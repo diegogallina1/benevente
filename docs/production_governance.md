@@ -6,9 +6,10 @@ O Benevente Wealth System produz uma **proposta de pesquisa para revisão humana
 
 1. Preencher a política de produção com valor, horizonte, limites e confirmação explícita de ciência.
 2. Gerar fundamentos TTM a partir de ITR oficial da CVM e DFP anterior, usando o mapa contábil específico para companhias não financeiras ou instituições financeiras, e verificar a data contábil (`as_of_date`) e a data de divulgação (`available_date`).
-3. Revisar a tela fundamental, pesos propostos, concentração, liquidez e custo estimado.
-4. Aprovar cada ordem de modo independente e lançá-la manualmente na plataforma da corretora.
-5. Guardar as notas de corretagem e reconciliar preço, quantidade e taxas realizadas contra a proposta.
+3. Arquivar o snapshot de mercado e o histórico de preços atribuídos; para não financeiras, anexar métricas verificadas de dívida/EBITDA e cobertura de juros.
+4. Revisar a tela fundamental, pesos propostos, concentração, liquidez, quantidade/lote e custo estimado.
+5. Aprovar cada ordem de modo independente e lançá-la manualmente na plataforma da corretora.
+6. Guardar as notas de corretagem e reconciliar preço, quantidade e taxas realizadas contra a proposta.
 
 ## Dados e custos
 

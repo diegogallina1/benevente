@@ -10,19 +10,24 @@ from production_policy import load_policy
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--policy", required=True)
-    parser.add_argument("--fundamentals", required=True)
+    parser.add_argument("--market-snapshot", required=True)
+    parser.add_argument("--price-history", required=True)
     parser.add_argument("--output", default="artifacts/production_readiness.json")
     args = parser.parse_args()
     policy = load_policy(args.policy)
-    fundamental_file = Path(args.fundamentals)
-    if not fundamental_file.exists() or fundamental_file.stat().st_size <= 100:
-        raise ValueError("A populated point-in-time fundamentals CSV is required.")
+    market_file = Path(args.market_snapshot)
+    price_file = Path(args.price_history)
+    for label, candidate in (("market snapshot", market_file), ("price history", price_file)):
+        if not candidate.exists() or candidate.stat().st_size <= 100:
+            raise ValueError(f"A populated {label} CSV is required.")
     report = {
-        "status": "READY_FOR_HUMAN_REVIEW_ONLY",
+        "status": "INPUTS_PRESENT_REQUIRES_LIVE_CVM_AND_POLICY_VALIDATION",
         "policy_id": policy.policy_id,
-        "fundamental_file": str(fundamental_file.resolve()),
+        "market_snapshot_file": str(market_file.resolve()),
+        "price_history_file": str(price_file.resolve()),
         "requirements": [
-            "Generate proposal with value_portfolio_runner.py",
+            "Generate proposal with live_proposal_runner.py using current CVM ITR/DFP data",
+            "The runner must validate filing availability, market-data age, price-history coverage, eligibility, liquidity and cost limits",
             "Independent human approval of every proposed order",
             "Enter orders manually in the broker platform",
             "Import broker notes and reconcile estimated versus actual fees",
@@ -35,4 +40,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

@@ -1,58 +1,111 @@
-# Benevente Quant AI / Benevente Wealth System
+# Benevente
 
-**Benevente Quant AI** é o nome acadêmico do framework de pesquisa; **Benevente Wealth System** é sua apresentação comercial B2B.
+**Benevente Quant AI** é o framework acadêmico de pesquisa. **Benevente Wealth
+System** é a solução B2B de apoio à decisão. Ambos compartilham o mesmo núcleo:
+seleção determinística de valor e qualidade, alocação restrita, dados
+ponto-no-tempo e uma trilha que permite revisar cada decisão.
 
-Framework de pesquisa para backtest de alocação B3/CDI com sinais tipados, MVO determinístico e fricções operacionais modeladas.
+O sistema não promete superar CDI, Ibovespa ou qualquer benchmark; não emite
+recomendação autônoma e não transmite ordens. Seu objetivo é tornar uma tese de
+carteira de médio/longo prazo reproduzível, verificável e revisável por uma
+pessoa responsável.
 
-## Princípios
+## O que já é executável
 
-- Decisão em cada rebalanceamento usa somente retornos até `T-1`.
-- A camada de sinais não produz pesos: o otimizador convexo aplica os limites.
-- Custos de transação (10 bps), slippage (5 bps) e limiar de turnover são contabilizados.
-- O teto de 15% vale para ações; o CDI é a manga residual de liquidez. Aplicar 15% também ao CDI tornaria inviável a restrição de até 60% em ações.
-- `--offline` produz dados sintéticos determinísticos para testes reprodutíveis; não representa mercado real.
+- Backtest reproduzível B3/CDI, com custos e slippage modelados;
+- Janelas históricas pré-especificadas de 5, 10 e 15 anos;
+- Cálculo TTM com ITR/DFP oficial da CVM e corte por data de recebimento;
+- Filtros que rejeitam ativos sem liquidez, qualidade ou dados de solvência
+  comparáveis;
+- Proposta para carteira-sombra: pesos, quantidades, lotes, custo, participação
+  no volume, caixa residual e arquivos de auditoria;
+- Conciliação posterior entre a proposta e a nota de corretagem.
 
-## Executar
+## Instalação e teste
 
 ```powershell
 python -m venv .venv-benevente
 .\.venv-benevente\Scripts\Activate.ps1
 pip install -r requirements.txt
+python -m pytest tests/test_pipeline.py tests/test_live_contracts.py -q
 python main.py --offline
-python paper_builder.py
-python research_runner.py --output artifacts/real_data
-python validate_research.py --input artifacts/real_data
-python tune_hyperparameters.py --input artifacts/real_data --split 2025-01-01
-python horizon_evaluation.py --output artifacts/horizons
-python value_portfolio_runner.py --fundamentals data/my_point_in_time_fundamentals.csv --decision-date 2026-08-01 --horizon 5
-python live_proposal_runner.py --policy data/my_production_policy.json --itr-year 2026 --market-snapshot data/my_market_snapshot.csv
-python pilot_tracker.py --policy data/my_pilot_100k_policy.json --nav data/my_pilot_nav.csv
 ```
 
-Os resultados ficam em `artifacts/`. A execução normal requer dados reais do `yfinance` e falha de forma explícita se não os obtiver; `--offline` é a única forma de usar dados sintéticos determinísticos.
+O modo `--offline` gera dados sintéticos determinísticos apenas para testar o
+software. Ele não é evidência de retorno de mercado.
 
-`research_runner.py` é a execução empírica: salva os preços de entrada, séries macro, curvas, métricas, comparativos CDI/Ibovespa/MVO clássico e sensibilidade de custos. Não preencha artigos com os resultados de `--offline`.
+## Pesquisa histórica
 
-`validate_research.py` faz as verificações independentes de integridade de séries, datas, valores nulos, recomposição da curva de patrimônio e conjunto de benchmarks.
+```powershell
+python research_runner.py --output artifacts/real_data
+python validate_research.py --input artifacts/real_data
+python horizon_evaluation.py --output artifacts/horizons
+```
 
-`tune_hyperparameters.py` seleciona gamma e influência dos sinais antes de 2025 e mede o modelo selecionado somente a partir de 2025. O resultado fora da amostra deve ser apresentado separadamente.
+`research_runner.py` arquiva preços, dados macro, curvas, métricas e
+comparativos com CDI, Ibovespa e MVO clássico. `validate_research.py` confere
+datas, valores nulos e recomposição de patrimônio. Não escolha parâmetros depois
+de observar uma janela: use `tune_hyperparameters.py` com uma separação temporal
+explícita.
 
-`horizon_evaluation.py` executa janelas pré-definidas de 5, 10 e 15 anos, cada uma com um ano independente de lookback antes do início da avaliação. Não use os resultados dessas janelas para retroativamente escolher parâmetros.
+## Carteira-sombra real, sem ordem automática
 
-## Seleção de valor e qualidade
+Uma proposta operacional requer três insumos datados e atribuídos:
 
-O módulo de médio/longo prazo utiliza filtros determinísticos para evitar ações frágeis: capitalização e liquidez mínimas, geração positiva de caixa, ROIC/ROE mínimos, alavancagem e cobertura de juros. Só depois ele ranqueia valor e qualidade. O arquivo [fundamentals_point_in_time_template.csv](data/fundamentals_point_in_time_template.csv) define o contrato de dados: cada observação exige `available_date`, a data em que ficou pública. Sem esse arquivo preenchido por uma fonte histórica confiável, o sistema não produz uma recomendação — por desenho.
+1. Política: copie `data/production_policy_template.json`, identifique o
+   responsável e confirme o reconhecimento explícito.
+2. Snapshot de mercado: copie `data/market_snapshot_template.csv` e preencha
+   preço de fechamento, capitalização, liquidez, lote e fonte (B3, corretora ou
+   fornecedor licenciado).
+3. Histórico de preços: CSV de fonte identificada, com `date`, uma coluna para
+   cada ticker `.SA` do snapshot e `TITULO_CDI`. Todas as linhas devem ser
+   anteriores ou iguais à data de decisão. O histórico deve ter, no mínimo,
+   253/505/757/1261 linhas para horizontes de 1/2/5/10–15 anos.
 
-O custo padrão de swing trade é `ClearB3CostModel`: corretagem Clear de 0%, taxa B3 regular de 0,0300% por lado e slippage dependente da participação no volume. Ele gera uma carteira-sombra e um modelo de ordens para conciliação posterior com notas de corretagem.
+Para empresas não financeiras, ITR/DFP padronizado não fornece de forma segura
+um EBITDA e cobertura de juros comparáveis. Se quiser que elas sejam elegíveis,
+preencha também `data/quality_metrics_template.csv` com métricas verificadas e
+fonte atribuída. Sem elas, o sistema rejeita o ativo em vez de inventar um dado.
 
-## Proposta com dados reais — sem execução automática
+```powershell
+Copy-Item data/production_policy_template.json data/my_policy.json
+Copy-Item data/market_snapshot_template.csv data/my_market.csv
+Copy-Item data/quality_metrics_template.csv data/my_quality.csv
+# preencher os CSVs e my_policy.json; o arquivo de preços é exportado da fonte escolhida
+python production_readiness.py --policy data/my_policy.json --market-snapshot data/my_market.csv --price-history data/my_prices.csv
+python live_proposal_runner.py --policy data/my_policy.json --itr-year 2026 --market-snapshot data/my_market.csv --price-history data/my_prices.csv --price-history-source "B3/corretora, exportação YYYY-MM-DD" --quality-metrics data/my_quality.csv --decision-date YYYY-MM-DD
+```
 
-`live_proposal_runner.py` baixa o ITR mais recente da CVM e o combina ao DFP anual anterior para calcular métricas TTM: DFP anual + ITR atual − ITR comparativo. A data de recebimento da CVM limita a disponibilidade da informação. Copie e complete [production_policy_template.json](data/production_policy_template.json) e forneça um [market_snapshot_template.csv](data/market_snapshot_template.csv) datado, atribuído à B3, corretora ou fornecedor licenciado. A rotina não consulta valores sem origem, não envia ordens e só pode ser seguida por entrada manual na corretora e reconciliação das notas.
+O pacote em `artifacts/live_proposals/YYYY-MM-DD/` contém a política aplicada,
+fundamentos CVM, histórico e snapshot arquivados, tela de elegibilidade, pesos,
+`proposed_orders.csv`, resumo de caixa/custos e metadados. As instruções de
+compra são arredondadas para o lote declarado e falham se excederem a
+participação máxima de 5% do volume diário médio. A pessoa responsável revisa e
+aprova cada linha antes de digitá-la manualmente na corretora.
 
-Para o experimento prospectivo, [pilot_100k_policy.json](data/pilot_100k_policy.json) e [pilot_nav_template.csv](data/pilot_nav_template.csv) iniciam uma carteira-sombra de R$100 mil. `pilot_tracker.py` mede NAV, retorno líquido observado, drawdown, CDI e Ibovespa sem criar nem executar uma ordem.
+Após receber a nota, copie `data/executions_template.csv`, preencha os dados
+efetivos e concilie:
 
-## LLM opcional
+```powershell
+python broker_note_reconciler.py --proposed-orders artifacts/live_proposals/YYYY-MM-DD/proposed_orders.csv --executions data/my_executions.csv --output artifacts/reconciliation.csv
+```
 
-O backtest usa `MockLLMAgents` determinístico por padrão, para manter reprodutibilidade e evitar chamadas pagas. `OpenAIStructuredAgents` é um adaptador opcional que requer `OPENAI_API_KEY` e valida a resposta contra JSON Schema/Pydantic antes de qualquer influência no otimizador. A API jamais gera pesos de carteira.
+Para o acompanhamento prospectivo de R$100 mil, preencha o NAV observado e
+execute `pilot_tracker.py`. Acompanhamento prospectivo e backtest permanecem
+separados.
 
-> Aviso: material educacional e de pesquisa. Não é recomendação de investimento nem validação de desempenho futuro.
+## Limites importantes
+
+- O LLM é opcional e só estrutura teses/riscos; jamais define pesos ou envia
+  ordens.
+- A cobertura atual é Brasil/B3. ETFs globais negociados na B3 só entram depois
+  de módulo próprio de transparência e dados ponto-no-tempo.
+- Custos Clear/B3 são estimativas versionadas e precisam ser confrontados com a
+  nota de corretagem, inclusive em caso de alteração de tabela.
+- Uso comercial, suitability, consultoria ou gestão exigem estrutura regulatória,
+  contratual e controles adequados. Este repositório é pesquisa e apoio à
+  decisão, não aconselhamento individual.
+
+Consulte [a integração ITR](docs/itr_integration.md), a
+[governança de produção](docs/production_governance.md) e o
+[desenho de pesquisa](docs/value_quality_research_design.md).

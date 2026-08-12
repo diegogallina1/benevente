@@ -2,6 +2,9 @@ from __future__ import annotations
 import argparse
 import json
 from pathlib import Path
+import matplotlib
+# The command is expected to run in CI and servers without a desktop session.
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from backtest_engine import BacktestEngine
 from config import SystemConfig

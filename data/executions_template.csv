@@ -1,0 +1,2 @@
+broker_note_id,execution_date,ticker,side,quantity,execution_price_brl,broker_fees_brl
+REPLACE,YYYY-MM-DD,PETR4,BUY,REPLACE,REPLACE,REPLACE

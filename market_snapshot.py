@@ -12,6 +12,8 @@ class MarketSnapshot(BaseModel):
     observed_at: datetime
     market_cap_brl: float = Field(gt=0)
     average_daily_value_brl: float = Field(gt=0)
+    close_price_brl: float = Field(gt=0)
+    lot_size: int = Field(default=1, ge=1)
     source: str = Field(min_length=8)
 
 

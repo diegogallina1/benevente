@@ -38,6 +38,16 @@ def write_order_template(path: str | Path) -> None:
         writer.writeheader()
 
 
+def write_proposed_orders(path: str | Path, orders: list[ProposedOrder]) -> None:
+    """Persist proposed orders in the exact contract used for reconciliation."""
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(ProposedOrder.__annotations__))
+        writer.writeheader()
+        writer.writerows(asdict(order) for order in orders)
+
+
 def reconcile(proposal: ProposedOrder, execution: ExecutedOrder) -> dict[str, float | str]:
     if proposal.ticker != execution.ticker or proposal.side != execution.side:
         raise ValueError("Broker-note execution does not match proposed order")
@@ -53,4 +63,3 @@ def reconcile(proposal: ProposedOrder, execution: ExecutedOrder) -> dict[str, fl
         "actual_broker_fees_brl": execution.broker_fees_brl,
         "cost_estimation_error_brl": execution.broker_fees_brl - proposal.estimated_cost_brl,
     }
-

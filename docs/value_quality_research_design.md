@@ -2,7 +2,7 @@
 
 ## Hipótese
 
-O Benevente testa se um filtro de valor e qualidade, complementado por uma revisão estruturada de LLM, gera retorno ajustado a risco superior ao CDI em horizontes de dois e cinco anos, depois de custos de negociação. Esta é uma hipótese testável, não uma promessa de performance.
+O Benevente testa se um filtro de valor e qualidade, complementado por uma revisão estruturada de LLM, gera retorno ajustado a risco superior ao CDI em horizontes de 1, 2, 5, 10 e 15 anos, depois de custos de negociação. Esta é uma hipótese testável, não uma promessa de performance.
 
 ## Ordem de decisão
 
@@ -17,7 +17,7 @@ O Benevente testa se um filtro de valor e qualidade, complementado por uma revis
 
 Use o contrato `data/fundamentals_point_in_time_template.csv`. Cada dado precisa de uma data contábil (`as_of_date`) e uma data em que se tornou público (`available_date`). Dados atuais baixados de APIs públicas não podem ser reutilizados retroativamente em backtests.
 
-Para propostas correntes, `cvm_fundamentals.py` baixa o DFP oficial da CVM e guarda a data de recebimento do documento. O preço, market cap e volume vêm de `yfinance` somente como cotação ao vivo e precisam ficar arquivados junto à proposta. O DFP não substitui uma base histórica de fundamentos para testes de performance.
+Para propostas correntes, `cvm_itr.py` combina ITR oficial com DFP anual anterior e guarda tanto a data contábil quanto a data de recebimento. Preço, capitalização, volume e lote são fornecidos em snapshot datado e atribuível; o histórico de preços também é exportado e preservado no pacote. Para não financeiras, dívida/EBITDA e cobertura de juros só são aceitos quando fornecidos em arquivo complementar datado e atribuível. O ITR/DFP corrente não substitui uma base histórica de fundamentos para testes de performance.
 
 ## Custos Clear/B3
 

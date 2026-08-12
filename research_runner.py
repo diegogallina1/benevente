@@ -10,6 +10,8 @@ import json
 from dataclasses import asdict, replace
 from pathlib import Path
 
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
