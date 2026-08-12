@@ -1,0 +1,36 @@
+{
+  "horizon_years": 5,
+  "execution_start": "2021-07-01",
+  "download_start": "2020-07-01",
+  "end_exclusive": "2026-07-01",
+  "config": {
+    "transaction_cost": 0.001,
+    "slippage": 0.0005,
+    "max_asset_weight": 0.15,
+    "risk_aversion_gamma": 2.5,
+    "rebalance_threshold": 0.03,
+    "rolling_window_days": 252,
+    "rebalance_days": 21,
+    "risk_free_rate_annual": 0.105,
+    "llm_alpha_influence": 0.3,
+    "initial_wealth": 100.0,
+    "cdi_bcb_series": 12,
+    "selic_bcb_series": 432,
+    "ipca_bcb_series": 433,
+    "tickers": [
+      "PETR4.SA",
+      "VALE3.SA",
+      "ITUB4.SA",
+      "BBDC4.SA",
+      "WEGE3.SA",
+      "RENT3.SA",
+      "ABEV3.SA",
+      "BBAS3.SA",
+      "TITULO_CDI"
+    ]
+  },
+  "sources": {
+    "prices": "Yahoo Finance via yfinance",
+    "CDI/macro": "Banco Central do Brasil SGS 12/432/433"
+  }
+}

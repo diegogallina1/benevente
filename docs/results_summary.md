@@ -25,3 +25,7 @@ Seleção em 12 períodos antes de 01/01/2025: gamma=1,0 e influência dos sinai
 ## Integridade e limitações
 
 `validation_report.json` verificou 871 linhas de preços, nenhuma data duplicada ou nula e recomposição independente das curvas dentro de tolerância numérica. Limitações: universo fixo de ações atuais (viés de sobrevivência), Yahoo Finance como fonte secundária e custos modelados, não custos observados. Não é recomendação de investimento.
+
+## Extensão de horizonte
+
+A avaliação fixa em 5, 10 e 15 anos está documentada em `docs/horizon_evaluation.md`. O Benevente Quant AI superou o CDI nas janelas de 10 e 15 anos, mas não na janela de 5 anos.

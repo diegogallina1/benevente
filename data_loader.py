@@ -54,18 +54,29 @@ class PointInTimeDataLoader:
 
     def fetch_cdi_returns(self, start_date: str, end_date: str) -> pd.Series:
         """Return the BCB SGS 12 CDI daily rate as a decimal daily return."""
-        from bcb import sgs
-        cdi = sgs.get({"cdi": self.config.cdi_bcb_series}, start=start_date, end=end_date)["cdi"]
+        cdi = self._fetch_bcb_chunked({"cdi": self.config.cdi_bcb_series}, start_date, end_date)["cdi"]
         return (cdi / 100).rename("CDI_RETURN")
 
     def fetch_macro_data(self, start_date: str, end_date: str) -> pd.DataFrame:
         """BCB macro series; callers must use observations dated no later than T-1."""
-        from bcb import sgs
-        macro = sgs.get({"selic": self.config.selic_bcb_series, "ipca": self.config.ipca_bcb_series},
-                        start=start_date, end=end_date)
+        macro = self._fetch_bcb_chunked({"selic": self.config.selic_bcb_series, "ipca": self.config.ipca_bcb_series},
+                                        start_date, end_date)
         macro["selic"] = macro["selic"] / 100
         macro["ipca"] = macro["ipca"] / 100
         return macro
+
+    @staticmethod
+    def _fetch_bcb_chunked(series: dict[str, int], start_date: str, end_date: str) -> pd.DataFrame:
+        """Fetch SGS series in eight-year blocks (daily SGS requests max out at 10 years)."""
+        from bcb import sgs
+        start, end = pd.Timestamp(start_date), pd.Timestamp(end_date)
+        blocks = []
+        cursor = start
+        while cursor < end:
+            block_end = min(cursor + pd.DateOffset(years=8), end)
+            blocks.append(sgs.get(series, start=cursor.strftime("%Y-%m-%d"), end=block_end.strftime("%Y-%m-%d")))
+            cursor = block_end + pd.Timedelta(days=1)
+        return pd.concat(blocks).loc[lambda frame: ~frame.index.duplicated(keep="last")].sort_index()
 
     @staticmethod
     def _synthetic_prices(tickers: list[str], start_date: str, end_date: str) -> pd.DataFrame:

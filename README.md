@@ -23,6 +23,7 @@ python paper_builder.py
 python research_runner.py --output artifacts/real_data
 python validate_research.py --input artifacts/real_data
 python tune_hyperparameters.py --input artifacts/real_data --split 2025-01-01
+python horizon_evaluation.py --output artifacts/horizons
 ```
 
 Os resultados ficam em `artifacts/`. A execução normal requer dados reais do `yfinance` e falha de forma explícita se não os obtiver; `--offline` é a única forma de usar dados sintéticos determinísticos.
@@ -32,6 +33,8 @@ Os resultados ficam em `artifacts/`. A execução normal requer dados reais do `
 `validate_research.py` faz as verificações independentes de integridade de séries, datas, valores nulos, recomposição da curva de patrimônio e conjunto de benchmarks.
 
 `tune_hyperparameters.py` seleciona gamma e influência dos sinais antes de 2025 e mede o modelo selecionado somente a partir de 2025. O resultado fora da amostra deve ser apresentado separadamente.
+
+`horizon_evaluation.py` executa janelas pré-definidas de 5, 10 e 15 anos, cada uma com um ano independente de lookback antes do início da avaliação. Não use os resultados dessas janelas para retroativamente escolher parâmetros.
 
 ## LLM opcional
 

@@ -1,0 +1,52 @@
+{
+  "assessment": "ready_with_caveats",
+  "checks": {
+    "price_rows": 3974,
+    "price_start": "2010-07-01",
+    "price_end": "2026-06-30",
+    "duplicate_price_dates": 0,
+    "null_price_values": 0,
+    "strategies": [
+      "Benevente Quant AI",
+      "MVO clássico",
+      "CDI",
+      "Ibovespa"
+    ]
+  },
+  "strategy_integrity": {
+    "benevente_quant_ai": {
+      "rows": 177,
+      "duplicate_dates": 0,
+      "null_values": 0,
+      "max_wealth_recalculation_difference": 1.8189894035458565e-12,
+      "negative_turnover_count": 0
+    },
+    "cdi": {
+      "rows": 177,
+      "duplicate_dates": 0,
+      "null_values": 0,
+      "max_wealth_recalculation_difference": 5.115907697472721e-13,
+      "negative_turnover_count": 0
+    },
+    "ibovespa": {
+      "rows": 177,
+      "duplicate_dates": 0,
+      "null_values": 0,
+      "max_wealth_recalculation_difference": 1.1368683772161603e-12,
+      "negative_turnover_count": 0
+    },
+    "mvo_clássico": {
+      "rows": 177,
+      "duplicate_dates": 0,
+      "null_values": 0,
+      "max_wealth_recalculation_difference": 1.0231815394945443e-12,
+      "negative_turnover_count": 0
+    }
+  },
+  "issues": [],
+  "required_caveats": [
+    "Yahoo Finance is a secondary market-data source; archive input CSVs with every reported run.",
+    "The universe is fixed and current-ticker based, so survivorship bias remains unless historical constituents are introduced.",
+    "Backtest results are not investment advice and do not predict future performance."
+  ]
+}
