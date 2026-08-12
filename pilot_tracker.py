@@ -10,6 +10,7 @@ from production_policy import ProductionPolicy
 
 
 REQUIRED_NAV_COLUMNS = {"date", "portfolio_value_brl", "cdi_value_brl", "ibovespa_value_brl", "notes"}
+ACTIVE_FUND_NAV_COLUMN = "active_fund_value_brl"
 
 
 def build_performance(policy: ProductionPolicy, nav: pd.DataFrame) -> tuple[pd.DataFrame, dict]:
@@ -17,6 +18,10 @@ def build_performance(policy: ProductionPolicy, nav: pd.DataFrame) -> tuple[pd.D
     if missing:
         raise ValueError(f"NAV file missing columns: {sorted(missing)}")
     frame = nav.copy()
+    # The template exposes an optional active-fund column. An entirely blank
+    # column means ``no fund comparison`` rather than an invalid observation.
+    if ACTIVE_FUND_NAV_COLUMN in frame.columns and frame[ACTIVE_FUND_NAV_COLUMN].isna().all():
+        frame = frame.drop(columns=[ACTIVE_FUND_NAV_COLUMN])
     frame["date"] = pd.to_datetime(frame["date"])
     frame = frame.sort_values("date")
     if frame.date.duplicated().any() or frame.empty:
@@ -28,6 +33,13 @@ def build_performance(policy: ProductionPolicy, nav: pd.DataFrame) -> tuple[pd.D
         if (frame[column] <= 0).any():
             raise ValueError(f"{column} must remain positive")
         frame[f"{column}_return"] = frame[column] / frame[column].iloc[0] - 1
+    if ACTIVE_FUND_NAV_COLUMN in frame.columns:
+        frame[ACTIVE_FUND_NAV_COLUMN] = pd.to_numeric(frame[ACTIVE_FUND_NAV_COLUMN])
+        if (frame[ACTIVE_FUND_NAV_COLUMN] <= 0).any() or frame[ACTIVE_FUND_NAV_COLUMN].isna().any():
+            raise ValueError(f"{ACTIVE_FUND_NAV_COLUMN} must remain positive and complete")
+        frame[f"{ACTIVE_FUND_NAV_COLUMN}_return"] = (
+            frame[ACTIVE_FUND_NAV_COLUMN] / frame[ACTIVE_FUND_NAV_COLUMN].iloc[0] - 1
+        )
     running_peak = frame.portfolio_value_brl.cummax()
     frame["portfolio_drawdown"] = frame.portfolio_value_brl / running_peak - 1
     latest = frame.iloc[-1]
@@ -44,6 +56,8 @@ def build_performance(policy: ProductionPolicy, nav: pd.DataFrame) -> tuple[pd.D
         "observation_count": int(len(frame)),
         "note": "Prospective tracking only; no return is guaranteed or inferred from this file.",
     }
+    if ACTIVE_FUND_NAV_COLUMN in frame.columns:
+        summary["active_fund_return"] = float(latest[f"{ACTIVE_FUND_NAV_COLUMN}_return"])
     return frame, summary
 
 

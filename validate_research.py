@@ -38,8 +38,15 @@ def validate(directory: Path) -> dict:
 
     metrics = pd.read_csv(directory / "performance_metrics.csv")
     checks["strategies"] = metrics.strategy.tolist()
-    if set(checks["strategies"]) != {"Benevente Quant AI", "MVO clássico", "CDI", "Ibovespa"}:
+    expected = {"Benevente Quant AI", "MVO clássico", "CDI", "Ibovespa"}
+    if not expected.issubset(set(checks["strategies"])):
         issues.append("Expected benchmark set is incomplete.")
+    fund_curves = directory / "active_fund_comparison_curves.csv"
+    if fund_curves.exists():
+        fund_data = pd.read_csv(fund_curves, parse_dates=["date"])
+        checks["active_fund_comparison_rows"] = int(len(fund_data))
+        if fund_data.empty or fund_data.date.duplicated().any() or fund_data.isna().any().any():
+            issues.append("Active-fund comparison has empty, duplicate, or null observations.")
     report = {"assessment": "ready_with_caveats" if not issues else "needs_revision", "checks": checks,
               "strategy_integrity": per_strategy, "issues": issues,
               "required_caveats": [
@@ -58,4 +65,3 @@ if __name__ == "__main__":
     report = validate(Path(args.input))
     print(json.dumps(report, indent=2, ensure_ascii=False))
     raise SystemExit(0 if report["assessment"] == "ready_with_caveats" else 1)
-

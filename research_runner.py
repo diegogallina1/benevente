@@ -18,6 +18,7 @@ import pandas as pd
 from backtest_engine import BacktestEngine
 from config import SystemConfig
 from data_loader import PointInTimeDataLoader
+from fund_comparator import CvmFundDailyClient, compare_common_window, format_cnpj
 
 
 def passive_results(prices: pd.Series, decision_dates: pd.Series, rebalance_days: int) -> pd.DataFrame:
@@ -33,7 +34,8 @@ def passive_results(prices: pd.Series, decision_dates: pd.Series, rebalance_days
     return pd.DataFrame(rows)
 
 
-def evaluate(config: SystemConfig, start: str, end: str, output: Path, offline: bool = False) -> pd.DataFrame:
+def evaluate(config: SystemConfig, start: str, end: str, output: Path, offline: bool = False,
+             active_fund_cnpj: str | None = None, active_fund_name: str | None = None) -> pd.DataFrame:
     output.mkdir(parents=True, exist_ok=True)
     loader = PointInTimeDataLoader(config)
     prices = loader.fetch_prices(start, end, offline=offline)
@@ -83,6 +85,20 @@ def evaluate(config: SystemConfig, start: str, end: str, output: Path, offline: 
     metrics.to_csv(output / "performance_metrics.csv")
     curves.to_csv(output / "equity_curves.csv")
 
+    if active_fund_cnpj:
+        if offline:
+            raise ValueError("An active-fund comparison requires official CVM data; it is unavailable in offline mode.")
+        fund_name = active_fund_name or f"Fundo ativo CVM {format_cnpj(active_fund_cnpj)}"
+        fund = CvmFundDailyClient().quotes(active_fund_cnpj, start, pd.Timestamp(end) - pd.Timedelta(days=1))
+        comparison_curves, comparison_metrics, comparison_metadata = compare_common_window(strategies, fund, fund_name)
+        comparison_curves.to_csv(output / "active_fund_comparison_curves.csv")
+        comparison_metrics.to_csv(output / "active_fund_comparison_metrics.csv", index=False)
+        comparison_metadata["source_urls"] = list(fund.source_urls)
+        (output / "active_fund_comparison_metadata.json").write_text(
+            json.dumps(comparison_metadata, indent=2, ensure_ascii=False), encoding="utf-8"
+        )
+        fund.quotes.to_csv(output / "input_active_fund_cvm_quotes.csv")
+
     ax = curves.plot(figsize=(11, 5), linewidth=2)
     ax.set(title="Benevente Quant AI — Real-data comparison (net returns)", xlabel="Rebalance date", ylabel="Wealth (base 100)")
     ax.grid(alpha=0.25)
@@ -104,8 +120,11 @@ def main() -> None:
     parser.add_argument("--end", default="2026-07-01", help="Exclusive end date for yfinance/BCB requests.")
     parser.add_argument("--output", default="artifacts/real_data")
     parser.add_argument("--offline", action="store_true")
+    parser.add_argument("--fund-cnpj", help="Optional active-fund/class CNPJ to compare using official CVM daily quotes.")
+    parser.add_argument("--fund-name", help="Display label for the optional active fund.")
     args = parser.parse_args()
-    metrics = evaluate(SystemConfig(), args.start, args.end, Path(args.output), args.offline)
+    metrics = evaluate(SystemConfig(), args.start, args.end, Path(args.output), args.offline,
+                       args.fund_cnpj, args.fund_name)
     print(metrics.to_string(float_format=lambda value: f"{value:.4f}"))
 
 

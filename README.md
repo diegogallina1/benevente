@@ -48,6 +48,44 @@ datas, valores nulos e recomposição de patrimônio. Não escolha parâmetros d
 de observar uma janela: use `tune_hyperparameters.py` com uma separação temporal
 explícita.
 
+## Comparação com fundo de gestão ativa
+
+O comparador aceita qualquer **CNPJ de fundo ou classe** com cotas no Informe
+Diário da CVM. Ele baixa apenas as linhas necessárias da fonte oficial, guarda as
+URLs dos arquivos usados e alinha a cota do fundo à última publicação disponível
+em cada data do modelo. Todas as curvas passam a começar em 100 na primeira data
+comum, o que evita comparar períodos diferentes.
+
+O valor inicial sugerido na interface é o **Dynamo Cougar FIF**, CNPJ
+`73.232.530/0001-39`, por ser um fundo de ações de longo histórico; é somente
+uma referência editável, não indicação de investimento. Fundos têm taxas,
+tributação, resgate, público-alvo e mandatos próprios, portanto a comparação não
+mede uma escolha investível equivalente.
+
+```powershell
+python research_runner.py --start 2021-07-01 --end 2026-07-01 --fund-cnpj 73.232.530/0001-39 --fund-name "Dynamo Cougar FIF" --output artifacts/dynamo_comparison
+python validate_research.py --input artifacts/dynamo_comparison
+```
+
+## Interface local
+
+Há dois modos de uso numa interface única:
+
+- **Pesquisa e fundo ativo:** executa o backtest, mostra CDI/Ibovespa/MVO e, no
+  modo real, o comparativo do fundo CVM escolhido;
+- **Carteira-sombra:** cria a linha-base ou importa um CSV de NAV observado para
+  acompanhar carteira, CDI, Ibovespa e, opcionalmente, a cota CVM de um fundo
+  ativo escolhido, sem transmitir ordens.
+
+```powershell
+.\launch_ui.ps1
+```
+
+Abra `http://localhost:8501`. A interface grava todos os resultados em
+`artifacts/ui/` e mantém os dois modos separados. Ela não substitui o fluxo de
+proposta com ITR/DFP, que continua sendo o caminho para uma revisão de carteira
+real com dados de mercado atribuídos.
+
 ## Carteira-sombra real, sem ordem automática
 
 Uma proposta operacional requer três insumos datados e atribuídos:
