@@ -1,0 +1,13 @@
+{
+  "cumulative_return": 0.15455910122944183,
+  "cagr": 0.10677278704483717,
+  "annual_volatility": 0.10597064419642639,
+  "sharpe": -0.27372578835038075,
+  "max_drawdown": -0.04870271019319572,
+  "average_turnover": 0.17773453368475706,
+  "gamma": 1.0,
+  "alpha": 0.3,
+  "split": "2025-01-01",
+  "periods": 17,
+  "sharpe_excess_cdi": -0.27372578835038075
+}

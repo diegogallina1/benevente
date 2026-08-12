@@ -1,5 +1,7 @@
 """Typed LLM boundary. The default mock is deterministic and API-free."""
 from __future__ import annotations
+import json
+import os
 from typing import Literal
 import numpy as np
 import pandas as pd
@@ -48,3 +50,28 @@ class MockLLMAgents:
             scores.append(AssetScore(ticker=ticker, confidence_score=score, rationale="Deterministic risk-adjusted momentum."))
         return SelectionOutput(scores=scores)
 
+
+class OpenAIStructuredAgents(MockLLMAgents):
+    """Optional OpenAI adapter; no request is made unless this class is selected.
+
+    The optimizer remains the sole producer of portfolio weights. API output is
+    parsed and validated with Pydantic before it can influence any optimization.
+    """
+    def __init__(self, config: SystemConfig, model: str | None = None) -> None:
+        super().__init__(config)
+        self.model = model or os.getenv("BENEVENTE_OPENAI_MODEL", "gpt-4o")
+
+    def macro(self, selic_rate: float, ipca_rate: float) -> MacroOutput:
+        if not os.getenv("OPENAI_API_KEY"):
+            raise RuntimeError("OPENAI_API_KEY is required to enable OpenAIStructuredAgents.")
+        from openai import OpenAI
+        schema = MacroOutput.model_json_schema()
+        response = OpenAI().responses.create(
+            model=self.model,
+            input=[
+                {"role": "system", "content": "You are a Brazilian macro allocation analyst. Return only the requested JSON."},
+                {"role": "user", "content": f"Selic={selic_rate:.2%}; IPCA={ipca_rate:.2%}. Set an equity cap from 0.10 to 0.90."},
+            ],
+            text={"format": {"type": "json_schema", "name": "macro_output", "schema": schema, "strict": True}},
+        )
+        return MacroOutput.model_validate(json.loads(response.output_text))

@@ -20,8 +20,21 @@ python -m venv .venv
 pip install -r requirements.txt
 python main.py --offline
 python paper_builder.py
+python research_runner.py --output artifacts/real_data
+python validate_research.py --input artifacts/real_data
+python tune_hyperparameters.py --input artifacts/real_data --split 2025-01-01
 ```
 
-Os resultados ficam em `artifacts/`. A execução sem `--offline` tenta baixar dados com `yfinance`, mas mantém fallback explícito e determinístico.
+Os resultados ficam em `artifacts/`. A execução normal requer dados reais do `yfinance` e falha de forma explícita se não os obtiver; `--offline` é a única forma de usar dados sintéticos determinísticos.
+
+`research_runner.py` é a execução empírica: salva os preços de entrada, séries macro, curvas, métricas, comparativos CDI/Ibovespa/MVO clássico e sensibilidade de custos. Não preencha artigos com os resultados de `--offline`.
+
+`validate_research.py` faz as verificações independentes de integridade de séries, datas, valores nulos, recomposição da curva de patrimônio e conjunto de benchmarks.
+
+`tune_hyperparameters.py` seleciona gamma e influência dos sinais antes de 2025 e mede o modelo selecionado somente a partir de 2025. O resultado fora da amostra deve ser apresentado separadamente.
+
+## LLM opcional
+
+O backtest usa `MockLLMAgents` determinístico por padrão, para manter reprodutibilidade e evitar chamadas pagas. `OpenAIStructuredAgents` é um adaptador opcional que requer `OPENAI_API_KEY` e valida a resposta contra JSON Schema/Pydantic antes de qualquer influência no otimizador. A API jamais gera pesos de carteira.
 
 > Aviso: material educacional e de pesquisa. Não é recomendação de investimento nem validação de desempenho futuro.

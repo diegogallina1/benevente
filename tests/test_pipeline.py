@@ -12,3 +12,10 @@ def test_offline_pipeline_generates_valid_metrics():
     assert result.turnover.ge(0).all()
     assert set(metrics) == {"cumulative_return", "cagr", "annual_volatility", "sharpe", "max_drawdown", "average_turnover"}
 
+
+def test_classic_mvo_has_no_signal_dependency():
+    config = SystemConfig()
+    prices = PointInTimeDataLoader(config).fetch_prices("2023-01-01", "2025-06-30", offline=True)
+    result = BacktestEngine(prices, config).run(use_signals=False)
+    assert not result.empty
+    assert result.equity_cap.eq(0.60).all()

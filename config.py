@@ -13,8 +13,10 @@ class SystemConfig:
     risk_free_rate_annual: float = 0.105
     llm_alpha_influence: float = 0.30
     initial_wealth: float = 100.0
+    cdi_bcb_series: int = 12
+    selic_bcb_series: int = 432
+    ipca_bcb_series: int = 433
     tickers: list[str] = field(default_factory=lambda: [
         "PETR4.SA", "VALE3.SA", "ITUB4.SA", "BBDC4.SA", "WEGE3.SA",
         "RENT3.SA", "ABEV3.SA", "BBAS3.SA", "TITULO_CDI",
     ])
-

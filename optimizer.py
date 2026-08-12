@@ -9,12 +9,14 @@ class MeanVarianceOptimizer:
     def __init__(self, config: SystemConfig) -> None:
         self.config = config
 
-    def optimize(self, historical_returns: pd.DataFrame, scores: dict[str, float], equity_cap: float) -> pd.Series:
+    def optimize(self, historical_returns: pd.DataFrame, scores: dict[str, float], equity_cap: float,
+                 influence: float | None = None) -> pd.Series:
         assets = list(historical_returns.columns)
         n = len(assets)
         mu = historical_returns.mean().to_numpy() * 252
         confidence = np.array([scores[a] for a in assets])
-        mu = mu * (1 + self.config.llm_alpha_influence * confidence)
+        influence = self.config.llm_alpha_influence if influence is None else influence
+        mu = mu * (1 + influence * confidence)
         covariance = historical_returns.cov().to_numpy() * 252 + np.eye(n) * 1e-7
         w = cp.Variable(n)
         equity_indices = [i for i, asset in enumerate(assets) if asset != "TITULO_CDI"]
