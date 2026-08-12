@@ -1,7 +1,8 @@
 .venv/
+.venv-benevente/
+work/
 __pycache__/
 *.py[cod]
 .env
 artifacts/
 .pytest_cache/
-

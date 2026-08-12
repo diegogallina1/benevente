@@ -1,0 +1,14 @@
+{
+  "policy_id": "benevente-personal-001",
+  "owner": "REPLACE_WITH_ACCOUNT_OWNER",
+  "effective_date": "2026-08-12",
+  "portfolio_value_brl": 100000,
+  "horizon_years": 5,
+  "maximum_equity_weight": 0.7,
+  "maximum_asset_weight": 0.15,
+  "maximum_rebalance_cost_brl": 500,
+  "maximum_drawdown_tolerance": 0.25,
+  "allow_global_b3_etfs": false,
+  "require_human_approval": true,
+  "acknowledged_not_investment_advice": false
+}

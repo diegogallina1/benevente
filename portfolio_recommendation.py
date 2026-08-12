@@ -26,7 +26,8 @@ class ValuePortfolioPlanner:
         self.cost_model = cost_model or ClearB3CostModel()
 
     def propose(self, historical_returns: pd.DataFrame, snapshots: list[FundamentalSnapshot], decision_date: pd.Timestamp,
-                current_weights: pd.Series | None = None, horizon_years: int = 5) -> PortfolioProposal:
+                current_weights: pd.Series | None = None, horizon_years: int = 5,
+                maximum_equity_weight: float = 0.80) -> PortfolioProposal:
         if horizon_years not in {2, 5}:
             raise ValueError("Benevente value proposals currently support 2- or 5-year horizons.")
         screen = ValueQualitySelector(self.config).score(snapshots, decision_date)
@@ -40,7 +41,7 @@ class ValuePortfolioPlanner:
         if "TITULO_CDI" in scores:
             scores["TITULO_CDI"] = 1.0
         weights = MeanVarianceOptimizer(self.config).optimize(
-            historical_returns, scores, equity_cap=0.80, influence=self.config.value_quality_influence,
+            historical_returns, scores, equity_cap=maximum_equity_weight, influence=self.config.value_quality_influence,
             eligible_assets=set(screen.loc[screen.eligible, "ticker"]),
         )
         liquidity = screen.set_index("ticker").average_daily_value_brl.to_dict()
@@ -50,4 +51,3 @@ class ValuePortfolioPlanner:
             for asset in weights.index if asset != "TITULO_CDI" and asset in liquidity
         )
         return PortfolioProposal(decision_date, horizon_years, weights, screen, estimated_cost)
-

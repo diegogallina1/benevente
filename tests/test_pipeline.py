@@ -6,6 +6,7 @@ from backtest_engine import BacktestEngine
 from execution_costs import ClearB3CostModel
 from fundamentals import FundamentalSnapshot
 from portfolio_recommendation import ValuePortfolioPlanner
+from production_policy import ProductionPolicy
 from shadow_portfolio import ExecutedOrder, ProposedOrder, reconcile
 from value_quality import ValueQualitySelector
 
@@ -78,3 +79,14 @@ def test_value_backtest_uses_screen_and_clear_cost_model():
     )
     assert not result.empty
     assert result.friction_cost.ge(0).all()
+
+
+def test_production_policy_requires_human_acknowledgement():
+    policy = ProductionPolicy(
+        policy_id="test-policy", owner="Diego", effective_date="2026-08-12", portfolio_value_brl=100_000,
+        horizon_years=5, maximum_equity_weight=0.7, maximum_asset_weight=0.15,
+        maximum_rebalance_cost_brl=500, maximum_drawdown_tolerance=0.25,
+        acknowledged_not_investment_advice=False,
+    )
+    with pytest.raises(ValueError, match="Acknowledgement"):
+        policy.validate_for_live_proposal()
