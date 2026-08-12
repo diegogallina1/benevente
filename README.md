@@ -1,4 +1,6 @@
-# AlphaNet-B3 / CapInvest AI
+# Benevente Quant AI / Benevente Wealth System
+
+**Benevente Quant AI** é o nome acadêmico do framework de pesquisa; **Benevente Wealth System** é sua apresentação comercial B2B. O repositório mantém o identificador técnico `alphanet-b3` por compatibilidade.
 
 Framework de pesquisa para backtest de alocação B3/CDI com sinais tipados, MVO determinístico e fricções operacionais modeladas.
 
