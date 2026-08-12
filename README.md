@@ -24,6 +24,7 @@ python research_runner.py --output artifacts/real_data
 python validate_research.py --input artifacts/real_data
 python tune_hyperparameters.py --input artifacts/real_data --split 2025-01-01
 python horizon_evaluation.py --output artifacts/horizons
+python value_portfolio_runner.py --fundamentals data/my_point_in_time_fundamentals.csv --decision-date 2026-08-01 --horizon 5
 ```
 
 Os resultados ficam em `artifacts/`. A execução normal requer dados reais do `yfinance` e falha de forma explícita se não os obtiver; `--offline` é a única forma de usar dados sintéticos determinísticos.
@@ -35,6 +36,12 @@ Os resultados ficam em `artifacts/`. A execução normal requer dados reais do `
 `tune_hyperparameters.py` seleciona gamma e influência dos sinais antes de 2025 e mede o modelo selecionado somente a partir de 2025. O resultado fora da amostra deve ser apresentado separadamente.
 
 `horizon_evaluation.py` executa janelas pré-definidas de 5, 10 e 15 anos, cada uma com um ano independente de lookback antes do início da avaliação. Não use os resultados dessas janelas para retroativamente escolher parâmetros.
+
+## Seleção de valor e qualidade
+
+O módulo de médio/longo prazo utiliza filtros determinísticos para evitar ações frágeis: capitalização e liquidez mínimas, geração positiva de caixa, ROIC/ROE mínimos, alavancagem e cobertura de juros. Só depois ele ranqueia valor e qualidade. O arquivo [fundamentals_point_in_time_template.csv](data/fundamentals_point_in_time_template.csv) define o contrato de dados: cada observação exige `available_date`, a data em que ficou pública. Sem esse arquivo preenchido por uma fonte histórica confiável, o sistema não produz uma recomendação — por desenho.
+
+O custo padrão de swing trade é `ClearB3CostModel`: corretagem Clear de 0%, taxa B3 regular de 0,0300% por lado e slippage dependente da participação no volume. Ele gera uma carteira-sombra e um modelo de ordens para conciliação posterior com notas de corretagem.
 
 ## LLM opcional
 

@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 from pydantic import BaseModel, Field
 from config import SystemConfig
+from fundamentals import FundamentalSnapshot
 
 
 class MacroOutput(BaseModel):
@@ -23,6 +24,16 @@ class AssetScore(BaseModel):
 
 class SelectionOutput(BaseModel):
     scores: list[AssetScore]
+
+
+class ValueResearchOutput(BaseModel):
+    ticker: str
+    verdict: Literal["APPROVE", "WATCH", "REJECT"]
+    confidence_score: float = Field(ge=-1.0, le=1.0)
+    investment_horizon_years: Literal[2, 5]
+    thesis: str = Field(max_length=500)
+    key_risks: list[str] = Field(min_length=1, max_length=4)
+    requires_human_review: bool = True
 
 
 class MockLLMAgents:
@@ -75,3 +86,28 @@ class OpenAIStructuredAgents(MockLLMAgents):
             text={"format": {"type": "json_schema", "name": "macro_output", "schema": schema, "strict": True}},
         )
         return MacroOutput.model_validate(json.loads(response.output_text))
+
+    def review_value_candidate(self, snapshot: FundamentalSnapshot, horizon_years: int) -> ValueResearchOutput:
+        """Review supplied facts only; it cannot override deterministic hard filters."""
+        if not os.getenv("OPENAI_API_KEY"):
+            raise RuntimeError("OPENAI_API_KEY is required to enable OpenAIStructuredAgents.")
+        if horizon_years not in (2, 5):
+            raise ValueError("horizon_years must be 2 or 5")
+        from openai import OpenAI
+        response = OpenAI().responses.create(
+            model=self.model,
+            input=[
+                {"role": "system", "content": (
+                    "You are a skeptical long-term value-investing research reviewer. Use only the supplied JSON facts. "
+                    "Do not provide portfolio weights, price targets, or claims of guaranteed return. "
+                    "Return the required JSON and set requires_human_review=true."
+                )},
+                {"role": "user", "content": json.dumps({"horizon_years": horizon_years, "fundamental_snapshot": snapshot.model_dump(mode="json")})},
+            ],
+            text={"format": {"type": "json_schema", "name": "value_research_output",
+                              "schema": ValueResearchOutput.model_json_schema(), "strict": True}},
+        )
+        output = ValueResearchOutput.model_validate(json.loads(response.output_text))
+        if output.ticker != snapshot.ticker:
+            raise ValueError("LLM response ticker does not match supplied candidate")
+        return output

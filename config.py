@@ -12,10 +12,19 @@ class SystemConfig:
     rebalance_days: int = 21
     risk_free_rate_annual: float = 0.105
     llm_alpha_influence: float = 0.30
+    value_quality_influence: float = 0.35
     initial_wealth: float = 100.0
+    initial_portfolio_value_brl: float = 1_000_000.0
     cdi_bcb_series: int = 12
     selic_bcb_series: int = 432
     ipca_bcb_series: int = 433
+    min_market_cap_brl: float = 2_000_000_000
+    min_free_cash_flow_yield: float = 0.02
+    min_roic: float = 0.08
+    min_roe: float = 0.08
+    max_debt_to_ebitda: float = 3.0
+    min_interest_coverage: float = 2.0
+    max_position_adv_participation: float = 0.05
     tickers: list[str] = field(default_factory=lambda: [
         "PETR4.SA", "VALE3.SA", "ITUB4.SA", "BBDC4.SA", "WEGE3.SA",
         "RENT3.SA", "ABEV3.SA", "BBAS3.SA", "TITULO_CDI",
