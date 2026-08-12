@@ -44,6 +44,8 @@ def _read_csv_from_zip(archive: ZipFile, filename: str) -> pd.DataFrame:
 
 
 def _latest_statement(frame: pd.DataFrame, cnpj: str) -> pd.DataFrame:
+    # CSVs from the CVM portal are Latin-1.  Compare the actual accented
+    # label, rather than a mojibake literal, so the reader is deterministic.
     company = frame[(frame.CNPJ_CIA == cnpj) & (frame.ORDEM_EXERC == "ÚLTIMO")].copy()
     company["DT_REFER"] = pd.to_datetime(company.DT_REFER)
     return company[company.DT_REFER == company.DT_REFER.max()]

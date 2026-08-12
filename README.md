@@ -25,7 +25,8 @@ python validate_research.py --input artifacts/real_data
 python tune_hyperparameters.py --input artifacts/real_data --split 2025-01-01
 python horizon_evaluation.py --output artifacts/horizons
 python value_portfolio_runner.py --fundamentals data/my_point_in_time_fundamentals.csv --decision-date 2026-08-01 --horizon 5
-python live_proposal_runner.py --policy data/my_production_policy.json --dfp-year 2025
+python live_proposal_runner.py --policy data/my_production_policy.json --itr-year 2026 --market-snapshot data/my_market_snapshot.csv
+python pilot_tracker.py --policy data/my_pilot_100k_policy.json --nav data/my_pilot_nav.csv
 ```
 
 Os resultados ficam em `artifacts/`. A execução normal requer dados reais do `yfinance` e falha de forma explícita se não os obtiver; `--offline` é a única forma de usar dados sintéticos determinísticos.
@@ -46,7 +47,9 @@ O custo padrão de swing trade é `ClearB3CostModel`: corretagem Clear de 0%, ta
 
 ## Proposta com dados reais — sem execução automática
 
-`live_proposal_runner.py` baixa o DFP anual oficial da CVM, usa a data de recebimento da CVM como disponibilidade dos fundamentos, consulta preços atuais e produz uma proposta para revisão humana. Copie e complete [production_policy_template.json](data/production_policy_template.json), inclusive a confirmação explícita de ciência. A rotina não envia ordens e só pode ser seguida por entrada manual no ambiente da corretora e reconciliação das notas de corretagem. Se a fonte de preço/capitalização não responder, a proposta falha fechada; não usa valores sintéticos nem aproximações silenciosas.
+`live_proposal_runner.py` baixa o ITR mais recente da CVM e o combina ao DFP anual anterior para calcular métricas TTM: DFP anual + ITR atual − ITR comparativo. A data de recebimento da CVM limita a disponibilidade da informação. Copie e complete [production_policy_template.json](data/production_policy_template.json) e forneça um [market_snapshot_template.csv](data/market_snapshot_template.csv) datado, atribuído à B3, corretora ou fornecedor licenciado. A rotina não consulta valores sem origem, não envia ordens e só pode ser seguida por entrada manual na corretora e reconciliação das notas.
+
+Para o experimento prospectivo, [pilot_100k_policy.json](data/pilot_100k_policy.json) e [pilot_nav_template.csv](data/pilot_nav_template.csv) iniciam uma carteira-sombra de R$100 mil. `pilot_tracker.py` mede NAV, retorno líquido observado, drawdown, CDI e Ibovespa sem criar nem executar uma ordem.
 
 ## LLM opcional
 

@@ -8,23 +8,29 @@ import json
 import pandas as pd
 
 from config import SystemConfig
-from cvm_fundamentals import CvmDfpClient
+from cvm_itr import CvmItrClient
 from data_loader import PointInTimeDataLoader
+from market_snapshot import load_market_snapshots
 from portfolio_recommendation import ValuePortfolioPlanner
 from production_policy import load_policy
 from shadow_portfolio import write_order_template
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Create a human-review-only Benevente live proposal from official CVM filings.")
+    parser = argparse.ArgumentParser(description="Create a human-review-only Benevente live proposal from CVM ITR/DFP TTM data.")
     parser.add_argument("--policy", required=True)
-    parser.add_argument("--dfp-year", type=int, required=True, help="Latest annual DFP year that was public at the decision date.")
+    parser.add_argument("--itr-year", type=int, required=True, help="ITR calendar year with filings available by the decision date.")
+    parser.add_argument("--market-snapshot", required=True, help="Dated CSV from B3, broker, or licensed market-data vendor.")
     parser.add_argument("--decision-date", default=str(pd.Timestamp.now().date()))
     parser.add_argument("--output", default="artifacts/live_proposals")
     args = parser.parse_args()
     policy = load_policy(args.policy)
     decision_date = pd.Timestamp(args.decision_date)
-    snapshots = CvmDfpClient().live_snapshots(args.dfp_year)
+    market_data = load_market_snapshots(args.market_snapshot, decision_date, policy.max_fundamental_age_days)
+    snapshots = CvmItrClient().live_snapshots(args.itr_year, decision_date, market_data)
+    oldest = min(item.available_date for item in snapshots)
+    if (decision_date - pd.Timestamp(oldest)).days > policy.max_fundamental_age_days:
+        raise RuntimeError("At least one ITR is older than the policy freshness limit.")
     # Include only assets with current, verified fundamental snapshots. ETFs/BDRs
     # enter only after their separate look-through data module is implemented.
     tickers = sorted(item.ticker for item in snapshots) + ["TITULO_CDI"]
@@ -39,6 +45,7 @@ def main() -> None:
     )
     destination = Path(args.output) / decision_date.strftime("%Y-%m-%d")
     destination.mkdir(parents=True, exist_ok=True)
+    pd.read_csv(args.market_snapshot).to_csv(destination / "market_snapshot.csv", index=False)
     pd.DataFrame([item.model_dump() for item in snapshots]).to_csv(destination / "fundamentals_cvm_live.csv", index=False)
     proposal.screen.to_csv(destination / "fundamental_screen.csv", index=False)
     proposal.weights.rename("target_weight").to_csv(destination / "proposed_weights.csv")
@@ -46,7 +53,12 @@ def main() -> None:
         "status": "PROPOSAL_ONLY_REQUIRES_HUMAN_APPROVAL",
         "policy_id": policy.policy_id,
         "decision_date": str(decision_date.date()),
-        "dfp_year": args.dfp_year,
+        "itr_year": args.itr_year,
+        "ttm_base_dfp_year": args.itr_year - 1,
+        "risk_profile": policy.risk_profile,
+        "horizon_years": policy.horizon_years,
+        "review_interval_months": policy.review_interval_months,
+        "fundamental_freshness_days": (decision_date - pd.Timestamp(oldest)).days,
         "estimated_rebalance_cost_brl": proposal.estimated_rebalance_cost_brl,
         "maximum_rebalance_cost_brl": policy.maximum_rebalance_cost_brl,
         "cost_limit_passed": proposal.estimated_rebalance_cost_brl <= policy.maximum_rebalance_cost_brl,
@@ -61,4 +73,3 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-

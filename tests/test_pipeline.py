@@ -7,6 +7,7 @@ from execution_costs import ClearB3CostModel
 from fundamentals import FundamentalSnapshot
 from portfolio_recommendation import ValuePortfolioPlanner
 from production_policy import ProductionPolicy
+from pilot_tracker import build_performance
 from shadow_portfolio import ExecutedOrder, ProposedOrder, reconcile
 from value_quality import ValueQualitySelector
 
@@ -90,3 +91,36 @@ def test_production_policy_requires_human_acknowledgement():
     )
     with pytest.raises(ValueError, match="Acknowledgement"):
         policy.validate_for_live_proposal()
+
+
+def test_profile_policy_applies_defaults_and_accepts_long_horizon():
+    policy = ProductionPolicy(
+        policy_id="pilot-100k", owner="Diego", effective_date="2026-08-12", portfolio_value_brl=100_000,
+        risk_profile="moderate", horizon_years=15, maximum_rebalance_cost_brl=500,
+    )
+    assert policy.maximum_equity_weight == pytest.approx(0.55)
+    assert policy.maximum_asset_weight == pytest.approx(0.12)
+    assert policy.review_interval_months == 3
+
+
+def test_custom_policy_requires_advanced_constraints():
+    with pytest.raises(ValueError, match="Custom policy"):
+        ProductionPolicy(
+            policy_id="custom-100k", owner="Diego", effective_date="2026-08-12", portfolio_value_brl=100_000,
+            risk_profile="custom", horizon_years=1, maximum_rebalance_cost_brl=500,
+        )
+
+
+def test_shadow_pilot_reports_returns_and_drawdown():
+    policy = ProductionPolicy(
+        policy_id="pilot-100k", owner="Diego", effective_date="2026-08-12", portfolio_value_brl=100_000,
+        risk_profile="moderate", horizon_years=5, maximum_rebalance_cost_brl=500,
+    )
+    nav = pd.DataFrame([
+        {"date": "2026-08-12", "portfolio_value_brl": 100_000, "cdi_value_brl": 100_000, "ibovespa_value_brl": 100_000, "notes": "baseline"},
+        {"date": "2026-09-12", "portfolio_value_brl": 98_000, "cdi_value_brl": 101_000, "ibovespa_value_brl": 99_000, "notes": "month one"},
+    ])
+    performance, summary = build_performance(policy, nav)
+    assert summary["portfolio_return"] == pytest.approx(-0.02)
+    assert summary["maximum_drawdown"] == pytest.approx(-0.02)
+    assert performance.portfolio_drawdown.iloc[-1] == pytest.approx(-0.02)

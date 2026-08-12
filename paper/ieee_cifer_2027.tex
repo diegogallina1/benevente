@@ -1,12 +1,83 @@
 \documentclass[10pt,conference]{IEEEtran}
-\usepackage{booktabs,graphicx}
-\title{Benevente Quant AI: A Reproducible Multi-Agent Framework for Portfolio Optimization}
-\author{Anonymous Authors}
-\begin{document}\maketitle
-\begin{abstract}We present Benevente Quant AI, a reproducible research framework for Brazilian equity and CDI portfolio allocation. The architecture separates structured confidence signals from deterministic constrained mean--variance optimization and models turnover-based transaction costs. Using an archived real-data run from January 2023 to June 2026, the strategy produced lower volatility and drawdown than a classic mean--variance portfolio and the Ibovespa, but underperformed CDI. These results do not support a claim of alpha; rather, they establish an auditable baseline and identify the conditions required for further validation.\end{abstract}
-\section{Method}At each monthly rebalance, the decision uses returns and macro observations through $t-1$. A typed signal layer produces bounded confidence scores; a convex optimizer enforces full investment, non-negative weights, 15\% equity position limits, an equity cap, and a CDI residual sleeve. The backtest deducts 10 basis points of transaction cost plus 5 basis points of slippage per executed turnover.
-\section{Empirical evaluation}The archived run covers 2 January 2023--30 June 2026, using adjusted B3 prices from Yahoo Finance and CDI, Selic and IPCA series from Banco Central do Brasil. Benevente Quant AI returned 22.98\% cumulatively (CAGR 8.93\%), with 9.95\% annualized volatility and a maximum drawdown of -4.87\%. It did not exceed CDI (34.23\% cumulative; CAGR 12.95\%); its Sharpe ratio relative to realized CDI was -0.32. Classic MVO had 20.00\% cumulative return, 13.74\% volatility and -7.30\% maximum drawdown; Ibovespa had 27.21\%, 19.92\%, and -14.81\%, respectively.
-\section{Long-horizon extension}Pre-specified 5-, 10-, and 15-year windows ending on 30 June 2026 were evaluated with a separate one-year lookback. Benevente Quant AI did not exceed CDI in the five-year window (69.87\% versus 76.47\% cumulative return). It did exceed CDI in the ten-year (226.23\% versus 141.66\%) and fifteen-year (408.29\% versus 298.23\%) windows. The ten-year window was the highest cumulative-return strategy among the reported benchmarks. The fifteen-year MVO benchmark was marginally higher (413.78\%), so this is not evidence of universal superiority.
-\section{Value and quality extension}The next experimental module defines a point-in-time fundamental data contract and applies deterministic eligibility filters before portfolio construction. It excludes illiquid issuers, firms without positive free-cash-flow yield, and non-financial firms with weak ROIC, excessive leverage, or inadequate interest coverage. An LLM may provide a structured, skeptical thesis review of already eligible candidates, but cannot output portfolio weights or override hard filters. This extension requires a historically dated fundamental-data source before empirical claims are made.
-\section{Limitations and reproducibility}The fixed present-day ticker universe introduces survivorship bias, market prices come from a secondary source, and execution costs are modeled rather than observed. Every input series and result table is archived under \texttt{artifacts/real\_data}. Execute \texttt{python research\_runner.py} followed by \texttt{python validate\_research.py}; the offline mode is solely a deterministic software test.
+\usepackage{booktabs}
+\usepackage{url}
+\usepackage{graphicx}
+
+\title{Benevente Quant AI: Reproducible Value--Quality Portfolio Research for Brazilian Equities}
+\author{Author information withheld for double-blind review}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This paper presents Benevente Quant AI, a reproducible research framework for Brazilian equity and CDI allocation. The framework separates data availability controls, deterministic value--quality eligibility filters, structured language-model review, and constrained optimization. An archived 5-, 10-, and 15-year evaluation is reported with explicit transaction-cost assumptions and CDI and Ibovespa benchmarks. The strategy underperformed CDI over five years, exceeded CDI over the selected 10- and 15-year windows, and therefore does not support a universal outperformance claim. A R\$100,000 prospective shadow-portfolio protocol is specified to collect out-of-sample evidence. The production proposal workflow uses CVM quarterly filings and an annual-report bridge to calculate trailing-twelve-month fundamentals; it requires attributable, dated market snapshots and human approval before any manual broker action.
+\end{abstract}
+
+\begin{IEEEkeywords}
+portfolio optimization, Brazilian equities, CVM, ITR, reproducibility, value investing, audit trail
+\end{IEEEkeywords}
+
+\section{Introduction}
+Long-horizon equity allocation is difficult because historical returns, reported fundamentals, market liquidity, transaction costs, and investor constraints must be aligned by date. Benevente Quant AI is a research system, not an autonomous execution engine. Its objective is to test whether a transparent value--quality process can improve long-term risk-adjusted results after costs. It does not promise to beat CDI, Ibovespa, or any other benchmark.
+
+The project has two presentations. \emph{Benevente Quant AI} denotes the academic and reproducible research framework. \emph{Benevente Wealth System} denotes a future B2B decision-support presentation. Individualized recommendations or automated portfolio management for third parties require the applicable Brazilian regulatory structure; automation does not remove the relevant responsibilities \cite{cvmrobo,cvm19}.
+
+\section{Method}
+At each rebalance, the historical-return estimator uses observations available through $t-1$. A deterministic filter removes securities that fail minimum capitalization or liquidity rules and, for non-financial issuers, require positive free-cash-flow yield, minimum ROIC, bounded leverage, and minimum interest coverage. Financial institutions are evaluated through accounting measures appropriate to their reporting structure, including ROE and price-to-book. The filter is deliberately fail-closed: absent or non-comparable fields do not become a positive signal.
+
+An optional language-model layer may generate a structured skeptical thesis for already eligible issuers. It cannot select a security, generate portfolio weights, override hard filters, or transmit an order. A constrained mean--variance optimizer imposes non-negative weights, a per-security cap, an investor-level equity cap, and a residual CDI sleeve. Historical experiments model 10 basis points of transaction cost plus 5 basis points of slippage per executed turnover. The live workflow separately models Clear/B3 assumptions and later reconciles them against broker notes.
+
+\section{Data and Point-in-Time Controls}
+Historical adjusted B3 prices and Ibovespa data are obtained through Yahoo Finance, while CDI, Selic, and IPCA use Banco Central do Brasil SGS series. These inputs are archived with each run. The fixed current ticker universe can induce survivorship bias and Yahoo Finance is a secondary market-data source; both limitations constrain causal or commercial claims.
+
+For prospective fundamental screening, the system downloads the CVM's structured quarterly ITR archive and annual DFP archive \cite{cvmitr,cvmdfp}. For a company with the most recent available ITR at date $q$, each income-statement or cash-flow metric is computed as
+\begin{equation}
+X_{TTM} = X_{DFP,y-1} + X_{ITR,q,y} - X_{ITR,q,y-1}.
+\end{equation}
+The ITR receipt date ($DT\_RECEB$) is the availability date; the report date ($DT\_REFER$) is the accounting observation date. A production run rejects a filing received after the decision date. It also requires a dated CSV snapshot for market capitalization and average daily traded value, with the B3, broker, or licensed vendor identified in the source field. This creates a preservable audit record rather than silently querying an unstable real-time endpoint.
+
+\section{Archived Empirical Evaluation}
+The 5-, 10-, and 15-year windows were pre-specified to end on 30 June 2026 and began on 1 July 2021, 2016, and 2011, respectively. Each window has a separate one-year lookback. Independent validation checked input continuity, duplicate dates, missing values, and recomposition of wealth curves.
+
+\begin{table*}[t]
+\caption{Archived out-of-sample horizon results after modeled frictions.}
+\centering
+\begin{tabular}{llrrrr}
+\toprule
+Horizon & Strategy & Cumulative return & CAGR & Annual volatility & Maximum drawdown \\
+\midrule
+5 years & Benevente Quant AI & 69.87\% & 11.38\% & 8.69\% & -11.00\% \\
+        & CDI                & 76.47\% & 12.25\% & 0.67\% & 0.00\% \\
+        & Ibovespa           & 38.09\% & 6.78\% & 16.78\% & -20.43\% \\
+10 years & Benevente Quant AI & 226.23\% & 12.78\% & 15.04\% & -29.59\% \\
+         & CDI                & 141.66\% & 9.39\% & 1.13\% & 0.00\% \\
+         & Ibovespa           & 220.60\% & 12.58\% & 24.79\% & -45.68\% \\
+15 years & Benevente Quant AI & 408.29\% & 11.65\% & 12.23\% & -18.93\% \\
+         & CDI                & 298.23\% & 9.82\% & 1.00\% & 0.00\% \\
+         & Ibovespa           & 174.10\% & 7.08\% & 23.39\% & -40.77\% \\
+\bottomrule
+\end{tabular}
+\label{tab:horizons}
+\end{table*}
+
+The evidence is mixed. Benevente Quant AI did not exceed CDI in the five-year window. It exceeded CDI in the reported 10- and 15-year windows. In the 10-year window it had the largest cumulative return among the compared strategies. In the 15-year window, classic constrained MVO returned 413.78\%, slightly above Benevente's 408.29\%. Thus the appropriate conclusion is conditional historical evidence, not persistent or guaranteed alpha.
+
+\section{Prospective R\$100,000 Shadow Portfolio}
+The prospective protocol begins with a R\$100,000 virtual portfolio, not an automatic investment. The investor policy records a risk profile (conservative, moderate, growth, aggressive, or custom), a selectable objective horizon of 1, 2, 5, 10, or 15 years, equity and position caps, maximum tolerated drawdown, rebalance-cost limit, review interval, and exclusions. Profile defaults can be overridden only through explicit advanced constraints.
+
+Before a proposal is issued, the system must (i) use the ITR available by the decision date, (ii) calculate TTM fundamentals with the DFP bridge, (iii) archive the market snapshot and fundamental screen, (iv) verify concentration, liquidity, costs, and data freshness, and (v) require human approval. If used by the investor, each order is entered manually at the broker and the broker note is reconciled against the proposed quantity, price, and estimated costs. Monthly monitoring reports NAV, realized versus modeled costs, turnover, drawdown, CDI and Ibovespa comparison, data versions, and any deviation from the policy.
+
+Future updates to this paper will append dated prospective observations without rewriting the frozen historical experiment. At least 12, 24, and 60 months of prospective data should be reported separately; no conclusion about superiority should be drawn from a short initial track record.
+
+\section{Limitations and Conclusion}
+The research does not yet use a historical point-in-time fundamental database across the full backtest period, so the current value--quality extension has no historical performance claim. The universe is small and subject to survivorship bias; corporate actions, delistings, taxes, bid--ask spreads, borrowing constraints, and realized brokerage conditions may differ from modeled assumptions. The pilot is an observation protocol, not validation of an investment product.
+
+Benevente Quant AI nevertheless establishes a useful auditable base: data availability is explicit, constraints are deterministic, long-horizon results can be reproduced, and current proposals require official filings, attributable market data, human review, and later reconciliation. The next research step is to construct a point-in-time historical CVM fundamental panel and evaluate the value--quality screen without changing its rules after observing results.
+
+\begin{thebibliography}{00}
+\bibitem{cvmitr} Comissão de Valores Mobiliários, ``Formulário de Informações Trimestrais (ITR),'' Portal Dados Abertos CVM. [Online]. Available: \url{https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/}
+\bibitem{cvmdfp} Comissão de Valores Mobiliários, ``Demonstrações Financeiras Padronizadas (DFP),'' Portal Dados Abertos CVM. [Online]. Available: \url{https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp}
+\bibitem{cvmrobo} Comissão de Valores Mobiliários, ``Robôs de investimentos,'' Portal do Investidor. [Online]. Available: \url{https://www.gov.br/investidor/pt-br/investir/como-investir/profissionais-do-mercado/robos-de-investimentos}
+\bibitem{cvm19} Comissão de Valores Mobiliários, ``Resolução CVM n. 19,'' 2021. [Online]. Available: \url{https://conteudo.cvm.gov.br/legislacao/resolucoes/resol019.html}
+\end{thebibliography}
 \end{document}

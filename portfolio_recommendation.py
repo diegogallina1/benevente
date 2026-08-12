@@ -28,8 +28,8 @@ class ValuePortfolioPlanner:
     def propose(self, historical_returns: pd.DataFrame, snapshots: list[FundamentalSnapshot], decision_date: pd.Timestamp,
                 current_weights: pd.Series | None = None, horizon_years: int = 5,
                 maximum_equity_weight: float = 0.80) -> PortfolioProposal:
-        if horizon_years not in {2, 5}:
-            raise ValueError("Benevente value proposals currently support 2- or 5-year horizons.")
+        if horizon_years not in {1, 2, 5, 10, 15}:
+            raise ValueError("Benevente supports 1-, 2-, 5-, 10-, and 15-year investor horizons.")
         screen = ValueQualitySelector(self.config).score(snapshots, decision_date)
         if screen.empty or not screen.eligible.any():
             raise ValueError("No eligible assets. Provide complete point-in-time fundamental snapshots.")
