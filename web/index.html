@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Benevente — research-grade wealth decision support." />
+    <meta name="description" content="Benevente — apoio institucional a decisões de carteira com pesquisa auditável." />
     <title>Benevente — Wealth System</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -120,7 +120,7 @@
 
       <section class="lab-section" id="laboratorio">
         <div class="shell lab-head"><div><p class="eyebrow light"><span></span> Laboratório de decisão</p><h2>Escolha o perfil. Veja a<br /><em>carteira e o histórico juntos.</em></h2></div><p>Uma única área para definir limites, consultar a cesta escolhida em cada janeiro e comparar o resultado daquela política com MVO e CDI. Não é uma previsão nem uma ordem.</p></div>
-        <div class="shell lab-grid">
+        <div class="shell lab-grid decision-studio">
           <form class="lab-form" id="proposal-form">
             <div class="form-title"><span>01</span><div><h3>Contexto da decisão</h3><p>Escolha parâmetros que tornam o risco explícito.</p></div></div>
             <label for="wealth">Patrimônio para análise <output id="wealth-output">R$ 100.000</output></label>
@@ -130,59 +130,41 @@
               <button type="button" class="choice" data-profile="conservador">Conservador</button>
               <button type="button" class="choice active" data-profile="moderado">Equilibrado</button>
               <button type="button" class="choice" data-profile="arrojado">Arrojado</button>
-              <button type="button" class="choice" data-profile="personalizado">Personalizado</button>
             </div>
-            <div class="lab-custom-policy hidden" id="lab-custom-policy"><div class="custom-policy-head"><span>POLÍTICA PERSONALIZADA</span><p>Defina os limites. A composição ilustrativa distribui a parcela em ações entre emissores para não confundir limite com concentração.</p></div><label>Máx. em renda variável <output id="lab-equity-output">55%</output><input id="lab-equity" type="range" min="0" max="100" value="55" /><small>0% = 100% reserva defensiva · 100% = somente renda variável, sujeito à diversificação.</small></label><label>Máx. por emissor <output id="lab-issuer-output">12%</output><input id="lab-issuer" type="range" min="5" max="25" value="12" /></label><label>Queda tolerada <output id="lab-drawdown-output">22%</output><input id="lab-drawdown" type="range" min="5" max="50" value="22" /></label></div>
-            <label for="horizon">Horizonte de decisão <output id="horizon-output">5 anos</output></label>
-            <input id="horizon" type="range" min="1" max="15" step="1" value="5" />
-            <div class="form-note"><i>✓</i><span>Futuros pesos respeitam limites de concentração, perfil e filtros de elegibilidade.</span></div>
-            <button class="button button-primary full" type="submit">Aplicar limites à leitura <span>→</span></button>
+            <div class="form-note"><i>✓</i><span>O protocolo auditado revisa a carteira uma vez por ano. Perfil e limites atualizam a leitura abaixo imediatamente.</span></div>
+            <button class="button button-primary full" type="submit">Atualizar leitura da política <span>→</span></button>
           </form>
 
+          <div class="decision-live-column">
           <div class="proposal" id="proposal-result" aria-live="polite">
-            <div class="proposal-empty" id="proposal-empty"><div class="empty-mark">◇</div><h3>Comece pelo contexto.</h3><p>Escolha um perfil para comparar os limites com os resultados anuais auditados.</p></div>
+            <div class="proposal-empty hidden" id="proposal-empty"><div class="empty-mark">◇</div><h3>Comece pelo contexto.</h3><p>Escolha um perfil para comparar os limites com os resultados anuais auditados.</p></div>
             <div class="proposal-content hidden" id="proposal-content">
               <div class="proposal-kicker"><span>LIMITES DA POLÍTICA</span><span class="status"><i></i> Exige revisão</span></div>
               <h3>Uma estrutura compatível<br />com <em id="profile-label">moderado</em>.</h3>
               <div class="result-metrics"><div><small>RENDA VARIÁVEL</small><strong id="equity-weight">55%</strong></div><div><small>CDI / DEFENSIVO</small><strong id="fixed-weight">45%</strong></div><div><small>REVISÃO</small><strong id="review-cycle">trimestral</strong></div></div>
               <div class="weight-list" id="weight-list"></div>
               <div class="result-callout"><span>O que isso significa</span><p id="proposal-insight"></p></div>
-              <p class="disclaimer">Os limites acima se aplicam à leitura do histórico. O resultado anual auditado aparece logo abaixo; política personalizada continua uma simulação, não um backtest.</p>
+              <p class="disclaimer">Os limites atualizam a leitura do histórico e a carteira candidata. Resultados passados não são promessa de retorno.</p>
             </div>
           </div>
-        </div>
-      </section>
-
-      <section class="research-workbench shell" id="carteira">
-        <div class="workbench-head">
-          <div>
-            <p class="eyebrow"><span></span> Resultado e dossiê anual</p>
-            <h2>A política em ação,<br /><em>antes e depois de cada ano.</em></h2>
+          <section class="embedded-dossier" id="carteira" aria-label="Resultado e dossiê anual">
+            <div class="embedded-dossier-head"><div><span class="control-label">RESULTADO E DOSSIÊ ANUAL</span><h3>A política e a cesta, <em>no mesmo lugar.</em></h3></div><p>Troque o perfil ou o ano e confira imediatamente a carteira, o resultado posterior, CDI e MVO.</p></div>
+            <div class="research-status" id="research-status" aria-live="polite"></div>
+            <div class="dossier-toolbar"><div class="portfolio-controls" role="group" aria-label="Controles do dossiê"><div><span class="control-label">DECISÃO HISTÓRICA</span><label class="decision-select-label" for="decision-year">Janeiro de decisão <select id="decision-year" aria-label="Ano da decisão histórica"></select></label></div><p class="dossier-policy" id="dossier-policy"></p></div><div class="profile-history" id="profile-history" aria-live="polite"></div></div>
+            <div class="asset-summary" id="asset-summary"></div>
+            <div class="asset-grid" id="asset-grid" aria-live="polite"></div>
+            <div class="asset-action-panel" id="asset-action-panel" aria-live="polite"></div>
+            <details class="dossier-details"><summary>Como esta decisão é auditada e o que a LLM faz</summary><div class="annual-protocol-card"><div><span class="control-label">PROTOCOLO WALK-FORWARD ANUAL</span><h3>Decidir em janeiro. Segurar até a próxima revisão.</h3><p>Em cada ano, a carteira é congelada com preços, fundamentos e dados disponíveis até a data de decisão. O retorno do ano seguinte só entra depois, como avaliação.</p></div><ol><li><b>Congelar</b><span>política, universo e snapshots ponto-no-tempo.</span></li><li><b>Manter</b><span>a carteira durante o período anual, descontando custos.</span></li><li><b>Revisar</b><span>na próxima data, com entradas e saídas comparáveis.</span></li></ol><a class="button button-secondary" href="./metodo.html">Ver método <span>→</span></a></div><div class="workbench-foot"><div><b>O que a LLM faz</b><span>Transforma fatos aprovados em tese, riscos e perguntas de revisão.</span></div><div><b>O que a LLM não faz</b><span>Não aprova ativos, não altera filtros, não calcula retornos nem envia ordens.</span></div><div><b>O que falta para uma carteira ao vivo</b><span>Dados licenciados, suitability e aprovação humana.</span></div></div></details>
+          </section>
           </div>
-          <p>Selecione o perfil e o janeiro de decisão. O painel mostra o retorno líquido daquela cesta, o mesmo MVO elegível e o CDI — sem usar o retorno do ano para escolher seus ativos.</p>
-        </div>
-        <div class="research-status" id="research-status" aria-live="polite"></div>
-        <div class="profile-history" id="profile-history" aria-live="polite"></div>
-        <div class="portfolio-controls" role="group" aria-label="Controles do dossiê">
-          <div><span class="control-label">DECISÃO HISTÓRICA</span><label class="decision-select-label" for="decision-year">Selecione o janeiro de decisão <select id="decision-year" aria-label="Ano da decisão histórica"></select></label></div>
-          <p class="dossier-policy" id="dossier-policy"></p>
-        </div>
-        <div class="asset-summary" id="asset-summary"></div>
-        <div class="asset-grid" id="asset-grid" aria-live="polite"></div>
-        <div class="asset-action-panel" id="asset-action-panel" aria-live="polite"></div>
-        <div class="annual-protocol-card"><div><span class="control-label">PROTOCOLO WALK-FORWARD ANUAL</span><h3>Decidir em janeiro. Segurar até a próxima revisão.</h3><p>Em cada ano, a carteira é congelada com preços, fundamentos e dados disponíveis até a data de decisão. O retorno do ano seguinte só entra depois, como avaliação. Trocas precisam aparecer no arquivo de transições com o motivo técnico.</p></div><ol><li><b>Congelar</b><span>política, universo e snapshots ponto-no-tempo.</span></li><li><b>Manter</b><span>a carteira durante o período anual, descontando custos de rebalanceamento.</span></li><li><b>Revisar</b><span>na próxima data: elegibilidade, peso, saída e entrada ficam comparáveis.</span></li></ol><a class="button button-secondary" href="./metodo.html">Ver protocolo <span>→</span></a></div>
-        <div class="workbench-foot">
-          <div><b>O que a LLM faz</b><span>Transforma fatos aprovados em uma nota de tese, riscos e perguntas de revisão.</span></div>
-          <div><b>O que a LLM não faz</b><span>Não aprova ativos, não altera filtros, não calcula retornos e não envia ordens.</span></div>
-          <div><b>O que falta para uma carteira ao vivo</b><span>Fundamentos históricos completos de todos os emissores, preço licenciado, suitability e aprovação humana.</span></div>
         </div>
       </section>
 
       <section class="forecast-shell" id="sugestoes">
-        <div class="shell forecast-head"><div><p class="eyebrow light"><span></span> Decisão vigente — pesquisa</p><h2>O que o método viu<br /><em>em janeiro de 2026.</em></h2></div><p>Uma triagem congelada antes do ano: dados públicos disponíveis, liquidez e limites de concentração. A IA redige a explicação; não escolhe ativos, pesos ou envia ordens.</p></div>
+        <div class="shell forecast-head"><div><p class="eyebrow light"><span></span> Decisão vigente — pesquisa</p><h2 id="current-decision-heading">Carteira Equilibrada<br /><em>em janeiro de 2026.</em></h2></div><p id="current-decision-intro">Triagem congelada antes do ano: dados públicos, liquidez e concentração. A IA explica a decisão; não escolhe ativos, pesos ou envia ordens.</p></div>
         <div class="shell forecast-grid">
-          <article class="forecast-card current-decision-card"><div class="forecast-card-top"><span class="control-label">CARTEIRA-CANDIDATA DE JANEIRO</span><span class="research-chip">RESEARCH ONLY</span></div><div id="current-decision-summary" class="scenario-summary">Carregando decisão datada…</div><div id="current-decision-assets" class="suggestion-assets" aria-live="polite"></div><p class="scenario-caption" id="current-decision-caption"></p></article>
-          <article class="forecast-card"><div class="forecast-card-top"><span class="control-label">CENÁRIOS HISTÓRICOS DA REGRA</span><span class="research-chip">NÃO É PREVISÃO</span></div><div class="scenario-summary" id="scenario-summary">Carregando cenário histórico…</div><div class="scenario-chart" id="scenario-chart" aria-live="polite"></div><p class="scenario-caption" id="scenario-caption"></p></article>
+          <article class="forecast-card current-decision-card"><div class="forecast-card-top"><span class="control-label" id="current-decision-label">CARTEIRA-CANDIDATA · EQUILIBRADO</span><span class="research-chip">PESQUISA</span></div><div id="current-decision-summary" class="scenario-summary">Carregando decisão datada…</div><div id="current-decision-assets" class="suggestion-assets" aria-live="polite"></div><p class="scenario-caption" id="current-decision-caption"></p></article>
+          <article class="forecast-card"><div class="forecast-card-top"><span class="control-label" id="scenario-profile-label">CENÁRIOS HISTÓRICOS · EQUILIBRADO</span><span class="research-chip">NÃO É PREVISÃO</span></div><div class="scenario-summary" id="scenario-summary">Carregando cenário histórico…</div><div class="scenario-chart" id="scenario-chart" aria-live="polite"></div><p class="scenario-caption" id="scenario-caption"></p></article>
         </div>
         <div class="shell scenario-limitations" id="scenario-limitations"></div>
       </section>
@@ -196,18 +178,18 @@
 
       <section class="comparison shell" id="comparar">
         <div class="comparison-head">
-          <div><p class="eyebrow"><span></span> Comparação anual auditada</p><h2>Retorno sem contexto<br /><em>não é evidência.</em></h2></div>
-          <p>O gráfico usa a mesma execução anual de valor e qualidade do dossiê: revisão anual, ativos aprovados na triagem, custos e CDI residual. A comparação não é uma promessa de alfa nem substitui validação futura.</p>
+          <div><p class="eyebrow"><span></span> Comparação anual auditada</p><h2>Retorno e método,<br /><em>na mesma leitura.</em></h2></div>
+          <p>A mesma regra anual do dossiê, com custos, limites e CDI residual. Compare janelas equivalentes; não é promessa de alfa.</p>
         </div>
         <div class="comparison-card">
           <div class="comparison-controls">
-            <div><span class="control-label">JANELA ANUAL AUDITADA</span><div class="period-options" role="tablist" aria-label="Janela de avaliação"><button type="button" class="period active" data-period="3">3 anos</button><button type="button" class="period" data-period="5">5 anos</button><button type="button" class="period" data-period="11">Série 2015–2025</button></div></div>
+            <div><span class="control-label">JANELA ANUAL AUDITADA</span><div class="period-options" role="tablist" aria-label="Janela de avaliação"><button type="button" class="period unavailable" disabled title="A base auditada é anual; YTD exige a reconciliação de 2026.">YTD</button><button type="button" class="period unavailable" disabled title="A base auditada é anual; não há uma janela comparável de seis meses.">6 meses</button><button type="button" class="period" data-period="1">1 ano</button><button type="button" class="period active" data-period="3">3 anos</button><button type="button" class="period" data-period="5">5 anos</button><button type="button" class="period" data-period="11">Total</button></div></div>
             <p id="period-description">Carregando a janela auditada e os custos de rebalanceamento…</p>
           </div>
           <div class="comparison-summary" id="comparison-summary" aria-live="polite"></div>
           <div class="comparison-grid compact-chart-layout">
             <div class="return-chart"><div class="chart-title"><span>Retorno acumulado</span><small>0% na primeira data comum</small></div><div class="curve-toggles" id="curve-toggles" aria-label="Séries exibidas"></div><div class="chart-return-summary" id="chart-return-summary" aria-live="polite"></div><div class="chart-tools" aria-label="Ferramentas do gráfico"><button type="button" id="chart-zoom-out">−</button><span id="chart-zoom-status">Visão completa</span><button type="button" id="chart-zoom-in">+</button><button type="button" id="chart-zoom-reset">Redefinir</button><span class="chart-scale-label">Escala</span><button type="button" class="chart-scale active" data-scale="linear">Linear</button><button type="button" class="chart-scale" data-scale="log">Log</button></div><svg class="line-chart" id="line-chart" viewBox="0 0 900 410" role="img" aria-label="Retornos acumulados selecionados"><g id="line-chart-grid"></g><g id="line-chart-lines"></g><g id="line-chart-labels"></g><g id="line-chart-direct-labels"></g><line id="line-chart-cursor" class="line-cursor hidden" /></svg><p class="line-chart-caption" id="line-chart-caption">Mova o cursor sobre a curva; a roda do mouse amplia a janela.</p><div class="chart-inspector" id="chart-inspector" aria-live="polite">Selecione uma data no gráfico para comparar os retornos.</div></div>
-            <aside class="chart-sidepanel"><div class="chart-add"><div class="chart-add-tabs" role="tablist"><button type="button" class="chart-source active" data-source="ticker">Ação / ETF B3</button><button type="button" class="chart-source" data-source="fund">Fundo ativo</button></div><form id="chart-add-form"><label id="chart-symbol-label">Ticker B3<input id="chart-symbol" name="symbol" placeholder="Ex.: PETR4" maxlength="12" /></label><div class="fund-preset hidden" id="fund-preset-label"><span>Referência pré-carregada</span><button type="button" class="fund-preset-button" data-fund-cnpj="73232530000139" data-fund-name="Dynamo Cougar FIF">Dynamo Cougar FIF</button></div><label class="fund-cnpj hidden" id="fund-cnpj-label">CNPJ da classe/fundo CVM<input id="fund-cnpj" inputmode="numeric" placeholder="Ex.: 73.232.530/0001-39" /></label><label class="fund-name hidden" id="fund-name-label">Nome para exibir<input id="fund-name" placeholder="Ex.: Fundo ativo CVM" /></label><label class="fund-file hidden" id="fund-file-label">Ou importar CSV de cotas<input id="fund-file" type="file" accept=".csv,text/csv" /></label><button class="chart-add-button" type="submit">Comparar</button></form><div class="quick-compare"><span>Atalhos</span><button type="button" class="quick-ticker" data-ticker="PETR4">PETR4</button><button type="button" class="quick-ticker" data-ticker="VALE3">VALE3</button><button type="button" class="quick-ticker" data-ticker="BOVA11">BOVA11</button></div><p id="chart-add-help">Adicione uma ação ou ETF B3, uma cota pública CVM ou um CSV de cotas. A comparação fica só nesta sessão.</p></div><div class="comparison-table-wrap"><table><thead><tr><th>Série</th><th>Retorno</th><th>Leitura</th></tr></thead><tbody id="comparison-table"></tbody></table></div></aside>
+            <aside class="chart-sidepanel"><div class="chart-add"><div class="chart-add-tabs" role="tablist"><button type="button" class="chart-source active" data-source="ticker">Ação / ETF B3</button><button type="button" class="chart-source" data-source="fund">Fundos ativos</button></div><form id="chart-add-form"><label id="chart-symbol-label">Ticker B3<input id="chart-symbol" name="symbol" placeholder="Ex.: PETR4" maxlength="12" /></label><div class="fund-preset hidden" id="fund-preset-label"><span>Fundos sugeridos · cotas CVM</span><div class="fund-preset-list"><button type="button" class="fund-preset-button" data-fund-cnpj="73232530000139" data-fund-name="Dynamo Cougar FIF">Dynamo Cougar</button><button type="button" class="fund-preset-button" data-fund-cnpj="08507696000159" data-fund-name="Verde AM Multi Estratégia">Verde Multi</button><button type="button" class="fund-preset-button" data-fund-cnpj="08078571000150" data-fund-name="Itaú Ações Dividendos">Itaú Dividendos</button><button type="button" class="fund-preset-button" data-fund-cnpj="16718302000130" data-fund-name="Itaú Ações Momento 30">Itaú Momento</button></div></div><label class="fund-cnpj hidden" id="fund-cnpj-label">CNPJ da classe/fundo CVM<input id="fund-cnpj" inputmode="numeric" placeholder="Ex.: 73.232.530/0001-39" /></label><label class="fund-name hidden" id="fund-name-label">Nome para exibir<input id="fund-name" placeholder="Ex.: Fundo ativo CVM" /></label><label class="fund-file hidden" id="fund-file-label">Ou importar CSV de cotas<input id="fund-file" type="file" accept=".csv,text/csv" /></label><button class="chart-add-button" type="submit">Adicionar</button></form><div class="quick-compare"><span>Atalhos</span><button type="button" class="quick-ticker" data-ticker="PETR4">PETR4</button><button type="button" class="quick-ticker" data-ticker="VALE3">VALE3</button><button type="button" class="quick-ticker" data-ticker="BOVA11">BOVA11</button></div><p id="chart-add-help">Adicione uma ação, ETF ou fundo para comparar na janela atual.</p></div><div class="comparison-table-wrap"><table><thead><tr><th>Série</th><th>Retorno</th><th>Leitura</th></tr></thead><tbody id="comparison-table"></tbody></table></div></aside>
             </div>
           <div class="comparison-foot"><span><i>✓</i> Integridade validada: disponibilidade dos fundamentos, pesos, custos e recomposição.</span><span>Fontes: CVM, BCB e preços históricos documentados</span></div>
         </div>
