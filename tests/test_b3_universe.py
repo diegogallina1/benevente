@@ -32,6 +32,7 @@ def test_parser_date_window_is_applied_while_loading(tmp_path):
     # retain only the prior-liquidity window rather than the entire year.
     from b3_universe import parse_cotahist
     assert "start_date" in parse_cotahist.__annotations__
+    assert "tickers" in parse_cotahist.__annotations__
 
 
 def test_official_b3_isin_bridge_has_precedence_over_short_issuer_name(tmp_path):

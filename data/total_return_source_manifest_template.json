@@ -1,0 +1,12 @@
+{
+  "price_basis": "total_return",
+  "provider": "licensed or first-party total-return source",
+  "extraction_timestamp": "YYYY-MM-DDThh:mm:ssZ",
+  "coverage_start": "YYYY-MM-DD",
+  "coverage_end": "YYYY-MM-DD",
+  "corporate_actions": "dividends, JCP, splits, reverse splits, subscriptions and delisting proceeds included",
+  "cdi_source": "Banco Central do Brasil SGS 12 or a documented CDI total-return index",
+  "file_sha256": "",
+  "reviewed_by": "",
+  "review_notes": ""
+}

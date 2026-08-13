@@ -8,6 +8,7 @@ from annual_walk_forward import (AnnualWalkForwardConfig, AnnualWalkForwardEngin
 from config import SystemConfig
 from data_loader import PointInTimeDataLoader
 from fundamentals import FundamentalSnapshot
+from annual_decision_evidence import build_decision_evidence
 
 
 def old_snapshot() -> FundamentalSnapshot:
@@ -84,6 +85,17 @@ def test_future_prices_do_not_change_an_earlier_january_portfolio():
     first_changed = changed_holdings[changed_holdings.decision_year == 2020][["ticker", "weight"]].reset_index(drop=True)
     pd.testing.assert_frame_equal(first_original, first_changed)
     assert original.loc[original.decision_year == 2020, "net_return"].item() == changed.loc[changed.decision_year == 2020, "net_return"].item()
+
+
+def test_decision_evidence_blocks_a_snapshot_missing_from_the_dated_b3_universe():
+    config = SystemConfig()
+    prices = PointInTimeDataLoader(config).fetch_prices("2018-01-01", "2022-01-10", offline=True)
+    universe = pd.DataFrame([{"decision_date": "2020-01-01", "universe_year": 2020,
+                              "ticker": "VALE3.SA", "asset_class": "equity"}])
+    mapping = pd.DataFrame([{"universe_year": 2020, "ticker": "VALE3.SA", "mapping_status": "accepted"}])
+    evidence, _ = build_decision_evidence(universe, mapping)
+    with pytest.raises(ValueError, match="No annual decisions"):
+        AnnualWalkForwardEngine(prices, [old_snapshot()], config, evidence).run(AnnualWalkForwardConfig(2020, 2021))
 
 
 def test_turnover_uses_drifted_weights_after_the_holding_year():

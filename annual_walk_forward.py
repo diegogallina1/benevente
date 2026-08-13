@@ -21,6 +21,8 @@ import pandas as pd
 from config import SystemConfig
 from execution_costs import ClearB3CostModel
 from fundamentals import FundamentalSnapshot
+from annual_decision_evidence import DecisionEvidence
+from annual_input_contract import validate_annual_inputs
 from optimizer import MeanVarianceOptimizer
 from portfolio_recommendation import PortfolioProposal, ValuePortfolioPlanner
 
@@ -138,11 +140,13 @@ def _format_weights(weights: pd.Series) -> str:
 
 class AnnualWalkForwardEngine:
     """Freeze, hold, review: a portfolio process a committee can audit."""
-    def __init__(self, prices: pd.DataFrame, snapshots: list[FundamentalSnapshot], config: SystemConfig) -> None:
+    def __init__(self, prices: pd.DataFrame, snapshots: list[FundamentalSnapshot], config: SystemConfig,
+                 decision_evidence: DecisionEvidence | None = None) -> None:
         self.prices = prices.copy().sort_index()
         self.prices.index = pd.to_datetime(self.prices.index)
         self.snapshots = snapshots
         self.config = config
+        self.decision_evidence = decision_evidence
         if "TITULO_CDI" not in self.prices:
             raise ValueError("Annual walk-forward requires TITULO_CDI in the price history.")
 
@@ -279,14 +283,29 @@ class AnnualWalkForwardEngine:
             next_decision = _first_trading_day(self.prices, year + 1)
             if decision is None or next_decision is None:
                 continue
-            history = self.prices.loc[self.prices.index < decision].pct_change().dropna()
-            if len(history) < protocol.minimum_history_days:
-                continue
             known_snapshots = [item for item in self.snapshots if pd.Timestamp(item.available_date) <= decision]
+            if self.decision_evidence is not None:
+                permitted = self.decision_evidence.allowed(decision)
+                known_snapshots = [item for item in known_snapshots if item.ticker in permitted]
             if not known_snapshots:
                 # Do not infer a fundamental screen from a future filing. This
                 # year is omitted and the final no-decision error makes the
                 # missing evidence visible to the caller.
+                continue
+            # A full B3 panel contains listings, delistings and infrequently
+            # traded shares. Evaluate only the dated candidates that have a
+            # complete trailing price window; do not forward-fill a gap or
+            # discard every other asset because one ticker is unavailable.
+            prior_prices = self.prices.loc[self.prices.index < decision]
+            candidate_tickers = [item.ticker for item in known_snapshots if item.ticker in prior_prices.columns]
+            complete_tickers = [ticker for ticker in candidate_tickers
+                                if prior_prices[ticker].tail(protocol.minimum_history_days + 1).notna().all()]
+            known_snapshots = [item for item in known_snapshots if item.ticker in complete_tickers]
+            if not known_snapshots:
+                continue
+            history_columns = [*complete_tickers, "TITULO_CDI"]
+            history = prior_prices.reindex(columns=history_columns).tail(protocol.minimum_history_days + 1).pct_change().dropna()
+            if len(history) < protocol.minimum_history_days:
                 continue
             # The selector itself rejects snapshots filed after the decision.
             planner_config = replace(self.config, initial_portfolio_value_brl=wealth,
@@ -304,7 +323,8 @@ class AnnualWalkForwardEngine:
                     maximum_asset_weight=protocol.maximum_asset_weight,
                     scores_override=factor_signal,
                 )
-            target = proposal.weights.reindex(self.prices.columns, fill_value=0.0)
+            active_columns = list(history.columns)
+            target = proposal.weights.reindex(active_columns, fill_value=0.0)
             # Same historical information and constraints, but no alpha score:
             # a fair annual MVO baseline for the very same eligible universe.
             eligible = set(proposal.screen.loc[proposal.screen.eligible, "ticker"])
@@ -314,8 +334,8 @@ class AnnualWalkForwardEngine:
                 history.tail(protocol.minimum_history_days), neutral_scores,
                 equity_cap=protocol.maximum_equity_weight, signal_influence=0.0,
                 eligible_assets=eligible,
-            ).reindex(self.prices.columns, fill_value=0.0)
-            realised_prices = self.prices.loc[(self.prices.index >= decision) & (self.prices.index < next_decision)]
+            ).reindex(active_columns, fill_value=0.0)
+            realised_prices = self.prices.loc[(self.prices.index >= decision) & (self.prices.index < next_decision), active_columns]
             realised_returns = realised_prices.pct_change().dropna()
             if realised_returns.empty:
                 continue
@@ -341,7 +361,7 @@ class AnnualWalkForwardEngine:
                 "mvo_eligible_net_return": mvo_net_return,
                 "cdi_net_return": cdi_net_return,
             })
-            for ticker in self.prices.columns:
+            for ticker in active_columns:
                 old, new = float(previous.get(ticker, 0.0)), float(target.get(ticker, 0.0))
                 if abs(old - new) <= 1e-6:
                     continue
@@ -477,6 +497,10 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run annual no-look-ahead Benevente walk-forward evaluation.")
     parser.add_argument("--prices", required=True, help="CSV with date, assets, and TITULO_CDI columns.")
     parser.add_argument("--fundamentals", required=True, help="CSV with FundamentalSnapshot fields and availability dates.")
+    parser.add_argument("--universe", help="Dated B3 universe CSV; must be supplied with --mapping to enable the identifier gate.")
+    parser.add_argument("--mapping", help="Dated B3/CVM mapping CSV; must be supplied with --universe.")
+    parser.add_argument("--price-basis", choices=["total_return", "price_return_only"], default="total_return",
+                        help="Only total_return may be used to calculate annual performance.")
     parser.add_argument("--start-year", type=int, required=True)
     parser.add_argument("--end-year", type=int, required=True, help="First year not held; e.g. 2026 evaluates through 2025.")
     parser.add_argument("--output", default="artifacts/annual_walk_forward")
@@ -489,9 +513,21 @@ def main() -> None:
     parser.add_argument("--training-end-year", type=int, help="Optional factor-selection cutoff; output is then evaluated only after this year.")
     parser.add_argument("--adaptive-factors", action="store_true", help="Select a pre-declared factor from prior years before each next-year decision.")
     args = parser.parse_args()
+    if bool(args.universe) != bool(args.mapping):
+        parser.error("--universe and --mapping must be supplied together.")
     from advisor import snapshots_from_frame
-    prices = pd.read_csv(args.prices, parse_dates=["date"]).set_index("date")
-    snapshots = snapshots_from_frame(pd.read_csv(args.fundamentals, parse_dates=["as_of_date", "available_date"]))
+    price_frame = pd.read_csv(args.prices, parse_dates=["date"])
+    fundamental_frame = pd.read_csv(args.fundamentals, parse_dates=["as_of_date", "available_date"])
+    input_manifest = validate_annual_inputs(price_frame, fundamental_frame, args.price_basis)
+    if not input_manifest.performance_permitted:
+        raise ValueError("Annual performance blocked: " + ", ".join(input_manifest.reasons))
+    prices = price_frame.set_index("date")
+    snapshots = snapshots_from_frame(fundamental_frame)
+    evidence = None
+    evidence_manifest = None
+    if args.universe:
+        from annual_decision_evidence import load_decision_evidence
+        evidence, evidence_manifest = load_decision_evidence(args.universe, args.mapping)
     protocol = AnnualWalkForwardConfig(args.start_year, args.end_year, factor=args.factor,
                                        maximum_equity_weight=args.maximum_equity_weight,
                                        maximum_asset_weight=args.maximum_asset_weight,
@@ -499,23 +535,26 @@ def main() -> None:
     protocol = protocol_for_risk_profile(protocol, args.risk_profile)
     if args.adaptive_factors:
         results, transitions, holdings, factor_choices = run_adaptive_factor_walk_forward(
-            AnnualWalkForwardEngine(prices, snapshots, SystemConfig()), protocol)
+            AnnualWalkForwardEngine(prices, snapshots, SystemConfig(), evidence), protocol)
         leaderboard = None
     elif args.training_end_year:
-        factor, leaderboard = select_factor_out_of_sample(engine=AnnualWalkForwardEngine(prices, snapshots, SystemConfig()),
+        factor, leaderboard = select_factor_out_of_sample(engine=AnnualWalkForwardEngine(prices, snapshots, SystemConfig(), evidence),
                                                            base=protocol, training_end_year=args.training_end_year)
         protocol = replace(protocol, start_year=args.training_end_year, factor=factor)
-        results, transitions, holdings = AnnualWalkForwardEngine(prices, snapshots, SystemConfig()).run(protocol)
+        results, transitions, holdings = AnnualWalkForwardEngine(prices, snapshots, SystemConfig(), evidence).run(protocol)
         factor_choices = None
     else:
         leaderboard = None
-        results, transitions, holdings = AnnualWalkForwardEngine(prices, snapshots, SystemConfig()).run(protocol)
+        results, transitions, holdings = AnnualWalkForwardEngine(prices, snapshots, SystemConfig(), evidence).run(protocol)
         factor_choices = None
     output = Path(args.output); output.mkdir(parents=True, exist_ok=True)
     results.to_csv(output / "annual_results.csv", index=False)
     transitions.to_csv(output / "annual_transitions.csv", index=False)
     holdings.to_csv(output / "annual_holdings.csv", index=False)
     _annual_benchmark_summary(results).to_csv(output / "annual_benchmark_summary.csv", index=False)
+    (output / "input_manifest.json").write_text(json.dumps(input_manifest.as_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
+    if evidence_manifest is not None:
+        evidence_manifest.to_csv(output / "decision_evidence_manifest.csv", index=False)
     if leaderboard is not None:
         leaderboard.to_csv(output / "factor_training_leaderboard.csv", index=False)
     if factor_choices is not None:

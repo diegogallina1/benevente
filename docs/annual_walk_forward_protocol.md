@@ -67,3 +67,52 @@ O arquivo `annual_benchmark_summary.csv` compara o Benevente com CDI e com um
 MVO neutro no **mesmo universo elegível e com a mesma data de decisão**. Ele
 evita a comparação injusta entre uma carteira filtrada e um MVO que recebe
 ativos que a política teria bloqueado.
+
+## Portão B3/CVM e retorno total
+
+Além dos fundamentos, cada decisão deve ser cruzada com o universo B3 e o mapa
+CVM **do mesmo janeiro**. O argumento `--universe` junto de `--mapping` ativa
+esse portão e grava `decision_evidence_manifest.csv` no artefato anual.
+
+```powershell
+.\.venv-benevente\Scripts\python.exe annual_walk_forward.py `
+  --prices data/precos_retorno_total_documentados.csv `
+  --fundamentals data/fundamentals_b3_cvm_full_2013_2025.csv `
+  --universe data/b3_historical_universes.csv `
+  --mapping data/b3_historical_cvm_ticker_map.csv `
+  --start-year 2013 --end-year 2026 --factor triple_factor `
+  --output artifacts/annual_b3_cvm
+```
+
+`build_b3_price_history.py` produz uma série de **preço** a partir do
+COTAHIST, útil para formar o conjunto disponível e os sinais anteriores à
+decisão. Ela é explicitamente `price_return_only`: dividendos, JCP e eventos
+corporativos não são retorno total. Não use essa saída isolada para afirmar
+performance, comparar CDI ou liberar a estratégia; para isso, anexe uma série
+de retorno total com origem, data de extração e tratamento de eventos.
+
+Antes de executar o experimento, rode o pré-teste. Ele registra tanto a
+cobertura B3/CVM anual quanto a aptidão (ou bloqueio) da base de retorno:
+
+```powershell
+.\.venv-benevente\Scripts\python.exe preflight_annual_walk_forward.py `
+  --prices data/prices_b3_cotahist_price_return_only_2011_2025.csv `
+  --fundamentals data/fundamentals_b3_cvm_full_2013_2025.csv `
+  --universe data/b3_historical_universes.csv `
+  --mapping data/b3_historical_cvm_ticker_map.csv `
+  --price-basis price_return_only `
+  --output artifacts/annual_input_manifest.json
+```
+
+O retorno de saída `2` significa bloqueio esperado: substitua a fonte pelo
+arquivo de retorno total documentado conforme
+`data/total_return_source_manifest_template.json`. Só então use
+`--price-basis total_return` para calcular performance.
+
+O adaptador `total_return_adapter.py` aceita somente uma exportação cuja hash
+SHA-256 confere com esse manifesto. A fonte deve declarar cobertura de
+dividendos, JCP, bonificações, desdobramentos, subscrições e proventos de
+deslistagem. A B3 informa que o COTAHIST não traz esses ajustes; a base
+estruturada de eventos corporativos é fornecida separadamente no serviço de
+dados da B3. Logo, não há combinação automática de fontes nem ajuste implícito
+no Benevente.
