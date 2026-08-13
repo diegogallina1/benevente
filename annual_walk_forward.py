@@ -315,9 +315,21 @@ class AnnualWalkForwardEngine:
         for year in range(protocol.start_year, protocol.end_year):
             decision_factor = (factors_by_year or {}).get(year, protocol.factor)
             decision = _first_trading_day(self.prices, year)
-            next_decision = _first_trading_day(self.prices, year + 1)
-            if decision is None or next_decision is None:
+            # A Jan-2025 decision can be evaluated through the last available
+            # 2025 session even when the local total-return panel stops before
+            # Jan-2026.  This preserves the no-look-ahead decision while
+            # clearly marking the close as an observed-data cutoff.
+            if decision is None:
                 continue
+            next_decision = _first_trading_day(self.prices, year + 1)
+            if next_decision is None:
+                observed = self.prices.index[self.prices.index >= decision]
+                if observed.empty:
+                    continue
+                # Keep the public record semantically clear: the field is
+                # exclusive, therefore it is the calendar day after the last
+                # observed market session.
+                next_decision = pd.Timestamp(observed[-1]).normalize() + pd.Timedelta(days=1)
             # A historical panel has one fundamental snapshot per ticker per
             # annual decision. The decision may see several older filings, but
             # only the newest filing actually available at that date may enter

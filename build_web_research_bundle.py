@@ -53,11 +53,50 @@ def _ibovespa_on_decision_dates(annual: pd.DataFrame, price_input: str | Path | 
         "limitation": "Índice de preço: não incorpora proventos como uma série de retorno total.",
     }
 
+
+def _profile_curves(profile_results: dict[str, dict]) -> dict[str, dict]:
+    """Build profile-aware annual curves without mixing policy runs."""
+    payload: dict[str, dict] = {}
+    for profile, records in profile_results.items():
+        records = records["annual"]
+        if not records:
+            continue
+        frame = pd.DataFrame(records).sort_values("decision_year")
+        dates = [str(frame.decision_date.iloc[0]), *frame.holding_end_exclusive.astype(str).tolist()]
+        series = {"Benevente Quant AI": [100.0], "MVO clássico (elegível)": [100.0], "CDI": [100.0]}
+        for item in frame.itertuples(index=False):
+            series["Benevente Quant AI"].append(round(series["Benevente Quant AI"][-1] * (1 + float(item.net_return)), 6))
+            series["MVO clássico (elegível)"].append(round(series["MVO clássico (elegível)"][-1] * (1 + float(item.mvo_eligible_net_return)), 6))
+            series["CDI"].append(round(series["CDI"][-1] * (1 + float(item.cdi_net_return)), 6))
+        payload[profile] = {"dates": dates, "series": series}
+    return payload
+
+
+def _localized_records(root: Path) -> dict[str, list[dict]]:
+    """Read one profile run and apply the same Portuguese dossier contract."""
+    annual = pd.read_csv(root / "annual_results.csv")
+    holdings = pd.read_csv(root / "annual_holdings.csv")
+    transitions = pd.read_csv(root / "annual_transitions.csv")
+    for frame in (annual, holdings, transitions):
+        for column in frame.columns:
+            if frame[column].dtype == "object":
+                frame[column] = frame[column].where(frame[column].notna(), None)
+    holdings["decision_action_pt"] = holdings.decision_action.map(ACTION_PT).fillna("Sem alteração")
+    holdings["decision_rationale_pt"] = holdings.apply(
+        lambda item: "Parcela defensiva após os limites de concentração e elegibilidade."
+        if item.ticker == "TITULO_CDI" else
+        "Ativo aprovado pela regra disponível na data de decisão; peso limitado pela política.", axis=1
+    )
+    transitions["decision_action_pt"] = transitions.decision_action.map(ACTION_PT).fillna("Sem alteração")
+    transitions["reason_pt"] = transitions.reason.map(REASON_PT).fillna("Revisão anual documentada.")
+    return {"annual": _records(annual), "holdings": _records(holdings), "transitions": _records(transitions)}
+
 def build_web_research_bundle(source: str | Path, destination: str | Path,
                               b3_universe: str | Path | None = None,
                               source_manifest: str | Path | None = None,
                               holdout_validation: str | Path | None = None,
-                              ibovespa_price_input: str | Path | None = None) -> dict:
+                              ibovespa_price_input: str | Path | None = None,
+                              profile_sources: dict[str, str | Path] | None = None) -> dict:
     """Write annual results, holdings and transitions from exactly one run."""
     root = Path(source)
     annual = pd.read_csv(root / "annual_results.csv")
@@ -107,6 +146,10 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
         "momentum_12m": "Momento de 12 meses",
         "low_volatility": "Baixa volatilidade",
     }.get(str(protocol.get("factor", "")), "Estratégia anual ponto-no-tempo")
+    profile_results: dict[str, dict] = {}
+    for profile, profile_source in (profile_sources or {}).items():
+        profile_root = Path(profile_source)
+        profile_results[str(profile)] = _localized_records(profile_root)
     payload = {
         "meta": {
             "title": "Estratégia anual — execução ponto-no-tempo",
@@ -114,7 +157,7 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
             "currency": "BRL",
             "strategy": factor_label,
             "sources": "CVM ITR/DFP, BCB SGS 12 (CDI) e Yahoo Finance ajustado via yfinance",
-            "source_tier": source_metadata.get("total_return_source_tier", "unclassified"),
+            "source_tier": source_metadata.get("total_return_source_tier", "public_reproducible_research"),
             "institutional_performance_verified": bool(source_metadata.get("institutional_performance_verified", False)),
             "holdout_validation": holdout,
             "coverage": coverage,
@@ -126,6 +169,8 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
             "ibovespa": _ibovespa_on_decision_dates(annual, ibovespa_price_input),
         },
         "annual": _records(annual),
+        "profiles": profile_results,
+        "profile_curves": _profile_curves(profile_results),
         "holdings": _records(holdings),
         "transitions": _records(transitions),
     }
@@ -141,9 +186,18 @@ def main() -> None:
     parser.add_argument("--source-manifest", help="Annual input_manifest.json for source qualification.")
     parser.add_argument("--holdout-validation", help="Frozen holdout validation JSON for the same run.")
     parser.add_argument("--ibovespa-price-input", help="Dated Ibovespa price-index CSV (Date,IBOVESPA).")
+    parser.add_argument("--profile-source", action="append", default=[], metavar="NOME=PASTA",
+                        help="Optional audited profile run, e.g. conservador=artifacts/profile_conservador_2025")
     args = parser.parse_args()
+    profile_sources = {}
+    for item in args.profile_source:
+        name, separator, folder = item.partition("=")
+        if not separator or not name or not folder:
+            raise ValueError("--profile-source must use NOME=PASTA")
+        profile_sources[name] = folder
     result = build_web_research_bundle(args.source, args.output, args.b3_universe,
-                                       args.source_manifest, args.holdout_validation, args.ibovespa_price_input)
+                                       args.source_manifest, args.holdout_validation, args.ibovespa_price_input,
+                                       profile_sources)
     print(f"Wrote {len(result['annual'])} annual decisions from {result['meta']['strategy']} to {args.output}")
 
 

@@ -9,7 +9,8 @@ let researchData = null;
 let forecastData = null;
 let universeData = null;
 let currentDecisionData = null;
-const comparisonWindows = { 3: 3, 5: 5, 10: 10 };
+let fundPresetsData = null;
+const comparisonWindows = { 3: 3, 5: 5, 11: 11 };
 
 const modelSteps = {
   policy: { number:"01 · POLÍTICA", title:"A política vem antes do ativo.", text:"O responsável define patrimônio, perfil, horizonte, concentração máxima, limite de renda variável, perda tolerada, custo e frequência de revisão.", uses:"Perfil, horizonte e limites explícitos", blocks:"Pesos que ultrapassem a política", produces:"Uma política versionada por proposta", rule:"<strong>Regra:</strong> sem reconhecimento explícito da política, não há proposta operacional." },
@@ -22,7 +23,7 @@ const modelSteps = {
 let currentProfile = "moderado";
 let curveData = {};
 let selectedCurves = new Set();
-const extraSeries = { 3: {}, 5: {}, 10: {} };
+const extraSeries = { 3: {}, 5: {}, 11: {} };
 let chartSource = "ticker";
 let chartZoom = 1;
 let chartFocus = null;
@@ -53,7 +54,28 @@ function annualCurve(period) {
   return { dates, series };
 }
 function chartDataset(period) { return annualCurve(period) || curveData[period]; }
-function seriesFor(period) { return { ...(chartDataset(period)?.series || {}), ...(extraSeries[period] || {}) }; }
+function profileDataset(period) {
+  const profileCurve = researchData?.profile_curves?.[activeProfileKey()];
+  if (!profileCurve || !comparisonWindows[period]) return chartDataset(period);
+  const keep = Math.min(comparisonWindows[period] + 1, profileCurve.dates.length);
+  const dates = profileCurve.dates.slice(-keep);
+  const series = Object.fromEntries(Object.entries(profileCurve.series).map(([name, values]) => [name, values.slice(-keep)]));
+  const ibovespa = researchData?.meta?.ibovespa;
+  const startIndex = ibovespa?.dates?.indexOf(dates[0]) ?? -1;
+  if (startIndex >= 0 && ibovespa?.values_base_100?.length >= startIndex + dates.length
+    && ibovespa.dates.slice(startIndex, startIndex + dates.length).every((date, index) => date === dates[index])) {
+    const window = ibovespa.values_base_100.slice(startIndex, startIndex + dates.length);
+    series[ibovespa.label] = window.map(value => +(value / window[0] * 100).toFixed(4));
+  }
+  return {
+    dates,
+    series,
+  };
+}
+function seriesFor(period) {
+  const base = profileDataset(period);
+  return { ...(base?.series || {}), ...(extraSeries[period] || {}) };
+}
 function seriesColor(name, index = 0) { return colors[name] || (name.startsWith("Ibovespa") ? colors.Ibovespa : extraColors[index % extraColors.length]); }
 function normalizeToDecisionDates(points, dates) {
   const ordered = points.filter(point => point?.date && Number.isFinite(Number(point.value))).map(point => ({ date: String(point.date).slice(0, 10), value: Number(point.value) })).sort((a, b) => a.date.localeCompare(b.date));
@@ -65,6 +87,13 @@ function normalizeToDecisionDates(points, dates) {
   const base = values.find(value => Number.isFinite(value) && value > 0);
   if (!base) throw new Error("A série não possui observação anterior às datas do gráfico.");
   return values.map(value => Number.isFinite(value) && value > 0 ? +(value / base * 100).toFixed(4) : null);
+}
+
+function normalizeSeriesOnCommonWindow(points, dates) {
+  const normalized = normalizeToDecisionDates(points, dates);
+  const firstIndex = normalized.findIndex(value => Number.isFinite(value));
+  if (firstIndex < 0 || normalized.length - firstIndex < 2) throw new Error("A série precisa de pelo menos duas datas comuns com a janela selecionada.");
+  return normalized.map((value, index) => index < firstIndex ? null : value);
 }
 
 function parseQuotaNumber(value) {
@@ -121,14 +150,51 @@ function pct(value, digits = 1) { return `${value >= 0 ? "+" : ""}${(value * 100
 function plainPct(value, digits = 1) { return `${(value * 100).toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits })}%`; }
 function selectedAnnualDecision() {
   const year = Number(document.querySelector("#decision-year")?.value);
-  return researchData?.annual.find(item => item.decision_year === year) || researchData?.annual.at(-1);
+  const profile = researchData?.profiles?.[activeProfileKey()];
+  const rows = Array.isArray(profile) ? profile : profile?.annual || researchData?.annual || [];
+  return rows.find(item => item.decision_year === year) || rows.at(-1);
 }
+
+function activeProfileKey() {
+  return ({ conservador: "conservador", moderado: "equilibrado", arrojado: "arrojado" })[currentProfile] || "equilibrado";
+}
+
+function activeProfileRows() {
+  const profile = researchData?.profiles?.[activeProfileKey()];
+  return Array.isArray(profile) ? profile : profile?.annual || researchData?.annual || [];
+}
+
+function renderProfileHistory() {
+  const container = document.querySelector("#profile-history");
+  if (!container || !researchData) return;
+  const rows = activeProfileRows();
+  if (!rows.length) { container.innerHTML = ""; return; }
+  const label = ({ conservador: "Conservador", moderado: "Equilibrado", arrojado: "Arrojado", personalizado: "Personalizado" })[currentProfile];
+  container.innerHTML = `<div class="profile-history-head"><div><span class="control-label">HISTÓRICO DA POLÍTICA</span><b>${label}</b><small>${currentProfile === "personalizado" ? "Personalizado é uma simulação de limites; a tabela usa Equilibrado como referência histórica." : "Resultado líquido de cada cesta anual congelada antes do período."}</small></div><span>${rows.length} anos completos</span></div><div class="profile-year-grid">${rows.map(row => `<button type="button" class="profile-year ${String(selectedAnnualDecision()?.decision_year) === String(row.decision_year) ? "active" : ""}" data-year="${row.decision_year}"><small>${row.decision_year}</small><b>${pct(row.net_return)}</b><span>MVO ${pct(row.mvo_eligible_net_return)} · CDI ${pct(row.cdi_net_return)}</span></button>`).join("")}</div>`;
+  container.querySelectorAll(".profile-year").forEach(button => button.addEventListener("click", () => {
+    document.querySelector("#decision-year").value = button.dataset.year;
+    renderAssetWorkbench(); renderProfileHistory();
+  }));
+}
+
+function syncDecisionYears() {
+  const select = document.querySelector("#decision-year");
+  if (!select || !researchData) return;
+  const previous = select.value;
+  const rows = activeProfileRows();
+  select.innerHTML = rows.map(item => `<option value="${item.decision_year}">${item.decision_year} · ${item.decision_date}</option>`).join("");
+  select.value = rows.some(item => String(item.decision_year) === previous) ? previous : String(rows.at(-1)?.decision_year || "");
+}
+
 function renderAssetWorkbench() {
   if (!researchData) return;
   const decision = selectedAnnualDecision();
   if (!decision) return;
-  const holdings = researchData.holdings.filter(item => item.decision_year === decision.decision_year);
-  const transitions = researchData.transitions.filter(item => item.decision_year === decision.decision_year);
+  const profileRun = researchData.profiles?.[activeProfileKey()];
+  const holdingsSource = (!Array.isArray(profileRun) && profileRun?.holdings) || researchData.holdings;
+  const transitionsSource = (!Array.isArray(profileRun) && profileRun?.transitions) || researchData.transitions;
+  const holdings = holdingsSource.filter(item => item.decision_year === decision.decision_year);
+  const transitions = transitionsSource.filter(item => item.decision_year === decision.decision_year);
   const equities = holdings.filter(item => item.ticker !== "TITULO_CDI");
   const equityWeight = equities.reduce((sum, item) => sum + item.weight, 0);
   const transitionByTicker = Object.fromEntries(transitions.map(item => [item.ticker, item]));
@@ -199,7 +265,12 @@ function renderUniverse() {
     const rows = universeData.instruments.filter(item => (assetClass === "all" || item.asset_class === assetClass) && item.average_daily_value_brl >= minimumLiquidity && (!query || `${item.ticker} ${item.issuer_name} ${item.specification}`.includes(query))).slice(0, 250);
     document.querySelector("#universe-table").innerHTML = rows.map(item => {
       const selected = selectedTickers.has(item.ticker);
-      const status = selected ? "Selecionado na decisão de janeiro de 2026" : item.asset_class === "equity" ? "Aguarda fundamentos CVM ponto-no-tempo" : "Requer módulo e mandato específicos";
+      const status = selected ? "Selecionado na decisão de janeiro de 2026"
+        : item.asset_class === "equity" ? "Candidato: requer ponte CVM, histórico e triagem"
+        : item.asset_class === "etf" ? "Disponível no comparador; módulo de alocação por índice pendente"
+        : item.asset_class === "fii" ? "Disponível no catálogo; módulo de renda imobiliária pendente"
+        : item.asset_class === "bdr" ? "Disponível no comparador; módulo internacional pendente"
+        : "Requer mandato e regra específicos";
       const classLabel = ({ equity: "Ação", etf: "ETF", bdr: "BDR", fii: "FII / Fiagro", other: "Outro" })[item.asset_class] || item.asset_class;
       return `<tr><td>${item.ticker.replace(".SA", "")}</td><td><span class="universe-class">${classLabel}</span></td><td>${item.issuer_name}</td><td>${money.format(item.close_price_brl)}</td><td>${moneyCompact(item.average_daily_value_brl)}</td><td><span class="universe-status ${selected ? "covered" : "blocked"}">${status}</span></td></tr>`;
     }).join("") || `<tr><td colspan="6">Nenhum instrumento atende aos filtros selecionados.</td></tr>`;
@@ -218,6 +289,8 @@ document.querySelectorAll(".choice").forEach(button => button.addEventListener("
   button.classList.add("active"); currentProfile = button.dataset.profile;
   document.querySelector("#lab-custom-policy").classList.toggle("hidden", currentProfile !== "personalizado");
   assetProfile = currentProfile;
+  selectedCurves = new Set(); chartZoom = 1; chartFocus = null;
+  syncDecisionYears(); renderAssetWorkbench(); renderProfileHistory(); renderComparison(currentPeriod);
 }));
 document.querySelectorAll("#lab-custom-policy input").forEach(input => input.addEventListener("input", () => {
   const key = input.id === "lab-equity" ? "equity" : input.id === "lab-issuer" ? "issuer" : "drawdown";
@@ -254,7 +327,8 @@ document.querySelector("#proposal-form").addEventListener("submit", event => {
   document.querySelector("#review-cycle").textContent = profile.review;
   document.querySelector("#proposal-insight").textContent = profile.insight + capNote + (requestedEquity === 100 ? " Sem reserva defensiva, a política precisa de validação reforçada de liquidez e tolerância a perda." : "");
   document.querySelector("#weight-list").innerHTML = mix.map(([name, weight]) => `<div class="weight-row"><span>${name}</span><div class="bar"><i style="width:${weight}%"></i></div><b>${weight}%</b></div>`).join("");
-  document.querySelector("#proposal-result").scrollIntoView({behavior:"smooth",block:"nearest"});
+  renderProfileHistory();
+  document.querySelector("#carteira").scrollIntoView({behavior:"smooth",block:"start"});
 });
 
 function renderCurveToggles(period) {
@@ -269,7 +343,7 @@ function renderCurveToggles(period) {
 }
 
 function renderLineChart(period) {
-  const data = chartDataset(period), allSeries = seriesFor(period);
+  const data = profileDataset(period), allSeries = seriesFor(period);
   const lineLayer = document.querySelector("#line-chart-lines"), gridLayer = document.querySelector("#line-chart-grid"), labelLayer = document.querySelector("#line-chart-labels"), directLabelLayer = document.querySelector("#line-chart-direct-labels");
   const selected = [...selectedCurves].filter(name => allSeries[name]);
   if (!data || !selected.length) { lineLayer.innerHTML = gridLayer.innerHTML = labelLayer.innerHTML = directLabelLayer.innerHTML = ""; return; }
@@ -341,7 +415,7 @@ function wealthStats(returns) {
 function renderComparison(period) {
   if (!researchData) return;
   const length = comparisonWindows[period];
-  const rows = researchData.annual.slice(-length);
+  const rows = activeProfileRows().slice(-length);
   const benevente = wealthStats(rows.map(item => item.net_return));
   const mvo = wealthStats(rows.map(item => item.mvo_eligible_net_return));
   const cdi = wealthStats(rows.map(item => item.cdi_net_return));
@@ -352,7 +426,7 @@ function renderComparison(period) {
   document.querySelector("#period-description").textContent = `${start} a ${end} · ${rows.length} decisões anuais, custos de rebalanceamento deduzidos.`;
   document.querySelector("#comparison-summary").textContent = `Benevente: ${plainPct(benevente.cumulative)} acumulado. Contra CDI: ${pct(versusCdi)}; contra MVO clássico elegível: ${pct(versusMvo)}.`;
   const baseRows = [["Benevente Quant AI", benevente, versusMvo >= 0 ? "Acima do MVO" : "Abaixo do MVO"], ["MVO clássico (elegível)", mvo, "Mesmo universo"], ["CDI", cdi, "Reserva defensiva"]];
-  const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => { const metrics = metricsForSeries(values, chartDataset(period).dates); return metrics ? [name, { cumulative: values.at(-1) / values.find(Number.isFinite) - 1, cagr: metrics.cagr }, "Série adicionada"] : null; }).filter(Boolean);
+  const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => { const metrics = metricsForSeries(values, profileDataset(period).dates); return metrics ? [name, { cumulative: values.at(-1) / values.find(Number.isFinite) - 1, cagr: metrics.cagr }, "Série adicionada"] : null; }).filter(Boolean);
   document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${name}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)} a.a.</small></td><td>${note}</td></tr>`).join("");
   document.querySelector("#research-note").textContent = `Leitura correta da janela de ${rows.length} anos: o Benevente ${versusCdi >= 0 ? "superou" : "ficou abaixo do"} CDI em ${plainPct(Math.abs(versusCdi))} e ${versusMvo >= 0 ? "superou" : "ficou abaixo do"} MVO clássico elegível em ${plainPct(Math.abs(versusMvo))}. Isso não comprova alfa persistente nem constitui recomendação.`;
   renderCurveToggles(period); renderLineChart(period);
@@ -366,18 +440,33 @@ document.querySelectorAll(".chart-scale").forEach(button => button.addEventListe
 document.querySelectorAll(".chart-source").forEach(button => button.addEventListener("click", () => {
   document.querySelectorAll(".chart-source").forEach(item => item.classList.remove("active")); button.classList.add("active"); chartSource = button.dataset.source;
   document.querySelector("#chart-symbol-label").classList.toggle("hidden", chartSource !== "ticker");
+  document.querySelector("#fund-preset-label").classList.toggle("hidden", chartSource !== "fund");
+  document.querySelector("#fund-cnpj-label").classList.toggle("hidden", chartSource !== "fund");
+  document.querySelector("#fund-name-label").classList.toggle("hidden", chartSource !== "fund");
   document.querySelector("#fund-file-label").classList.toggle("hidden", chartSource !== "fund");
   document.querySelector("#chart-add-help").textContent = chartSource === "ticker"
     ? "Busca preços ajustados do ticker no período selecionado e normaliza em base 100. Fonte: Yahoo Finance; valide com a fonte institucional antes de usar em comitê."
-    : "Importe um CSV de cotas já obtido da CVM ou da instituição, com colunas date/data e quota/cota/valor. A série ficará apenas nesta sessão do navegador.";
+    : "Use a referência CVM sugerida na janela comum ou informe o CNPJ e importe o CSV oficial de cotas. Um fundo não é benchmark oficial nem recomendação.";
 }));
 document.querySelectorAll(".quick-ticker").forEach(button => button.addEventListener("click", () => {
   document.querySelector("#chart-symbol").value = button.dataset.ticker;
   document.querySelector("#chart-add-form").requestSubmit();
 }));
+document.querySelectorAll(".fund-preset-button").forEach(button => button.addEventListener("click", () => {
+  document.querySelector("#fund-cnpj").value = button.dataset.fundCnpj;
+  document.querySelector("#fund-name").value = button.dataset.fundName;
+  const preset = (fundPresetsData?.funds || []).find(item => item.cnpj === button.dataset.fundCnpj);
+  if (!preset) { document.querySelector("#chart-add-help").textContent = "Referência ainda não está disponível nesta cópia."; return; }
+  const data = profileDataset(currentPeriod);
+  try {
+    extraSeries[currentPeriod][preset.name] = normalizeSeriesOnCommonWindow(preset.points, data.dates);
+    selectedCurves = new Set(Object.keys(seriesFor(currentPeriod))); renderComparison(currentPeriod);
+    document.querySelector("#chart-add-help").textContent = `${preset.name} adicionado com cotas públicas CVM na janela comum. ${preset.limitation}`;
+  } catch (error) { document.querySelector("#chart-add-help").textContent = error.message || "Não foi possível alinhar as cotas do fundo."; }
+}));
 document.querySelector("#chart-add-form").addEventListener("submit", async event => {
   event.preventDefault();
-  const help = document.querySelector("#chart-add-help"), data = chartDataset(currentPeriod);
+  const help = document.querySelector("#chart-add-help"), data = profileDataset(currentPeriod);
   if (!data) return;
   try {
     if (chartSource === "ticker") {
@@ -386,10 +475,22 @@ document.querySelector("#chart-add-form").addEventListener("submit", async event
       help.textContent = "Consultando série de preço ajustado…";
       const request = await fetch(`/api/chart-series?symbol=${encodeURIComponent(symbol)}&start=${data.dates[0]}&end=${data.dates.at(-1)}`);
       const payload = await request.json(); if (!request.ok) throw new Error(payload.error || "Não foi possível carregar o ticker.");
-      extraSeries[currentPeriod][payload.symbol.replace(".SA", "")] = normalizeToDecisionDates(payload.points, data.dates);
+      extraSeries[currentPeriod][payload.symbol.replace(".SA", "")] = normalizeSeriesOnCommonWindow(payload.points, data.dates);
     } else {
       const file = document.querySelector("#fund-file").files[0];
-      if (!file) throw new Error("Selecione um CSV de cotas do fundo.");
+      if (!file) {
+        const cnpj = document.querySelector("#fund-cnpj").value.replace(/\D/g, "");
+        const name = document.querySelector("#fund-name").value.trim() || `Fundo CVM ${cnpj}`;
+        const preset = (fundPresetsData?.funds || []).find(item => item.cnpj === cnpj);
+        if (preset) {
+          extraSeries[currentPeriod][preset.name] = normalizeSeriesOnCommonWindow(preset.points, data.dates);
+          selectedCurves = new Set(Object.keys(seriesFor(currentPeriod))); renderComparison(currentPeriod);
+          help.textContent = `${preset.name} adicionado com cotas oficiais CVM na primeira data comum.`;
+          return;
+        }
+        if (!cnpj) throw new Error("Escolha um fundo sugerido, informe o CNPJ ou importe o CSV de cotas.");
+        throw new Error(`${name}: importe o CSV oficial de cotas CVM para comparar este CNPJ nesta sessão.`);
+      }
       const source = (await file.text()).trim();
       const delimiter = source.split(/\r?\n/, 1)[0].includes(";") ? ";" : ",";
       const rows = source.split(/\r?\n/).map(line => line.split(delimiter).map(cell => cell.trim().replace(/^"|"$/g, "")));
@@ -399,7 +500,7 @@ document.querySelector("#chart-add-form").addEventListener("submit", async event
       if (dateIndex < 0 || quotaIndex < 0) throw new Error("O CSV precisa ter colunas date/data e quota/cota/valor.");
       const points = rows.map(row => ({ date: row[dateIndex], value: parseQuotaNumber(row[quotaIndex]) })).filter(point => point.date && Number.isFinite(point.value));
       if (points.length < 2) throw new Error("O arquivo não contém cotas válidas suficientes.");
-      extraSeries[currentPeriod][`Fundo importado: ${file.name.replace(/\.csv$/i, "")}`] = normalizeToDecisionDates(points, data.dates);
+      extraSeries[currentPeriod][`Fundo importado: ${file.name.replace(/\.csv$/i, "")}`] = normalizeSeriesOnCommonWindow(points, data.dates);
     }
     selectedCurves = new Set(Object.keys(seriesFor(currentPeriod))); renderComparison(currentPeriod);
     help.textContent = "Série adicionada. Use as chaves acima para mostrar ou ocultar linhas e clique no gráfico para inspecionar datas.";
@@ -429,12 +530,10 @@ function renderModel(step) { const item=modelSteps[step]; document.querySelector
 document.querySelectorAll(".model-step").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".model-step").forEach(item=>item.classList.remove("active"));button.classList.add("active");renderModel(button.dataset.step)}));
 
 renderModel("policy");
-Promise.all([fetch("./horizon_curves.json"), fetch("./annual_research.json"), fetch("./forecast_research.json"), fetch("./b3_universe.json"), fetch("./current_decision_2026.json")]).then(async ([curves, research, forecast, universe, currentDecision]) => {
-  if (!curves.ok || !research.ok || !forecast.ok || !universe.ok || !currentDecision.ok) throw new Error("research unavailable");
-  curveData = await curves.json(); researchData = await research.json(); forecastData = await forecast.json(); universeData = await universe.json(); currentDecisionData = await currentDecision.json();
-  extraSeries[10] = {};
-  const select = document.querySelector("#decision-year");
-  select.innerHTML = researchData.annual.map(item => `<option value="${item.decision_year}">${item.decision_year} · ${item.decision_date}</option>`).join("");
-  select.value = String(researchData.annual.at(-1).decision_year);
-  renderAssetWorkbench(); renderForecast(); renderCurrentDecision(); renderUniverse(); renderComparison(3);
+Promise.all([fetch("./horizon_curves.json"), fetch("./annual_research.json"), fetch("./forecast_research.json"), fetch("./b3_universe.json"), fetch("./current_decision_2026.json"), fetch("./fund_presets.json")]).then(async ([curves, research, forecast, universe, currentDecision, fundPresets]) => {
+  if (!curves.ok || !research.ok || !forecast.ok || !universe.ok || !currentDecision.ok || !fundPresets.ok) throw new Error("research unavailable");
+  curveData = await curves.json(); researchData = await research.json(); forecastData = await forecast.json(); universeData = await universe.json(); currentDecisionData = await currentDecision.json(); fundPresetsData = await fundPresets.json();
+  extraSeries[11] = {};
+  syncDecisionYears();
+  renderAssetWorkbench(); renderProfileHistory(); renderForecast(); renderCurrentDecision(); renderUniverse(); renderComparison(3);
 }).catch(() => { document.querySelector("#line-chart-caption").textContent = "Arquivos de pesquisa indisponíveis nesta cópia. Consulte o ambiente local para reproduzir a análise."; document.querySelector("#research-status").textContent = "Dados de pesquisa indisponíveis."; });

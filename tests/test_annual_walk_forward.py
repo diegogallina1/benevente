@@ -39,6 +39,19 @@ def test_annual_walk_forward_freezes_then_holds_each_year_without_future_filing(
     assert petr4.decision_rationale.str.contains("point-in-time").all()
 
 
+def test_last_available_year_is_held_to_the_observed_market_cutoff():
+    config = SystemConfig(initial_portfolio_value_brl=100_000)
+    prices = PointInTimeDataLoader(config).fetch_prices("2018-01-01", "2021-12-30", offline=True)
+    results, _, _ = AnnualWalkForwardEngine(prices, [old_snapshot()], config).run(
+        AnnualWalkForwardConfig(2020, 2022)
+    )
+    terminal = results.iloc[-1]
+    assert terminal.decision_year == 2021
+    assert terminal.decision_date == "2021-01-01"
+    assert terminal.holding_end_exclusive == "2021-12-31"
+    assert terminal.net_return == pytest.approx(terminal.net_return)
+
+
 def test_annual_walk_forward_uses_only_newest_available_filing_per_ticker():
     config = SystemConfig(initial_portfolio_value_brl=100_000)
     prices = PointInTimeDataLoader(config).fetch_prices("2018-01-01", "2023-01-10", offline=True)

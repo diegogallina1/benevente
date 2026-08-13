@@ -49,3 +49,16 @@ def test_bundle_aligns_ibovespa_price_index_to_annual_decision_dates(tmp_path: P
     result = build_web_research_bundle(source, tmp_path / "research.json", ibovespa_price_input=ibov)
     assert result["meta"]["ibovespa"]["values_base_100"] == [100.0, 120.0]
     assert "índice de preço" in result["meta"]["ibovespa"]["limitation"].lower()
+
+
+def test_bundle_includes_profile_specific_history_when_sources_are_provided(tmp_path: Path):
+    source = tmp_path / "equilibrado"; source.mkdir()
+    conservative = tmp_path / "conservador"; conservative.mkdir()
+    for root, yearly_return in ((source, .10), (conservative, .07)):
+        pd.DataFrame([{"decision_year": 2025, "decision_date": "2025-01-02", "holding_end_exclusive": "2025-12-31", "net_return": yearly_return, "mvo_eligible_net_return": .08, "cdi_net_return": .06}]).to_csv(root / "annual_results.csv", index=False)
+        pd.DataFrame([{"decision_year": 2025, "ticker": "AAAA3.SA", "decision_action": "entered"}]).to_csv(root / "annual_holdings.csv", index=False)
+        pd.DataFrame([{"decision_year": 2025, "ticker": "AAAA3.SA", "decision_action": "entered", "reason": "entered_after_point_in_time_screen"}]).to_csv(root / "annual_transitions.csv", index=False)
+        (root / "protocol.json").write_text(json.dumps({"factor": "value_quality"}), encoding="utf-8")
+    result = build_web_research_bundle(source, tmp_path / "research.json", profile_sources={"conservador": conservative})
+    assert result["profiles"]["conservador"]["annual"][0]["net_return"] == .07
+    assert result["profile_curves"]["conservador"]["series"]["Benevente Quant AI"] == [100.0, 107.0]
