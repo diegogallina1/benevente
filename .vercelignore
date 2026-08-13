@@ -1,0 +1,15 @@
+.venv/
+.venv-benevente/
+work/
+workpytest_*/
+artifacts/
+data/
+tests/
+docs/
+paper/
+outputs/
+__pycache__/
+*.pyc
+.env
+.env.local
+.pytest_cache/
