@@ -1,0 +1,2 @@
+ticker,cnpj_cia,cvm_sector,mapping_status,observed_at,source
+PETR4.SA,33.000.167/0001-01,Petróleo e Gás,accepted,YYYY-MM-DD,REPLACE_WITH_DATED_OFFICIAL_B3_ISIN_CNPJ_BRIDGE

@@ -26,7 +26,31 @@ Forneça também um CSV de preços histórico com a coluna `date`, uma coluna po
 
 Para emissoras não financeiras, alavancagem e cobertura de juros só entram quando houver `quality_metrics.csv` datado e atribuível. Dados ausentes são reprovação de elegibilidade, não preenchimento automático.
 
-## Comando
+## Atualização recente do universo elegível
+
+Para a proposta atual, o ITR não fica limitado aos oito emissores de exemplo.
+Forneça um `issuer_map` com cada ação no snapshot de mercado, seu CNPJ CVM,
+setor, data de observação e uma ponte B3--CVM aceita. O processo produz uma
+linha de cobertura para **cada** ticker: aceita a empresa com mapa, ITR/DFP e
+dados de mercado datados; bloqueia os demais com o motivo. BDR, ETF, FII e
+títulos continuam no universo de visualização, mas não são tratados como
+companhia aberta com ITR.
+
+```powershell
+Copy-Item data/live_b3_cvm_issuer_map_template.csv data/my_live_issuer_map.csv
+# Preencha somente mapeamentos B3--CNPJ datados e oficialmente verificáveis.
+python refresh_recent_itr.py --itr-year 2026 --decision-date 2026-08-12 `
+  --market-snapshot data/my_market_snapshot.csv `
+  --issuer-map data/my_live_issuer_map.csv `
+  --output artifacts/recent_itr/fundamentals.csv `
+  --coverage-report artifacts/recent_itr/coverage.csv `
+  --manifest artifacts/recent_itr/refresh_manifest.json
+```
+
+O manifesto guarda os hashes do mapa e do snapshot. A atualização não envia
+ordens e não usa ITR recebido depois da data de decisão.
+
+## Proposta
 
 ```powershell
 Copy-Item data/pilot_100k_policy.json data/my_pilot_100k_policy.json

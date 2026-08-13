@@ -230,7 +230,7 @@ Copy-Item data/market_snapshot_template.csv data/my_market.csv
 Copy-Item data/quality_metrics_template.csv data/my_quality.csv
 # preencher os CSVs e my_policy.json; o arquivo de preços é exportado da fonte escolhida
 python production_readiness.py --policy data/my_policy.json --market-snapshot data/my_market.csv --price-history data/my_prices.csv
-python live_proposal_runner.py --policy data/my_policy.json --itr-year 2026 --market-snapshot data/my_market.csv --price-history data/my_prices.csv --price-history-source "B3/corretora, exportação YYYY-MM-DD" --quality-metrics data/my_quality.csv --decision-date YYYY-MM-DD
+python live_proposal_runner.py --policy data/my_policy.json --itr-year 2026 --market-snapshot data/my_market.csv --issuer-map data/my_live_issuer_map.csv --price-history data/my_prices.csv --price-history-source "B3/corretora, exportação YYYY-MM-DD" --quality-metrics data/my_quality.csv --decision-date YYYY-MM-DD
 ```
 
 O pacote em `artifacts/live_proposals/YYYY-MM-DD/` contém a política aplicada,

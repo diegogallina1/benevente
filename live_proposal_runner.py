@@ -8,7 +8,7 @@ import json
 import pandas as pd
 
 from config import SystemConfig
-from cvm_itr import CvmItrClient
+from advisor import snapshots_from_frame
 from horizon import estimation_window_days
 from market_snapshot import load_market_snapshots
 from order_builder import build_initial_orders
@@ -17,6 +17,7 @@ from production_policy import load_policy
 from price_history import load_price_history
 from quality_metrics import apply_quality_metric_overrides, load_quality_metric_overrides
 from shadow_portfolio import write_proposed_orders
+from refresh_recent_itr import refresh_recent_itr
 
 
 def main() -> None:
@@ -24,6 +25,8 @@ def main() -> None:
     parser.add_argument("--policy", required=True)
     parser.add_argument("--itr-year", type=int, required=True, help="ITR calendar year with filings available by the decision date.")
     parser.add_argument("--market-snapshot", required=True, help="Dated CSV from B3, broker, or licensed market-data vendor.")
+    parser.add_argument("--issuer-map", required=True,
+                        help="Dated accepted B3 ticker-to-CNPJ map for issuers in the market snapshot.")
     parser.add_argument("--price-history", required=True, help="Archived dated price-history CSV from B3, broker, or licensed vendor.")
     parser.add_argument("--price-history-source", required=True, help="Source and export reference for the archived price history.")
     parser.add_argument("--quality-metrics", help="Optional dated, attributable debt/interest metrics for non-financial issuers.")
@@ -33,7 +36,10 @@ def main() -> None:
     policy = load_policy(args.policy)
     decision_date = pd.Timestamp(args.decision_date)
     market_data = load_market_snapshots(args.market_snapshot, decision_date, policy.max_fundamental_age_days)
-    snapshots = CvmItrClient().live_snapshots(args.itr_year, decision_date, market_data)
+    refreshed, itr_coverage, itr_manifest = refresh_recent_itr(
+        args.itr_year, decision_date, args.market_snapshot, args.issuer_map, policy.max_fundamental_age_days,
+    )
+    snapshots = snapshots_from_frame(refreshed)
     if args.quality_metrics:
         snapshots = apply_quality_metric_overrides(
             snapshots, load_quality_metric_overrides(args.quality_metrics, decision_date, policy.max_fundamental_age_days)
@@ -60,7 +66,9 @@ def main() -> None:
     destination = Path(args.output) / decision_date.strftime("%Y-%m-%d")
     destination.mkdir(parents=True, exist_ok=True)
     pd.read_csv(args.market_snapshot).to_csv(destination / "market_snapshot.csv", index=False)
+    pd.read_csv(args.issuer_map).to_csv(destination / "issuer_map.csv", index=False)
     pd.DataFrame([item.model_dump() for item in snapshots]).to_csv(destination / "fundamentals_cvm_live.csv", index=False)
+    itr_coverage.to_csv(destination / "itr_coverage.csv", index=False)
     proposal.screen.to_csv(destination / "fundamental_screen.csv", index=False)
     proposal.weights.rename("target_weight").to_csv(destination / "proposed_weights.csv")
     orders, order_summary = build_initial_orders(
@@ -73,6 +81,7 @@ def main() -> None:
         "policy_id": policy.policy_id,
         "decision_date": str(decision_date.date()),
         "itr_year": args.itr_year,
+        "itr_refresh": itr_manifest,
         "ttm_base_dfp_year": args.itr_year - 1,
         "risk_profile": policy.risk_profile,
         "horizon_years": policy.horizon_years,
