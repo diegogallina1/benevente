@@ -19,9 +19,17 @@ def _field(line: str, start: int, end: int) -> str:
     return line[start - 1:end].strip()
 
 
-def parse_cotahist(path: str | Path) -> pd.DataFrame:
-    """Parse COTAHIST daily records needed for a point-in-time universe."""
+def parse_cotahist(path: str | Path, start_date: str | pd.Timestamp | None = None,
+                   end_date: str | pd.Timestamp | None = None) -> pd.DataFrame:
+    """Parse COTAHIST daily records needed for a point-in-time universe.
+
+    Optional boundaries are applied while streaming the fixed-width file. This
+    is essential for January universe construction: we need only the previous
+    60 sessions, not an entire multi-million-row annual quotation file.
+    """
     archive_path = Path(path)
+    start = pd.Timestamp(start_date).strftime("%Y%m%d") if start_date is not None else None
+    end = pd.Timestamp(end_date).strftime("%Y%m%d") if end_date is not None else None
     with ZipFile(archive_path) as archive:
         name = next((item for item in archive.namelist() if item.upper().endswith(".TXT")), None)
         if name is None:
@@ -32,8 +40,13 @@ def parse_cotahist(path: str | Path) -> pd.DataFrame:
             for line in lines:
                 if len(line) < 245 or _field(line, 1, 2) != "01":
                     continue
+                raw_date = line[2:10]
+                # Avoid constructing a Timestamp for every quotation in the
+                # annual ZIP. ISO-like YYYYMMDD strings preserve date order.
+                if not raw_date.isdigit() or (start is not None and raw_date < start) or (end is not None and raw_date > end):
+                    continue
                 rows.append({
-                    "trade_date": _field(line, 3, 10),
+                    "trade_date": raw_date,
                     "bdi_code": _field(line, 11, 12),
                     "ticker_raw": _field(line, 13, 24),
                     "market_type": _field(line, 25, 27),

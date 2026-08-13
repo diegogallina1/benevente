@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import re
 from zipfile import ZipFile
 import pandas as pd
 
@@ -13,11 +14,16 @@ from market_snapshot import MarketSnapshot
 CVM_ITR_URL = "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/itr_cia_aberta_{year}.zip"
 
 
+def _cnpj_key(value: object) -> str:
+    """Compare CVM and B3 identifiers independently of display formatting."""
+    return re.sub(r"\D", "", str(value or "")).zfill(14)
+
+
 def _statement(frame: pd.DataFrame, cnpj: str, reference_date: pd.Timestamp,
                version: int, order: str = "ÚLTIMO") -> pd.DataFrame:
     copy = frame.copy()
     copy["DT_REFER"] = pd.to_datetime(copy["DT_REFER"])
-    return copy[(copy.CNPJ_CIA == cnpj) & (copy.DT_REFER == reference_date)
+    return copy[(copy.CNPJ_CIA == _cnpj_key(cnpj)) & (copy.DT_REFER == reference_date)
                 & (copy.VERSAO == version) & (copy.ORDEM_EXERC == order)]
 
 
@@ -38,7 +44,7 @@ def _any_value(frame: pd.DataFrame, cnpj: str, reference_date: pd.Timestamp,
 
 
 def _annual_value(frame: pd.DataFrame, cnpj: str, account: str) -> float | None:
-    copy = frame[(frame.CNPJ_CIA == cnpj) & (frame.ORDEM_EXERC == "ÚLTIMO")].copy()
+    copy = frame[(frame.CNPJ_CIA == _cnpj_key(cnpj)) & (frame.ORDEM_EXERC == "ÚLTIMO")].copy()
     copy["DT_REFER"] = pd.to_datetime(copy["DT_REFER"])
     if copy.empty:
         return None
@@ -119,6 +125,9 @@ class CvmItrClient:
             panel["annual_dfc"] = _statement_with_individual_fallback(annual_archive, prefix, "DFC_MI", itr_year - 1)
         panel["filings"]["DT_RECEB"] = pd.to_datetime(panel["filings"].DT_RECEB)
         panel["filings"]["DT_REFER"] = pd.to_datetime(panel["filings"].DT_REFER)
+        for frame in panel.values():
+            if isinstance(frame, pd.DataFrame) and "CNPJ_CIA" in frame.columns:
+                frame["CNPJ_CIA"] = frame["CNPJ_CIA"].map(_cnpj_key)
         self._statement_panels[itr_year] = panel
         return panel
 
@@ -130,7 +139,8 @@ class CvmItrClient:
         annual_dre, annual_dfc, filings = panel["annual_dre"], panel["annual_dfc"], panel["filings"]
         results: list[FundamentalSnapshot] = []
         for issuer in issuers:
-            candidates = filings[(filings.CNPJ_CIA == issuer.cnpj) & (filings.DT_RECEB <= decision_date)].copy()
+            cnpj = _cnpj_key(issuer.cnpj)
+            candidates = filings[(filings.CNPJ_CIA == cnpj) & (filings.DT_RECEB <= decision_date)].copy()
             if candidates.empty:
                 raise RuntimeError(f"No ITR available by {decision_date.date()} for {issuer.ticker}")
             filing = candidates.sort_values(["DT_REFER", "VERSAO", "DT_RECEB"]).iloc[-1]
@@ -139,11 +149,18 @@ class CvmItrClient:
             if market is None:
                 raise RuntimeError(f"No auditable market snapshot for {issuer.ticker}")
 
+            issuer_dre = dre[dre.CNPJ_CIA == cnpj]
+            issuer_bpa = bpa[bpa.CNPJ_CIA == cnpj]
+            issuer_bpp = bpp[bpp.CNPJ_CIA == cnpj]
+            issuer_dfc = dfc[dfc.CNPJ_CIA == cnpj]
+            issuer_annual_dre = annual_dre[annual_dre.CNPJ_CIA == cnpj]
+            issuer_annual_dfc = annual_dfc[annual_dfc.CNPJ_CIA == cnpj]
+
             def ttm(accounts: tuple[str, ...]) -> float:
                 return _ttm(
-                    _annual_any(annual_dre, issuer.cnpj, accounts),
-                    _any_value(dre, issuer.cnpj, reference, version, accounts, "ÚLTIMO"),
-                    _any_value(dre, issuer.cnpj, reference, version, accounts, "PENÚLTIMO"),
+                    _annual_any(issuer_annual_dre, cnpj, accounts),
+                    _any_value(issuer_dre, cnpj, reference, version, accounts, "ÚLTIMO"),
+                    _any_value(issuer_dre, cnpj, reference, version, accounts, "PENÚLTIMO"),
                     accounts[0], issuer.ticker,
                 )
 
@@ -160,17 +177,17 @@ class CvmItrClient:
             # account (2.03) as industrial statements, whereas newer bank
             # templates may expose 2.07/2.08.  The ordered fallback preserves
             # the most specific available presentation.
-            equity = (_any_value(bpp, issuer.cnpj, reference, version, ("2.08", "2.07", "2.05", "2.03"))
-                      if issuer.is_financial else _value(bpp, issuer.cnpj, reference, version, "2.03"))
-            cash = _any_value(bpa, issuer.cnpj, reference, version, ("1.01.01", "1.01"))
-            debt = (_value(bpp, issuer.cnpj, reference, version, "2.01.04") or 0.0) + (_value(bpp, issuer.cnpj, reference, version, "2.02.01") or 0.0)
+            equity = (_any_value(issuer_bpp, cnpj, reference, version, ("2.08", "2.07", "2.05", "2.03"))
+                      if issuer.is_financial else _value(issuer_bpp, cnpj, reference, version, "2.03"))
+            cash = _any_value(issuer_bpa, cnpj, reference, version, ("1.01.01", "1.01"))
+            debt = (_value(issuer_bpp, cnpj, reference, version, "2.01.04") or 0.0) + (_value(issuer_bpp, cnpj, reference, version, "2.02.01") or 0.0)
             if issuer.is_financial:
                 cfo = investing = None
             else:
                 def ttm_cashflow(account: str) -> float:
-                    return _ttm(_annual_value(annual_dfc, issuer.cnpj, account),
-                                _value(dfc, issuer.cnpj, reference, version, account, "ÚLTIMO"),
-                                _value(dfc, issuer.cnpj, reference, version, account, "PENÚLTIMO"),
+                    return _ttm(_annual_value(issuer_annual_dfc, cnpj, account),
+                                _value(issuer_dfc, cnpj, reference, version, account, "ÚLTIMO"),
+                                _value(issuer_dfc, cnpj, reference, version, account, "PENÚLTIMO"),
                                 account, issuer.ticker)
                 cfo, investing = ttm_cashflow("6.01"), ttm_cashflow("6.02")
             required = (net_income, equity) if issuer.is_financial else (revenue, ebit, net_income, cash, equity, cfo, investing)
