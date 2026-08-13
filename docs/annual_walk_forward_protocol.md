@@ -77,6 +77,7 @@ esse portão e grava `decision_evidence_manifest.csv` no artefato anual.
 ```powershell
 .\.venv-benevente\Scripts\python.exe annual_walk_forward.py `
   --prices data/precos_retorno_total_documentados.csv `
+  --total-return-manifest data/manifesto_da_fonte_de_retorno_total.json `
   --fundamentals data/fundamentals_b3_cvm_full_2013_2025.csv `
   --universe data/b3_historical_universes.csv `
   --mapping data/b3_historical_cvm_ticker_map.csv `
@@ -116,3 +117,20 @@ deslistagem. A B3 informa que o COTAHIST não traz esses ajustes; a base
 estruturada de eventos corporativos é fornecida separadamente no serviço de
 dados da B3. Logo, não há combinação automática de fontes nem ajuste implícito
 no Benevente.
+
+## Validação treino--holdout
+
+Depois de o experimento anual usar uma fonte de retorno total aprovada, a
+validação separa os anos antes de `split-year` (treino) dos anos a partir dessa
+data (holdout congelado). O relatório exige, no holdout, retorno líquido acima
+de CDI **e** do MVO elegível, Sharpe excedente CDI não negativo, drawdown dentro
+do limite e amostra mínima. Sem essas condições, o único status possível é
+`research_only`.
+
+```powershell
+.\.venv-benevente\Scripts\python.exe validate_annual_holdout.py `
+  --annual-results artifacts/annual_b3_cvm/annual_results.csv `
+  --input-manifest artifacts/annual_b3_cvm/input_manifest.json `
+  --split-year 2020 `
+  --output artifacts/annual_b3_cvm/holdout_validation.json
+```

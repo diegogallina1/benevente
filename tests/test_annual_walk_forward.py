@@ -142,3 +142,11 @@ def test_named_risk_profile_sets_guardrails_without_changing_factor_or_asset_cou
     assert protocol.maximum_asset_weight == RISK_PROFILE_LIMITS["conservador"]["maximum_asset_weight"]
     assert protocol.factor == "triple_factor"
     assert protocol.top_assets == 4
+
+
+def test_cli_requires_a_hashed_manifest_for_total_return_inputs(monkeypatch):
+    import annual_walk_forward
+    monkeypatch.setattr("sys.argv", ["annual_walk_forward.py", "--prices", "prices.csv", "--fundamentals", "fundamentals.csv",
+                                      "--start-year", "2020", "--end-year", "2022", "--price-basis", "total_return"])
+    with pytest.raises(SystemExit, match="2"):
+        annual_walk_forward.main()

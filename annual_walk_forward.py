@@ -501,6 +501,8 @@ def main() -> None:
     parser.add_argument("--mapping", help="Dated B3/CVM mapping CSV; must be supplied with --universe.")
     parser.add_argument("--price-basis", choices=["total_return", "price_return_only"], default="total_return",
                         help="Only total_return may be used to calculate annual performance.")
+    parser.add_argument("--total-return-manifest",
+                        help="Required with total_return: source metadata and SHA-256 for the return-index export.")
     parser.add_argument("--start-year", type=int, required=True)
     parser.add_argument("--end-year", type=int, required=True, help="First year not held; e.g. 2026 evaluates through 2025.")
     parser.add_argument("--output", default="artifacts/annual_walk_forward")
@@ -516,7 +518,15 @@ def main() -> None:
     if bool(args.universe) != bool(args.mapping):
         parser.error("--universe and --mapping must be supplied together.")
     from advisor import snapshots_from_frame
-    price_frame = pd.read_csv(args.prices, parse_dates=["date"])
+    if args.price_basis == "total_return" and not args.total_return_manifest:
+        parser.error("--total-return-manifest is required with --price-basis total_return.")
+    if args.price_basis == "price_return_only" and args.total_return_manifest:
+        parser.error("--total-return-manifest cannot accompany --price-basis price_return_only.")
+    if args.price_basis == "total_return":
+        from total_return_adapter import load_total_return_export
+        price_frame, _ = load_total_return_export(args.prices, args.total_return_manifest)
+    else:
+        price_frame = pd.read_csv(args.prices, parse_dates=["date"])
     fundamental_frame = pd.read_csv(args.fundamentals, parse_dates=["as_of_date", "available_date"])
     input_manifest = validate_annual_inputs(price_frame, fundamental_frame, args.price_basis)
     if not input_manifest.performance_permitted:
