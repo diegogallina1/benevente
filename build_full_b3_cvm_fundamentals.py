@@ -89,14 +89,24 @@ class FreShareResolver:
         # FRE records can be amended.  Search a rolling three-package window
         # and select the last receipt that was public at the decision date.
         for year in range(decision.year - 2, decision.year + 1):
-            index, total, classes = self._panel(year)
+            # A January decision precedes that calendar year's FRE package.
+            # Its absence is normal and must not block an otherwise valid
+            # filing from the prior two years.
+            try:
+                index, total, classes = self._panel(year)
+            except FileNotFoundError:
+                continue
             filings = index[(index["cnpj"] == _digits(cnpj)) & (index["DT_RECEB"] <= decision)].copy()
             if filings.empty:
                 continue
             filing = filings.sort_values(["DT_RECEB", "VERSAO", "ID_DOC"]).iloc[-1]
             doc_id = str(filing["ID_DOC"])
             total_rows = total[(total["cnpj"] == _digits(cnpj)) & (total["ID_Documento"].astype(str) == doc_id)].copy()
-            total_rows = total_rows[total_rows["Tipo_Capital"].fillna("").str.contains("Integralizado", case=False)]
+            # Older FRE schemas report only "Capital Emitido".  It is a
+            # public share count for the same dated document, so it is a
+            # valid fallback when "Capital Integralizado" is absent.
+            capital_kind = total_rows["Tipo_Capital"].fillna("")
+            total_rows = total_rows[capital_kind.str.contains("Integralizado|Emitido", case=False, regex=True)]
             # Some FRE amendments carry a new index document before the
             # capital-social section is refiled. In that case retain the
             # newest capital document that was public no later than the same
@@ -105,7 +115,7 @@ class FreShareResolver:
                 company_total = total[total["cnpj"] == _digits(cnpj)].copy()
                 company_total["ID_Documento_num"] = pd.to_numeric(company_total["ID_Documento"], errors="coerce")
                 company_total = company_total[company_total["ID_Documento_num"] <= int(doc_id)]
-                company_total = company_total[company_total["Tipo_Capital"].fillna("").str.contains("Integralizado", case=False)]
+                company_total = company_total[company_total["Tipo_Capital"].fillna("").str.contains("Integralizado|Emitido", case=False, regex=True)]
                 if not company_total.empty:
                     last_capital_doc = company_total["ID_Documento_num"].max()
                     total_rows = company_total[company_total["ID_Documento_num"] == last_capital_doc]

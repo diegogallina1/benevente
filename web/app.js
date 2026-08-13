@@ -8,6 +8,7 @@ const profiles = {
 let researchData = null;
 let forecastData = null;
 let universeData = null;
+let currentDecisionData = null;
 const comparisonWindows = { 3: 3, 5: 5, 10: 10 };
 
 const modelSteps = {
@@ -25,6 +26,7 @@ const extraSeries = { 3: {}, 5: {}, 10: {} };
 let chartSource = "ticker";
 let chartZoom = 1;
 let chartFocus = null;
+let chartScale = "linear";
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 const format = value => `${value.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})}%`;
 const colors = { "Benevente Quant AI":"#0f766e", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "Ibovespa":"#7a8490" };
@@ -42,8 +44,11 @@ function annualCurve(period) {
     series.CDI.push(+(series.CDI.at(-1) * (1 + item.cdi_net_return)).toFixed(4));
   });
   const ibovespa = researchData.meta.ibovespa;
-  if (ibovespa?.values_base_100?.length >= dates.length && ibovespa.dates?.slice(-dates.length).every((date, index) => date === dates[index])) {
-    series[ibovespa.label] = ibovespa.values_base_100.slice(-dates.length);
+  const fullDates = ibovespa?.dates || [];
+  const startIndex = fullDates.indexOf(dates[0]);
+  if (startIndex >= 0 && ibovespa?.values_base_100?.length >= startIndex + dates.length && fullDates.slice(startIndex, startIndex + dates.length).every((date, index) => date === dates[index])) {
+    const window = ibovespa.values_base_100.slice(startIndex, startIndex + dates.length);
+    series[ibovespa.label] = window.map(value => +(value / window[0] * 100).toFixed(4));
   }
   return { dates, series };
 }
@@ -102,11 +107,13 @@ let assetProfile = "moderado";
 let customPolicy = { equity: 55, issuer: 12, drawdown: 22 };
 
 function demoWeights(profile) {
-  const equity = profile === "personalizado" ? customPolicy.equity : profiles[profile].equity;
-  const issuer = profile === "personalizado" ? customPolicy.issuer : profiles[profile].issuer;
+  const equity = Number(profile === "personalizado" ? customPolicy.equity : profiles[profile].equity);
+  const issuer = Number(profile === "personalizado" ? customPolicy.issuer : profiles[profile].issuer);
+  const safeEquity = Number.isFinite(equity) ? Math.max(0, Math.min(100, equity)) : 0;
+  const safeIssuer = Number.isFinite(issuer) ? Math.max(0, Math.min(100, issuer)) : 0;
   const eligible = demoAssets.filter(asset => !asset.blocked);
   const totalScore = eligible.reduce((sum, asset) => sum + asset.score, 0);
-  const weights = Object.fromEntries(eligible.map(asset => [asset.ticker, Math.min(+(equity * asset.score / totalScore).toFixed(1), issuer)]));
+  const weights = Object.fromEntries(eligible.map(asset => [asset.ticker, Math.min(+(safeEquity * asset.score / totalScore).toFixed(1), safeIssuer)]));
   return { weights, residual: +(100 - Object.values(weights).reduce((sum, value) => sum + value, 0)).toFixed(1), issuer };
 }
 
@@ -151,7 +158,6 @@ function signedScenario(value) { return Number.isFinite(value) ? `${value >= 0 ?
 function renderForecast() {
   if (!forecastData) return;
   const portfolio = forecastData.portfolio;
-  document.querySelector("#suggestion-decision").textContent = `DECISÃO ${forecastData.decision_date}`;
   document.querySelector("#scenario-summary").innerHTML = [
     ["CENÁRIO ADVERSO · P20", signedScenario(portfolio.historical_downside_p20)],
     ["MEDIANA HISTÓRICA", signedScenario(portfolio.historical_median_return)],
@@ -164,8 +170,20 @@ function renderForecast() {
     [portfolio.historical_downside_p20, "P20"], [portfolio.historical_median_return, "mediana"], [portfolio.historical_upside_p80, "P80"]
   ].map(([value, label]) => `<span class="scenario-marker" style="left:${point(value)}">${label}<i></i>${signedScenario(value)}</span>`).join("")}<div class="scenario-scale"><span>${signedScenario(min)}</span><span>retorno anual histórico condicional</span><span>${signedScenario(max)}</span></div>`;
   document.querySelector("#scenario-caption").textContent = `${forecastData.label}. Base: ${portfolio.historical_observations} decisões anuais anteriores da regra; custos e CDI residual pertencem ao protocolo de carteira, não aos retornos isolados de ativos.`;
-  document.querySelector("#suggestion-assets").innerHTML = forecastData.assets.map(asset => `<article class="suggestion-asset"><div class="suggestion-row"><div><small>ATIVO HISTÓRICO ELEGÍVEL</small><b>${asset.ticker}</b></div><div><small>PESO NO CICLO</small><strong>${pctPlain(asset.weight)}</strong></div></div><div class="suggestion-row"><span>Faixa histórica própria: ${signedScenario(asset.historical_downside_p20)} a ${signedScenario(asset.historical_upside_p80)}</span><span>${asset.historical_observations} observações</span></div><p>${asset.why}</p></article>`).join("");
   document.querySelector("#scenario-limitations").innerHTML = forecastData.limitations.map(note => `<span>${note}</span>`).join("");
+}
+
+function renderCurrentDecision() {
+  if (!currentDecisionData) return;
+  const { universe, holdings, cdi_weight: cdiWeight, monitoring, decision_date: date } = currentDecisionData;
+  const priceReturn = monitoring?.portfolio_price_return;
+  document.querySelector("#current-decision-summary").innerHTML = [
+    ["DECISÃO", new Date(`${date}T12:00:00`).toLocaleDateString("pt-BR")],
+    ["AÇÕES", pctPlain(1 - cdiWeight)],
+    ["MONITORAMENTO", Number.isFinite(priceReturn) ? signedScenario(priceReturn) : "—"],
+  ].map(([label, value]) => `<div><small>${label}</small><b>${value}</b></div>`).join("");
+  document.querySelector("#current-decision-assets").innerHTML = holdings.map(asset => `<article class="suggestion-asset"><div class="suggestion-row"><div><small>ATIVO SELECIONADO</small><b>${asset.ticker}</b></div><div><small>PESO</small><strong>${pctPlain(asset.weight)}</strong></div></div><p>${asset.why}</p></article>`).join("");
+  document.querySelector("#current-decision-caption").textContent = `Até ${monitoring?.through || "a última observação"}: ${monitoring?.label || "monitoramento indisponível"} A decisão examinou ${universe.all_instruments.toLocaleString("pt-BR")} instrumentos B3; ${universe.mapped_liquid_equities_processed} ações líquidas com ponte B3/CVM foram processadas nesta atualização.`;
 }
 
 function moneyCompact(value) { return new Intl.NumberFormat("pt-BR", {style:"currency",currency:"BRL",notation:"compact",maximumFractionDigits:1}).format(value || 0); }
@@ -173,7 +191,7 @@ function renderUniverse() {
   if (!universeData) return;
   const byClass = universeData.coverage_by_class;
   document.querySelector("#universe-summary").innerHTML = [[universeData.instrument_count, "instrumentos negociados"], [byClass.equity || 0, "ações"], [byClass.etf || 0, "ETFs / fundos listados"], [byClass.bdr || 0, "BDRs"], [byClass.fii || 0, "FIIs / Fiagros"]].map(([value, label]) => `<div><b>${value.toLocaleString("pt-BR")}</b><span>${label}</span></div>`).join("");
-  const selectedTickers = new Set((forecastData?.assets || []).map(asset => `${asset.ticker}.SA`));
+  const selectedTickers = new Set((currentDecisionData?.holdings || []).map(asset => `${asset.ticker}.SA`));
   const update = () => {
     const query = document.querySelector("#universe-search").value.trim().toUpperCase();
     const assetClass = document.querySelector("#universe-class").value;
@@ -181,7 +199,7 @@ function renderUniverse() {
     const rows = universeData.instruments.filter(item => (assetClass === "all" || item.asset_class === assetClass) && item.average_daily_value_brl >= minimumLiquidity && (!query || `${item.ticker} ${item.issuer_name} ${item.specification}`.includes(query))).slice(0, 250);
     document.querySelector("#universe-table").innerHTML = rows.map(item => {
       const selected = selectedTickers.has(item.ticker);
-      const status = selected ? "Selecionado no último ciclo histórico" : item.asset_class === "equity" ? "Aguarda fundamentos CVM ponto-no-tempo" : "Requer módulo e mandato específicos";
+      const status = selected ? "Selecionado na decisão de janeiro de 2026" : item.asset_class === "equity" ? "Aguarda fundamentos CVM ponto-no-tempo" : "Requer módulo e mandato específicos";
       const classLabel = ({ equity: "Ação", etf: "ETF", bdr: "BDR", fii: "FII / Fiagro", other: "Outro" })[item.asset_class] || item.asset_class;
       return `<tr><td>${item.ticker.replace(".SA", "")}</td><td><span class="universe-class">${classLabel}</span></td><td>${item.issuer_name}</td><td>${money.format(item.close_price_brl)}</td><td>${moneyCompact(item.average_daily_value_brl)}</td><td><span class="universe-status ${selected ? "covered" : "blocked"}">${status}</span></td></tr>`;
     }).join("") || `<tr><td colspan="6">Nenhum instrumento atende aos filtros selecionados.</td></tr>`;
@@ -202,7 +220,8 @@ document.querySelectorAll(".choice").forEach(button => button.addEventListener("
   assetProfile = currentProfile;
 }));
 document.querySelectorAll("#lab-custom-policy input").forEach(input => input.addEventListener("input", () => {
-  customPolicy = { ...customPolicy, [input.id.replace("lab-", "").replace("-", "")]: Number(input.value) };
+  const key = input.id === "lab-equity" ? "equity" : input.id === "lab-issuer" ? "issuer" : "drawdown";
+  customPolicy = { ...customPolicy, [key]: Number(input.value) };
   customPolicy.issuer = Math.min(customPolicy.issuer, customPolicy.equity);
   document.querySelector("#lab-equity-output").value = `${customPolicy.equity}%`;
   document.querySelector("#lab-issuer-output").value = `${customPolicy.issuer}%`;
@@ -211,8 +230,8 @@ document.querySelectorAll("#lab-custom-policy input").forEach(input => input.add
 document.querySelector("#proposal-form").addEventListener("submit", event => {
   event.preventDefault();
   const profile = profiles[currentProfile];
-  const requestedEquity = currentProfile === "personalizado" ? customPolicy.equity : profile.equity;
-  const issuerCap = currentProfile === "personalizado" ? customPolicy.issuer : profile.issuer;
+  const requestedEquity = Math.max(0, Math.min(100, Number(currentProfile === "personalizado" ? customPolicy.equity : profile.equity) || 0));
+  const issuerCap = Math.max(1, Math.min(100, Number(currentProfile === "personalizado" ? customPolicy.issuer : profile.issuer) || 1));
   // This illustration assumes four selected issuers.  It shows the attainable
   // allocation instead of silently treating a policy ceiling as a target.
   const requiredIssuers = requestedEquity === 0 ? 0 : Math.ceil(requestedEquity / issuerCap);
@@ -222,15 +241,16 @@ document.querySelector("#proposal-form").addEventListener("submit", event => {
   // required number of diversified slots.
   const availableIllustrativeIssuers = Math.max(4, requiredIssuers || 4);
   const effectiveEquity = Math.min(requestedEquity, issuerCap * availableIllustrativeIssuers);
-  const mix = [["Ações elegíveis", effectiveEquity], ["CDI / defensivo", 100 - effectiveEquity]];
+  const safeEquity = Number.isFinite(effectiveEquity) ? effectiveEquity : 0;
+  const mix = [["Ações elegíveis", safeEquity], ["CDI / defensivo", 100 - safeEquity]];
   const capNote = effectiveEquity < requestedEquity
     ? ` Com ${availableIllustrativeIssuers} emissores ilustrativos e teto de ${issuerCap}% por emissor, a exposição efetiva fica em ${effectiveEquity}%; o restante permanece defensivo.`
     : " A exposição é um teto de política, não uma meta ou previsão de retorno.";
   document.querySelector("#proposal-empty").classList.add("hidden");
   document.querySelector("#proposal-content").classList.remove("hidden");
   document.querySelector("#profile-label").textContent = currentProfile === "moderado" ? "moderado" : currentProfile;
-  document.querySelector("#equity-weight").textContent = `${effectiveEquity}%`;
-  document.querySelector("#fixed-weight").textContent = `${100-effectiveEquity}%`;
+  document.querySelector("#equity-weight").textContent = `${safeEquity}%`;
+  document.querySelector("#fixed-weight").textContent = `${100-safeEquity}%`;
   document.querySelector("#review-cycle").textContent = profile.review;
   document.querySelector("#proposal-insight").textContent = profile.insight + capNote + (requestedEquity === 100 ? " Sem reserva defensiva, a política precisa de validação reforçada de liquidez e tolerância a perda." : "");
   document.querySelector("#weight-list").innerHTML = mix.map(([name, weight]) => `<div class="weight-row"><span>${name}</span><div class="bar"><i style="width:${weight}%"></i></div><b>${weight}%</b></div>`).join("");
@@ -260,12 +280,20 @@ function renderLineChart(period) {
   const endIndex = Math.min(totalPoints, startIndex + visiblePoints);
   const dates = data.dates.slice(startIndex, endIndex);
   const visibleSeries = Object.fromEntries(selected.map(name => [name, allSeries[name].slice(startIndex, endIndex)]));
-  const values = selected.flatMap(name => visibleSeries[name].filter(value => Number.isFinite(value)));
-  const min = Math.floor(Math.min(...values) / 25) * 25, max = Math.ceil(Math.max(...values) / 25) * 25;
+  const values = selected.flatMap(name => visibleSeries[name].filter(value => Number.isFinite(value) && value > 0));
+  const transformed = value => chartScale === "log" ? Math.log(value) : value;
+  const transformedValues = values.map(transformed);
+  const rawMin = Math.min(...transformedValues), rawMax = Math.max(...transformedValues);
+  const min = chartScale === "log" ? rawMin : Math.floor(rawMin / 25) * 25;
+  const max = chartScale === "log" ? rawMax : Math.ceil(rawMax / 25) * 25;
   const width=900, height=410, left=54, right=144, top=18, bottom=38, plotW=width-left-right, plotH=height-top-bottom;
   const x = index => left + index * plotW / Math.max(dates.length - 1, 1);
-  const y = value => top + (max - value) * plotH / Math.max(max-min, 1);
-  const grid = Array.from({length:5}, (_, index) => min + index * (max-min) / 4).map(value => `<line class="line-grid" x1="${left}" x2="${width-right}" y1="${y(value)}" y2="${y(value)}"/><text class="line-grid-label" x="4" y="${y(value)+3}">${Math.round(value)}</text>`).join("");
+  const y = value => top + (max - transformed(value)) * plotH / Math.max(max-min, .0001);
+  const grid = Array.from({length:5}, (_, index) => min + index * (max-min) / 4).map(value => {
+    const rawValue = chartScale === "log" ? Math.exp(value) : value;
+    const yPosition = top + (max - value) * plotH / Math.max(max-min, .0001);
+    return `<line class="line-grid" x1="${left}" x2="${width-right}" y1="${yPosition}" y2="${yPosition}"/><text class="line-grid-label" x="4" y="${yPosition + 3}">${(rawValue - 100).toLocaleString("pt-BR", {maximumFractionDigits:0})}%</text>`;
+  }).join("");
   const dateLabels = [0, Math.floor((dates.length-1)/2), dates.length-1].map(index => `<text class="line-grid-label" text-anchor="${index===0?"start":index===dates.length-1?"end":"middle"}" x="${x(index)}" y="${height-5}">${dates[index].slice(0,7)}</text>`).join("");
   lineLayer.innerHTML = selected.map((name, seriesIndex) => {
     let active = false;
@@ -278,21 +306,23 @@ function renderLineChart(period) {
     const returnPct = (series[lastIndex] / 100 - 1) * 100;
     return `<g class="line-direct-label"><circle cx="${x(lastIndex)}" cy="${y(series[lastIndex])}" r="4" fill="${seriesColor(name, seriesIndex)}"/><text x="${x(lastIndex) + 9}" y="${y(series[lastIndex]) - 5}" fill="${seriesColor(name, seriesIndex)}">${name}</text><text x="${x(lastIndex) + 9}" y="${y(series[lastIndex]) + 11}" fill="#607480">${returnPct >= 0 ? "+" : ""}${returnPct.toLocaleString("pt-BR", {maximumFractionDigits:1})}%</text></g>`;
   }).join("");
-  gridLayer.innerHTML = grid; labelLayer.innerHTML = dateLabels;
+  gridLayer.innerHTML = grid; labelLayer.innerHTML = `${dateLabels}<text class="line-axis-title" x="15" y="${top + plotH / 2}" transform="rotate(-90 15 ${top + plotH / 2})">Retorno acumulado (%)</text><text class="line-axis-title" text-anchor="middle" x="${left + plotW / 2}" y="${height - 1}">Data de observação</text>`;
   document.querySelector("#chart-return-summary").innerHTML = selected.map((name, index) => {
-    const last = [...allSeries[name]].reverse().find(value => Number.isFinite(value));
-    const returnPct = (last / 100 - 1) * 100;
+    const series = allSeries[name].slice(startIndex, endIndex);
+    const first = series.find(value => Number.isFinite(value));
+    const last = [...series].reverse().find(value => Number.isFinite(value));
+    const returnPct = (last / first - 1) * 100;
     return `<span style="--series-color:${seriesColor(name, index)}"><i></i><b>${name}</b><strong>${returnPct >= 0 ? "+" : ""}${returnPct.toLocaleString("pt-BR", {maximumFractionDigits:1})}%</strong></span>`;
   }).join("");
   const start = dates[0], end = dates.at(-1);
   document.querySelector("#chart-zoom-status").textContent = chartZoom === 1 ? "Visão completa" : `${dates.length} pontos visíveis`;
-  document.querySelector("#line-chart-caption").textContent = `${selected.length} série(s) visível(is) · ${start} a ${end} · patrimônio normalizado em 100. Clique, amplie ou arraste para inspecionar.`;
+  document.querySelector("#line-chart-caption").textContent = `${selected.length} série(s) visível(is) · ${start} a ${end} · retorno acumulado em %. Escala ${chartScale === "log" ? "logarítmica" : "linear"}; use a roda do mouse para ampliar e arraste para deslocar.`;
   const inspect = event => {
     const rect = event.currentTarget.getBoundingClientRect();
     const viewX = (event.clientX - rect.left) * width / rect.width;
     const index = Math.max(0, Math.min(dates.length - 1, Math.round((viewX - left) / plotW * (dates.length - 1))));
     const cursor = document.querySelector("#line-chart-cursor"); cursor.classList.remove("hidden"); cursor.setAttribute("x1", x(index)); cursor.setAttribute("x2", x(index)); cursor.setAttribute("y1", top); cursor.setAttribute("y2", height-bottom);
-    document.querySelector("#chart-inspector").innerHTML = `<b>${dates[index]}</b> · ${selected.map(name => `${name}: <b>${Number.isFinite(visibleSeries[name][index]) ? visibleSeries[name][index].toLocaleString("pt-BR", {minimumFractionDigits:1, maximumFractionDigits:1}) : "—"}</b>`).join(" &nbsp;|&nbsp; ")}`;
+    document.querySelector("#chart-inspector").innerHTML = `<b>${dates[index]}</b> · ${selected.map(name => `${name}: <b>${Number.isFinite(visibleSeries[name][index]) ? pct(visibleSeries[name][index] / visibleSeries[name].find(Number.isFinite) - 1) : "—"}</b>`).join(" &nbsp;|&nbsp; ")}`;
   };
   const chart = document.querySelector("#line-chart");
   let dragStart = null;
@@ -321,9 +351,9 @@ function renderComparison(period) {
   const versusCdi = benevente.cumulative - cdi.cumulative, versusMvo = benevente.cumulative - mvo.cumulative;
   document.querySelector("#period-description").textContent = `${start} a ${end} · ${rows.length} decisões anuais, custos de rebalanceamento deduzidos.`;
   document.querySelector("#comparison-summary").textContent = `Benevente: ${plainPct(benevente.cumulative)} acumulado. Contra CDI: ${pct(versusCdi)}; contra MVO clássico elegível: ${pct(versusMvo)}.`;
-  const baseRows = [["Benevente Quant AI", benevente, `${winCdi}/${rows.length} vs CDI`, versusMvo >= 0 ? "acima do MVO" : "abaixo do MVO"], ["MVO clássico (elegível)", mvo, `${winMvo}/${rows.length} perdas para Benevente`, "mesmo universo"], ["CDI", cdi, `${rows.length - winCdi}/${rows.length} anos à frente`, "referência defensiva"]];
-  const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => { const metrics = metricsForSeries(values, chartDataset(period).dates); return metrics ? [name, { cumulative: values.at(-1) / values.find(Number.isFinite) - 1, cagr: metrics.cagr }, "série importada", "comparação visual"] : null; }).filter(Boolean);
-  document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, wins, note]) => `<tr><td>${name}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)} a.a.</small></td><td>${wins}</td><td>${note}</td></tr>`).join("");
+  const baseRows = [["Benevente Quant AI", benevente, versusMvo >= 0 ? "Acima do MVO" : "Abaixo do MVO"], ["MVO clássico (elegível)", mvo, "Mesmo universo"], ["CDI", cdi, "Reserva defensiva"]];
+  const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => { const metrics = metricsForSeries(values, chartDataset(period).dates); return metrics ? [name, { cumulative: values.at(-1) / values.find(Number.isFinite) - 1, cagr: metrics.cagr }, "Série adicionada"] : null; }).filter(Boolean);
+  document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${name}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)} a.a.</small></td><td>${note}</td></tr>`).join("");
   document.querySelector("#research-note").textContent = `Leitura correta da janela de ${rows.length} anos: o Benevente ${versusCdi >= 0 ? "superou" : "ficou abaixo do"} CDI em ${plainPct(Math.abs(versusCdi))} e ${versusMvo >= 0 ? "superou" : "ficou abaixo do"} MVO clássico elegível em ${plainPct(Math.abs(versusMvo))}. Isso não comprova alfa persistente nem constitui recomendação.`;
   renderCurveToggles(period); renderLineChart(period);
 }
@@ -332,6 +362,7 @@ document.querySelectorAll(".period:not(.unavailable)").forEach(button=>button.ad
 document.querySelector("#chart-zoom-in").addEventListener("click", () => { chartZoom = Math.min(5, chartZoom + 1); renderLineChart(currentPeriod); });
 document.querySelector("#chart-zoom-out").addEventListener("click", () => { chartZoom = Math.max(1, chartZoom - 1); renderLineChart(currentPeriod); });
 document.querySelector("#chart-zoom-reset").addEventListener("click", () => { chartZoom = 1; chartFocus = null; renderLineChart(currentPeriod); });
+document.querySelectorAll(".chart-scale").forEach(button => button.addEventListener("click", () => { document.querySelectorAll(".chart-scale").forEach(item => item.classList.remove("active")); button.classList.add("active"); chartScale = button.dataset.scale; renderLineChart(currentPeriod); }));
 document.querySelectorAll(".chart-source").forEach(button => button.addEventListener("click", () => {
   document.querySelectorAll(".chart-source").forEach(item => item.classList.remove("active")); button.classList.add("active"); chartSource = button.dataset.source;
   document.querySelector("#chart-symbol-label").classList.toggle("hidden", chartSource !== "ticker");
@@ -339,6 +370,10 @@ document.querySelectorAll(".chart-source").forEach(button => button.addEventList
   document.querySelector("#chart-add-help").textContent = chartSource === "ticker"
     ? "Busca preços ajustados do ticker no período selecionado e normaliza em base 100. Fonte: Yahoo Finance; valide com a fonte institucional antes de usar em comitê."
     : "Importe um CSV de cotas já obtido da CVM ou da instituição, com colunas date/data e quota/cota/valor. A série ficará apenas nesta sessão do navegador.";
+}));
+document.querySelectorAll(".quick-ticker").forEach(button => button.addEventListener("click", () => {
+  document.querySelector("#chart-symbol").value = button.dataset.ticker;
+  document.querySelector("#chart-add-form").requestSubmit();
 }));
 document.querySelector("#chart-add-form").addEventListener("submit", async event => {
   event.preventDefault();
@@ -394,12 +429,12 @@ function renderModel(step) { const item=modelSteps[step]; document.querySelector
 document.querySelectorAll(".model-step").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".model-step").forEach(item=>item.classList.remove("active"));button.classList.add("active");renderModel(button.dataset.step)}));
 
 renderModel("policy");
-Promise.all([fetch("./horizon_curves.json"), fetch("./annual_research.json"), fetch("./forecast_research.json"), fetch("./b3_universe.json")]).then(async ([curves, research, forecast, universe]) => {
-  if (!curves.ok || !research.ok || !forecast.ok || !universe.ok) throw new Error("research unavailable");
-  curveData = await curves.json(); researchData = await research.json(); forecastData = await forecast.json(); universeData = await universe.json();
+Promise.all([fetch("./horizon_curves.json"), fetch("./annual_research.json"), fetch("./forecast_research.json"), fetch("./b3_universe.json"), fetch("./current_decision_2026.json")]).then(async ([curves, research, forecast, universe, currentDecision]) => {
+  if (!curves.ok || !research.ok || !forecast.ok || !universe.ok || !currentDecision.ok) throw new Error("research unavailable");
+  curveData = await curves.json(); researchData = await research.json(); forecastData = await forecast.json(); universeData = await universe.json(); currentDecisionData = await currentDecision.json();
   extraSeries[10] = {};
   const select = document.querySelector("#decision-year");
   select.innerHTML = researchData.annual.map(item => `<option value="${item.decision_year}">${item.decision_year} · ${item.decision_date}</option>`).join("");
   select.value = String(researchData.annual.at(-1).decision_year);
-  renderAssetWorkbench(); renderForecast(); renderUniverse(); renderComparison(3);
+  renderAssetWorkbench(); renderForecast(); renderCurrentDecision(); renderUniverse(); renderComparison(3);
 }).catch(() => { document.querySelector("#line-chart-caption").textContent = "Arquivos de pesquisa indisponíveis nesta cópia. Consulte o ambiente local para reproduzir a análise."; document.querySelector("#research-status").textContent = "Dados de pesquisa indisponíveis."; });

@@ -21,9 +21,11 @@ def _cnpj_key(value: object) -> str:
 
 def _statement(frame: pd.DataFrame, cnpj: str, reference_date: pd.Timestamp,
                version: int, order: str = "ÚLTIMO") -> pd.DataFrame:
-    copy = frame.copy()
+    # Called several times per issuer. Filter before copying so a dated
+    # full-universe panel does not duplicate every CVM statement per lookup.
+    copy = frame[frame.CNPJ_CIA == _cnpj_key(cnpj)].copy()
     copy["DT_REFER"] = pd.to_datetime(copy["DT_REFER"])
-    return copy[(copy.CNPJ_CIA == _cnpj_key(cnpj)) & (copy.DT_REFER == reference_date)
+    return copy[(copy.DT_REFER == reference_date)
                 & (copy.VERSAO == version) & (copy.ORDEM_EXERC == order)]
 
 
@@ -128,6 +130,14 @@ class CvmItrClient:
         for frame in panel.values():
             if isinstance(frame, pd.DataFrame) and "CNPJ_CIA" in frame.columns:
                 frame["CNPJ_CIA"] = frame["CNPJ_CIA"].map(_cnpj_key)
+        # The full-universe gate asks for one issuer at a time.  Index each
+        # statement once instead of rescanning multi-million-row CVM panels
+        # for every issuer and every account.
+        panel["by_issuer"] = {
+            name: {str(cnpj): group for cnpj, group in frame.groupby("CNPJ_CIA", sort=False)}
+            for name, frame in panel.items()
+            if isinstance(frame, pd.DataFrame) and name != "filings" and "CNPJ_CIA" in frame.columns
+        }
         self._statement_panels[itr_year] = panel
         return panel
 
@@ -149,12 +159,14 @@ class CvmItrClient:
             if market is None:
                 raise RuntimeError(f"No auditable market snapshot for {issuer.ticker}")
 
-            issuer_dre = dre[dre.CNPJ_CIA == cnpj]
-            issuer_bpa = bpa[bpa.CNPJ_CIA == cnpj]
-            issuer_bpp = bpp[bpp.CNPJ_CIA == cnpj]
-            issuer_dfc = dfc[dfc.CNPJ_CIA == cnpj]
-            issuer_annual_dre = annual_dre[annual_dre.CNPJ_CIA == cnpj]
-            issuer_annual_dfc = annual_dfc[annual_dfc.CNPJ_CIA == cnpj]
+            by_issuer = panel["by_issuer"]
+            empty = pd.DataFrame()
+            issuer_dre = by_issuer["dre"].get(cnpj, empty)
+            issuer_bpa = by_issuer["bpa"].get(cnpj, empty)
+            issuer_bpp = by_issuer["bpp"].get(cnpj, empty)
+            issuer_dfc = by_issuer["dfc"].get(cnpj, empty)
+            issuer_annual_dre = by_issuer["annual_dre"].get(cnpj, empty)
+            issuer_annual_dfc = by_issuer["annual_dfc"].get(cnpj, empty)
 
             def ttm(accounts: tuple[str, ...]) -> float:
                 return _ttm(

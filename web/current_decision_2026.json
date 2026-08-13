@@ -1,0 +1,61 @@
+{
+  "decision_date": "2026-01-02",
+  "status": "research_monitoring_only",
+  "universe": {
+    "all_instruments": 1424,
+    "equities_at_decision": 361,
+    "identifier_bridge_accepted": 311,
+    "liquid_equities_examined": 138,
+    "mapped_liquid_equities_processed": 20,
+    "fundamental_snapshots": 115,
+    "screened_with_complete_price_history": 111,
+    "eligible_after_screen": 12
+  },
+  "method": [
+    "universo B3 datado",
+    "ponte B3/CVM por ticker e ISIN",
+    "ITR/DFP disponível até a decisão",
+    "liquidez, valor, qualidade e limites de concentração"
+  ],
+  "holdings": [
+    {
+      "ticker": "ABCB4",
+      "weight": 0.12,
+      "score": 0.9166666666666666,
+      "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "BRSR6",
+      "weight": 0.12,
+      "score": 0.7222222222222222,
+      "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "BBDC3",
+      "weight": 0.12,
+      "score": 0.6805555555555557,
+      "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "ITUB3",
+      "weight": 0.12,
+      "score": 0.5972222222222222,
+      "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    }
+  ],
+  "cdi_weight": 0.52,
+  "monitoring": {
+    "through": "2026-08-12",
+    "portfolio_price_return": -0.007896159705808148,
+    "label": "Retorno parcial por preço B3; não inclui proventos e não é comparável ao retorno total histórico."
+  },
+  "limitations": [
+    "Não é recomendação individual ou ordem.",
+    "O universo completo é inventariado; nesta versão, a seleção de ações exige ponte B3/CVM e fundamentos comparáveis.",
+    "Acompanhamento de 2026 usa preço oficial B3 sem ajuste de proventos; reconciliação é necessária antes de qualquer alegação institucional."
+  ]
+}
