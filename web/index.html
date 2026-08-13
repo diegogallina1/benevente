@@ -63,11 +63,33 @@
       </section>
 
       <section class="research-signal shell" aria-label="Estado atual da pesquisa">
-        <div class="research-signal-lede"><span>ESTADO DA PESQUISA</span><strong>2013–2025</strong><p>13 decisões anuais auditadas. O explorador exibe 1.406 instrumentos da B3 datados em 12/08/2026.</p></div>
-        <div><span>REGRA RESTRITIVA</span><strong>10,11% a.a.</strong><p>Linha de referência, líquida de custos. CDI no mesmo período: 9,51% a.a.</p></div>
-        <div><span>MULTIFATORIAL · 5 ATIVOS</span><strong>14,17% a.a.</strong><p>Qualidade, valor e momento; 55% em ações, cinco emissores e custos deduzidos.</p></div>
-        <div><span>VALIDAÇÃO SEPARADA</span><strong>13,14% a.a.</strong><p>No holdout 2020–2025, superou CDI (9,43%) e MVO elegível (11,76%).</p></div>
+        <div class="research-signal-lede"><span>ESTADO DA PESQUISA</span><strong>2015–2024</strong><p>10 decisões anuais, com 2015–2020 reservados para selecionar a regra e 2021–2024 congelados para avaliação. O painel solicitado contém 497 códigos B3; 358 séries ajustadas foram recuperadas para pesquisa.</p></div>
+        <div><span>CANDIDATA SELECIONADA</span><strong>12,42% a.a.</strong><p>Valor e qualidade, após custos modelados, na execução integral.</p></div>
+        <div><span>CDI · MESMA JANELA</span><strong>8,45% a.a.</strong><p>Excesso anualizado de 3,66 p.p. na amostra executada.</p></div>
+        <div><span>MVO ELEGÍVEL</span><strong>12,21% a.a.</strong><p>Excesso anualizado de 0,19 p.p.; evidência ainda classificada como pesquisa.</p></div>
         <a class="text-link" href="#comparar">Ver resultados e limites <span>→</span></a>
+      </section>
+
+      <section class="orientation shell" id="entender-resultados" aria-label="Como interpretar os resultados">
+        <div class="orientation-intro"><p class="eyebrow"><span></span> Antes de comparar</p><h2>O número só importa<br /><em>quando o método é compreendido.</em></h2><p>O Benevente usa referências diferentes porque cada uma responde a uma pergunta. A comparação é feita na mesma janela, com patrimônio inicial normalizado e custos do rebalanceamento descontados.</p></div>
+        <div class="definition-grid">
+          <article><span>CDI</span><h3>Referência de liquidez.</h3><p>Taxa diária observada no mercado interbancário. Aqui representa a parcela defensiva e o custo de oportunidade de não investir em ações.</p><a href="#comparar">Ver no gráfico <span>→</span></a></article>
+          <article><span>IBOVESPA</span><h3>Termômetro amplo da bolsa.</h3><p>Índice de ações da B3. Serve para enxergar o mercado local, mas não possui a mesma política de risco, elegibilidade ou reserva em CDI da carteira.</p><a href="#comparar">Comparar referência <span>→</span></a></article>
+          <article><span>MVO</span><h3>Otimização média-variância.</h3><p>O MVO clássico escolhe pesos a partir de retorno e risco históricos. No painel, ele usa apenas ativos que já passaram na mesma tela de elegibilidade: por isso é “MVO elegível”.</p><a href="#mvo-explicado">Entender a diferença <span>→</span></a></article>
+          <article><span>RETORNO TOTAL</span><h3>Preço ajustado, não só cotação.</h3><p>A série de pesquisa usa preço ajustado do Yahoo Finance, que incorpora eventos distribuídos pelo provedor. Ainda requer reconciliação com B3/CVM para validação institucional.</p><a href="#metodo-pesquisa">Ver limitação <span>→</span></a></article>
+        </div>
+      </section>
+
+      <section class="use-flow" id="fluxo-de-uso">
+        <div class="shell"><div class="flow-heading"><p class="eyebrow light"><span></span> Fluxo racional de uso</p><h2>Da política à decisão,<br /><em>sem pular etapas.</em></h2><p>Cada etapa abre a próxima. O site não trata uma curva histórica como uma instrução de compra.</p></div>
+          <ol class="flow-steps">
+            <li><a href="#laboratorio"><b>1</b><span><strong>Defina o mandato</strong>Perfil, patrimônio, horizonte e limites formam a política.</span></a></li>
+            <li><a href="#carteira"><b>2</b><span><strong>Audite a decisão histórica</strong>Veja quais dados e ativos existiam antes do retorno.</span></a></li>
+            <li><a href="#comparar"><b>3</b><span><strong>Compare como iguais</strong>Confronte Benevente, CDI e MVO na mesma janela e com custos.</span></a></li>
+            <li><a href="#modelo"><b>4</b><span><strong>Entenda a regra</strong>Confira o filtro, a otimização e o papel limitado da LLM.</span></a></li>
+            <li><a href="#contato"><b>5</b><span><strong>Leve a um responsável</strong>Dados recentes, suitability e aprovação humana transformam pesquisa em piloto.</span></a></li>
+          </ol>
+        </div>
       </section>
 
       <section class="audience-shell" id="para-quem">
@@ -174,11 +196,11 @@
       <section class="comparison shell" id="comparar">
         <div class="comparison-head">
           <div><p class="eyebrow"><span></span> Comparação anual auditada</p><h2>Retorno sem contexto<br /><em>não é evidência.</em></h2></div>
-          <p>O gráfico usa a mesma execução multifatorial do dossiê: seleção anual, cinco ativos quando elegíveis, custos e CDI residual. A comparação não é uma promessa de alfa nem substitui validação futura.</p>
+          <p>O gráfico usa a mesma execução anual de valor e qualidade do dossiê: revisão anual, ativos aprovados na triagem, custos e CDI residual. A comparação não é uma promessa de alfa nem substitui validação futura.</p>
         </div>
         <div class="comparison-card">
           <div class="comparison-controls">
-            <div><span class="control-label">JANELA ANUAL AUDITADA</span><div class="period-options" role="tablist" aria-label="Janela de avaliação"><button type="button" class="period active" data-period="5">5 anos</button><button type="button" class="period" data-period="10">10 anos</button><button type="button" class="period" data-period="12">12 anos</button><button type="button" class="period" data-period="13">Série 2013–2025</button></div></div>
+            <div><span class="control-label">JANELA ANUAL AUDITADA</span><div class="period-options" role="tablist" aria-label="Janela de avaliação"><button type="button" class="period active" data-period="3">3 anos</button><button type="button" class="period" data-period="5">5 anos</button><button type="button" class="period" data-period="10">Série 2015–2024</button></div></div>
             <p id="period-description">Carregando a janela auditada e os custos de rebalanceamento…</p>
           </div>
           <div class="comparison-summary" id="comparison-summary" aria-live="polite"></div>
@@ -189,7 +211,8 @@
           <div class="comparison-foot"><span><i>✓</i> Integridade validada: disponibilidade dos fundamentos, pesos, custos e recomposição.</span><span>Fontes: CVM, BCB e preços históricos documentados</span></div>
         </div>
         <p class="research-note" id="research-note">Leitura correta: esta é uma hipótese de pesquisa. A página calcula janelas com o arquivo anual auditado e não declara superioridade consistente se ela não estiver presente.</p>
-        <div class="benchmark-panel candidate-disclosure"><div><span class="control-label">CANDIDATA MULTIFATORIAL — PESQUISA</span><h3>Qualidade + valor + momento, sem olhar o retorno seguinte.</h3><p>Na amostra 2013–2025, a execução com até 55% em ações, cinco emissores e custos deduzidos registrou 14,17% a.a.; CDI: 9,51%; MVO elegível: 12,11%. O holdout pré-separado 2020–2025 registrou 13,14% a.a., acima de CDI (9,43%) e MVO (11,76%). O universo fundamental histórico ainda é de oito emissores: o próximo teste exigirá cobertura ponto-no-tempo completa, sem mudar a regra após observá-lo.</p></div><div class="benchmark-actions"><span><b>Como usar:</b> escolha o perfil para definir limites; só então rode o protocolo anual com dados ponto-no-tempo.</span><a class="button button-secondary" href="./metodo.html">Ver método <span>→</span></a></div></div>
+        <div class="benchmark-panel candidate-disclosure"><div><span class="control-label">CANDIDATA SELECIONADA — PESQUISA</span><h3>Valor e qualidade escolhidos no treino, antes do holdout.</h3><p>Quatro regras pré-definidas foram comparadas apenas em 2015–2020. Só valor e qualidade superou CDI e MVO elegível nesse treino; ela foi então congelada para 2021–2024. Na execução 2015–2024, com até 55% em ações, até 12% por emissor e custos deduzidos, registrou 12,42% a.a.; CDI: 8,45%; MVO elegível: 12,21%. O holdout venceu ambos na amostra, mas os preços ajustados vêm de fonte pública secundária. O status correto permanece <em>research only</em>.</p></div><div class="benchmark-actions"><span><b>Como usar:</b> escolha o perfil para definir limites; trate o resultado como evidência de pesquisa, não como promessa de retorno.</span><a class="button button-secondary" href="./metodo.html">Ver método <span>→</span></a></div></div>
+        <article class="mvo-explainer" id="mvo-explicado"><div><span class="control-label">POR QUE A CANDIDATA PODE FICAR ACIMA DO MVO?</span><h3>Não é “IA adivinhando o mercado”.</h3><p>O MVO elegível usa a mesma tela de ativos, mas aloca pelo equilíbrio histórico entre retorno e volatilidade. A regra Benevente adiciona uma escolha anterior: elimina empresas que não atendem aos critérios de valor, qualidade, liquidez e solvência disponíveis naquela data; depois impõe teto por emissor, teto de ações, custos e CDI residual.</p></div><div class="mvo-columns"><p><b>MVO elegível</b><span>Otimiza pesos dos ativos aprovados a partir de estatísticas históricas.</span></p><p><b>Quant AI</b><span>Executa filtros e pesos determinísticos; a LLM apenas transforma fatos aprovados em tese, riscos e perguntas de revisão.</span></p><p><b>O que conta como superar</b><span>Maior retorno líquido na mesma janela, sem usar informação futura. Isso não prova superioridade futura.</span></p></div></article>
         <div class="benchmark-panel">
           <div><span class="control-label">REFERÊNCIAS DE MERCADO E FUNDOS</span><h3>Pesquisa acadêmica e produto comercial têm fluxos distintos.</h3><p>No ambiente de pesquisa, o comparador reproduz cotas CVM por CNPJ e documenta a janela comum. No fluxo comercial, a instituição define seus benchmarks e mandatos; a implantação conecta fontes licenciadas e o painel de comitê, sem pedir que um visitante use PowerShell.</p></div>
           <div class="benchmark-actions"><span><b>Para a instituição:</b> configure benchmarks no onboarding e acompanhe política, risco e aderência.</span><a class="button button-secondary" href="#contato">Planejar integração <span>→</span></a><a class="text-link research-link" href="#metodo-pesquisa">Ver ambiente de pesquisa <span>→</span></a></div>
@@ -237,7 +260,7 @@
         <div class="shell contact-section"><div><p class="eyebrow light"><span></span> Conversa institucional</p><h2>Mostre o seu fluxo.<br /><em>Montamos o piloto certo.</em></h2><p>Solicite uma demonstração focada em política, comitê, dados e controles — não em promessa de rentabilidade.</p><div class="contact-aside"><b>Para qual tipo de instituição?</b><span>Gestora, wealth manager, multi-family office, RIA, assessoria, fintech ou outra organização regulada.</span></div></div><form id="demo-request-form" class="demo-form"><label>Nome<input required name="name" autocomplete="name" /></label><label>E-mail profissional<input required type="email" name="email" autocomplete="email" /></label><label>Instituição<input required name="institution" autocomplete="organization" /></label><label>Perfil de uso<select name="use_case"><option>Gestão / wealth</option><option>Multi-family office</option><option>RIA / assessoria</option><option>Fintech / plataforma</option><option>Pesquisa acadêmica</option><option>Outro</option></select></label><label>O que precisa resolver?<textarea required name="message" rows="4" placeholder="Ex.: padronizar propostas para comitê e integrar benchmarks."></textarea></label><button class="button button-primary full" type="submit">Solicitar demonstração <span>→</span></button><p class="form-response" id="demo-form-response" role="status"></p><small>Dados enviados apenas para contato sobre a demonstração. Não inclua dados de clientes, carteira ou informações confidenciais.</small></form></div>
       </section>
 
-      <section class="research-disclosure shell" id="metodo-pesquisa"><p class="eyebrow"><span></span> Ambiente de pesquisa</p><h2>Benevente Quant AI</h2><p>Backtests, dados CVM ponto-no-tempo, custos, cenários condicionais e validação reproduzível pertencem ao ambiente acadêmico/técnico. A amostra pública atual cobre decisões de 2013 a 2025; o snapshot B3 de 12/08/2026 amplia a descoberta para instrumentos negociados, mas não substitui os fundamentos e os controles exigidos para uma recomendação atual.</p><a class="text-link" href="./metodo.html">Ler metodologia e evidências <span>→</span></a></section>
+      <section class="research-disclosure shell" id="metodo-pesquisa"><p class="eyebrow"><span></span> Ambiente de pesquisa</p><h2>Benevente Quant AI</h2><p>Backtests, dados CVM ponto-no-tempo, custos, cenários condicionais e validação reproduzível pertencem ao ambiente acadêmico/técnico. A execução pública atual cobre decisões de 2015 a 2024, com CDI do BCB e preços ajustados Yahoo Finance. Ela não substitui reconciliação de proventos B3/CVM, dados licenciados, suitability ou uma recomendação atual.</p><a class="text-link" href="./metodo.html">Ler metodologia e evidências <span>→</span></a></section>
     </main>
 
     <footer class="footer"><div class="shell"><a class="brand" href="#inicio"><span class="brand-mark">B</span><span>Benevente</span></a><p><b>Benevente Wealth System</b> · solução B2B para instituições que respondem por decisões de carteira<br /><b>Benevente Quant AI</b> · versão acadêmica e pesquisa reproduzível</p><span>© 2026 Benevente</span></div></footer>

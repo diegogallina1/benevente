@@ -57,7 +57,8 @@ def validate_annual_inputs(prices: pd.DataFrame, fundamentals: pd.DataFrame, pri
         reasons=tuple(reasons),
         first_price_date=None if dates.empty else str(dates.min().date()),
         last_price_date=None if dates.empty else str(dates.max().date()),
-        price_tickers=max(len(prices.columns) - (1 if "date" in prices.columns else 0), 0),
+        # ``TITULO_CDI`` is the defensive benchmark index, not a B3 issuer.
+        price_tickers=max(len(prices.columns) - sum(column in prices.columns for column in ("date", "TITULO_CDI")), 0),
         fundamental_snapshots=int(len(fundamentals)),
     )
 

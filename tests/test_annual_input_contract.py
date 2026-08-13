@@ -14,3 +14,4 @@ def test_total_return_input_with_cdi_is_permitted():
     prices = pd.DataFrame({"date": ["2020-01-02"], "AAAA3.SA": [10.0], "TITULO_CDI": [100.0]})
     result = validate_annual_inputs(prices, pd.DataFrame([{"ticker": "AAAA3.SA"}]), "total_return")
     assert result.performance_permitted
+    assert result.price_tickers == 1

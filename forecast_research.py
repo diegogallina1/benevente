@@ -40,7 +40,7 @@ def build_conditional_scenarios(holdings: pd.DataFrame, decision_year: int | Non
             "historical_median_return": _percentile(outcomes, .50),
             "historical_downside_p20": _percentile(outcomes, .20),
             "historical_upside_p80": _percentile(outcomes, .80),
-            "why": "Selecionado pelo score qualidade + valuation + momento disponível na data anual de decisão.",
+            "why": "Selecionado pela regra de elegibilidade e ranking disponível na data anual de decisão.",
         })
     selected_tickers = selected.ticker.tolist()
     # Assess the *selection rule* on prior annual decisions. Matching the
