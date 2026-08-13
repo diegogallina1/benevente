@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Metodologia e governança do Benevente Quant AI." />
+    <meta name="description" content="Metodologia do Benevente Quant AI." />
     <title>Benevente Quant AI — Metodologia</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,22 +16,22 @@
     <nav class="method-nav shell"><a href="./">← Benevente Wealth System</a></nav>
     <main class="shell method-page">
       <p class="eyebrow"><span></span> Benevente Quant AI · documentação pública</p>
-      <h1>Metodologia que pode ser levada ao comitê.</h1>
+      <h1>Metodologia completa do Benevente Quant AI.</h1>
       <p>Esta página descreve o núcleo acadêmico/reproduzível do Benevente. Não é oferta de investimento, relatório de performance ou declaração de conformidade regulatória.</p>
       <div class="method-callout"><b>Princípio central</b>Uma LLM pode organizar uma tese e perguntas de revisão a partir de fatos aprovados. Ela não aprova ativos, não calcula sinais, não altera restrições e não define pesos.</div>
       <h2>1. Política antes do portfólio</h2>
       <p>Perfil, horizonte, concentração máxima, perda tolerada, custo e frequência de revisão são versionados antes da seleção. Os perfis representam limites institucionais de exemplo; a política formal continua sob responsabilidade da instituição.</p>
-      <h2>2. Dados ponto-no-tempo</h2>
-      <p>O fluxo auditável exige data contábil, data de disponibilidade, fonte e snapshot de mercado. Documentos e preços que não seriam conhecidos na data da decisão são rejeitados. Sem um universo histórico datado, não se declara cobertura integral da B3.</p>
+      <h2>2. Dados disponíveis na decisão</h2>
+      <p>Cada decisão registra data contábil, data de divulgação, fonte e dados de mercado usados. Documentos e preços publicados depois da decisão são excluídos. Sem histórico datado do universo, não se declara cobertura integral da B3.</p>
       <h2>3. Elegibilidade e alocação</h2>
-      <ul><li>Não financeiras: liquidez, geração de caixa, ROIC, dívida e cobertura de juros.</li><li>Financeiras: liquidez, rentabilidade e preço sobre patrimônio.</li><li>Após o filtro, a otimização restrita aplica teto de renda variável, teto por emissor e reserva defensiva em CDI.</li></ul>
+      <ul><li>Empresas não financeiras: liquidez, geração de caixa, ROIC, dívida e cobertura de juros.</li><li>Instituições financeiras: liquidez, rentabilidade e preço sobre patrimônio.</li><li>Após o filtro, a otimização aplica teto de renda variável, teto por emissor e parcela em CDI.</li></ul>
       <h2>4. Evidência e validação</h2>
       <p>As janelas arquivadas de 5, 10 e 15 anos são exibidas com CDI, Ibovespa e MVO clássico. O resultado é heterogêneo: não há superioridade consistente contra MVO. A seleção de hiperparâmetros usa apenas a parte de treinamento e exige condições mínimas antes do holdout.</p>
       <h2>5. Candidata de valor e qualidade em pesquisa</h2>
-      <p>A candidata separa o orçamento de risco do sinal: perfis definem tetos de ações e concentração; entre ativos líquidos e com informação disponível, o ranking determinístico combina métricas de valor e qualidade. Para empresas não financeiras, a regra exige sinais compatíveis de geração de caixa, retorno sobre capital e solvência; para instituições financeiras, usa medidas compatíveis de retorno sobre patrimônio e valor. Tudo é congelado no primeiro pregão de janeiro, antes de observar o retorno daquele ano.</p>
-      <p>Em uma seleção pré-definida, quatro regras foram comparadas somente no treino 2015–2020; valor e qualidade foi a única que superou CDI e MVO elegível nessa etapa. Congelada para o holdout 2021–2024, ela superou ambos nessa amostra. Na execução atualizada de 2015–2025, o perfil Equilibrado, com teto de 55% em ações e 12% por emissor, apresentou 13,75% a.a. após custos, contra 8,94% do CDI e 13,56% do MVO elegível. A fonte de retorno é Yahoo Finance ajustado, a ser reconciliada com B3/CVM; por isso, continua como hipótese <code>research_only</code>, e não como promessa comercial.</p>
+      <p>A regra separa risco do sinal. Os perfis definem teto de ações e concentração. Entre ativos líquidos e com dados disponíveis, o ranking determinístico combina valor e qualidade. Para empresas não financeiras, considera geração de caixa, retorno sobre capital e solvência. Para instituições financeiras, usa retorno sobre patrimônio e valor. A carteira é definida no primeiro pregão de janeiro antes de observar o retorno daquele ano.</p>
+      <p>Quatro regras foram comparadas somente no treino 2015–2020. Valor e qualidade foi a única que superou CDI e MVO elegível nessa etapa. Mantida no teste 2021–2024, superou ambos nessa amostra. Na execução atualizada de 2015–2025, o perfil Equilibrado, com teto de 55% em ações e 12% por emissor, apresentou 13,75% a.a. após custos, contra 8,94% do CDI e 13,56% do MVO elegível. A fonte de retorno é Yahoo Finance ajustado e ainda requer reconciliação com B3/CVM. Por isso, o resultado é pesquisa, não promessa comercial.</p>
       <h2>6. Uso comercial responsável</h2>
-      <p>O Wealth System entrega esta governança em uma experiência B2B. Integração, suitability, licenças de dados, aprovação e qualquer enquadramento regulatório são definidos com a instituição usuária. Nenhuma ordem é transmitida pelo produto.</p>
+      <p>O Wealth System entrega esse método em uma experiência B2B. Integração, suitability, licenças de dados, aprovação e enquadramento regulatório são definidos com a instituição usuária. O produto não transmite ordens.</p>
       <p><a class="text-link" href="./#contato">Conversar sobre um piloto institucional →</a></p>
     </main>
   </body>

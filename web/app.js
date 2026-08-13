@@ -13,24 +13,27 @@ const comparisonWindows = { 1: 1, 3: 3, 5: 5, 11: 11 };
 
 const modelSteps = {
   policy: { number:"01 · POLÍTICA", title:"A política vem antes do ativo.", text:"O responsável define patrimônio, perfil, horizonte, concentração máxima, limite de renda variável, perda tolerada, custo e frequência de revisão.", uses:"Perfil, horizonte e limites explícitos", blocks:"Pesos que ultrapassem a política", produces:"Uma política versionada por proposta", rule:"<strong>Regra:</strong> sem reconhecimento explícito da política, não há proposta operacional." },
-  data: { number:"02 · DADOS", title:"Uma informação só entra quando era pública.", text:"Cada fundamento tem data contábil e data de disponibilidade. Preços, liquidez, lote e capitalização precisam de snapshot datado e de uma fonte atribuída.", uses:"CVM ITR/DFP, BCB e snapshots de mercado", blocks:"Dados futuros, nulos ou sem fonte", produces:"Pacote datado de entrada", rule:"<strong>Regra:</strong> o documento divulgado depois da decisão é rejeitado no fluxo auditável." },
+  data: { number:"02 · DADOS", title:"Uma informação só entra quando era pública.", text:"Cada fundamento tem data contábil e data de divulgação. Preços, liquidez, lote e capitalização têm data e fonte registradas.", uses:"CVM ITR/DFP, BCB e dados de mercado", blocks:"Dados futuros, nulos ou sem fonte", produces:"Pacote de dados da decisão", rule:"<strong>Regra:</strong> o documento divulgado depois da decisão é rejeitado." },
   screen: { number:"03 · FILTRO", title:"Primeiro eliminar, depois ranquear.", text:"O filtro determinístico busca valor e qualidade. Para não financeiras: caixa, ROIC, dívida e cobertura; para financeiras: ROE e preço sobre valor patrimonial.", uses:"Liquidez, valor, rentabilidade e solvência", blocks:"Ativos frágeis ou com métrica ausente", produces:"Tela de elegibilidade e motivo de bloqueio", rule:"<strong>Regra:</strong> ausência de dado comparável é reprovação, não uma inferência favorável." },
   optimizer: { number:"04 · OTIMIZAÇÃO", title:"Otimizar não é adivinhar.", text:"Somente os ativos elegíveis entram numa otimização restrita. Os pesos obedecem limites por emissor, exposição a ações e uma reserva residual em CDI.", uses:"Retornos históricos e restrições da política", blocks:"Concentração e ativos reprovados", produces:"Pesos, custos e caixa residual", rule:"<strong>Regra:</strong> uma LLM não define pesos e não pode mudar uma regra rígida." },
-  review: { number:"05 · REVISÃO HUMANA", title:"O resultado é uma proposta, não uma ordem.", text:"A pessoa responsável revisa tese, riscos, pesos e custos. Se decidir implementar, insere a ordem manualmente e concilia a nota de corretagem depois.", uses:"Proposta, evidências e custo estimado", blocks:"Execução automática", produces:"Carteira-sombra e trilha de auditoria", rule:"<strong>Regra:</strong> resultados prospectivos devem permanecer separados do backtest histórico." }
+  review: { number:"05 · REVISÃO", title:"O resultado é uma proposta, não uma ordem.", text:"A instituição revisa tese, riscos, pesos e custos. Se decidir implementar, registra a operação e confere a nota de corretagem depois.", uses:"Proposta, evidências e custo estimado", blocks:"Execução automática", produces:"Carteira-sombra e registro de decisão", rule:"<strong>Regra:</strong> resultados prospectivos ficam separados do backtest histórico." }
 };
 
 let currentProfile = "moderado";
-let curveData = {};
 let selectedCurves = new Set();
 const extraSeries = { 1: {}, 3: {}, 5: {}, 11: {} };
+const addedSeries = new Map();
 let chartSource = "ticker";
 let chartZoom = 1;
 let chartFocus = null;
 let chartScale = "linear";
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
-const format = value => `${value.toLocaleString("pt-BR",{minimumFractionDigits:2,maximumFractionDigits:2})}%`;
 const colors = { "Benevente Quant AI":"#0f766e", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "Ibovespa":"#7a8490" };
 const extraColors = ["#9c4f2a", "#7856a3", "#b87418", "#2a7c91"];
+const formatDateBr = value => {
+  const date = new Date(`${String(value).slice(0, 10)}T12:00:00`);
+  return Number.isNaN(date.valueOf()) ? String(value) : date.toLocaleDateString("pt-BR");
+};
 
 function annualCurve(period) {
   if (!researchData || !comparisonWindows[period]) return null;
@@ -52,10 +55,9 @@ function annualCurve(period) {
   }
   return { dates, series };
 }
-function chartDataset(period) { return annualCurve(period) || curveData[period]; }
 function profileDataset(period) {
   const profileCurve = researchData?.profile_curves?.[activeProfileKey()];
-  if (!profileCurve || !comparisonWindows[period]) return chartDataset(period);
+  if (!profileCurve || !comparisonWindows[period]) return annualCurve(period);
   const keep = Math.min(comparisonWindows[period] + 1, profileCurve.dates.length);
   const dates = profileCurve.dates.slice(-keep);
   const series = Object.fromEntries(Object.entries(profileCurve.series).map(([name, values]) => [name, values.slice(-keep)]));
@@ -74,6 +76,14 @@ function profileDataset(period) {
 function seriesFor(period) {
   const base = profileDataset(period);
   return { ...(base?.series || {}), ...(extraSeries[period] || {}) };
+}
+function refreshExtraSeriesForPeriod(period) {
+  const data = profileDataset(period);
+  if (!data) return;
+  extraSeries[period] = {};
+  addedSeries.forEach((points, name) => {
+    try { extraSeries[period][name] = normalizeSeriesOnCommonWindow(points, data.dates); } catch (_) { /* no common dates */ }
+  });
 }
 function seriesColor(name, index = 0) { return colors[name] || (name.startsWith("Ibovespa") ? colors.Ibovespa : extraColors[index % extraColors.length]); }
 function normalizeToDecisionDates(points, dates) {
@@ -116,30 +126,6 @@ function metricsForSeries(values, dates) {
   let peak = -Infinity, drawdown = 0;
   observed.forEach(item => { peak = Math.max(peak, item.value); drawdown = Math.min(drawdown, item.value / peak - 1); });
   return { cagr, volatility, drawdown };
-}
-
-// Esta amostra existe apenas para demonstrar a interface de revisão. Os campos
-// foram deliberadamente marcados como sintéticos no pipeline e não podem virar
-// uma recomendação atual sem um novo snapshot CVM/B3 ponto-no-tempo.
-const demoAssets = [
-  { ticker:"BBAS3", sector:"Financeiro", score:79.6, pe:"P/L 5,5", quality:"ROE 19,0%", liquidity:"R$ 40 bi/dia", why:"Preço sobre patrimônio e rentabilidade passam na régua financeira.", risk:"Risco de controlador e ciclo de crédito." },
-  { ticker:"ITUB4", sector:"Financeiro", score:60.2, pe:"P/L 9,0", quality:"ROE 18,0%", liquidity:"R$ 90 bi/dia", why:"Rentabilidade e liquidez atendem aos filtros do recorte.", risk:"Sensível a crédito, juros e múltiplo." },
-  { ticker:"BBDC4", sector:"Financeiro", score:59.2, pe:"P/L 8,5", quality:"ROE 14,0%", liquidity:"R$ 50 bi/dia", why:"Métrica de valor e ROE cumprem a regra financeira.", risk:"Execução operacional e ciclo de provisões." },
-  { ticker:"PETR4", sector:"Energia", score:58.2, pe:"P/L 10,0", quality:"ROIC 18,0%", liquidity:"R$ 80 bi/dia", why:"Caixa, retorno sobre capital e alavancagem passam no filtro.", risk:"Commodity, câmbio e interferência estatal." },
-  { ticker:"VALE3", sector:"Materiais", score:57.1, pe:"P/L 8,0", quality:"ROIC 15,0%", liquidity:"R$ 70 bi/dia", why:"Valor, geração de caixa e cobertura de juros atendem ao corte.", risk:"Minério, China e risco socioambiental." },
-  { ticker:"WEGE3", sector:"Industrial", score:51.0, pe:"P/L 30,0", quality:"ROIC 20,0%", liquidity:"R$ 20 bi/dia", why:"Qualidade e balanço passam; o múltiplo reduz a pontuação relativa.", risk:"Prêmio de valuation e crescimento esperado." },
-  { ticker:"ABEV3", sector:"Consumo", score:34.7, pe:"P/L 16,0", quality:"ROIC 12,0%", liquidity:"R$ 30 bi/dia", why:"Liquidez e solvência passam, com menor pontuação de valor/qualidade.", risk:"Crescimento, concorrência e pressão de margens." },
-  { ticker:"RENT3", sector:"Consumo", score:0, pe:"P/L 22,0", quality:"Dívida 4,5x", liquidity:"R$ 20 bi/dia", why:"Reprovado antes da otimização.", risk:"FCF abaixo do mínimo, dívida elevada e cobertura insuficiente.", blocked:true }
-];
-function demoWeights(profile) {
-  const equity = Number(profiles[profile].equity);
-  const issuer = Number(profiles[profile].issuer);
-  const safeEquity = Number.isFinite(equity) ? Math.max(0, Math.min(100, equity)) : 0;
-  const safeIssuer = Number.isFinite(issuer) ? Math.max(0, Math.min(100, issuer)) : 0;
-  const eligible = demoAssets.filter(asset => !asset.blocked);
-  const totalScore = eligible.reduce((sum, asset) => sum + asset.score, 0);
-  const weights = Object.fromEntries(eligible.map(asset => [asset.ticker, Math.min(+(safeEquity * asset.score / totalScore).toFixed(1), safeIssuer)]));
-  return { weights, residual: +(100 - Object.values(weights).reduce((sum, value) => sum + value, 0)).toFixed(1), issuer };
 }
 
 function pct(value, digits = 1) { return `${value >= 0 ? "+" : ""}${(value * 100).toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits })}%`; }
@@ -187,7 +173,7 @@ function syncDecisionYears() {
   if (!select || !researchData) return;
   const previous = select.value;
   const rows = activeProfileRows();
-  select.innerHTML = rows.map(item => `<option value="${item.decision_year}">${item.decision_year} · ${item.decision_date}</option>`).join("");
+  select.innerHTML = rows.map(item => `<option value="${item.decision_year}">${item.decision_year} · ${formatDateBr(item.decision_date)}</option>`).join("");
   select.value = rows.some(item => String(item.decision_year) === previous) ? previous : String(rows.at(-1)?.decision_year || "");
 }
 
@@ -203,24 +189,25 @@ function renderAssetWorkbench() {
   const equities = holdings.filter(item => item.ticker !== "TITULO_CDI");
   const equityWeight = equities.reduce((sum, item) => sum + item.weight, 0);
   const transitionByTicker = Object.fromEntries(transitions.map(item => [item.ticker, item]));
-  document.querySelector("#dossier-policy").textContent = `Execução histórica: ${String(researchData.meta.strategy || "valor e qualidade").toLowerCase()}; até ${plainPct(decision.target_equity_weight)} em renda variável e ${plainPct(researchData.meta.protocol.maximum_asset_weight)} por emissor. O retorno abaixo foi realizado depois de ${decision.decision_date}; não foi usado para decidir.`;
+  document.querySelector("#dossier-policy").textContent = `Regra anual de ${String(researchData.meta.strategy || "valor e qualidade").toLowerCase()}. Até ${plainPct(decision.target_equity_weight)} em renda variável e ${plainPct(researchData.meta.protocol.maximum_asset_weight)} por emissor. O retorno foi apurado depois de ${formatDateBr(decision.decision_date)} e não influenciou a escolha.`;
   const coverage = researchData.meta.coverage;
   const source = researchData.meta.source_tier === "public_reproducible_research" ? "fonte pública de pesquisa" : "fonte qualificada";
   const series = coverage.price_tickers ? `${coverage.price_tickers.toLocaleString("pt-BR")} séries ajustadas` : "séries ajustadas";
-  document.querySelector("#research-status").innerHTML = `<b>Status dos dados: pesquisa reproduzível; não é validação institucional.</b><span>O painel usa ${series}, CDI do BCB e ${coverage.fundamental_snapshots?.toLocaleString("pt-BR") || "—"} snapshots CVM ponto-no-tempo. O retorno é proveniente de ${source}; proventos, JCP e eventos de deslistagem ainda exigem reconciliação B3/CVM ou fonte licenciada.</span>`;
-  document.querySelector("#asset-summary").innerHTML = `<div><small>DECISÃO</small><strong>${decision.decision_date}</strong><span>Carteira mantida até ${decision.holding_end_exclusive}.</span></div><div><small>RENDA VARIÁVEL</small><strong>${plainPct(equityWeight)}</strong><span>${equities.length} ativo(s) elegível(is); CDI ficou como reserva.</span></div><div><small>RESULTADO POSTERIOR</small><strong>${pct(decision.net_return)}</strong><span>Líquido de custo estimado de ${money.format(decision.estimated_cost_brl)}.</span></div>`;
+  document.querySelector("#research-status").innerHTML = `<b>Pesquisa reproduzível, ainda não validada para uso institucional.</b><span>O painel usa ${series}, CDI do BCB e ${coverage.fundamental_snapshots?.toLocaleString("pt-BR") || "—"} demonstrações CVM disponíveis em cada decisão. Proventos, JCP e eventos societários ainda exigem reconciliação B3/CVM ou fonte licenciada.</span>`;
+  document.querySelector("#asset-summary").innerHTML = `<div><small>DECISÃO</small><strong>${formatDateBr(decision.decision_date)}</strong><span>Carteira mantida até ${formatDateBr(decision.holding_end_exclusive)}.</span></div><div><small>RENDA VARIÁVEL</small><strong>${plainPct(equityWeight)}</strong><span>${equities.length} ativo(s) elegível(is). CDI completa a alocação.</span></div><div><small>RESULTADO POSTERIOR</small><strong>${pct(decision.net_return)}</strong><span>Após custo estimado de ${money.format(decision.estimated_cost_brl)}.</span></div>`;
   document.querySelector("#asset-grid").innerHTML = holdings.map(item => {
     const transition = transitionByTicker[item.ticker];
     const isCdi = item.ticker === "TITULO_CDI";
-    const status = isCdi ? "Reserva de liquidez" : (item.decision_action_pt || "Sem alteração");
+    const status = isCdi ? "Parcela CDI" : (item.decision_action_pt || "Mantido");
     const signal = item.trailing_12m_return_at_decision == null ? "Não aplicável" : plainPct(item.trailing_12m_return_at_decision);
     const volatility = item.trailing_12m_volatility_at_decision == null ? "Não aplicável" : plainPct(item.trailing_12m_volatility_at_decision);
     const currentReason = transition?.reason_pt || "Mantido segundo a política e a revisão anual.";
-    return `<article class="asset-card ${isCdi ? "defensive" : ""}"><div class="asset-card-top"><div><small>${isCdi ? "RESERVA DEFENSIVA" : "ATIVO ELEGÍVEL"}</small><h3>${isCdi ? "CDI" : item.ticker.replace(".SA", "")}</h3></div><span class="asset-status ${isCdi ? "defensive" : ""}">${status}</span></div><div class="asset-metrics"><div><small>PESO</small><b>${plainPct(item.weight)}</b></div><div><small>12M ANTERIOR</small><b>${signal}</b></div><div><small>VOL. 12M</small><b>${volatility}</b></div></div><p><b>Decisão:</b> ${item.decision_rationale_pt || item.decision_rationale}</p><p><b>Registro de troca:</b> ${currentReason}</p><div class="asset-return"><b>Resultado realizado após a decisão</b>${pct(item.realised_next_year_return)} no período anual. Exibido para avaliação, não para justificar a entrada.</div><div class="asset-weight"><span>Score disponível na decisão: ${item.value_quality_score == null ? "—" : item.value_quality_score.toLocaleString("pt-BR", {minimumFractionDigits:2,maximumFractionDigits:2})}</span><strong>${item.decision_action_pt || ""}</strong></div></article>`;
+    const actionClass = ({ Entrada: "entered", Aumento: "increased", Redução: "reduced", Saída: "exited" })[status] || (isCdi ? "defensive" : "maintained");
+    return `<article class="asset-card ${isCdi ? "defensive" : ""}"><div class="asset-card-top"><div><small>${isCdi ? "PARCELA DEFENSIVA" : "ATIVO ELEGÍVEL"}</small><h3>${isCdi ? "CDI" : item.ticker.replace(".SA", "")}</h3></div><span class="asset-status ${actionClass}">${status}</span></div><div class="asset-metrics"><div><small>PESO</small><b>${plainPct(item.weight)}</b></div><div><small>12M ANTERIOR</small><b>${signal}</b></div><div><small>VOL. 12M</small><b>${volatility}</b></div></div><p><b>Critério:</b> ${item.decision_rationale_pt || item.decision_rationale}</p><p><b>Revisão:</b> ${currentReason}</p><div class="asset-return"><b>Resultado observado depois da decisão</b>${pct(item.realised_next_year_return)} no período anual. Mostrado para avaliar a regra, não para justificar a entrada.</div><div class="asset-weight"><span>Score na decisão: ${item.value_quality_score == null ? "—" : item.value_quality_score.toLocaleString("pt-BR", {minimumFractionDigits:2,maximumFractionDigits:2})}</span><strong>${item.decision_action_pt || ""}</strong></div></article>`;
   }).join("");
   const panel = document.querySelector("#asset-action-panel");
   panel.classList.add("active");
-  panel.innerHTML = `<div><span class="action-label">COMO LER</span><b>Decisão antes; resultado depois.</b><p>O dossiê separa informação disponível em janeiro da rentabilidade realizada durante o ano. Assim é possível auditar se uma troca foi defensável sem olhar o futuro.</p></div><div><span class="action-label">PRÓXIMA REVISÃO</span><b>${decision.holding_end_exclusive}</b><p>Reavaliar elegibilidade, dados CVM, liquidez, custos e pesos efetivamente desviados. Não é instrução atual de compra ou venda.</p></div>`;
+  panel.innerHTML = `<div><span class="action-label">COMO LER</span><b>Escolha antes, resultado depois.</b><p>O dossiê separa o que estava disponível em janeiro da rentabilidade observada no ano.</p></div><div><span class="action-label">PRÓXIMA REVISÃO</span><b>${formatDateBr(decision.holding_end_exclusive)}</b><p>Reavaliar elegibilidade, dados CVM, liquidez, custos e pesos. Não é instrução de compra ou venda.</p></div>`;
 }
 
 function refreshDecisionStudio() {
@@ -275,19 +262,21 @@ function renderCurrentDecision() {
   const priceReturn = monitoring?.portfolio_price_return;
   const profileName = ({ conservador: "Conservadora", moderado: "Equilibrada", arrojado: "Arrojada" })[currentProfile] || "Equilibrada";
   const requestedLabel = ({ conservador: "Conservador", moderado: "Equilibrado", arrojado: "Arrojado" })[currentProfile] || "Equilibrado";
-  const isNativeMonitoring = currentProfile === "moderado";
+  const hasComparableMonitoring = currentProfile === "moderado";
   document.querySelector("#current-decision-heading").innerHTML = `Carteira ${profileName}<br /><em>em janeiro de 2026.</em>`;
-  document.querySelector("#current-decision-intro").textContent = `Triagem congelada antes do ano, com os limites do perfil ${requestedLabel}: dados públicos, liquidez e concentração. A IA explica a decisão; não escolhe ativos, pesos ou envia ordens.`;
+  document.querySelector("#current-decision-intro").textContent = `Triagem feita em ${formatDateBr(date)}, com dados públicos, liquidez e concentração. A IA explica a decisão; pesos e critérios seguem a regra.`;
   document.querySelector("#current-decision-label").textContent = `CARTEIRA-CANDIDATA · ${requestedLabel.toUpperCase()}`;
   document.querySelector("#current-decision-summary").innerHTML = [
-    ["DECISÃO", new Date(`${date}T12:00:00`).toLocaleDateString("pt-BR")],
+    ["DECISÃO", formatDateBr(date)],
     ["AÇÕES", pctPlain(1 - cdiWeight)],
-    ["MONITORAMENTO", isNativeMonitoring && Number.isFinite(priceReturn) ? signedScenario(priceReturn) : "A recalcular"],
+    ["RESULTADO PARCIAL", hasComparableMonitoring && Number.isFinite(priceReturn) ? signedScenario(priceReturn) : "Indisponível"],
   ].map(([label, value]) => `<div><small>${label}</small><b>${value}</b></div>`).join("");
   document.querySelector("#current-decision-assets").innerHTML = [...visibleHoldings.map(asset => `<article class="suggestion-asset"><div class="suggestion-row"><div><small>ATIVO SELECIONADO</small><b>${asset.ticker}</b></div><div><small>PESO · ${money.format(capital * asset.weight)}</small><strong>${pctPlain(asset.weight)}</strong></div></div><p>${asset.why}</p></article>`), cdiWeight > .0001 ? `<article class="suggestion-asset"><div class="suggestion-row"><div><small>RESERVA DEFENSIVA</small><b>CDI</b></div><div><small>PESO · ${money.format(capital * cdiWeight)}</small><strong>${pctPlain(cdiWeight)}</strong></div></div><p>Reserva resultante do teto de renda variável da política selecionada.</p></article>` : ""].join("");
-  const feasibility = feasibleEquity < requestedEquity ? ` Com os ${holdings.length} ativos processados nesta prévia, a exposição realizável é ${pctPlain(feasibleEquity)}; o restante fica em CDI.` : "";
-  const monitoringText = isNativeMonitoring ? ` Até ${monitoring?.through || "a última observação"}: ${monitoring?.label || "monitoramento indisponível"}.` : " O acompanhamento de retorno desta política precisa ser recalculado com esses pesos; não reutilizamos o resultado do perfil Equilibrado.";
-  document.querySelector("#current-decision-caption").textContent = `Perfil ${requestedLabel}: teto de ${policy.equity}% em renda variável e ${policy.issuer}% por emissor. Os ativos de janeiro de 2026 permanecem os mesmos; os pesos são redimensionados pelo perfil.${feasibility}${monitoringText}`;
+  const feasibility = feasibleEquity < requestedEquity ? ` Com os ${holdings.length} ativos processados nesta prévia, a exposição atingida é ${pctPlain(feasibleEquity)}; o restante fica em CDI.` : "";
+  const monitoringText = hasComparableMonitoring
+    ? ` Até ${formatDateBr(monitoring?.through || date)}: ${monitoring?.label || "resultado parcial indisponível"}.`
+    : " O resultado parcial está disponível apenas para os pesos do perfil Equilibrado; o site não reaproveita esse número para outro perfil.";
+  document.querySelector("#current-decision-caption").textContent = `Perfil ${requestedLabel}: teto de ${policy.equity}% em renda variável e ${policy.issuer}% por emissor. Os pesos da candidata refletem esse perfil.${feasibility}${monitoringText}`;
 }
 
 function moneyCompact(value) { return new Intl.NumberFormat("pt-BR", {style:"currency",currency:"BRL",notation:"compact",maximumFractionDigits:1}).format(value || 0); }
@@ -303,16 +292,16 @@ function renderUniverse() {
     const rows = universeData.instruments.filter(item => (assetClass === "all" || item.asset_class === assetClass) && item.average_daily_value_brl >= minimumLiquidity && (!query || `${item.ticker} ${item.issuer_name} ${item.specification}`.includes(query))).slice(0, 250);
     document.querySelector("#universe-table").innerHTML = rows.map(item => {
       const selected = selectedTickers.has(item.ticker);
-      const status = selected ? "Selecionado na decisão de janeiro de 2026"
-        : item.asset_class === "equity" ? "Candidato: requer ponte CVM, histórico e triagem"
-        : item.asset_class === "etf" ? "Disponível no comparador; módulo de alocação por índice pendente"
-        : item.asset_class === "fii" ? "Disponível no catálogo; módulo de renda imobiliária pendente"
-        : item.asset_class === "bdr" ? "Disponível no comparador; módulo internacional pendente"
+      const status = selected ? "Selecionado em janeiro de 2026"
+        : item.asset_class === "equity" ? "Candidato: requer vínculo CVM, histórico e triagem"
+        : item.asset_class === "etf" ? "Disponível no comparador. Alocação por índice pendente"
+        : item.asset_class === "fii" ? "Disponível no catálogo. Módulo imobiliário pendente"
+        : item.asset_class === "bdr" ? "Disponível no comparador. Módulo internacional pendente"
         : "Requer mandato e regra específicos";
       const classLabel = ({ equity: "Ação", etf: "ETF", bdr: "BDR", fii: "FII / Fiagro", other: "Outro" })[item.asset_class] || item.asset_class;
       return `<tr><td>${item.ticker.replace(".SA", "")}</td><td><span class="universe-class">${classLabel}</span></td><td>${item.issuer_name}</td><td>${money.format(item.close_price_brl)}</td><td>${moneyCompact(item.average_daily_value_brl)}</td><td><span class="universe-status ${selected ? "covered" : "blocked"}">${status}</span></td></tr>`;
     }).join("") || `<tr><td colspan="6">Nenhum instrumento atende aos filtros selecionados.</td></tr>`;
-    document.querySelector("#universe-foot").textContent = `Exibindo ${rows.length} de ${universeData.instrument_count.toLocaleString("pt-BR")} instrumentos do snapshot ${universeData.observed_at}. ${universeData.eligibility_note}`;
+    document.querySelector("#universe-foot").textContent = `Exibindo ${rows.length} de ${universeData.instrument_count.toLocaleString("pt-BR")} instrumentos da base de ${formatDateBr(universeData.observed_at)}. ${universeData.eligibility_note}`;
   };
   ["#universe-search", "#universe-class", "#universe-liquidity"].forEach(selector => document.querySelector(selector).addEventListener(selector === "#universe-search" ? "input" : "change", update));
   update();
@@ -379,6 +368,7 @@ function renderLineChart(period) {
   const dates = data.dates.slice(startIndex, endIndex);
   const visibleSeries = Object.fromEntries(selected.map(name => [name, allSeries[name].slice(startIndex, endIndex)]));
   const values = selected.flatMap(name => visibleSeries[name].filter(value => Number.isFinite(value) && value > 0));
+  if (!values.length) { lineLayer.innerHTML = gridLayer.innerHTML = labelLayer.innerHTML = directLabelLayer.innerHTML = ""; return; }
   const transformed = value => chartScale === "log" ? Math.log(value) : value;
   const transformedValues = values.map(transformed);
   const rawMin = Math.min(...transformedValues), rawMax = Math.max(...transformedValues);
@@ -392,7 +382,7 @@ function renderLineChart(period) {
     const yPosition = top + (max - value) * plotH / Math.max(max-min, .0001);
     return `<line class="line-grid" x1="${left}" x2="${width-right}" y1="${yPosition}" y2="${yPosition}"/><text class="line-grid-label" x="4" y="${yPosition + 3}">${(rawValue - 100).toLocaleString("pt-BR", {maximumFractionDigits:0})}%</text>`;
   }).join("");
-  const dateLabels = [0, Math.floor((dates.length-1)/2), dates.length-1].map(index => `<text class="line-grid-label" text-anchor="${index===0?"start":index===dates.length-1?"end":"middle"}" x="${x(index)}" y="${height-5}">${dates[index].slice(0,7)}</text>`).join("");
+  const dateLabels = [0, Math.floor((dates.length-1)/2), dates.length-1].map(index => `<text class="line-grid-label" text-anchor="${index===0?"start":index===dates.length-1?"end":"middle"}" x="${x(index)}" y="${height-5}">${formatDateBr(dates[index])}</text>`).join("");
   lineLayer.innerHTML = selected.map((name, seriesIndex) => {
     let active = false;
     const path = visibleSeries[name].map((value,index) => { if (!Number.isFinite(value)) { active = false; return ""; } const command = active ? "L" : "M"; active = true; return `${command}${x(index).toFixed(2)},${y(value).toFixed(2)}`; }).join(" ");
@@ -414,13 +404,13 @@ function renderLineChart(period) {
   }).join("");
   const start = dates[0], end = dates.at(-1);
   document.querySelector("#chart-zoom-status").textContent = chartZoom === 1 ? "Visão completa" : `${dates.length} pontos visíveis`;
-  document.querySelector("#line-chart-caption").textContent = `${selected.length} série(s) visível(is) · ${start} a ${end} · retorno acumulado em %. Escala ${chartScale === "log" ? "logarítmica" : "linear"}; use a roda do mouse para ampliar e arraste para deslocar.`;
+  document.querySelector("#line-chart-caption").textContent = `${selected.length} série(s) visível(is) · ${formatDateBr(start)} a ${formatDateBr(end)} · retorno acumulado em %. Escala ${chartScale === "log" ? "logarítmica" : "linear"}. Use a roda do mouse para ampliar e arraste para deslocar.`;
   const inspect = event => {
     const rect = event.currentTarget.getBoundingClientRect();
     const viewX = (event.clientX - rect.left) * width / rect.width;
     const index = Math.max(0, Math.min(dates.length - 1, Math.round((viewX - left) / plotW * (dates.length - 1))));
     const cursor = document.querySelector("#line-chart-cursor"); cursor.classList.remove("hidden"); cursor.setAttribute("x1", x(index)); cursor.setAttribute("x2", x(index)); cursor.setAttribute("y1", top); cursor.setAttribute("y2", height-bottom);
-    document.querySelector("#chart-inspector").innerHTML = `<b>${dates[index]}</b> · ${selected.map(name => `${name}: <b>${Number.isFinite(visibleSeries[name][index]) ? pct(visibleSeries[name][index] / visibleSeries[name].find(Number.isFinite) - 1) : "—"}</b>`).join(" &nbsp;|&nbsp; ")}`;
+    document.querySelector("#chart-inspector").innerHTML = `<b>${formatDateBr(dates[index])}</b> · ${selected.map(name => `${name}: <b>${Number.isFinite(visibleSeries[name][index]) ? pct(visibleSeries[name][index] / visibleSeries[name].find(Number.isFinite) - 1) : "—"}</b>`).join(" &nbsp;|&nbsp; ")}`;
   };
   const chart = document.querySelector("#line-chart");
   let dragStart = null;
@@ -438,6 +428,7 @@ function wealthStats(returns) {
 }
 function renderComparison(period) {
   if (!researchData) return;
+  refreshExtraSeriesForPeriod(period);
   const length = comparisonWindows[period];
   const rows = activeProfileRows().slice(-length);
   const benevente = wealthStats(rows.map(item => item.net_return));
@@ -447,12 +438,17 @@ function renderComparison(period) {
   const winMvo = rows.filter(item => item.net_return > item.mvo_eligible_net_return).length;
   const start = rows[0].decision_date, end = rows.at(-1).holding_end_exclusive;
   const versusCdi = benevente.cumulative - cdi.cumulative, versusMvo = benevente.cumulative - mvo.cumulative;
-  document.querySelector("#period-description").textContent = `${start} a ${end} · ${rows.length} decisões anuais, custos de rebalanceamento deduzidos.`;
-  document.querySelector("#comparison-summary").textContent = `Benevente: ${plainPct(benevente.cumulative)} acumulado. Contra CDI: ${pct(versusCdi)}; contra MVO clássico elegível: ${pct(versusMvo)}.`;
+  document.querySelector("#period-description").textContent = `${formatDateBr(start)} a ${formatDateBr(end)} · ${rows.length} decisões anuais com custos deduzidos.`;
+  document.querySelector("#comparison-summary").textContent = `Benevente ${plainPct(benevente.cumulative)} acumulado. Diferença para CDI ${pct(versusCdi)}. Diferença para MVO clássico ${pct(versusMvo)}.`;
   const baseRows = [["Benevente Quant AI", benevente, versusMvo >= 0 ? "Acima do MVO" : "Abaixo do MVO"], ["MVO clássico (elegível)", mvo, "Mesmo universo"], ["CDI", cdi, "Reserva defensiva"]];
-  const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => { const metrics = metricsForSeries(values, profileDataset(period).dates); return metrics ? [name, { cumulative: values.at(-1) / values.find(Number.isFinite) - 1, cagr: metrics.cagr }, "Série adicionada"] : null; }).filter(Boolean);
-  document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${name}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)} a.a.</small></td><td>${note}</td></tr>`).join("");
-  document.querySelector("#research-note").textContent = `Leitura correta da janela de ${rows.length} anos: o Benevente ${versusCdi >= 0 ? "superou" : "ficou abaixo do"} CDI em ${plainPct(Math.abs(versusCdi))} e ${versusMvo >= 0 ? "superou" : "ficou abaixo do"} MVO clássico elegível em ${plainPct(Math.abs(versusMvo))}. Isso não comprova alfa persistente nem constitui recomendação.`;
+  const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => {
+    const metrics = metricsForSeries(values, profileDataset(period).dates);
+    const firstAvailable = values.findIndex(value => Number.isFinite(Number(value)));
+    const note = firstAvailable >= 0 ? `Disponível desde ${formatDateBr(profileDataset(period).dates[firstAvailable])}` : "Série adicionada";
+    return metrics ? [name, { cumulative: values.at(-1) / values.find(Number.isFinite) - 1, cagr: metrics.cagr }, note] : null;
+  }).filter(Boolean);
+  document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${name}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td>${note}</td></tr>`).join("");
+  document.querySelector("#research-note").textContent = `Na janela de ${rows.length} ano(s), o Benevente ${versusCdi >= 0 ? "superou" : "ficou abaixo do"} CDI em ${plainPct(Math.abs(versusCdi))} e ${versusMvo >= 0 ? "superou" : "ficou abaixo do"} MVO clássico em ${plainPct(Math.abs(versusMvo))}. Não é garantia de retorno.`;
   renderCurveToggles(period); renderLineChart(period);
 }
 let currentPeriod = "3";
@@ -469,8 +465,8 @@ document.querySelectorAll(".chart-source").forEach(button => button.addEventList
   document.querySelector("#fund-name-label").classList.toggle("hidden", chartSource !== "fund");
   document.querySelector("#fund-file-label").classList.toggle("hidden", chartSource !== "fund");
   document.querySelector("#chart-add-help").textContent = chartSource === "ticker"
-    ? "Busca preços ajustados do ticker no período selecionado e normaliza em base 100. Fonte: Yahoo Finance; valide com a fonte institucional antes de usar em comitê."
-    : "Use a referência CVM sugerida na janela comum ou informe o CNPJ e importe o CSV oficial de cotas. Um fundo não é benchmark oficial nem recomendação.";
+    ? "Busca preços ajustados do ticker na janela selecionada e normaliza em base 100. Fonte: Yahoo Finance. Valide com fonte institucional antes de usar na análise."
+    : "Use um fundo sugerido ou informe CNPJ e CSV oficial de cotas. Um fundo não é benchmark oficial nem recomendação.";
 }));
 document.querySelectorAll(".quick-ticker").forEach(button => button.addEventListener("click", () => {
   document.querySelector("#chart-symbol").value = button.dataset.ticker;
@@ -483,9 +479,10 @@ document.querySelectorAll(".fund-preset-button").forEach(button => button.addEve
   if (!preset) { document.querySelector("#chart-add-help").textContent = "Referência ainda não está disponível nesta cópia."; return; }
   const data = profileDataset(currentPeriod);
   try {
-    extraSeries[currentPeriod][preset.name] = normalizeSeriesOnCommonWindow(preset.points, data.dates);
+    addedSeries.set(preset.name, preset.points);
+    refreshExtraSeriesForPeriod(currentPeriod);
     selectedCurves = new Set(Object.keys(seriesFor(currentPeriod))); renderComparison(currentPeriod);
-    document.querySelector("#chart-add-help").textContent = `${preset.name} adicionado com cotas públicas CVM na janela comum. ${preset.limitation}`;
+    document.querySelector("#chart-add-help").textContent = `${preset.name} adicionado com cotas CVM. ${preset.limitation}`;
   } catch (error) { document.querySelector("#chart-add-help").textContent = error.message || "Não foi possível alinhar as cotas do fundo."; }
 }));
 document.querySelector("#chart-add-form").addEventListener("submit", async event => {
@@ -499,7 +496,8 @@ document.querySelector("#chart-add-form").addEventListener("submit", async event
       help.textContent = "Consultando série de preço ajustado…";
       const request = await fetch(`/api/chart-series?symbol=${encodeURIComponent(symbol)}&start=${data.dates[0]}&end=${data.dates.at(-1)}`);
       const payload = await request.json(); if (!request.ok) throw new Error(payload.error || "Não foi possível carregar o ticker.");
-      extraSeries[currentPeriod][payload.symbol.replace(".SA", "")] = normalizeSeriesOnCommonWindow(payload.points, data.dates);
+      addedSeries.set(payload.symbol.replace(".SA", ""), payload.points);
+      refreshExtraSeriesForPeriod(currentPeriod);
     } else {
       const file = document.querySelector("#fund-file").files[0];
       if (!file) {
@@ -507,9 +505,10 @@ document.querySelector("#chart-add-form").addEventListener("submit", async event
         const name = document.querySelector("#fund-name").value.trim() || `Fundo CVM ${cnpj}`;
         const preset = (fundPresetsData?.funds || []).find(item => item.cnpj === cnpj);
         if (preset) {
-          extraSeries[currentPeriod][preset.name] = normalizeSeriesOnCommonWindow(preset.points, data.dates);
+          addedSeries.set(preset.name, preset.points);
+          refreshExtraSeriesForPeriod(currentPeriod);
           selectedCurves = new Set(Object.keys(seriesFor(currentPeriod))); renderComparison(currentPeriod);
-          help.textContent = `${preset.name} adicionado com cotas oficiais CVM na primeira data comum.`;
+          help.textContent = `${preset.name} adicionado com cotas oficiais CVM na janela selecionada.`;
           return;
         }
         if (!cnpj) throw new Error("Escolha um fundo sugerido, informe o CNPJ ou importe o CSV de cotas.");
@@ -524,10 +523,11 @@ document.querySelector("#chart-add-form").addEventListener("submit", async event
       if (dateIndex < 0 || quotaIndex < 0) throw new Error("O CSV precisa ter colunas date/data e quota/cota/valor.");
       const points = rows.map(row => ({ date: row[dateIndex], value: parseQuotaNumber(row[quotaIndex]) })).filter(point => point.date && Number.isFinite(point.value));
       if (points.length < 2) throw new Error("O arquivo não contém cotas válidas suficientes.");
-      extraSeries[currentPeriod][`Fundo importado: ${file.name.replace(/\.csv$/i, "")}`] = normalizeSeriesOnCommonWindow(points, data.dates);
+      addedSeries.set(`Fundo importado: ${file.name.replace(/\.csv$/i, "")}`, points);
+      refreshExtraSeriesForPeriod(currentPeriod);
     }
     selectedCurves = new Set(Object.keys(seriesFor(currentPeriod))); renderComparison(currentPeriod);
-    help.textContent = "Série adicionada. Use as chaves acima para mostrar ou ocultar linhas e clique no gráfico para inspecionar datas.";
+    help.textContent = "Série adicionada. Use as chaves para mostrar ou ocultar linhas e clique no gráfico para inspecionar datas.";
   } catch (error) { help.textContent = error.message || "Não foi possível adicionar a série."; }
 });
 document.querySelector("#decision-year").addEventListener("change", renderAssetWorkbench);
@@ -554,9 +554,9 @@ function renderModel(step) { const item=modelSteps[step]; document.querySelector
 document.querySelectorAll(".model-step").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".model-step").forEach(item=>item.classList.remove("active"));button.classList.add("active");renderModel(button.dataset.step)}));
 
 renderModel("policy");
-Promise.all([fetch("./horizon_curves.json"), fetch("./annual_research.json"), fetch("./forecast_research.json"), fetch("./b3_universe.json"), fetch("./current_decision_2026.json"), fetch("./fund_presets.json")]).then(async ([curves, research, forecast, universe, currentDecision, fundPresets]) => {
-  if (!curves.ok || !research.ok || !forecast.ok || !universe.ok || !currentDecision.ok || !fundPresets.ok) throw new Error("research unavailable");
-  curveData = await curves.json(); researchData = await research.json(); forecastData = await forecast.json(); universeData = await universe.json(); currentDecisionData = await currentDecision.json(); fundPresetsData = await fundPresets.json();
+Promise.all([fetch("./annual_research.json"), fetch("./forecast_research.json"), fetch("./b3_universe.json"), fetch("./current_decision_2026.json"), fetch("./fund_presets.json")]).then(async ([research, forecast, universe, currentDecision, fundPresets]) => {
+  if (!research.ok || !forecast.ok || !universe.ok || !currentDecision.ok || !fundPresets.ok) throw new Error("research unavailable");
+  researchData = await research.json(); forecastData = await forecast.json(); universeData = await universe.json(); currentDecisionData = await currentDecision.json(); fundPresetsData = await fundPresets.json();
   extraSeries[1] = {}; extraSeries[3] = {}; extraSeries[5] = {}; extraSeries[11] = {};
   document.querySelector("#proposal-form").requestSubmit();
   renderUniverse();

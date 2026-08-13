@@ -2,6 +2,7 @@
 .venv-benevente/
 work/
 workpytest_*/
+workpytest_bundle/
 artifacts/
 data/
 tests/
