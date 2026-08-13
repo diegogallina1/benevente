@@ -50,10 +50,19 @@ class ValuePortfolioPlanner:
             self.config,
             max_asset_weight=maximum_asset_weight or self.config.max_asset_weight,
         )
-        weights = MeanVarianceOptimizer(optimizer_config).optimize(
-            historical_returns, scores, equity_cap=maximum_equity_weight, signal_influence=self.config.value_quality_influence,
-            eligible_assets=set(screen.loc[screen.eligible, "ticker"]),
+        eligible_assets = set(screen.loc[screen.eligible, "ticker"])
+        # Optimise only the assets that passed the dated eligibility screen
+        # plus the CDI residual. Passing blocked names with a zero upper bound
+        # needlessly creates a large, rank-deficient covariance matrix and
+        # makes a valid constrained optimisation numerically fragile.
+        optimizer_assets = [asset for asset in assets if asset == "TITULO_CDI" or asset in eligible_assets]
+        optimized = MeanVarianceOptimizer(optimizer_config).optimize(
+            historical_returns.loc[:, optimizer_assets],
+            {asset: scores[asset] for asset in optimizer_assets},
+            equity_cap=maximum_equity_weight, signal_influence=self.config.value_quality_influence,
+            eligible_assets=eligible_assets,
         )
+        weights = optimized.reindex(assets, fill_value=0.0)
         liquidity = screen.set_index("ticker").average_daily_value_brl.to_dict()
         portfolio_value = self.config.initial_portfolio_value_brl
         estimated_cost = sum(

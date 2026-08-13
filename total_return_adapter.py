@@ -15,6 +15,7 @@ import pandas as pd
 
 
 REQUIRED_MANIFEST = {"price_basis", "provider", "extraction_timestamp", "coverage_start", "coverage_end", "corporate_actions", "cdi_source", "file_sha256"}
+INSTITUTIONAL_SOURCE_TIERS = {"official_or_licensed_verified", "reconciled_primary_records"}
 
 
 def file_sha256(path: str | Path) -> str:
@@ -23,6 +24,16 @@ def file_sha256(path: str | Path) -> str:
         for chunk in iter(lambda: source.read(1_048_576), b""):
             digest.update(chunk)
     return digest.hexdigest()
+
+
+def institutional_performance_verified(manifest: dict) -> bool:
+    """Whether a source may support an institutional performance approval.
+
+    A public adjusted-close feed is useful for reproducible research but is
+    not enough on its own for commercial validation of dividends, JCP and
+    delisting proceeds.
+    """
+    return str(manifest.get("source_tier", "")) in INSTITUTIONAL_SOURCE_TIERS
 
 
 def load_total_return_export(prices_path: str | Path, manifest_path: str | Path) -> tuple[pd.DataFrame, dict]:

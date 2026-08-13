@@ -76,6 +76,11 @@ Os arquivos `annual_results.csv`, `annual_transitions.csv`,
 experimento. O processo não procura o maior retorno depois de observar o
 futuro; isso seria sobreajuste, não uma estratégia utilizável.
 
+Para uma rota gratuita e reproduzível de pesquisa, use o
+[painel Yahoo Finance ajustado + CDI BCB](docs/yahoo_total_return_research.md).
+Ele é classificado como pesquisa até a reconciliação dos eventos corporativos
+com registros B3/CVM ou um provedor licenciado.
+
 ### Candidata multifatorial e perfil do investidor
 
 O candidato separado `triple_factor` corrige a subalocação acidental da linha

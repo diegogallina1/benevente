@@ -3,7 +3,7 @@ import json
 import pandas as pd
 import pytest
 
-from total_return_adapter import file_sha256, load_total_return_export
+from total_return_adapter import file_sha256, institutional_performance_verified, load_total_return_export
 
 
 def test_total_return_export_requires_a_matching_attribution_manifest(tmp_path):
@@ -20,3 +20,8 @@ def test_total_return_export_requires_a_matching_attribution_manifest(tmp_path):
     metadata["file_sha256"] = "not-the-real-hash"; manifest.write_text(json.dumps(metadata), encoding="utf-8")
     with pytest.raises(ValueError, match="hash"):
         load_total_return_export(prices, manifest)
+
+
+def test_public_adjusted_close_source_is_research_only_until_reconciled():
+    assert not institutional_performance_verified({"source_tier": "public_reproducible_research"})
+    assert institutional_performance_verified({"source_tier": "reconciled_primary_records"})

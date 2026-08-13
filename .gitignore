@@ -9,3 +9,5 @@ __pycache__/
 .vercel/
 artifacts/
 .pytest_cache/
+data/prices_yahoo_adjusted_total_return_*.csv
+data/yahoo_adjusted_total_return_*_manifest.json

@@ -72,6 +72,21 @@ def test_value_planner_only_allocates_eligible_assets():
     assert proposal.weights.drop(labels=["PETR4.SA", "TITULO_CDI"]).sum() == pytest.approx(0.0, abs=1e-7)
 
 
+def test_value_planner_reduces_optimizer_input_to_eligible_assets(monkeypatch):
+    config = SystemConfig(rolling_window_days=100)
+    prices = PointInTimeDataLoader(config).fetch_prices("2023-01-01", "2025-06-30", offline=True)
+    returns = prices.pct_change().dropna().iloc[-100:]
+    seen: list[set[str]] = []
+    import portfolio_recommendation
+    original = portfolio_recommendation.MeanVarianceOptimizer.optimize
+    def capture(self, historical_returns, *args, **kwargs):
+        seen.append(set(historical_returns.columns))
+        return original(self, historical_returns, *args, **kwargs)
+    monkeypatch.setattr(portfolio_recommendation.MeanVarianceOptimizer, "optimize", capture)
+    ValuePortfolioPlanner(config).propose(returns, [snapshot("PETR4.SA")], pd.Timestamp("2025-02-28"), horizon_years=5)
+    assert seen == [{"PETR4.SA", "TITULO_CDI"}]
+
+
 def test_value_backtest_uses_screen_and_clear_cost_model():
     config = SystemConfig(rolling_window_days=100, rebalance_days=21)
     prices = PointInTimeDataLoader(config).fetch_prices("2023-01-01", "2025-06-30", offline=True)

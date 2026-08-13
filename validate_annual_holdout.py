@@ -18,12 +18,18 @@ def main() -> None:
     parser.add_argument("--output", default="artifacts/annual_holdout_validation.json")
     args = parser.parse_args()
     source_manifest = json.loads(Path(args.input_manifest).read_text(encoding="utf-8"))
+    source_verified = bool(source_manifest.get("performance_permitted", False)) and bool(
+        source_manifest.get("institutional_performance_verified", False)
+    )
     approved, evidence = annual_holdout_readiness(
         pd.read_csv(args.annual_results), args.split_year,
-        bool(source_manifest.get("performance_permitted", False)), AnnualHoldoutGate(),
+        source_verified, AnnualHoldoutGate(),
     )
     report = {"status": "approved" if approved else "research_only", "split_year": args.split_year,
-              "input_manifest_status": source_manifest.get("status"), "evidence": evidence}
+              "input_manifest_status": source_manifest.get("status"),
+              "total_return_source_tier": source_manifest.get("total_return_source_tier"),
+              "institutional_performance_verified": source_verified,
+              "evidence": evidence}
     output = Path(args.output); output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     print(json.dumps(report, indent=2, ensure_ascii=False))

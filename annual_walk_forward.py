@@ -37,6 +37,19 @@ RISK_PROFILE_LIMITS: dict[str, dict[str, float | str]] = {
 }
 
 
+def _price_column_for_ticker(ticker: str, columns: pd.Index) -> str | None:
+    """Resolve the B3/CVM ``.SA`` convention against a price panel safely.
+
+    Dated CVM snapshots commonly retain Yahoo's market suffix (``PETR4.SA``),
+    whereas public price exports use the canonical B3 code (``PETR4``).  The
+    conversion is deterministic and only used at the integration boundary;
+    all decision records retain the original snapshot ticker.
+    """
+    value = str(ticker).upper().strip()
+    candidates = (value, value.removesuffix(".SA"), value + ".SA")
+    return next((candidate for candidate in candidates if candidate in columns), None)
+
+
 @dataclass(frozen=True)
 class AnnualWalkForwardConfig:
     start_year: int
@@ -136,6 +149,26 @@ def _first_trading_day(prices: pd.DataFrame, year: int) -> pd.Timestamp | None:
 def _format_weights(weights: pd.Series) -> str:
     entries = [f"{ticker}:{weight:.2%}" for ticker, weight in weights.items() if weight > 1e-6]
     return " | ".join(entries)
+
+
+def _recent_market_sessions(prices: pd.DataFrame, decision: pd.Timestamp,
+                            minimum_history_days: int) -> pd.DatetimeIndex:
+    """Identify recent B3 sessions from broad panel coverage, not calendar days.
+
+    Yahoo emits rows for Brazilian holidays when a minority of instruments
+    traded (or their calendar differs). Requiring every asset to have a quote
+    on every one of those rows would reject liquid issuers such as PETR4.  A
+    session is therefore a date with at least 80% of the panel's peak equity
+    coverage. Individual names must still have a real quote on all selected
+    sessions; nothing is forward-filled.
+    """
+    prior = prices.loc[prices.index < decision].drop(columns="TITULO_CDI", errors="ignore")
+    coverage = prior.notna().sum(axis=1)
+    if coverage.empty:
+        return pd.DatetimeIndex([])
+    threshold = max(1, int(coverage.max() * .80))
+    sessions = coverage.index[coverage >= threshold]
+    return pd.DatetimeIndex(sessions[-(minimum_history_days + 1):])
 
 
 class AnnualWalkForwardEngine:
@@ -269,7 +302,8 @@ class AnnualWalkForwardEngine:
         )
         return PortfolioProposal(decision, protocol.horizon_years, weights, screen, estimated_cost)
 
-    def run(self, protocol: AnnualWalkForwardConfig) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    def run(self, protocol: AnnualWalkForwardConfig,
+            factors_by_year: dict[int, str] | None = None) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         wealth = float(self.config.initial_portfolio_value_brl)
         previous = pd.Series(0.0, index=self.prices.columns)
         mvo_previous = pd.Series(0.0, index=self.prices.columns)
@@ -279,11 +313,18 @@ class AnnualWalkForwardEngine:
         holding_rows: list[dict] = []
 
         for year in range(protocol.start_year, protocol.end_year):
+            decision_factor = (factors_by_year or {}).get(year, protocol.factor)
             decision = _first_trading_day(self.prices, year)
             next_decision = _first_trading_day(self.prices, year + 1)
             if decision is None or next_decision is None:
                 continue
-            known_snapshots = [item for item in self.snapshots if pd.Timestamp(item.available_date) <= decision]
+            # A historical panel has one fundamental snapshot per ticker per
+            # annual decision. The decision may see several older filings, but
+            # only the newest filing actually available at that date may enter
+            # the screen; retaining all older records duplicates a ticker and
+            # can accidentally turn its price history into a DataFrame.
+            from fundamentals import snapshots_available_on
+            known_snapshots = list(snapshots_available_on(self.snapshots, decision).values())
             if self.decision_evidence is not None:
                 permitted = self.decision_evidence.allowed(decision)
                 known_snapshots = [item for item in known_snapshots if item.ticker in permitted]
@@ -297,22 +338,31 @@ class AnnualWalkForwardEngine:
             # complete trailing price window; do not forward-fill a gap or
             # discard every other asset because one ticker is unavailable.
             prior_prices = self.prices.loc[self.prices.index < decision]
-            candidate_tickers = [item.ticker for item in known_snapshots if item.ticker in prior_prices.columns]
-            complete_tickers = [ticker for ticker in candidate_tickers
-                                if prior_prices[ticker].tail(protocol.minimum_history_days + 1).notna().all()]
+            ticker_columns = {item.ticker: _price_column_for_ticker(item.ticker, prior_prices.columns)
+                              for item in known_snapshots}
+            recent_sessions = _recent_market_sessions(self.prices, decision, protocol.minimum_history_days)
+            if len(recent_sessions) < protocol.minimum_history_days + 1:
+                continue
+            complete_tickers = [ticker for ticker, column in ticker_columns.items()
+                                if column is not None and prior_prices.loc[recent_sessions, column].notna().all()]
             known_snapshots = [item for item in known_snapshots if item.ticker in complete_tickers]
             if not known_snapshots:
                 continue
-            history_columns = [*complete_tickers, "TITULO_CDI"]
-            history = prior_prices.reindex(columns=history_columns).tail(protocol.minimum_history_days + 1).pct_change().dropna()
+            # Rename only the local history slice to the dated fundamental
+            # identifiers. This prevents price-source syntax from changing the
+            # selection universe or the audit trail.
+            history_source_columns = [ticker_columns[ticker] for ticker in complete_tickers]
+            history = prior_prices.loc[recent_sessions, [*history_source_columns, "TITULO_CDI"]].rename(
+                columns={ticker_columns[ticker]: ticker for ticker in complete_tickers}
+            ).pct_change().dropna()
             if len(history) < protocol.minimum_history_days:
                 continue
             # The selector itself rejects snapshots filed after the decision.
             planner_config = replace(self.config, initial_portfolio_value_brl=wealth,
                                      rolling_window_days=protocol.minimum_history_days,
                                      max_asset_weight=protocol.maximum_asset_weight)
-            factor_signal = self.factor_scores(history, protocol.factor)
-            if protocol.factor == "triple_factor":
+            factor_signal = self.factor_scores(history, decision_factor)
+            if decision_factor == "triple_factor":
                 proposal = self.triple_factor_proposal(history.tail(protocol.minimum_history_days), known_snapshots,
                                                        decision, previous, protocol, wealth)
             else:
@@ -330,12 +380,27 @@ class AnnualWalkForwardEngine:
             eligible = set(proposal.screen.loc[proposal.screen.eligible, "ticker"])
             neutral_scores = {ticker: 0.0 for ticker in history.columns}
             neutral_scores["TITULO_CDI"] = 1.0
+            # The comparator may only see assets that passed the same dated
+            # screen. Restricting the input columns (rather than assigning
+            # zero upper bounds to hundreds of ineligible names) also avoids
+            # numerical instability in a rank-deficient full-universe
+            # covariance matrix.
+            mvo_columns = [ticker for ticker in active_columns if ticker == "TITULO_CDI" or ticker in eligible]
             mvo_target = MeanVarianceOptimizer(planner_config).optimize(
-                history.tail(protocol.minimum_history_days), neutral_scores,
+                history.loc[:, mvo_columns].tail(protocol.minimum_history_days),
+                {ticker: neutral_scores[ticker] for ticker in mvo_columns},
                 equity_cap=protocol.maximum_equity_weight, signal_influence=0.0,
                 eligible_assets=eligible,
             ).reindex(active_columns, fill_value=0.0)
-            realised_prices = self.prices.loc[(self.prices.index >= decision) & (self.prices.index < next_decision), active_columns]
+            realised_slice = self.prices.loc[
+                (self.prices.index >= decision) & (self.prices.index < next_decision),
+                [*history_source_columns, "TITULO_CDI"],
+            ]
+            realised_coverage = realised_slice.drop(columns="TITULO_CDI").notna().sum(axis=1)
+            realised_threshold = max(1, int(realised_coverage.max() * .80)) if not realised_coverage.empty else 1
+            realised_prices = realised_slice.loc[realised_coverage >= realised_threshold].rename(
+                columns={ticker_columns[ticker]: ticker for ticker in complete_tickers}
+            )
             realised_returns = realised_prices.pct_change().dropna()
             if realised_returns.empty:
                 continue
@@ -357,7 +422,7 @@ class AnnualWalkForwardEngine:
                 "net_return": net_return, "opening_wealth_brl": wealth, "closing_wealth_brl": closing_wealth,
                 "turnover": turnover, "weights_at_decision": _format_weights(target),
                 "known_snapshot_count": len(known_snapshots),
-                "factor": protocol.factor, "target_equity_weight": float(target.drop(labels="TITULO_CDI").sum()),
+                "factor": decision_factor, "target_equity_weight": float(target.drop(labels="TITULO_CDI").sum()),
                 "mvo_eligible_net_return": mvo_net_return,
                 "cdi_net_return": cdi_net_return,
             })
@@ -378,7 +443,7 @@ class AnnualWalkForwardEngine:
                 transition_rows.append({"decision_year": year, "decision_date": decision.date().isoformat(),
                                         "ticker": ticker, "previous_weight": old, "new_weight": new, "reason": reason,
                                         "decision_action": _decision_action(old, new),
-                                        "factor": protocol.factor})
+                                        "factor": decision_factor})
             for ticker, weight in target.items():
                 if weight > 1e-6:
                     item = screen.loc[ticker] if ticker in screen.index else None
@@ -404,7 +469,7 @@ class AnnualWalkForwardEngine:
                                          "ticker": ticker, "weight": weight,
                                          "previous_weight": old_weight,
                                          "decision_action": _decision_action(old_weight, float(weight)),
-                                         "factor": protocol.factor,
+                                         "factor": decision_factor,
                                          "value_quality_score": score,
                                          "factor_signal_at_decision": selected_signal,
                                          "trailing_12m_return_at_decision": twelve_month_return,
@@ -462,9 +527,6 @@ def run_adaptive_factor_walk_forward(engine: AnnualWalkForwardEngine, base: Annu
     frozen and evaluated once. This is the production-like training protocol,
     rather than re-fitting on the final full sample.
     """
-    result_frames: list[pd.DataFrame] = []
-    transition_frames: list[pd.DataFrame] = []
-    holding_frames: list[pd.DataFrame] = []
     choices: list[dict] = []
     for decision_year in range(base.start_year + base.minimum_factor_training_years, base.end_year):
         selection_end = decision_year
@@ -477,20 +539,22 @@ def run_adaptive_factor_walk_forward(engine: AnnualWalkForwardEngine, base: Annu
             # If a historical gap makes factor comparison impossible, retain
             # the pre-registered value/quality baseline rather than guessing.
             factor, board = "value_quality", pd.DataFrame()
-        year_protocol = replace(base, start_year=decision_year, end_year=decision_year + 1, factor=factor)
-        try:
-            yearly, transitions, holdings = engine.run(year_protocol)
-        except ValueError:
-            continue
-        result_frames.append(yearly); transition_frames.append(transitions); holding_frames.append(holdings)
         choices.append({"decision_year": decision_year, "selected_factor": factor,
                         "selection_end_year_exclusive": selection_end,
                         "training_observations": int(board.iloc[0].training_years) if not board.empty else 0,
                         "selection_status": "selected_from_prior_years" if not board.empty else "baseline_retained_missing_training"})
-    if not result_frames:
+    if not choices:
         raise ValueError("No adaptive annual decisions were produced. Review dated price and fundamental coverage.")
-    return (pd.concat(result_frames, ignore_index=True), pd.concat(transition_frames, ignore_index=True),
-            pd.concat(holding_frames, ignore_index=True), pd.DataFrame(choices))
+    # Selection happens with only prior outcomes above.  Evaluation then runs
+    # once, continuously, so drifted weights, wealth and transaction costs
+    # from each holding year become the starting state of the next one.
+    factor_map = {int(row["decision_year"]): str(row["selected_factor"]) for row in choices}
+    first_decision = min(factor_map)
+    results, transitions, holdings = engine.run(replace(base, start_year=first_decision), factors_by_year=factor_map)
+    results = results.loc[results.decision_year.isin(factor_map)].reset_index(drop=True)
+    transitions = transitions.loc[transitions.decision_year.isin(factor_map)].reset_index(drop=True)
+    holdings = holdings.loc[holdings.decision_year.isin(factor_map)].reset_index(drop=True)
+    return results, transitions, holdings, pd.DataFrame(choices)
 
 
 def main() -> None:
@@ -523,10 +587,11 @@ def main() -> None:
     if args.price_basis == "price_return_only" and args.total_return_manifest:
         parser.error("--total-return-manifest cannot accompany --price-basis price_return_only.")
     if args.price_basis == "total_return":
-        from total_return_adapter import load_total_return_export
-        price_frame, _ = load_total_return_export(args.prices, args.total_return_manifest)
+        from total_return_adapter import institutional_performance_verified, load_total_return_export
+        price_frame, return_source_manifest = load_total_return_export(args.prices, args.total_return_manifest)
     else:
         price_frame = pd.read_csv(args.prices, parse_dates=["date"])
+        return_source_manifest = {}
     fundamental_frame = pd.read_csv(args.fundamentals, parse_dates=["as_of_date", "available_date"])
     input_manifest = validate_annual_inputs(price_frame, fundamental_frame, args.price_basis)
     if not input_manifest.performance_permitted:
@@ -562,7 +627,12 @@ def main() -> None:
     transitions.to_csv(output / "annual_transitions.csv", index=False)
     holdings.to_csv(output / "annual_holdings.csv", index=False)
     _annual_benchmark_summary(results).to_csv(output / "annual_benchmark_summary.csv", index=False)
-    (output / "input_manifest.json").write_text(json.dumps(input_manifest.as_dict(), indent=2, ensure_ascii=False), encoding="utf-8")
+    input_manifest_payload = input_manifest.as_dict()
+    input_manifest_payload["total_return_source_tier"] = return_source_manifest.get("source_tier", "unclassified")
+    input_manifest_payload["institutional_performance_verified"] = (
+        institutional_performance_verified(return_source_manifest) if args.price_basis == "total_return" else False
+    )
+    (output / "input_manifest.json").write_text(json.dumps(input_manifest_payload, indent=2, ensure_ascii=False), encoding="utf-8")
     if evidence_manifest is not None:
         evidence_manifest.to_csv(output / "decision_evidence_manifest.csv", index=False)
     if leaderboard is not None:

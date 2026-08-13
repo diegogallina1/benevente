@@ -76,3 +76,12 @@ def test_annual_holdout_does_not_approve_a_strategy_that_loses_to_mvo():
     approved, evidence = annual_holdout_readiness(results, 2019, True, AnnualHoldoutGate())
     assert not approved
     assert "did_not_beat_mvo_in_frozen_holdout" in evidence["annual_validation_reasons"]
+
+
+def test_public_research_source_cannot_be_passed_as_verified_holdout_input():
+    results = annual_result(range(2013, 2023), .15, .08, .10)
+    source_tier = "public_reproducible_research"
+    source_verified = source_tier in {"official_or_licensed_verified", "reconciled_primary_records"}
+    approved, evidence = annual_holdout_readiness(results, 2019, source_verified, AnnualHoldoutGate())
+    assert not approved
+    assert "total_return_input_not_verified" in evidence["annual_validation_reasons"]
