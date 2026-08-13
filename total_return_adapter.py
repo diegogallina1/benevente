@@ -41,7 +41,16 @@ def load_total_return_export(prices_path: str | Path, manifest_path: str | Path)
     if prices.date.duplicated().any() or prices.date.isna().any():
         raise ValueError("Total-return export has invalid or duplicate dates")
     numeric = prices.drop(columns="date").apply(pd.to_numeric, errors="coerce")
-    if numeric.isna().any().any() or (numeric <= 0).any().any():
-        raise ValueError("Total-return export must contain positive numeric index levels")
+    # A historical universe is intrinsically sparse: an IPO cannot have a
+    # price before listing.  The annual engine separately requires a complete
+    # pre-decision lookback for every eligible ticker.  CDI, in contrast, is
+    # mandatory on every trade-date to keep the defensive allocation honest.
+    if numeric.empty or numeric.drop(columns="TITULO_CDI", errors="ignore").dropna(how="all").empty:
+        raise ValueError("Total-return export must contain at least one asset index")
+    if numeric["TITULO_CDI"].isna().any() or (numeric["TITULO_CDI"] <= 0).any():
+        raise ValueError("Total-return export must contain a complete positive TITULO_CDI index")
+    assets = numeric.drop(columns="TITULO_CDI")
+    if (assets.dropna(how="all") <= 0).any().any():
+        raise ValueError("Total-return asset index levels must be positive where supplied")
     prices.loc[:, numeric.columns] = numeric
     return prices.sort_values("date").reset_index(drop=True), manifest

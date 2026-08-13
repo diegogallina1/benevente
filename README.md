@@ -273,4 +273,5 @@ se aplicável, CNPJ do fundo ativo de comparação. A ativação não envia orde
 
 Consulte [a integração ITR](docs/itr_integration.md), a
 [governança de produção](docs/production_governance.md) e o
-[desenho de pesquisa](docs/value_quality_research_design.md).
+[desenho de pesquisa](docs/value_quality_research_design.md) e o
+[protocolo brapi + CDI BCB](docs/brapi_total_return_research.md).
