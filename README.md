@@ -76,6 +76,26 @@ Os arquivos `annual_results.csv`, `annual_transitions.csv`,
 experimento. O processo não procura o maior retorno depois de observar o
 futuro; isso seria sobreajuste, não uma estratégia utilizável.
 
+### Candidata multifatorial e perfil do investidor
+
+O candidato separado `triple_factor` corrige a subalocação acidental da linha
+de base: ele combina qualidade primária (ROIC ou ROE), *earnings yield* e
+momento de 12 meses, sempre com informação conhecida no janeiro da decisão.
+Ausência de uma métrica secundária de dívida não exclui, por si só, uma empresa;
+liquidez, lucro positivo e qualidade continuam obrigatórios. Os perfis não
+mudam o sinal: apenas definem os tetos de risco auditáveis.
+
+```powershell
+python annual_walk_forward.py --prices data/prices_b3_2011_2026.csv --fundamentals data/fundamentals_cvm_january_panel.csv --start-year 2013 --end-year 2026 --factor triple_factor --risk-profile moderado --output artifacts/annual_triple_factor_moderado
+```
+
+Os perfis são `conservador` (35% em ações / 10% por emissor), `moderado`
+(55% / 12%), `crescimento` (70% / 15%) e `arrojado` (80% / 15%). Com quatro
+ativos, o teto por emissor pode reduzir a exposição efetiva: o moderado alcança,
+no máximo, 48%; crescimento e arrojado, 60%. Consulte o
+[protocolo da candidata multifatorial](docs/triple_factor_candidate_protocol.md)
+para resultados, custos e a limitação de status `research_only`.
+
 Em especial, consulte `annual_holdings.csv` como a lâmina anual de decisão:
 para cada ativo mantido ela contém peso anterior/novo, ação (entrada, manutenção,
 aumento ou redução), score de valor/qualidade, sinal selecionado, retorno e

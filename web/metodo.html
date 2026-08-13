@@ -27,7 +27,10 @@
       <ul><li>Não financeiras: liquidez, geração de caixa, ROIC, dívida e cobertura de juros.</li><li>Financeiras: liquidez, rentabilidade e preço sobre patrimônio.</li><li>Após o filtro, a otimização restrita aplica teto de renda variável, teto por emissor e reserva defensiva em CDI.</li></ul>
       <h2>4. Evidência e validação</h2>
       <p>As janelas arquivadas de 5, 10 e 15 anos são exibidas com CDI, Ibovespa e MVO clássico. O resultado é heterogêneo: não há superioridade consistente contra MVO. A seleção de hiperparâmetros usa apenas a parte de treinamento e exige condições mínimas antes do holdout.</p>
-      <h2>5. Uso comercial responsável</h2>
+      <h2>5. Hipótese multifatorial em pesquisa</h2>
+      <p>A candidata multifatorial separa o orçamento de risco do sinal: perfis definem tetos de ações e concentração; entre ativos líquidos e com lucro positivo, o score usa 40% de qualidade (ROIC ou ROE), 40% de <em>earnings yield</em> e 20% de retorno de preço anterior de 12 meses. Tudo é congelado no primeiro pregão de janeiro, antes de observar o retorno daquele ano.</p>
+      <p>Na amostra pública 2013–2025, o cenário moderado atingiu 48% máximo efetivo em ações (quatro emissores, teto de 12%) e apresentou 12,73% a.a. após custos, contra 9,51% do CDI e 12,11% do MVO elegível. No holdout 2020–2025 ficou abaixo do MVO, embora acima do CDI. Por isso, continua como hipótese <code>research_only</code>, e não como promessa comercial.</p>
+      <h2>6. Uso comercial responsável</h2>
       <p>O Wealth System entrega esta governança em uma experiência B2B. Integração, suitability, licenças de dados, aprovação e qualquer enquadramento regulatório são definidos com a instituição usuária. Nenhuma ordem é transmitida pelo produto.</p>
       <p><a class="text-link" href="./#contato">Conversar sobre um piloto institucional →</a></p>
     </main>

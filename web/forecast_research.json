@@ -1,0 +1,64 @@
+{
+  "decision_year": 2025,
+  "decision_date": "2025-01-02",
+  "method": "conditional_historical_distribution",
+  "label": "Faixa histórica condicional — não é previsão ou meta de rentabilidade",
+  "assets": [
+    {
+      "ticker": "PETR4",
+      "weight": 0.12,
+      "historical_observations": 4,
+      "historical_median_return": 0.2614292504481924,
+      "historical_downside_p20": 0.07356079747032489,
+      "historical_upside_p80": 0.650928027464508,
+      "why": "Selecionado pelo score qualidade + valuation + momento disponível na data anual de decisão."
+    },
+    {
+      "ticker": "ITUB4",
+      "weight": 0.12,
+      "historical_observations": 10,
+      "historical_median_return": 0.1643719931816918,
+      "historical_downside_p20": -0.0335361888862514,
+      "historical_upside_p80": 0.3444068767731945,
+      "why": "Selecionado pelo score qualidade + valuation + momento disponível na data anual de decisão."
+    },
+    {
+      "ticker": "WEGE3",
+      "weight": 0.12,
+      "historical_observations": 9,
+      "historical_median_return": 0.1356454925267114,
+      "historical_downside_p20": -0.010045184313101158,
+      "historical_upside_p80": 0.3898237200786716,
+      "why": "Selecionado pelo score qualidade + valuation + momento disponível na data anual de decisão."
+    },
+    {
+      "ticker": "BBAS3",
+      "weight": 0.106455626975019,
+      "historical_observations": 10,
+      "historical_median_return": 0.10185099879004965,
+      "historical_downside_p20": -0.06919563934196343,
+      "historical_upside_p80": 0.443100210670878,
+      "why": "Selecionado pelo score qualidade + valuation + momento disponível na data anual de decisão."
+    },
+    {
+      "ticker": "VALE3",
+      "weight": 0.0835443730249809,
+      "historical_observations": 6,
+      "historical_median_return": 0.03682434044776165,
+      "historical_downside_p20": -0.0628263312927414,
+      "historical_upside_p80": 0.248862360966219,
+      "why": "Selecionado pelo score qualidade + valuation + momento disponível na data anual de decisão."
+    }
+  ],
+  "portfolio": {
+    "historical_observations": 12,
+    "historical_median_return": 0.08113600371353985,
+    "historical_downside_p20": 0.018166323505026886,
+    "historical_upside_p80": 0.19736654074624302
+  },
+  "limitations": [
+    "A faixa resume retornos passados condicionais aos ativos e à regra; não estima preço-alvo.",
+    "A decisão mais recente do painel é histórica. Uma proposta atual exige fundamentos CVM e snapshot de mercado atuais.",
+    "Poucas observações e mudanças de regime podem tornar a faixa inadequada para o futuro."
+  ]
+}

@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from annual_walk_forward import (AnnualWalkForwardConfig, AnnualWalkForwardEngine,
+                                 RISK_PROFILE_LIMITS, protocol_for_risk_profile,
                                  run_adaptive_factor_walk_forward,
                                  select_factor_out_of_sample)
 from config import SystemConfig
@@ -93,3 +94,39 @@ def test_turnover_uses_drifted_weights_after_the_holding_year():
     changed_prices.loc[(changed_prices.index >= "2020-01-02") & (changed_prices.index < "2021-01-01"), "PETR4.SA"] *= 2
     changed, _, _ = AnnualWalkForwardEngine(changed_prices, [old_snapshot()], config).run(AnnualWalkForwardConfig(2020, 2023))
     assert base.loc[base.decision_year == 2021, "turnover"].item() != changed.loc[changed.decision_year == 2021, "turnover"].item()
+
+
+def test_triple_factor_keeps_primary_quality_asset_when_secondary_solvency_is_unavailable():
+    config = SystemConfig(initial_portfolio_value_brl=100_000)
+    prices = PointInTimeDataLoader(config).fetch_prices("2018-01-01", "2023-01-10", offline=True)
+    snapshot = old_snapshot().model_copy(update={"debt_to_ebitda": None, "interest_coverage": None})
+    engine = AnnualWalkForwardEngine(prices, [snapshot], config)
+    protocol = AnnualWalkForwardConfig(2020, 2023, factor="triple_factor", maximum_equity_weight=.55,
+                                       maximum_asset_weight=.12, top_assets=4)
+    results, _, holdings = engine.run(protocol)
+    assert results.factor.eq("triple_factor").all()
+    assert results.target_equity_weight.eq(.12).all()
+    assert holdings.loc[holdings.ticker.eq("PETR4.SA"), "eligible_at_decision"].all()
+
+
+def test_triple_factor_never_exceeds_equity_or_issuer_policy_cap():
+    config = SystemConfig(initial_portfolio_value_brl=100_000)
+    prices = PointInTimeDataLoader(config).fetch_prices("2018-01-01", "2023-01-10", offline=True)
+    snapshots = [old_snapshot(), old_snapshot().model_copy(update={"ticker": "VALE3.SA"})]
+    engine = AnnualWalkForwardEngine(prices, snapshots, config)
+    protocol = AnnualWalkForwardConfig(2020, 2023, factor="triple_factor", maximum_equity_weight=.60,
+                                       maximum_asset_weight=.15, top_assets=4)
+    results, _, holdings = engine.run(protocol)
+    assert results.target_equity_weight.le(.30 + 1e-8).all()
+    equity_holdings = holdings[holdings.ticker.ne("TITULO_CDI")]
+    assert equity_holdings.weight.le(.15 + 1e-8).all()
+
+
+def test_named_risk_profile_sets_guardrails_without_changing_factor_or_asset_count():
+    base = AnnualWalkForwardConfig(2020, 2023, factor="triple_factor", top_assets=4)
+    protocol = protocol_for_risk_profile(base, "conservador")
+    assert protocol.risk_profile == "conservador"
+    assert protocol.maximum_equity_weight == RISK_PROFILE_LIMITS["conservador"]["maximum_equity_weight"]
+    assert protocol.maximum_asset_weight == RISK_PROFILE_LIMITS["conservador"]["maximum_asset_weight"]
+    assert protocol.factor == "triple_factor"
+    assert protocol.top_assets == 4

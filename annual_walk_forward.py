@@ -19,9 +19,20 @@ from pathlib import Path
 import pandas as pd
 
 from config import SystemConfig
+from execution_costs import ClearB3CostModel
 from fundamentals import FundamentalSnapshot
 from optimizer import MeanVarianceOptimizer
-from portfolio_recommendation import ValuePortfolioPlanner
+from portfolio_recommendation import PortfolioProposal, ValuePortfolioPlanner
+
+
+# These are allocation guardrails, not return forecasts. Keeping them here
+# makes a research run reproducible from a human risk-profile label, while the
+# protocol JSON still contains the exact numerical limits used.
+RISK_PROFILE_LIMITS: dict[str, dict[str, float | str]] = {
+    "conservador": {"maximum_equity_weight": .35, "maximum_asset_weight": .10, "review_frequency": "trimestral"},
+    "moderado": {"maximum_equity_weight": .55, "maximum_asset_weight": .12, "review_frequency": "trimestral"},
+    "arrojado": {"maximum_equity_weight": .80, "maximum_asset_weight": .15, "review_frequency": "semestral"},
+}
 
 
 @dataclass(frozen=True)
@@ -34,6 +45,31 @@ class AnnualWalkForwardConfig:
     minimum_history_days: int = 252
     factor: str = "value_quality"
     minimum_factor_training_years: int = 3
+    top_assets: int = 4
+    minimum_average_daily_value_brl: float = 10_000_000
+    risk_profile: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.end_year <= self.start_year:
+            raise ValueError("end_year must be after start_year so at least one holding period can be evaluated.")
+        if not 0 <= self.maximum_equity_weight <= 1:
+            raise ValueError("maximum_equity_weight must be between 0 and 1.")
+        if not 0 < self.maximum_asset_weight <= 1:
+            raise ValueError("maximum_asset_weight must be between 0 (exclusive) and 1.")
+        if self.top_assets < 1:
+            raise ValueError("top_assets must be at least 1.")
+        if self.risk_profile is not None and self.risk_profile not in RISK_PROFILE_LIMITS:
+            raise ValueError(f"Unsupported risk profile '{self.risk_profile}'.")
+
+
+def protocol_for_risk_profile(protocol: AnnualWalkForwardConfig, risk_profile: str | None) -> AnnualWalkForwardConfig:
+    """Apply pre-declared investor guardrails without changing the signal."""
+    if risk_profile is None:
+        return protocol
+    limits = RISK_PROFILE_LIMITS[risk_profile]
+    return replace(protocol, risk_profile=risk_profile,
+                   maximum_equity_weight=float(limits["maximum_equity_weight"]),
+                   maximum_asset_weight=float(limits["maximum_asset_weight"]))
 
 
 def _decision_action(old: float, new: float, tolerance: float = 1e-6) -> str:
@@ -118,7 +154,7 @@ class AnnualWalkForwardEngine:
         the fundamental value/quality ranking. No realized holding-period
         return enters this function.
         """
-        if factor == "value_quality":
+        if factor in {"value_quality", "triple_factor"}:
             return None
         equities = [ticker for ticker in history.columns if ticker != "TITULO_CDI"]
         if not equities:
@@ -133,9 +169,103 @@ class AnnualWalkForwardEngine:
         ranks = raw.rank(pct=True)
         return {ticker: float(2 * rank - 1) for ticker, rank in ranks.items()}
 
+    @staticmethod
+    def _zscore(series: pd.Series) -> pd.Series:
+        """Cross-sectional z-score with deterministic zero-variance handling."""
+        deviation = float(series.std(ddof=0))
+        return pd.Series(0.0, index=series.index) if deviation == 0 else (series - series.mean()) / deviation
+
+    def triple_factor_screen(self, snapshots: list[FundamentalSnapshot], history: pd.DataFrame,
+                              decision: pd.Timestamp, protocol: AnnualWalkForwardConfig) -> pd.DataFrame:
+        """Pre-registered quality + value + 12-month momentum screen.
+
+        This deliberately requires only the primary quality signal (ROIC for
+        operating companies and ROE for financials), positive earnings and
+        minimum liquidity.  A missing debt/interest field is reported but is
+        *not* treated as evidence of distress; that was the source of the
+        baseline's accidental financial-sector concentration.  No later price
+        or filing is read here.
+        """
+        from fundamentals import snapshots_available_on
+
+        current = snapshots_available_on(snapshots, decision)
+        rows: list[dict] = []
+        for ticker, item in current.items():
+            reasons: list[str] = []
+            if ticker not in history.columns:
+                reasons.append("missing_price_history")
+            if item.average_daily_value_brl < protocol.minimum_average_daily_value_brl:
+                reasons.append("minimum_liquidity")
+            quality = item.roe if item.is_financial else item.roic
+            if quality is None or quality < (self.config.min_roe if item.is_financial else self.config.min_roic):
+                reasons.append("primary_quality")
+            if item.price_to_earnings is None or item.price_to_earnings <= 0:
+                reasons.append("positive_earnings")
+            row = {**item.model_dump(), "eligible": not reasons, "rejection_reasons": ",".join(reasons),
+                   "quality_signal": quality, "earnings_yield": None if item.price_to_earnings is None else 1 / item.price_to_earnings,
+                   "momentum_12m": None, "factor_score": 0.0, "value_quality_score": 0.0, "selection_rank": None}
+            if ticker in history.columns and len(history):
+                row["momentum_12m"] = float((1 + history[ticker].tail(protocol.minimum_history_days)).prod() - 1)
+            rows.append(row)
+        screen = pd.DataFrame(rows)
+        eligible = screen[screen.eligible].copy()
+        if eligible.empty:
+            return screen
+        eligible["factor_score"] = (
+            .40 * self._zscore(eligible.quality_signal) +
+            .40 * self._zscore(eligible.earnings_yield) +
+            .20 * self._zscore(eligible.momentum_12m)
+        )
+        eligible = eligible.sort_values(["factor_score", "ticker"], ascending=[False, True])
+        eligible["selection_rank"] = range(1, len(eligible) + 1)
+        # Preserve the established output column while making its meaning
+        # explicit in the factor column and protocol.json.
+        eligible["value_quality_score"] = eligible.factor_score.rank(pct=True)
+        return screen.merge(eligible[["ticker", "factor_score", "value_quality_score", "selection_rank"]], on="ticker", how="left", suffixes=("", "_scored")).assign(
+            factor_score=lambda frame: frame.factor_score_scored.fillna(frame.factor_score),
+            value_quality_score=lambda frame: frame.value_quality_score_scored.fillna(frame.value_quality_score),
+            selection_rank=lambda frame: frame.selection_rank_scored.fillna(frame.selection_rank),
+        ).drop(columns=["factor_score_scored", "value_quality_score_scored", "selection_rank_scored"])
+
+    @staticmethod
+    def _confidence_weights(scores: pd.Series, total_equity: float, maximum_asset_weight: float) -> pd.Series:
+        """Allocate by factor confidence while respecting every issuer cap."""
+        if scores.empty or total_equity <= 0:
+            return pd.Series(dtype=float)
+        raw = scores - scores.min() + .25
+        weights = raw / raw.sum() * total_equity
+        # Water-fill any cap excess among the remaining names; a cap is never
+        # relaxed merely to reach the requested equity allocation.
+        for _ in range(len(weights) + 1):
+            capped = weights >= maximum_asset_weight - 1e-12
+            excess = float(weights[capped].sum() - maximum_asset_weight * capped.sum())
+            weights.loc[capped] = maximum_asset_weight
+            available = ~capped
+            if excess <= 1e-12 or not available.any():
+                break
+            weights.loc[available] += excess * (raw[available] / raw[available].sum())
+        return weights.clip(upper=maximum_asset_weight)
+
+    def triple_factor_proposal(self, history: pd.DataFrame, snapshots: list[FundamentalSnapshot], decision: pd.Timestamp,
+                               current_weights: pd.Series, protocol: AnnualWalkForwardConfig, wealth: float) -> PortfolioProposal:
+        screen = self.triple_factor_screen(snapshots, history, decision, protocol)
+        selected = screen[screen.eligible].sort_values(["factor_score", "ticker"], ascending=[False, True]).head(protocol.top_assets)
+        if selected.empty:
+            raise ValueError("No eligible assets under the triple-factor point-in-time screen.")
+        attainable_equity = min(protocol.maximum_equity_weight, protocol.maximum_asset_weight * len(selected))
+        selected_weights = self._confidence_weights(selected.set_index("ticker").factor_score, attainable_equity, protocol.maximum_asset_weight)
+        weights = pd.Series(0.0, index=history.columns)
+        weights.loc[selected_weights.index] = selected_weights
+        weights["TITULO_CDI"] = 1 - float(weights.drop(labels="TITULO_CDI").sum())
+        liquidity = selected.set_index("ticker").average_daily_value_brl.to_dict()
+        costs = ClearB3CostModel()
+        estimated_cost = sum(
+            costs.estimate(wealth * abs(weights[ticker] - current_weights.get(ticker, 0.0)), liquidity[ticker]).total_brl
+            for ticker in selected_weights.index
+        )
+        return PortfolioProposal(decision, protocol.horizon_years, weights, screen, estimated_cost)
+
     def run(self, protocol: AnnualWalkForwardConfig) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
-        if protocol.end_year <= protocol.start_year:
-            raise ValueError("end_year must be after start_year so at least one holding period can be evaluated.")
         wealth = float(self.config.initial_portfolio_value_brl)
         previous = pd.Series(0.0, index=self.prices.columns)
         mvo_previous = pd.Series(0.0, index=self.prices.columns)
@@ -163,13 +293,17 @@ class AnnualWalkForwardEngine:
                                      rolling_window_days=protocol.minimum_history_days,
                                      max_asset_weight=protocol.maximum_asset_weight)
             factor_signal = self.factor_scores(history, protocol.factor)
-            proposal = ValuePortfolioPlanner(planner_config).propose(
-                history.tail(protocol.minimum_history_days), known_snapshots, decision,
-                current_weights=previous, horizon_years=protocol.horizon_years,
-                maximum_equity_weight=protocol.maximum_equity_weight,
-                maximum_asset_weight=protocol.maximum_asset_weight,
-                scores_override=factor_signal,
-            )
+            if protocol.factor == "triple_factor":
+                proposal = self.triple_factor_proposal(history.tail(protocol.minimum_history_days), known_snapshots,
+                                                       decision, previous, protocol, wealth)
+            else:
+                proposal = ValuePortfolioPlanner(planner_config).propose(
+                    history.tail(protocol.minimum_history_days), known_snapshots, decision,
+                    current_weights=previous, horizon_years=protocol.horizon_years,
+                    maximum_equity_weight=protocol.maximum_equity_weight,
+                    maximum_asset_weight=protocol.maximum_asset_weight,
+                    scores_override=factor_signal,
+                )
             target = proposal.weights.reindex(self.prices.columns, fill_value=0.0)
             # Same historical information and constraints, but no alpha score:
             # a fair annual MVO baseline for the very same eligible universe.
@@ -203,7 +337,7 @@ class AnnualWalkForwardEngine:
                 "net_return": net_return, "opening_wealth_brl": wealth, "closing_wealth_brl": closing_wealth,
                 "turnover": turnover, "weights_at_decision": _format_weights(target),
                 "known_snapshot_count": len(known_snapshots),
-                "factor": protocol.factor,
+                "factor": protocol.factor, "target_equity_weight": float(target.drop(labels="TITULO_CDI").sum()),
                 "mvo_eligible_net_return": mvo_net_return,
                 "cdi_net_return": cdi_net_return,
             })
@@ -346,14 +480,23 @@ def main() -> None:
     parser.add_argument("--start-year", type=int, required=True)
     parser.add_argument("--end-year", type=int, required=True, help="First year not held; e.g. 2026 evaluates through 2025.")
     parser.add_argument("--output", default="artifacts/annual_walk_forward")
-    parser.add_argument("--factor", choices=["value_quality", "momentum_12m", "low_volatility"], default="value_quality")
+    parser.add_argument("--factor", choices=["value_quality", "momentum_12m", "low_volatility", "triple_factor"], default="value_quality")
+    parser.add_argument("--maximum-equity-weight", type=float, default=.55)
+    parser.add_argument("--maximum-asset-weight", type=float, default=.12)
+    parser.add_argument("--top-assets", type=int, default=4)
+    parser.add_argument("--risk-profile", choices=list(RISK_PROFILE_LIMITS),
+                        help="Apply pre-declared investor allocation guardrails; overrides manual equity and issuer caps.")
     parser.add_argument("--training-end-year", type=int, help="Optional factor-selection cutoff; output is then evaluated only after this year.")
     parser.add_argument("--adaptive-factors", action="store_true", help="Select a pre-declared factor from prior years before each next-year decision.")
     args = parser.parse_args()
     from advisor import snapshots_from_frame
     prices = pd.read_csv(args.prices, parse_dates=["date"]).set_index("date")
     snapshots = snapshots_from_frame(pd.read_csv(args.fundamentals, parse_dates=["as_of_date", "available_date"]))
-    protocol = AnnualWalkForwardConfig(args.start_year, args.end_year, factor=args.factor)
+    protocol = AnnualWalkForwardConfig(args.start_year, args.end_year, factor=args.factor,
+                                       maximum_equity_weight=args.maximum_equity_weight,
+                                       maximum_asset_weight=args.maximum_asset_weight,
+                                       top_assets=args.top_assets)
+    protocol = protocol_for_risk_profile(protocol, args.risk_profile)
     if args.adaptive_factors:
         results, transitions, holdings, factor_choices = run_adaptive_factor_walk_forward(
             AnnualWalkForwardEngine(prices, snapshots, SystemConfig()), protocol)

@@ -7,15 +7,13 @@ from typing import Literal
 from pydantic import BaseModel, Field, model_validator
 
 
-RiskProfile = Literal["conservative", "moderate", "growth", "aggressive", "custom"]
+RiskProfile = Literal["conservative", "moderate", "aggressive", "custom"]
 HORIZONS = {1, 2, 5, 10, 15}
 PROFILE_DEFAULTS = {
     "conservative": {"maximum_equity_weight": 0.35, "maximum_asset_weight": 0.10,
                      "maximum_drawdown_tolerance": 0.15, "review_interval_months": 3},
     "moderate": {"maximum_equity_weight": 0.55, "maximum_asset_weight": 0.12,
                  "maximum_drawdown_tolerance": 0.22, "review_interval_months": 3},
-    "growth": {"maximum_equity_weight": 0.70, "maximum_asset_weight": 0.15,
-               "maximum_drawdown_tolerance": 0.30, "review_interval_months": 6},
     "aggressive": {"maximum_equity_weight": 0.80, "maximum_asset_weight": 0.15,
                    "maximum_drawdown_tolerance": 0.40, "review_interval_months": 6},
 }
@@ -28,8 +26,10 @@ class ProductionPolicy(BaseModel):
     portfolio_value_brl: float = Field(gt=0)
     risk_profile: RiskProfile = "moderate"
     horizon_years: int = Field(ge=1, le=15)
-    maximum_equity_weight: float | None = Field(default=None, ge=0.10, le=0.80)
-    maximum_asset_weight: float | None = Field(default=None, ge=0.05, le=0.15)
+    # A custom policy may deliberately be 100% fixed income or 100% equities.
+    # The portfolio constructor must still enforce diversification and suitability.
+    maximum_equity_weight: float | None = Field(default=None, ge=0.0, le=1.0)
+    maximum_asset_weight: float | None = Field(default=None, gt=0.0, le=1.0)
     maximum_rebalance_cost_brl: float = Field(gt=0)
     maximum_drawdown_tolerance: float | None = Field(default=None, ge=0.05, le=0.50)
     review_interval_months: int | None = Field(default=None, ge=1, le=12)

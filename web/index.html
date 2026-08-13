@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Benevente — research-grade wealth decision support." />
     <title>Benevente — Wealth System</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
@@ -22,6 +23,7 @@
         <a href="#como-funciona">Método</a>
         <a href="#laboratorio">Laboratório</a>
         <a href="#carteira">Carteira</a>
+        <a href="#sugestoes">Cenários</a>
         <a href="#comparar">Comparar</a>
         <a href="#governanca">Governança</a>
         <a href="#como-comecar">Como começar</a>
@@ -61,10 +63,11 @@
       </section>
 
       <section class="research-signal shell" aria-label="Estado atual da pesquisa">
-        <div><span>ESTADO DA PESQUISA</span><strong>2013–2025</strong><p>13 períodos anuais auditados, com decisão em janeiro e retorno observado somente depois.</p></div>
-        <div><span>RESULTADO-BASE</span><strong>10,11% a.a.</strong><p>CAGR líquido do Benevente na amostra ponto-no-tempo; CDI: 9,51% a.a.</p></div>
-        <div><span>LEITURA RESPONSÁVEL</span><strong>Não aprovado para alfa</strong><p>O MVO comparável marcou 10,33% a.a.; a hipótese ainda precisa de aprimoramento.</p></div>
-        <a class="text-link" href="#comparar">Examinar a evidência <span>→</span></a>
+        <div class="research-signal-lede"><span>ESTADO DA PESQUISA</span><strong>2013–2025</strong><p>13 decisões anuais auditadas. O explorador exibe 1.406 instrumentos da B3 datados em 12/08/2026.</p></div>
+        <div><span>REGRA RESTRITIVA</span><strong>10,11% a.a.</strong><p>Linha de referência, líquida de custos. CDI no mesmo período: 9,51% a.a.</p></div>
+        <div><span>MULTIFATORIAL · 5 ATIVOS</span><strong>14,17% a.a.</strong><p>Qualidade, valor e momento; 55% em ações, cinco emissores e custos deduzidos.</p></div>
+        <div><span>VALIDAÇÃO SEPARADA</span><strong>13,14% a.a.</strong><p>No holdout 2020–2025, superou CDI (9,43%) e MVO elegível (11,76%).</p></div>
+        <a class="text-link" href="#comparar">Ver resultados e limites <span>→</span></a>
       </section>
 
       <section class="audience-shell" id="para-quem">
@@ -104,11 +107,10 @@
             <div class="choice-row" role="radiogroup" aria-label="Perfil de risco">
               <button type="button" class="choice" data-profile="conservador">Conservador</button>
               <button type="button" class="choice active" data-profile="moderado">Equilibrado</button>
-              <button type="button" class="choice" data-profile="crescimento">Crescimento</button>
               <button type="button" class="choice" data-profile="arrojado">Arrojado</button>
               <button type="button" class="choice" data-profile="personalizado">Personalizado</button>
             </div>
-            <div class="lab-custom-policy hidden" id="lab-custom-policy"><label>Máx. em renda variável <output id="lab-equity-output">55%</output><input id="lab-equity" type="range" min="10" max="80" value="55" /></label><label>Máx. por emissor <output id="lab-issuer-output">12%</output><input id="lab-issuer" type="range" min="5" max="15" value="12" /></label><label>Queda tolerada <output id="lab-drawdown-output">22%</output><input id="lab-drawdown" type="range" min="5" max="50" value="22" /></label></div>
+            <div class="lab-custom-policy hidden" id="lab-custom-policy"><div class="custom-policy-head"><span>POLÍTICA PERSONALIZADA</span><p>Defina os limites. A composição ilustrativa distribui a parcela em ações entre emissores para não confundir limite com concentração.</p></div><label>Máx. em renda variável <output id="lab-equity-output">55%</output><input id="lab-equity" type="range" min="0" max="100" value="55" /><small>0% = 100% reserva defensiva · 100% = somente renda variável, sujeito à diversificação.</small></label><label>Máx. por emissor <output id="lab-issuer-output">12%</output><input id="lab-issuer" type="range" min="5" max="25" value="12" /></label><label>Queda tolerada <output id="lab-drawdown-output">22%</output><input id="lab-drawdown" type="range" min="5" max="50" value="22" /></label></div>
             <label for="horizon">Horizonte de decisão <output id="horizon-output">5 anos</output></label>
             <input id="horizon" type="range" min="1" max="15" step="1" value="5" />
             <div class="form-note"><i>✓</i><span>Futuros pesos respeitam limites de concentração, perfil e filtros de elegibilidade.</span></div>
@@ -149,28 +151,45 @@
         <div class="workbench-foot">
           <div><b>O que a LLM faz</b><span>Transforma fatos aprovados em uma nota de tese, riscos e perguntas de revisão.</span></div>
           <div><b>O que a LLM não faz</b><span>Não aprova ativos, não altera filtros, não calcula retornos e não envia ordens.</span></div>
-          <div><b>O que falta para uma carteira ao vivo</b><span>Universo completo B3, fonte de preço licenciada, snapshots recentes, suitability e aprovação humana.</span></div>
+          <div><b>O que falta para uma carteira ao vivo</b><span>Fundamentos históricos completos de todos os emissores, preço licenciado, suitability e aprovação humana.</span></div>
         </div>
+      </section>
+
+      <section class="forecast-shell" id="sugestoes">
+        <div class="shell forecast-head"><div><p class="eyebrow light"><span></span> Sugestão e cenários</p><h2>Uma tese para o próximo ciclo,<br /><em>não uma promessa sobre o futuro.</em></h2></div><p>A sugestão deriva da última decisão auditada disponível no painel. A faixa de retorno é uma distribuição de resultados históricos da regra, calculada antes da decisão descrita; não é preço-alvo, garantia ou recomendação individual.</p></div>
+        <div class="shell forecast-grid">
+          <article class="forecast-card"><div class="forecast-card-top"><span class="control-label">CENÁRIO CONDICIONAL DA CARTEIRA</span><span class="research-chip">RESEARCH ONLY</span></div><div class="scenario-summary" id="scenario-summary">Carregando cenário histórico…</div><div class="scenario-chart" id="scenario-chart" aria-live="polite"></div><p class="scenario-caption" id="scenario-caption"></p></article>
+          <article class="forecast-card suggestion-card"><div class="forecast-card-top"><span class="control-label">ATIVOS SELECIONADOS NO CICLO AUDITADO</span><span id="suggestion-decision"></span></div><div id="suggestion-assets" class="suggestion-assets" aria-live="polite"></div><p class="scenario-caption">A seleção acima é histórica. Para uma sugestão atual, o motor exige atualização de ITR/DFP, preço, liquidez, política e aprovação humana.</p></article>
+        </div>
+        <div class="shell scenario-limitations" id="scenario-limitations"></div>
+      </section>
+
+      <section class="universe-shell shell" id="universo">
+        <div class="universe-head"><div><p class="eyebrow"><span></span> Cobertura B3 datada</p><h2>Todo instrumento observado,<br /><em>sem fingir que todos são elegíveis.</em></h2></div><p>O explorador usa o COTAHIST oficial da B3. Pesquise ações, ETFs, BDRs e FIIs; a classe e a liquidez são fatos de mercado. A elegibilidade para compra depende de dados fundamentais, mandato e controles adicionais.</p></div>
+        <div class="universe-summary" id="universe-summary">Carregando o snapshot B3…</div>
+        <div class="universe-controls"><label>Buscar ativo ou emissor<input id="universe-search" placeholder="Ex.: PETR4, energia, ETF…" /></label><label>Classe<select id="universe-class"><option value="all">Todas as classes</option><option value="equity">Ações</option><option value="etf">ETFs / fundos listados</option><option value="bdr">BDRs</option><option value="fii">FIIs / Fiagros</option><option value="other">Outros instrumentos</option></select></label><label>Liquidez mínima (R$/dia)<select id="universe-liquidity"><option value="0">Sem mínimo</option><option value="1000000">R$ 1 mi</option><option value="10000000">R$ 10 mi</option><option value="50000000">R$ 50 mi</option></select></label></div>
+        <div class="universe-table-wrap"><table class="universe-table"><thead><tr><th>Instrumento</th><th>Classe</th><th>Emissor</th><th>Preço de fechamento</th><th>Liquidez média / dia</th><th>Status no modelo</th></tr></thead><tbody id="universe-table"></tbody></table></div><p class="universe-foot" id="universe-foot"></p>
       </section>
 
       <section class="comparison shell" id="comparar">
         <div class="comparison-head">
-          <div><p class="eyebrow"><span></span> Evidência ponto-no-tempo</p><h2>Retorno sem contexto<br /><em>não é evidência.</em></h2></div>
-          <p>O comitê vê retorno líquido, risco, queda, giro e universo comparável na mesma base. A comparação não promete alfa: expõe onde a hipótese funcionou, onde falhou e o que precisa ser melhorado.</p>
+          <div><p class="eyebrow"><span></span> Comparação anual auditada</p><h2>Retorno sem contexto<br /><em>não é evidência.</em></h2></div>
+          <p>O gráfico usa a mesma execução multifatorial do dossiê: seleção anual, cinco ativos quando elegíveis, custos e CDI residual. A comparação não é uma promessa de alfa nem substitui validação futura.</p>
         </div>
         <div class="comparison-card">
           <div class="comparison-controls">
-            <div><span class="control-label">JANELA AUDITADA</span><div class="period-options" role="tablist" aria-label="Janela de avaliação"><button type="button" class="period active" data-period="5">5 anos</button><button type="button" class="period" data-period="10">10 anos</button><button type="button" class="period" data-period="13">13 anos</button><button type="button" class="period unavailable" disabled title="Requer arquivo histórico pré-2011">15 anos</button></div></div>
+            <div><span class="control-label">JANELA ANUAL AUDITADA</span><div class="period-options" role="tablist" aria-label="Janela de avaliação"><button type="button" class="period active" data-period="5">5 anos</button><button type="button" class="period" data-period="10">10 anos</button><button type="button" class="period" data-period="12">12 anos</button><button type="button" class="period" data-period="13">Série 2013–2025</button></div></div>
             <p id="period-description">Carregando a janela auditada e os custos de rebalanceamento…</p>
           </div>
           <div class="comparison-summary" id="comparison-summary" aria-live="polite"></div>
             <div class="comparison-grid">
-            <div class="return-chart"><div class="chart-title"><span>Curva de patrimônio</span><small>base 100 na primeira data comum</small></div><div class="curve-toggles" id="curve-toggles" aria-label="Séries exibidas"></div><div class="chart-return-summary" id="chart-return-summary" aria-live="polite"></div><div class="chart-add"><div class="chart-add-tabs" role="tablist"><button type="button" class="chart-source active" data-source="ticker">Adicionar ação B3</button><button type="button" class="chart-source" data-source="fund">Adicionar fundo ativo</button></div><form id="chart-add-form"><label id="chart-symbol-label">Ticker B3<input id="chart-symbol" name="symbol" placeholder="Ex.: PETR4" maxlength="12" /></label><label class="fund-file hidden" id="fund-file-label">CSV de cotas do fundo (CVM ou administrador)<input id="fund-file" type="file" accept=".csv,text/csv" /></label><button class="chart-add-button" type="submit">Adicionar ao gráfico</button></form><p id="chart-add-help">Busca preços ajustados do ticker no período selecionado e normaliza em base 100. Fonte: Yahoo Finance; valide com a fonte institucional antes de usar em comitê.</p></div><svg class="line-chart" id="line-chart" viewBox="0 0 900 410" role="img" aria-label="Curvas históricas selecionadas"><g id="line-chart-grid"></g><g id="line-chart-lines"></g><g id="line-chart-labels"></g><g id="line-chart-direct-labels"></g><line id="line-chart-cursor" class="line-cursor hidden" /></svg><p class="line-chart-caption" id="line-chart-caption">Mova o cursor sobre o gráfico para inspecionar uma data.</p><div class="chart-inspector" id="chart-inspector" aria-live="polite">Mova o cursor sobre qualquer ponto da curva para ver o retorno acumulado de cada série.</div></div>
+            <div class="return-chart"><div class="chart-title"><span>Curva de patrimônio</span><small>base 100 na primeira data comum</small></div><div class="curve-toggles" id="curve-toggles" aria-label="Séries exibidas"></div><div class="chart-return-summary" id="chart-return-summary" aria-live="polite"></div><div class="chart-tools" aria-label="Ferramentas do gráfico"><button type="button" id="chart-zoom-out">−</button><span id="chart-zoom-status">Visão completa</span><button type="button" id="chart-zoom-in">+</button><button type="button" id="chart-zoom-reset">Redefinir</button><small>Use a roda do mouse para ampliar; arraste para deslocar.</small></div><div class="chart-add"><div class="chart-add-tabs" role="tablist"><button type="button" class="chart-source active" data-source="ticker">Adicionar ação B3</button><button type="button" class="chart-source" data-source="fund">Adicionar fundo ativo</button></div><form id="chart-add-form"><label id="chart-symbol-label">Ticker B3<input id="chart-symbol" name="symbol" placeholder="Ex.: PETR4" maxlength="12" /></label><label class="fund-file hidden" id="fund-file-label">CSV de cotas do fundo (CVM ou administrador)<input id="fund-file" type="file" accept=".csv,text/csv" /></label><button class="chart-add-button" type="submit">Adicionar ao gráfico</button></form><p id="chart-add-help">Busca preços ajustados do ticker no período selecionado e normaliza em base 100. Fonte: Yahoo Finance; valide com a fonte institucional antes de usar em comitê.</p></div><svg class="line-chart" id="line-chart" viewBox="0 0 900 410" role="img" aria-label="Curvas históricas selecionadas"><g id="line-chart-grid"></g><g id="line-chart-lines"></g><g id="line-chart-labels"></g><g id="line-chart-direct-labels"></g><line id="line-chart-cursor" class="line-cursor hidden" /></svg><p class="line-chart-caption" id="line-chart-caption">Mova o cursor, clique numa data ou use zoom para inspecionar a curva.</p><div class="chart-inspector" id="chart-inspector" aria-live="polite">Mova o cursor sobre qualquer ponto da curva para ver o retorno acumulado de cada série.</div></div>
               <div class="comparison-table-wrap"><table><thead><tr><th>Estratégia</th><th>Retorno</th><th>Vitórias</th><th>Leitura</th></tr></thead><tbody id="comparison-table"></tbody></table></div>
           </div>
           <div class="comparison-foot"><span><i>✓</i> Integridade validada: disponibilidade dos fundamentos, pesos, custos e recomposição.</span><span>Fontes: CVM, BCB e preços históricos documentados</span></div>
         </div>
         <p class="research-note" id="research-note">Leitura correta: esta é uma hipótese de pesquisa. A página calcula janelas com o arquivo anual auditado e não declara superioridade consistente se ela não estiver presente.</p>
+        <div class="benchmark-panel candidate-disclosure"><div><span class="control-label">CANDIDATA MULTIFATORIAL — PESQUISA</span><h3>Qualidade + valor + momento, sem olhar o retorno seguinte.</h3><p>Na amostra 2013–2025, a execução com até 55% em ações, cinco emissores e custos deduzidos registrou 14,17% a.a.; CDI: 9,51%; MVO elegível: 12,11%. O holdout pré-separado 2020–2025 registrou 13,14% a.a., acima de CDI (9,43%) e MVO (11,76%). O universo fundamental histórico ainda é de oito emissores: o próximo teste exigirá cobertura ponto-no-tempo completa, sem mudar a regra após observá-lo.</p></div><div class="benchmark-actions"><span><b>Como usar:</b> escolha o perfil para definir limites; só então rode o protocolo anual com dados ponto-no-tempo.</span><a class="button button-secondary" href="./metodo.html">Ver método <span>→</span></a></div></div>
         <div class="benchmark-panel">
           <div><span class="control-label">REFERÊNCIAS DE MERCADO E FUNDOS</span><h3>Pesquisa acadêmica e produto comercial têm fluxos distintos.</h3><p>No ambiente de pesquisa, o comparador reproduz cotas CVM por CNPJ e documenta a janela comum. No fluxo comercial, a instituição define seus benchmarks e mandatos; a implantação conecta fontes licenciadas e o painel de comitê, sem pedir que um visitante use PowerShell.</p></div>
           <div class="benchmark-actions"><span><b>Para a instituição:</b> configure benchmarks no onboarding e acompanhe política, risco e aderência.</span><a class="button button-secondary" href="#contato">Planejar integração <span>→</span></a><a class="text-link research-link" href="#metodo-pesquisa">Ver ambiente de pesquisa <span>→</span></a></div>
@@ -218,7 +237,7 @@
         <div class="shell contact-section"><div><p class="eyebrow light"><span></span> Conversa institucional</p><h2>Mostre o seu fluxo.<br /><em>Montamos o piloto certo.</em></h2><p>Solicite uma demonstração focada em política, comitê, dados e controles — não em promessa de rentabilidade.</p><div class="contact-aside"><b>Para qual tipo de instituição?</b><span>Gestora, wealth manager, multi-family office, RIA, assessoria, fintech ou outra organização regulada.</span></div></div><form id="demo-request-form" class="demo-form"><label>Nome<input required name="name" autocomplete="name" /></label><label>E-mail profissional<input required type="email" name="email" autocomplete="email" /></label><label>Instituição<input required name="institution" autocomplete="organization" /></label><label>Perfil de uso<select name="use_case"><option>Gestão / wealth</option><option>Multi-family office</option><option>RIA / assessoria</option><option>Fintech / plataforma</option><option>Pesquisa acadêmica</option><option>Outro</option></select></label><label>O que precisa resolver?<textarea required name="message" rows="4" placeholder="Ex.: padronizar propostas para comitê e integrar benchmarks."></textarea></label><button class="button button-primary full" type="submit">Solicitar demonstração <span>→</span></button><p class="form-response" id="demo-form-response" role="status"></p><small>Dados enviados apenas para contato sobre a demonstração. Não inclua dados de clientes, carteira ou informações confidenciais.</small></form></div>
       </section>
 
-      <section class="research-disclosure shell" id="metodo-pesquisa"><p class="eyebrow"><span></span> Ambiente de pesquisa</p><h2>Benevente Quant AI</h2><p>Backtests, dados CVM ponto-no-tempo, custos e validação reproduzível pertencem ao ambiente acadêmico/técnico. A amostra pública atual cobre decisões de 2013 a 2025; 15 anos completos exigem arquivo contábil pré-2011 licenciado ou equivalente, que ainda não foi incorporado.</p><a class="text-link" href="./metodo.html">Ler metodologia e evidências <span>→</span></a></section>
+      <section class="research-disclosure shell" id="metodo-pesquisa"><p class="eyebrow"><span></span> Ambiente de pesquisa</p><h2>Benevente Quant AI</h2><p>Backtests, dados CVM ponto-no-tempo, custos, cenários condicionais e validação reproduzível pertencem ao ambiente acadêmico/técnico. A amostra pública atual cobre decisões de 2013 a 2025; o snapshot B3 de 12/08/2026 amplia a descoberta para instrumentos negociados, mas não substitui os fundamentos e os controles exigidos para uma recomendação atual.</p><a class="text-link" href="./metodo.html">Ler metodologia e evidências <span>→</span></a></section>
     </main>
 
     <footer class="footer"><div class="shell"><a class="brand" href="#inicio"><span class="brand-mark">B</span><span>Benevente</span></a><p><b>Benevente Wealth System</b> · solução B2B para instituições que respondem por decisões de carteira<br /><b>Benevente Quant AI</b> · versão acadêmica e pesquisa reproduzível</p><span>© 2026 Benevente</span></div></footer>
