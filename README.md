@@ -251,6 +251,11 @@ Para o acompanhamento prospectivo de R$100 mil, preencha o NAV observado e
 execute `pilot_tracker.py`. Acompanhamento prospectivo e backtest permanecem
 separados.
 
+Antes de acompanhar uma proposta real ou em simulador, ative a
+[carteira-sombra com aprovação humana](docs/shadow_portfolio_protocol.md). O
+manifesto guarda hashes da política e das ordens, responsável, valor inicial e,
+se aplicável, CNPJ do fundo ativo de comparação. A ativação não envia ordens.
+
 ## Limites importantes
 
 - O LLM é opcional e só estrutura teses/riscos a partir de fatos aprovados;

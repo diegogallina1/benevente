@@ -3,9 +3,11 @@ from zipfile import ZipFile
 import pandas as pd
 import pytest
 
-from fund_comparator import CvmFundDailyClient, FundQuoteSeries, compare_common_window, format_cnpj, normalize_cnpj
+from fund_comparator import (CvmFundDailyClient, FundQuoteSeries, compare_common_window, format_cnpj,
+                             fund_values_for_nav, normalize_cnpj)
 from pilot_tracker import build_performance
 from production_policy import ProductionPolicy
+from shadow_portfolio import ProposedOrder, activate_shadow_portfolio
 
 
 def test_cnpj_normalization_and_archive_schedule():
@@ -41,6 +43,14 @@ def test_active_fund_comparison_uses_only_common_window():
     assert metadata["comparison_start"] == "2025-02-28"
 
 
+def test_fund_values_for_shadow_nav_uses_last_published_quota():
+    fund = FundQuoteSeries("73232530000139", pd.Series(
+        [10.0, 10.5], index=pd.to_datetime(["2026-01-01", "2026-02-01"])), ("https://example.test/fund.zip",))
+    values = fund_values_for_nav(fund, pd.to_datetime(["2026-01-02", "2026-02-02"]), 100_000)
+    assert values.iloc[0] == pytest.approx(100_000)
+    assert values.iloc[1] == pytest.approx(105_000)
+
+
 def test_shadow_tracking_accepts_optional_active_fund_value():
     policy = ProductionPolicy(policy_id="shadow", owner="Diego", effective_date="2026-01-02", portfolio_value_brl=100_000,
                               horizon_years=5, maximum_rebalance_cost_brl=500)
@@ -52,3 +62,37 @@ def test_shadow_tracking_accepts_optional_active_fund_value():
     ])
     _, summary = build_performance(policy, nav)
     assert summary["active_fund_return"] == pytest.approx(0.04)
+
+
+def test_human_approval_freezes_a_shadow_portfolio_and_binds_tracking(tmp_path):
+    policy_path = tmp_path / "policy.json"
+    policy = ProductionPolicy(policy_id="shadow", owner="Diego", effective_date="2026-01-02", portfolio_value_brl=100_000,
+                              horizon_years=5, maximum_rebalance_cost_brl=500,
+                              acknowledged_not_investment_advice=True)
+    policy_path.write_text(policy.model_dump_json(), encoding="utf-8")
+    orders_path = tmp_path / "orders.csv"
+    pd.DataFrame([ProposedOrder("2026-01-02", "PETR4", "BUY", 100, 30, 1, "shadow:PETR4").__dict__]).to_csv(orders_path, index=False)
+    activation = activate_shadow_portfolio(policy_path, orders_path, "Comitê de investimentos", tmp_path / "activation.json",
+                                           "73.232.530/0001-39", "Fundo de comparação")
+    nav = pd.DataFrame([
+        {"date": "2026-01-02", "portfolio_value_brl": 100_000, "cdi_value_brl": 100_000,
+         "ibovespa_value_brl": 100_000, "active_fund_value_brl": 100_000, "notes": "baseline"},
+        {"date": "2026-02-02", "portfolio_value_brl": 101_000, "cdi_value_brl": 100_800,
+         "ibovespa_value_brl": 100_500, "active_fund_value_brl": 100_900, "notes": "first month"},
+    ])
+    _, summary = build_performance(policy, nav, activation)
+    assert summary["status"] == "SHADOW_PORTFOLIO_ACTIVE"
+    assert summary["approved_by"] == "Comitê de investimentos"
+    assert summary["active_fund_cnpj"] == "73232530000139"
+
+
+def test_shadow_activation_refuses_unapproved_or_wrong_date_orders(tmp_path):
+    policy_path = tmp_path / "policy.json"
+    policy = ProductionPolicy(policy_id="shadow", owner="Diego", effective_date="2026-01-02", portfolio_value_brl=100_000,
+                              horizon_years=5, maximum_rebalance_cost_brl=500,
+                              acknowledged_not_investment_advice=True)
+    policy_path.write_text(policy.model_dump_json(), encoding="utf-8")
+    orders_path = tmp_path / "orders.csv"
+    pd.DataFrame([ProposedOrder("2026-01-03", "PETR4", "BUY", 100, 30, 1, "shadow:PETR4").__dict__]).to_csv(orders_path, index=False)
+    with pytest.raises(ValueError, match="effective date"):
+        activate_shadow_portfolio(policy_path, orders_path, "Comitê", tmp_path / "activation.json")

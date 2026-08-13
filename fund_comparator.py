@@ -150,3 +150,20 @@ def compare_common_window(strategies: dict[str, pd.DataFrame], fund: FundQuoteSe
         "alignment": "Latest CVM quote on or before each strategy decision date.",
     }
     return curves, metrics, metadata
+
+
+def fund_values_for_nav(fund: FundQuoteSeries, nav_dates: pd.Series | pd.DatetimeIndex,
+                        initial_value_brl: float) -> pd.Series:
+    """Mark an active-fund reference to the shadow NAV dates from CVM quotas.
+
+    Values are normalized only at the shadow portfolio's first date.  This is
+    a comparison curve, not a cash flow or a claim that the fund was purchased.
+    """
+    dates = pd.DatetimeIndex(pd.to_datetime(nav_dates))
+    if dates.empty or dates.has_duplicates:
+        raise ValueError("NAV dates must be non-empty and unique")
+    aligned = fund.quotes.reindex(dates, method="ffill")
+    if aligned.isna().any():
+        first_missing = str(aligned[aligned.isna()].index[0].date())
+        raise ValueError(f"No CVM fund quote on or before NAV date {first_missing}")
+    return (aligned / aligned.iloc[0] * initial_value_brl).rename("active_fund_value_brl")
