@@ -1,0 +1,2 @@
+decision_date,ticker,observed_at,market_cap_brl,average_daily_value_brl,close_price_brl,lot_size,source
+2012-01-02,PETR4.SA,2011-12-30T18:00:00,REPLACE,REPLACE,REPLACE,1,REPLACE_WITH_DATED_B3_OR_LICENSED_VENDOR_EXPORT

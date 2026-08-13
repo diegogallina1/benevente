@@ -48,6 +48,57 @@ datas, valores nulos e recomposição de patrimônio. Não escolha parâmetros d
 de observar uma janela: use `tune_hyperparameters.py` com uma separação temporal
 explícita.
 
+### Walk-forward anual: manter, revisar e justificar trocas
+
+`annual_walk_forward.py` implementa o protocolo de revisão anual: em cada
+primeiro pregão do ano, ele congela a política, os fundamentos disponíveis e os
+pesos; mantém a carteira até a próxima revisão; e somente então calcula o
+retorno realizado. `annual_transitions.csv` mostra cada entrada, saída ou ajuste
+e seu motivo técnico. O retorno do ano avaliado nunca é usado para decidir a
+carteira que o antecede.
+
+```powershell
+python annual_walk_forward.py --prices data/my_prices.csv --fundamentals data/my_fundamentals.csv --start-year 2012 --end-year 2026 --output artifacts/annual_walk_forward
+```
+
+Para a seleção adaptativa, o motor compara somente três hipóteses
+pré-registradas — valor/qualidade, momentum de 12 meses e baixa volatilidade —
+usando exclusivamente os anos já encerrados. Antes de cada ano novo, ele
+congela o fator vencedor pelo critério retorno líquido, drawdown e giro;
+depois avalia uma única vez o ano ainda desconhecido:
+
+```powershell
+python annual_walk_forward.py --prices data/my_prices.csv --fundamentals data/my_fundamentals.csv --start-year 2012 --end-year 2026 --adaptive-factors --output artifacts/annual_adaptive
+```
+
+Os arquivos `annual_results.csv`, `annual_transitions.csv`,
+`annual_holdings.csv` e `adaptive_factor_choices.csv` são a evidência do
+experimento. O processo não procura o maior retorno depois de observar o
+futuro; isso seria sobreajuste, não uma estratégia utilizável.
+
+Em especial, consulte `annual_holdings.csv` como a lâmina anual de decisão:
+para cada ativo mantido ela contém peso anterior/novo, ação (entrada, manutenção,
+aumento ou redução), score de valor/qualidade, sinal selecionado, retorno e
+volatilidade de 12 meses **conhecidos no janeiro da decisão**, além do retorno
+realizado separado ao fim daquele ano. `annual_benchmark_summary.csv` compara
+o resultado anual com CDI e com MVO no mesmo universo elegível. Os pesos são
+deixados derivar durante o ano antes de medir o giro da revisão seguinte.
+
+### Regra de prontidão comercial
+
+Uma estratégia só pode ser apresentada como candidata a alfa se, em um
+holdout congelado e líquido de custos modelados, superar **CDI e MVO clássico**,
+mantiver Sharpe excedente ao CDI positivo, drawdown dentro do limite e pelo
+menos 24 períodos mensais. Caso contrário, a saída é obrigatoriamente
+`research_only`: ela pode ser estudada, mas não é prova para uma alegação
+comercial de retorno superior.
+
+O portal aberto da CVM disponibiliza DFP desde 2010 e ITR desde 2011. Portanto,
+um estudo "fundamentalista ponto-no-tempo" de 20 anos iniciado em 2006 exige
+uma fonte adicional de fundamentos históricos e um universo de constituintes
+datado; o sistema não preenche 2006–2010 com informação posterior. Consulte o
+[Portal de Dados Abertos da CVM](https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/DFP/DADOS/) para a disponibilidade dos arquivos.
+
 ## Comparação com fundo de gestão ativa
 
 O comparador aceita qualquer **CNPJ de fundo ou classe** com cotas no Informe
@@ -69,22 +120,70 @@ python validate_research.py --input artifacts/dynamo_comparison
 
 ## Interface local
 
-Há dois modos de uso numa interface única:
+Há quatro áreas numa interface única:
 
+- **Sugestão de carteira:** coleta perfil, horizonte de 1/2/5/10/15 anos e
+  limites; bloqueia ativos que não passam em liquidez, valor, qualidade ou
+  solvência; produz pesos restritos, custo estimado e uma trilha de auditoria.
+  O modo de demonstração é inteiramente sintético e só testa o fluxo. Para uma
+  proposta rastreável, o usuário carrega histórico de preços e fundamentos
+  ponto-no-tempo com fonte e data de disponibilidade.
 - **Pesquisa e fundo ativo:** executa o backtest, mostra CDI/Ibovespa/MVO e, no
   modo real, o comparativo do fundo CVM escolhido;
 - **Carteira-sombra:** cria a linha-base ou importa um CSV de NAV observado para
   acompanhar carteira, CDI, Ibovespa e, opcionalmente, a cota CVM de um fundo
   ativo escolhido, sem transmitir ordens.
+- **Como funciona:** apresenta os controles, a separação entre modelo e futura
+  camada de LLM, e a obrigatoriedade de revisão humana.
 
 ```powershell
 .\launch_ui.ps1
 ```
 
 Abra `http://localhost:8501`. A interface grava todos os resultados em
-`artifacts/ui/` e mantém os dois modos separados. Ela não substitui o fluxo de
+`artifacts/ui/` e mantém os modos separados. Cada sugestão salva política,
+preços usados, tela de elegibilidade, pesos e resumo de métricas. Ela não substitui o fluxo de
 proposta com ITR/DFP, que continua sendo o caminho para uma revisão de carteira
 real com dados de mercado atribuídos.
+
+Se o PowerShell bloquear a execução de scripts, execute uma única vez na janela
+atual e repita o comando: `Set-ExecutionPolicy -Scope Process Bypass`. Como
+alternativa sem política de PowerShell, dê duplo clique em `launch_ui.cmd`.
+
+Na primeira inicialização de uma versão anterior do lançador, o Streamlit podia
+exibir uma pergunta opcional de e-mail; pressione `Enter` vazio para seguir. A
+configuração atual do projeto desativa essa pergunta.
+
+## Experiência web para apresentação
+
+A pasta `web/` contém a experiência web estática do **Benevente Wealth
+System**, desenhada para demonstrações e para o case de estudo. Ela explica o
+método e permite explorar, de forma claramente identificada, como perfil e
+horizonte alteram os limites ilustrativos de uma proposta. Não consulta dados
+de mercado, não executa o motor Python e não deve ser tratada como recomendação
+ou proposta investível.
+
+Depois de autenticar o Vercel CLI, publique-a a partir da pasta `web/`:
+
+```powershell
+npx.cmd vercel login
+cd web
+npx.cmd vercel --prod --yes
+```
+
+O motor auditável continua sendo a interface Streamlit e os comandos de
+proposta descritos neste README. Uma futura API deverá ligar a experiência web
+ao mesmo núcleo Python, preservando a trilha de dados e aprovação humana.
+
+### Contato institucional do site
+
+O site comercial tem um formulário de demonstração em `/api/demo-request`. A
+rota só encaminha o lead depois que estas variáveis forem cadastradas na Vercel
+para produção: `RESEND_API_KEY`, `BENEVENTE_FROM_EMAIL` e
+`BENEVENTE_CONTACT_EMAIL`. Use `web/.env.example` apenas como referência e não
+versione chaves. Sem as variáveis, a página informa de forma explícita que o
+canal ainda não foi configurado; ela não guarda dados do visitante em arquivo
+ou planilha local.
 
 ## Carteira-sombra real, sem ordem automática
 
@@ -134,8 +233,11 @@ separados.
 
 ## Limites importantes
 
-- O LLM é opcional e só estrutura teses/riscos; jamais define pesos ou envia
-  ordens.
+- O LLM é opcional e só estrutura teses/riscos a partir de fatos aprovados;
+  jamais define pontuações, limites, pesos ou envia ordens. Os sinais de
+  alocação são determinísticos e versionados.
+- Sharpe, retorno, CDI e comparações com fundos mostrados pelo sistema são
+  medidas históricas e não meta, previsão ou garantia de superação.
 - A cobertura atual é Brasil/B3. ETFs globais negociados na B3 só entram depois
   de módulo próprio de transparência e dados ponto-no-tempo.
 - Custos Clear/B3 são estimativas versionadas e precisam ser confrontados com a

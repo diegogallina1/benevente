@@ -46,9 +46,12 @@ def add_table(document: Document, headers: list[str], rows: list[list[str]]) -> 
 
 
 def build_btech() -> None:
-    if not SOURCE_BTECH.exists():
-        raise FileNotFoundError(SOURCE_BTECH)
-    copy2(SOURCE_BTECH, BTECH_OUTPUT)
+    if SOURCE_BTECH.exists():
+        copy2(SOURCE_BTECH, BTECH_OUTPUT)
+    elif not BTECH_OUTPUT.exists():
+        raise FileNotFoundError(f"BTECH template not found at {SOURCE_BTECH} or {BTECH_OUTPUT}")
+    # The reviewed output preserves the original BTECH template when the
+    # user-provided download is no longer available in this workspace.
     document = Document(BTECH_OUTPUT)
     clear_body(document)
 
@@ -76,7 +79,8 @@ def build_btech() -> None:
     add_paragraph(document, "O Espírito Santo combina empresários, famílias patrimoniais, empresas exportadoras e intermediários financeiros que demandam serviços sofisticados de inteligência patrimonial. Uma solução B2B local pode apoiar a retenção de conhecimento financeiro e de relacionamentos de longo prazo no estado, sem substituir o dever fiduciário, a análise profissional ou a decisão do cliente. O valor econômico vem da padronização do processo e da redução de retrabalho, não de promessas de performance.")
 
     add_paragraph(document, "2. FUNDAMENTAÇÃO TEÓRICA E CONCEITUAL SUBJACENTE", "Heading 2")
-    add_paragraph(document, "A plataforma parte da Teoria Moderna de Carteiras, que formaliza a relação entre retorno esperado, risco e diversificação, e de extensões que combinam visões qualitativas com regras quantitativas. No Benevente, o modelo de linguagem não determina pesos de carteira. Ele pode estruturar uma tese e apontar riscos, mas os pesos são calculados por um otimizador convexo sujeito a limites de concentração, exposição a ações, liquidez, custos e reserva em CDI.")
+    add_paragraph(document, "A plataforma parte da Teoria Moderna de Carteiras, que formaliza a relação entre retorno esperado, risco e diversificação, e de extensões que combinam visões qualitativas com regras quantitativas. Black e Litterman (1992) fundamentam a separação entre uma visão qualitativa e a alocação de equilíbrio; no Benevente, o modelo de linguagem pode estruturar uma tese e apontar riscos, mas não determina pesos. Os pesos são calculados por um otimizador convexo sujeito a limites de concentração, exposição a ações, liquidez, custos e reserva em CDI.")
+    add_paragraph(document, "DeMiguel, Garlappi e Uppal (2009) alertam que erro de estimação pode anular o ganho teórico de otimização fora da amostra. Por isso, limites explícitos, uma referência simples e validação temporal congelada são controles de pesquisa, não ajustes para vencer retrospectivamente. Novy-Marx e Velikov (2016) reforçam que custos e turnover alteram materialmente o resultado líquido; o backtest reporta atritos modelados e o fluxo operacional concilia posteriormente a nota de corretagem.")
     add_paragraph(document, "A seleção de ativos é orientada por valor e qualidade. Para empresas não financeiras, a elegibilidade requer liquidez e capitalização mínimas, geração positiva de caixa, ROIC mínimo e filtros de endividamento e cobertura de juros. Para instituições financeiras, os critérios respeitam a taxonomia de seus demonstrativos, privilegiando ROE e preço sobre valor patrimonial. Ausência de dado comparável é motivo de reprovação, e não de inferência favorável.")
 
     add_paragraph(document, "3. DESCRIÇÃO DO PRODUTO TECNOLÓGICO", "Heading 2")
@@ -121,15 +125,22 @@ def build_btech() -> None:
         "COMISSÃO DE VALORES MOBILIÁRIOS. Formulário de Informações Trimestrais (ITR): dados abertos. Disponível em: https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/.",
         "COMISSÃO DE VALORES MOBILIÁRIOS. Resolução CVM n. 19, de 25 de fevereiro de 2021. Disponível em: https://conteudo.cvm.gov.br/legislacao/resolucoes/resol019.html.",
         "MARKOWITZ, H. Portfolio Selection. The Journal of Finance, v. 7, n. 1, p. 77-91, 1952.",
-        "THE DOCUMENTATION IN THE REPOSITORY. Benevente Quant AI: snapshots de dados, validações e avaliação de horizontes. Repositório do projeto, 2026.",
+        "BLACK, F.; LITTERMAN, R. Global Portfolio Optimization. Financial Analysts Journal, v. 48, n. 5, p. 28-43, 1992. DOI: 10.2469/faj.v48.n5.28.",
+        "DEMIGUEL, V.; GARLAPPI, L.; UPPAL, R. Optimal versus naive diversification: how inefficient is the 1/N portfolio strategy? The Review of Financial Studies, v. 22, n. 5, p. 1915-1953, 2009. DOI: 10.1093/rfs/hhm075.",
+        "NOVY-MARX, R.; VELIKOV, M. A taxonomy of anomalies and their trading costs. The Review of Financial Studies, v. 29, n. 1, p. 104-147, 2016. DOI: 10.1093/rfs/hhv063.",
+        "BENEVENTE WEALTH SYSTEM. Documentação técnica, repositório de dados e validação de horizontes. Repositório do projeto, 2026.",
     ]:
         add_paragraph(document, reference)
 
     for paragraph in document.paragraphs:
-        if paragraph.text == "REFERÊNCIAS BIBLIOGRÁFICAS":
-            # Keep the section label with its bibliography instead of leaving
-            # an orphan heading at the bottom of the preceding page.
+        if paragraph.text == "5. VALIDAÇÃO EMPÍRICA E PILOTO PROSPECTIVO":
+            # The evaluation table is a single evidence unit; keeping its
+            # heading and all rows together is more readable than a split row.
             paragraph.paragraph_format.page_break_before = True
+        if paragraph.text == "REFERÊNCIAS BIBLIOGRÁFICAS":
+            # Section 6 deliberately leaves enough room for the compact source
+            # list; avoid creating an almost empty page before the references.
+            paragraph.paragraph_format.page_break_before = False
 
     document.core_properties.author = ""
     document.core_properties.last_modified_by = ""

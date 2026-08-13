@@ -4,8 +4,8 @@ import pandas as pd
 from config import SystemConfig
 from execution_costs import ClearB3CostModel
 from fundamentals import FundamentalSnapshot
-from llm_agents import MockLLMAgents
 from optimizer import MeanVarianceOptimizer
+from signals import DeterministicSignalEngine
 from value_quality import ValueQualitySelector
 
 
@@ -17,7 +17,7 @@ class BacktestEngine:
             equity_cap: float = 0.60, fundamental_snapshots: list[FundamentalSnapshot] | None = None,
             cost_model: ClearB3CostModel | None = None) -> pd.DataFrame:
         returns = self.prices.pct_change().dropna()
-        agents, optimizer = MockLLMAgents(self.config), MeanVarianceOptimizer(self.config)
+        signals, optimizer = DeterministicSignalEngine(self.config), MeanVarianceOptimizer(self.config)
         value_selector = ValueQualitySelector(self.config) if fundamental_snapshots else None
         previous = pd.Series(1 / len(returns.columns), index=returns.columns)
         wealth, rows = self.config.initial_wealth, []
@@ -25,11 +25,10 @@ class BacktestEngine:
             history = returns.iloc[end - self.config.rolling_window_days:end]  # Through T-1 only.
             if macro_data is not None:
                 observed = macro_data.loc[:returns.index[end - 1]].ffill().iloc[-1]
-                macro = agents.macro(float(observed.selic), float(observed.ipca) if pd.notna(observed.ipca) else 0.0)
+                macro = signals.macro_budget(float(observed.selic), float(observed.ipca) if pd.notna(observed.ipca) else 0.0)
             else:
-                macro = agents.macro(self.config.risk_free_rate_annual, 0.0)
-            selection = agents.select(history)
-            scores = {x.ticker: x.confidence_score for x in selection.scores}
+                macro = signals.macro_budget(self.config.risk_free_rate_annual, 0.0)
+            scores = signals.trailing_risk_adjusted_scores(history)
             eligible_assets = None
             liquidity: dict[str, float] = {}
             if value_selector is not None:
@@ -43,7 +42,7 @@ class BacktestEngine:
             if not use_signals:
                 scores = dict.fromkeys(scores, 0.0)
             target = optimizer.optimize(history, scores, macro.equity_allocation_cap if use_signals else equity_cap,
-                                        influence=self.config.llm_alpha_influence if use_signals else 0.0,
+                                        signal_influence=self.config.signal_alpha_influence if use_signals else 0.0,
                                         eligible_assets=eligible_assets)
             turnover = float((target - previous).abs().sum())
             weights = target if turnover >= self.config.rebalance_threshold else previous

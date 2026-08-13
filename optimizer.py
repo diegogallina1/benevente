@@ -10,12 +10,12 @@ class MeanVarianceOptimizer:
         self.config = config
 
     def optimize(self, historical_returns: pd.DataFrame, scores: dict[str, float], equity_cap: float,
-                 influence: float | None = None, eligible_assets: set[str] | None = None) -> pd.Series:
+                 signal_influence: float | None = None, eligible_assets: set[str] | None = None) -> pd.Series:
         assets = list(historical_returns.columns)
         n = len(assets)
         mu = historical_returns.mean().to_numpy() * 252
         confidence = np.array([scores[a] for a in assets])
-        influence = self.config.llm_alpha_influence if influence is None else influence
+        influence = self.config.signal_alpha_influence if signal_influence is None else signal_influence
         mu = mu * (1 + influence * confidence)
         covariance = historical_returns.cov().to_numpy() * 252 + np.eye(n) * 1e-7
         w = cp.Variable(n)

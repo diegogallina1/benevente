@@ -11,7 +11,10 @@ class SystemConfig:
     rolling_window_days: int = 252
     rebalance_days: int = 21
     risk_free_rate_annual: float = 0.105
-    llm_alpha_influence: float = 0.30
+    # Kept solely so archived v0.1 run metadata can still be read. It has no
+    # effect on allocation and must not be used by new experiments.
+    llm_alpha_influence: float = 0.0
+    signal_alpha_influence: float = 0.30
     value_quality_influence: float = 0.35
     initial_wealth: float = 100.0
     initial_portfolio_value_brl: float = 1_000_000.0

@@ -22,6 +22,8 @@ Long-horizon allocation requires more than an optimizer: returns, accounting rep
 
 The system is not an autonomous trading engine and does not claim to beat CDI, Ibovespa, or any other benchmark. Its research question is narrower: whether a transparent, constrained process can be evaluated reproducibly after modeled frictions. Individualized securities advice and portfolio management for third parties require the applicable legal, contractual, and professional structure; an algorithm does not remove those responsibilities \cite{cvm19,cvmrobo}.
 
+The framework follows Markowitz's risk--return setting while treating estimation error, concentration and turnover as first-class constraints. Black and Litterman's equilibrium-plus-views formulation motivates a strict separation between qualitative views and mechanical allocation \cite{blacklitterman}; the present implementation does not claim to be a Black--Litterman allocator. Evidence that optimized portfolios often fail to dominate simple diversification out of sample motivates explicit caps and a frozen benchmark protocol \cite{demiguel}. Transaction frictions are evaluated as part of the strategy rather than appended as an afterthought, consistent with evidence that costs and turnover can materially change anomaly profitability \cite{novymarx}.
+
 \section{Method}
 At every rebalance, estimators only use returns available through $t-1$. The portfolio weights $w$ solve a long-only constrained mean--variance problem:
 \begin{equation}
@@ -85,6 +87,9 @@ Benevente Quant AI nevertheless provides an auditable research baseline: data av
 
 \begin{thebibliography}{00}
 \bibitem{markowitz} H. Markowitz, ``Portfolio Selection,'' \emph{The Journal of Finance}, vol. 7, no. 1, pp. 77--91, 1952.
+\bibitem{blacklitterman} F. Black and R. Litterman, ``Global Portfolio Optimization,'' \emph{Financial Analysts Journal}, vol. 48, no. 5, pp. 28--43, 1992, doi: 10.2469/faj.v48.n5.28.
+\bibitem{demiguel} V. DeMiguel, L. Garlappi, and R. Uppal, ``Optimal versus Naive Diversification: How Inefficient is the 1/N Portfolio Strategy?'' \emph{The Review of Financial Studies}, vol. 22, no. 5, pp. 1915--1953, 2009, doi: 10.1093/rfs/hhm075.
+\bibitem{novymarx} R. Novy-Marx and M. Velikov, ``A Taxonomy of Anomalies and Their Trading Costs,'' \emph{The Review of Financial Studies}, vol. 29, no. 1, pp. 104--147, 2016, doi: 10.1093/rfs/hhv063.
 \bibitem{cvmitr} Comiss\~ao de Valores Mobili\'arios, ``Formul\'ario de Informa\c{c}\~oes Trimestrais (ITR),'' CVM Open Data. [Online]. Available: \url{https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/}
 \bibitem{cvmdfp} Comiss\~ao de Valores Mobili\'arios, ``Demonstra\c{c}\~oes Financeiras Padronizadas (DFP),'' CVM Open Data. [Online]. Available: \url{https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp}
 \bibitem{cvmrobo} Comiss\~ao de Valores Mobili\'arios, ``Rob\^os de investimentos,'' Portal do Investidor. [Online]. Available: \url{https://www.gov.br/investidor/pt-br/investir/como-investir/profissionais-do-mercado/robos-de-investimentos}

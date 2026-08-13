@@ -1,8 +1,11 @@
 .venv/
 .venv-benevente/
 work/
+workpytest_*/
 __pycache__/
 *.py[cod]
 .env
+.env.local
+.vercel/
 artifacts/
 .pytest_cache/

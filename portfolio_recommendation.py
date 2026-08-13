@@ -1,7 +1,7 @@
 """Build an auditable long-horizon value/quality proposal, not an order."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import pandas as pd
 from config import SystemConfig
 from execution_costs import ClearB3CostModel
@@ -27,7 +27,8 @@ class ValuePortfolioPlanner:
 
     def propose(self, historical_returns: pd.DataFrame, snapshots: list[FundamentalSnapshot], decision_date: pd.Timestamp,
                 current_weights: pd.Series | None = None, horizon_years: int = 5,
-                maximum_equity_weight: float = 0.80) -> PortfolioProposal:
+                maximum_equity_weight: float = 0.80, maximum_asset_weight: float | None = None,
+                scores_override: dict[str, float] | None = None) -> PortfolioProposal:
         if horizon_years not in {1, 2, 5, 10, 15}:
             raise ValueError("Benevente supports 1-, 2-, 5-, 10-, and 15-year investor horizons.")
         screen = ValueQualitySelector(self.config).score(snapshots, decision_date)
@@ -38,10 +39,19 @@ class ValuePortfolioPlanner:
         scores = {asset: 0.0 for asset in assets}
         for item in screen[screen.eligible].itertuples():
             scores[item.ticker] = float(2 * item.value_quality_score - 1)
+        if scores_override is not None:
+            # A factor experiment may change only the ranking of assets that
+            # already passed the deterministic eligibility screen. It cannot
+            # revive a blocked asset or alter policy constraints.
+            scores.update({ticker: float(score) for ticker, score in scores_override.items() if ticker in scores})
         if "TITULO_CDI" in scores:
             scores["TITULO_CDI"] = 1.0
-        weights = MeanVarianceOptimizer(self.config).optimize(
-            historical_returns, scores, equity_cap=maximum_equity_weight, influence=self.config.value_quality_influence,
+        optimizer_config = replace(
+            self.config,
+            max_asset_weight=maximum_asset_weight or self.config.max_asset_weight,
+        )
+        weights = MeanVarianceOptimizer(optimizer_config).optimize(
+            historical_returns, scores, equity_cap=maximum_equity_weight, signal_influence=self.config.value_quality_influence,
             eligible_assets=set(screen.loc[screen.eligible, "ticker"]),
         )
         liquidity = screen.set_index("ticker").average_daily_value_brl.to_dict()
