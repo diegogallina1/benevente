@@ -61,3 +61,10 @@ body{font-size:15px}.hero{grid-template-columns:minmax(0,42rem);min-height:auto}
 .line-selection{stroke-dasharray:5 5;opacity:.42;stroke-width:2}
 .line-boundary{stroke:#9aa9a4;stroke-width:1;stroke-dasharray:2 4}
 .line-boundary-label{font:700 9px "DM Mono",monospace;fill:#7d8f89}
+
+/* Terminal wealth sits beside the percentage so the two are read together. A
+   percentage is easy to nod at; the same figure in reais is what a reader
+   compares against the fund they already hold. Tabular figures keep the column
+   aligned on the thousands separator instead of drifting per row. */
+.comparison-table-wrap td.wealth-cell { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.comparison-table-wrap td.wealth-cell b { font-weight: 600; }

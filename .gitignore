@@ -17,3 +17,5 @@ data/yahoo_adjusted_total_return_*_manifest.json
 data/prices_b3_total_return_full_*.csv
 data/prices_b3_price_return_full_*.csv
 data/prices_b3_cotahist_2011_2026.csv
+
+.vercel

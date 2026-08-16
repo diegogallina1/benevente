@@ -11,6 +11,9 @@ let currentDecisionData = null;
 let fundPresetsData = null;
 let finalStrategyData = null;
 const comparisonWindows = { 1: 1, 2: 2, 3: 3, 5: 5, 11: 99 };
+// Round, unambiguous, and large enough that the gap between alternatives is
+// legible in reais rather than in fractions of a percentage point.
+const WEALTH_BASE = 100000;
 
 const modelSteps = {
   policy: { number:"01 · POLÍTICA", title:"A política vem antes do ativo.", text:"O responsável define patrimônio, perfil, limite de ações, concentração por emissor, custos e revisão anual.", uses:"Perfil e limites explícitos", blocks:"Pesos acima da política", produces:"Uma política reproduzível", rule:"<strong>Regra:</strong> sem política, não há carteira." },
@@ -567,7 +570,11 @@ function renderComparison(period) {
   const versusCdi = benevente.cumulative - cdi.cumulative, versusMvo = benevente.cumulative - mvo.cumulative;
   document.querySelector("#period-description").textContent = `${formatDateBr(start)} a ${formatDateBr(end)} · ${rows.length} decisões anuais com custos e imposto deduzidos.`;
   const marketPhrase = winMarket === null ? "" : ` Contra o Ibovespa, venceu ${winMarket} de ${rows.length}.`;
-  document.querySelector("#comparison-summary").textContent = `Benevente ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
+  // A percentage is easy to nod at and hard to feel. The same number said in
+  // reais is what a reader actually compares against the fund they already own,
+  // so it travels beside every series instead of only in the headline.
+  const wealthFrom = stats => WEALTH_BASE * (1 + stats.cumulative);
+  document.querySelector("#comparison-summary").textContent = `Benevente ${plainPct(benevente.cumulative)} acumulado: ${money.format(WEALTH_BASE)} viram ${money.format(wealthFrom(benevente))}, contra ${money.format(wealthFrom(cdi))} no CDI${ibovespa ? ` e ${money.format(wealthFrom(ibovespa))} no Ibovespa` : ""}. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
   // Gross of tax, like every fund factsheet, so these rows can sit beside a peer
   // without an adjustment nobody else applies. BOVA11 tracked the Ibovespa to
   // within two hundredths of a point a year, so showing both spent a line to
@@ -584,7 +591,7 @@ function renderComparison(period) {
     const note = firstAvailable >= 0 ? `Disponível desde ${formatDateBr(profileDataset(period).dates[firstAvailable])}` : "Série adicionada";
     return metrics ? [name, { cumulative: values.at(-1) / values.find(Number.isFinite) - 1, cagr: metrics.cagr }, note] : null;
   }).filter(Boolean);
-  document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${escapeHtml(name)}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td>${escapeHtml(note)}</td></tr>`).join("");
+  document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${escapeHtml(name)}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td class="wealth-cell"><b>${money.format(wealthFrom(stats))}</b></td><td>${escapeHtml(note)}</td></tr>`).join("");
   const marketNote = ibovespa ? ` Contra o Ibovespa, ${pct(benevente.cumulative - ibovespa.cumulative)}.` : "";
   document.querySelector("#research-note").textContent = `Janela de ${rows.length} ano(s): diferença para o CDI ${pct(versusCdi)} e para o MVO de referência ${pct(versusMvo)}.${marketNote} O MVO de referência é uma otimização independente sobre o mesmo universo elegível, não uma cópia da carteira. Período usado para desenvolver a regra: não é teste fora da amostra.`;
   renderCurveToggles(period); renderLineChart(period);

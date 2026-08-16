@@ -21,6 +21,16 @@ from pathlib import Path
 
 import pandas as pd
 
+from annual_walk_forward import BrazilianTaxModel, apply_annual_taxes
+
+# Written by apply_annual_taxes; dropped before recomputing so a stale copy from
+# a single configuration's run can never survive into the published series.
+_TAX_OUTPUT_COLUMNS = [
+    "realised_share_for_tax", "tax_rate", "net_return_after_tax",
+    "mvo_realised_share_for_tax", "mvo_tax_rate", "mvo_net_return_after_tax",
+    "cdi_net_return_after_tax",
+]
+
 
 def _configuration_limits(name: str) -> dict:
     """Recover the policy limits encoded in a configuration name.
@@ -60,6 +70,14 @@ def stitch_annual(selection: pd.DataFrame, runs: dict[str, Path]) -> pd.DataFram
         row["net_return"] = float(row["net_return"]) - float(item.switching_cost)
         rows.append(row)
     stitched = pd.DataFrame(rows).reset_index(drop=True)
+    # Tax has to be recomputed on the stitched sequence, not copied from each
+    # run. Every configuration's own after-tax column assumes the investor
+    # stayed in it for the whole window; the published track switches five
+    # times, and a switch realises gains that the copied column never charges.
+    # Recomputing here also makes the after-tax series pay the switching cost,
+    # which the pre-tax series already paid two lines above.
+    stitched = apply_annual_taxes(stitched.drop(columns=_TAX_OUTPUT_COLUMNS, errors="ignore"),
+                                  BrazilianTaxModel())
     ordered = ["decision_year", *[column for column in stitched.columns if column != "decision_year"]]
     return stitched[ordered]
 
