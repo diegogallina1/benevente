@@ -247,7 +247,15 @@ def main() -> None:
     pd.DataFrame(rules).to_csv(output / "weight_paths.csv")
     panel.to_csv(output / "monthly_panel.csv")
     candidates = table.drop(index=[name for name in table.index if name.startswith(("oracle", "reference", "static"))])
-    significant = candidates[candidates.excess_p_value < .05] if "excess_p_value" in candidates else candidates.iloc[0:0]
+    # A rule that loses significantly is not a rule that beats anything. The
+    # sign has to be checked alongside the p-value, otherwise a confidently bad
+    # rule is reported as a confirmed improvement.
+    if "excess_p_value" in candidates:
+        beaten = candidates[(candidates.excess_p_value < .05) & (candidates.excess_vs_static_annual > 0)]
+        lost = candidates[(candidates.excess_p_value < .05) & (candidates.excess_vs_static_annual <= 0)]
+    else:
+        beaten = lost = candidates.iloc[0:0]
+    significant = beaten
     summary = {
         "months_evaluated": int(len(index)),
         "evaluation_window": f"{index[0].date()} a {index[-1].date()}",
@@ -258,6 +266,7 @@ def main() -> None:
         "best_rule": str(candidates.cagr.idxmax()) if len(candidates) else None,
         "best_rule_cagr": float(candidates.cagr.max()) if len(candidates) else None,
         "rules_beating_static_significantly": sorted(significant.index.tolist()),
+        "rules_losing_to_static_significantly": sorted(lost.index.tolist()),
         "reading": ("A rule only counts if its advantage over the published static weight survives a paired test "
                     "across the whole window. Five rules were tried, so a single p-value near five per cent is not "
                     "yet evidence; it is one draw from five."),

@@ -158,3 +158,37 @@ def test_overfitting_probability_is_high_when_trials_are_pure_noise():
     report = probability_of_backtest_overfitting(trials, subsets=8)
     assert report["splits_evaluated"] == report["expected_splits"]
     assert report["probability_of_backtest_overfitting"] > .3
+
+
+def test_session_filter_survives_a_universe_that_grows_over_time():
+    """A later listing wave must not disqualify the earlier years wholesale."""
+    from annual_walk_forward import _recent_market_sessions
+
+    early = pd.bdate_range("2011-01-03", periods=400)
+    late = pd.bdate_range(early[-1] + pd.Timedelta(days=3), periods=100)
+    index = early.union(late)
+    frame = pd.DataFrame(index=index, columns=[f"OLD{n}" for n in range(30)] + [f"NEW{n}" for n in range(70)],
+                         dtype=float)
+    frame.loc[:, [f"OLD{n}" for n in range(30)]] = 1.0
+    # The seventy newer tickers only start trading in the last hundred sessions,
+    # which more than triples the panel's peak coverage late in the history.
+    frame.loc[late, [f"NEW{n}" for n in range(70)]] = 1.0
+    frame["TITULO_CDI"] = 100.0
+    sessions = _recent_market_sessions(frame, index[-1] + pd.Timedelta(days=1), minimum_history_days=252)
+    # The lookback needs 253 sessions and only 100 exist after the listing wave,
+    # so it has to reach back. Measuring against the all-history peak left just
+    # those 100 and starved every decision that depended on the window.
+    assert len(sessions) == 253
+    assert sessions.min() < late.min()
+
+
+def test_session_filter_still_drops_a_thin_holiday():
+    from annual_walk_forward import _recent_market_sessions
+
+    index = pd.bdate_range("2020-01-01", periods=300)
+    frame = pd.DataFrame(1.0, index=index, columns=[f"A{n}" for n in range(50)])
+    holiday = index[150]
+    frame.loc[holiday, [f"A{n}" for n in range(45)]] = np.nan
+    frame["TITULO_CDI"] = 100.0
+    sessions = _recent_market_sessions(frame, index[-1] + pd.Timedelta(days=1), minimum_history_days=200)
+    assert holiday not in sessions

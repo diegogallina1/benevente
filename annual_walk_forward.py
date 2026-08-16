@@ -313,22 +313,33 @@ def _format_weights(weights: pd.Series) -> str:
     return " | ".join(entries)
 
 
+SESSION_COVERAGE_WINDOW = 63
+
+
 def _recent_market_sessions(prices: pd.DataFrame, decision: pd.Timestamp,
                             minimum_history_days: int) -> pd.DatetimeIndex:
     """Identify recent B3 sessions from broad panel coverage, not calendar days.
 
-    Yahoo emits rows for Brazilian holidays when a minority of instruments
-    traded (or their calendar differs). Requiring every asset to have a quote
-    on every one of those rows would reject liquid issuers such as PETR4.  A
-    session is therefore a date with at least 80% of the panel's peak equity
-    coverage. Individual names must still have a real quote on all selected
-    sessions; nothing is forward-filled.
+    A provider emits rows for Brazilian holidays when a minority of instruments
+    traded, or when their calendar differs. Requiring every asset to have a
+    quote on each of those rows would reject liquid issuers such as PETR4, so a
+    session must carry most of the coverage seen around it.
+
+    "Around it" is the correction. Measuring against the peak coverage of the
+    entire prior history made the bar rise every time a company listed: once
+    2013 brought the panel to roughly 490 tickers, the 2011 and 2012 sessions
+    of a 320-ticker universe fell below 80% of that peak and were discarded
+    wholesale. The January 2014 decision was then left with fewer than 253
+    qualifying sessions and the whole year was skipped, for no reason that had
+    anything to do with 2014. Comparing each session with the peak of its own
+    recent window keeps the holiday filter and drops the drift.
     """
     prior = prices.loc[prices.index < decision].drop(columns="TITULO_CDI", errors="ignore")
     coverage = prior.notna().sum(axis=1)
     if coverage.empty:
         return pd.DatetimeIndex([])
-    threshold = max(1, int(coverage.max() * .80))
+    local_peak = coverage.rolling(SESSION_COVERAGE_WINDOW, min_periods=1).max()
+    threshold = (local_peak * .80).clip(lower=1)
     sessions = coverage.index[coverage >= threshold]
     return pd.DatetimeIndex(sessions[-(minimum_history_days + 1):])
 

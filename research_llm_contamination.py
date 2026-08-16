@@ -249,7 +249,7 @@ def main() -> None:
     parser.add_argument("--env-file", default=".env.local")
     parser.add_argument("--cache-dir", default="work/llm_contamination")
     parser.add_argument("--output", default="artifacts/llm_contamination")
-    parser.add_argument("--arms", default="named,anonymised,monolithic")
+    parser.add_argument("--arms", default="named,anonymised,monolithic,deterministic")
     parser.add_argument("--pace-seconds", type=float, default=5.0,
                         help="Delay between calls. The free tier caps requests per minute as well as per day.")
     args = parser.parse_args()
@@ -295,18 +295,29 @@ def main() -> None:
         planner = replace(SystemConfig(), max_asset_weight=args.issuer_cap, rolling_window_days=protocol.minimum_history_days)
 
         for arm in arms:
-            prompt, mapping = build_prompt(screen, decision, arm, args.issuer_cap)
-            schema = WEIGHT_SCHEMA if arm == "monolithic" else SCORE_SCHEMA
-            try:
-                response = call_gemini(prompt, schema, args.model, cache / arm, api_key)
-                # The free tier allows fifteen requests per minute. Pacing here
-                # is cheaper than discovering the limit through a refusal.
-                time.sleep(args.pace_seconds)
-            except Exception as exc:
-                violations.append({"decision_year": year, "arm": arm, "issue": "call_failed", "detail": str(exc)[:200]})
-                continue
-            parsed = response["parsed"]
             columns = [ticker for ticker in screen.ticker if ticker in history.columns]
+            if arm == "deterministic":
+                # The control arm. Same universe, same optimiser, same costs;
+                # the only difference is that the pre-declared factor rank
+                # supplies the score instead of the model. Without this arm the
+                # study cannot separate "the model adds something" from "the
+                # model does not get in the way".
+                percentile = screen.set_index("ticker").value_quality_score
+                parsed = {"scores": [{"id": ticker, "confidence": float(2 * percentile.get(ticker, .5) - 1)}
+                                     for ticker in columns]}
+                mapping = {ticker: ticker for ticker in columns}
+            else:
+                prompt, mapping = build_prompt(screen, decision, arm, args.issuer_cap)
+                schema = WEIGHT_SCHEMA if arm == "monolithic" else SCORE_SCHEMA
+                try:
+                    response = call_gemini(prompt, schema, args.model, cache / arm, api_key)
+                    # The free tier allows fifteen requests per minute. Pacing
+                    # here is cheaper than discovering the limit through a refusal.
+                    time.sleep(args.pace_seconds)
+                except Exception as exc:
+                    violations.append({"decision_year": year, "arm": arm, "issue": "call_failed", "detail": str(exc)[:200]})
+                    continue
+                parsed = response["parsed"]
             if arm == "monolithic":
                 raw = {mapping.get(str(item.get("id")), str(item.get("id"))): float(item.get("weight", 0.0))
                        for item in parsed.get("weights", [])}
@@ -376,6 +387,34 @@ def main() -> None:
             "average_equity_weight": float(frame.equity_weight.mean()),
             "worst_year": float(frame.net_return.min()),
         }
+    def paired_gap(left: str, right: str) -> dict | None:
+        """Annualised difference between two arms on the years both produced."""
+        if not {left, right} <= set(per_arm):
+            return None
+        paired = results[results.arm.isin([left, right])].pivot(
+            index="decision_year", columns="arm", values="net_return").dropna()
+        if paired.empty:
+            return None
+        from scipy import stats
+        difference = paired[left] - paired[right]
+        _, p_value = stats.ttest_1samp(difference, 0.0)
+        return {"paired_years": int(len(paired)), f"{left}_cagr": cagr(paired[left]),
+                f"{right}_cagr": cagr(paired[right]),
+                "annualised_gap": cagr(paired[left]) - cagr(paired[right]),
+                "mean_annual_difference": float(difference.mean()),
+                "p_value": float(p_value), f"years_{left}_won": int((difference > 0).sum())}
+
+    added_value = paired_gap("anonymised", "deterministic")
+    if added_value:
+        added_value["reading"] = (
+            "The control ranks the same eligible universe by the pre-declared factor score. A gap near zero means the "
+            "model reproduces the deterministic ranking rather than adding judgement; a negative gap means it "
+            "subtracts. Only a positive, significant gap supports the claim that the model contributes.")
+    architecture = paired_gap("anonymised", "monolithic")
+    if architecture:
+        architecture["reading"] = (
+            "Both arms receive the same information. One returns a bounded score that a convex optimiser turns into "
+            "weights; the other returns weights directly. The gap is what the decoupling is worth.")
     contamination = None
     if {"named", "anonymised"} <= set(per_arm):
         paired = results[results.arm.isin(["named", "anonymised"])].pivot(
@@ -400,6 +439,8 @@ def main() -> None:
         "model": args.model,
         "arms": per_arm,
         "contamination": contamination,
+        "model_added_value_vs_deterministic": added_value,
+        "decoupled_vs_monolithic": architecture,
         "decoupling_note": ("In the named and anonymised arms the model never sets a weight: its bounded score tilts "
                             "expected return inside the convex optimiser, which still enforces every cap. The "
                             "monolithic arm is the counterfactual where the model is trusted with weights; see "
