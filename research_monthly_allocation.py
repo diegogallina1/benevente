@@ -51,29 +51,45 @@ RISK_AVERSION_GRID = (2.0, 4.0, 8.0, 16.0)
 TILT_GRID = (0.0, .10, .20, .30)
 
 
-def monthly_panel(daily: pd.DataFrame) -> pd.DataFrame:
-    """Month-end returns of the equity sleeve, the defensive sleeve and the market."""
+FREQUENCIES = {"monthly": {"rule": "ME", "periods": 12}, "weekly": {"rule": "W-FRI", "periods": 52}}
+
+
+def monthly_panel(daily: pd.DataFrame, frequency: str = "monthly") -> pd.DataFrame:
+    """Period-end returns of the equity sleeve, the cash sleeve and the market.
+
+    Frequency is a parameter because the question is statistical before it is
+    financial: a decade of annual decisions gives eight usable observations,
+    monthly gives roughly a hundred and twenty, weekly roughly five hundred.
+    The economics change with it — weekly rebalancing pays its turnover far
+    more often — so both are run and reported side by side rather than one
+    being chosen after the fact.
+    """
+    if frequency not in FREQUENCIES:
+        raise ValueError(f"frequency must be one of {sorted(FREQUENCIES)}")
+    rule, periods = FREQUENCIES[frequency]["rule"], FREQUENCIES[frequency]["periods"]
     frame = daily.set_index("date").sort_index()
     needed = [column for column in ("equity_sleeve", "cdi", "IBOVESPA", "BOVA11") if column in frame.columns]
     if "equity_sleeve" not in needed or "cdi" not in needed:
         raise ValueError("The daily curve must carry equity_sleeve and cdi levels.")
-    monthly = frame[needed].resample("ME").last().dropna(how="any")
-    returns = monthly.pct_change().dropna()
+    sampled = frame[needed].resample(rule).last().dropna(how="any")
+    returns = sampled.pct_change().dropna()
     returns.columns = [f"{column}_return" for column in returns.columns]
     panel = returns.rename(columns={"equity_sleeve_return": "equity", "cdi_return": "cash"})
     panel["excess"] = panel.equity - panel.cash
-    levels = monthly.equity_sleeve.reindex(panel.index)
-    market = monthly.IBOVESPA.reindex(panel.index) if "IBOVESPA" in monthly else levels
-    # Every predictor is measured on information available at the close of the
-    # month before the one it is used to allocate.
-    panel["trailing_12m"] = levels.pct_change(12)
-    panel["trailing_volatility"] = panel.equity.rolling(12).std(ddof=1) * (12 ** .5)
-    panel["short_volatility"] = panel.equity.rolling(3).std(ddof=1) * (12 ** .5)
-    panel["above_trend"] = (levels / levels.rolling(10).mean() - 1)
+    levels = sampled.equity_sleeve.reindex(panel.index)
+    market = sampled.IBOVESPA.reindex(panel.index) if "IBOVESPA" in sampled else levels
+    # Every predictor keeps the same economic horizon across frequencies: one
+    # year of trailing return, one year and one quarter of realised volatility,
+    # and a ten-month trend. Only the number of observations changes.
+    year, quarter, trend = periods, max(2, round(periods / 4)), max(3, round(periods * 10 / 12))
+    panel["trailing_12m"] = levels.pct_change(year)
+    panel["trailing_volatility"] = panel.equity.rolling(year).std(ddof=1) * (periods ** .5)
+    panel["short_volatility"] = panel.equity.rolling(quarter).std(ddof=1) * (periods ** .5)
+    panel["above_trend"] = (levels / levels.rolling(trend).mean() - 1)
     panel["drawdown"] = levels / levels.cummax() - 1
-    panel["market_trailing_12m"] = market.pct_change(12)
-    panel["cash_level"] = panel.cash.rolling(12).sum()
-    return panel.shift(0)
+    panel["market_trailing_12m"] = market.pct_change(year)
+    panel["periods_per_year"] = periods
+    return panel
 
 
 def _lagged(panel: pd.DataFrame, columns: list[str]) -> pd.DataFrame:
@@ -108,16 +124,16 @@ def _apply(weights: pd.Series, panel: pd.DataFrame, cap: float, taxed: bool) -> 
     return frame
 
 
-def _metrics(returns: pd.Series, cash: pd.Series) -> dict:
+def _metrics(returns: pd.Series, cash: pd.Series, periods: int = 12) -> dict:
     wealth = (1 + returns).cumprod()
-    years = len(returns) / 12
+    years = len(returns) / periods
     excess = returns - cash.reindex(returns.index)
     deviation = float(returns.std(ddof=1))
     return {
-        "months": int(len(returns)),
+        "periods": int(len(returns)),
         "cagr": float(wealth.iloc[-1] ** (1 / years) - 1),
-        "annual_volatility": float(deviation * (12 ** .5)),
-        "sharpe_vs_cash": float(excess.mean() / excess.std(ddof=1) * (12 ** .5)) if excess.std(ddof=1) else float("nan"),
+        "annual_volatility": float(deviation * (periods ** .5)),
+        "sharpe_vs_cash": float(excess.mean() / excess.std(ddof=1) * (periods ** .5)) if excess.std(ddof=1) else float("nan"),
         "max_drawdown": float((wealth / wealth.cummax() - 1).min()),
         "months_beating_cash": int((returns > cash.reindex(returns.index)).sum()),
     }
@@ -194,13 +210,16 @@ def main() -> None:
     parser.add_argument("--cap", type=float, default=.95)
     parser.add_argument("--policy-weight", type=float, default=.55)
     parser.add_argument("--output", default="artifacts/monthly_allocation")
+    parser.add_argument("--frequency", choices=sorted(FREQUENCIES), default="monthly",
+                        help="Rebalancing frequency of the equity/cash split.")
     parser.add_argument("--training-months", type=int, default=MINIMUM_TRAINING_MONTHS,
                         help="Months of history each fit may use before the first live allocation. "
                              "Shorter windows buy live observations at the cost of a weaker fit; run several.")
     args = parser.parse_args()
 
     daily = pd.read_csv(args.daily, parse_dates=["date"])
-    panel = monthly_panel(daily)
+    panel = monthly_panel(daily, args.frequency)
+    periods = FREQUENCIES[args.frequency]["periods"]
     predictors = ["trailing_12m", "above_trend", "drawdown", "market_trailing_12m", "short_volatility"]
     rules = build_rules(panel, args.cap, args.policy_weight, predictors, args.training_months)
     index = next(iter(rules.values())).index
@@ -216,8 +235,8 @@ def main() -> None:
             static_returns = applied.net_return
         record = {"rule": name, "average_weight": float(weights.clip(0, args.cap).mean()),
                   "average_turnover": float(applied.turnover.mean()),
-                  **_metrics(applied.net_return, cash),
-                  "cagr_after_tax": _metrics(after_tax.net_return, cash)["cagr"]}
+                  **_metrics(applied.net_return, cash, periods),
+                  "cagr_after_tax": _metrics(after_tax.net_return, cash, periods)["cagr"]}
         rows.append(record)
         curves[name] = applied.net_return
     table = pd.DataFrame(rows).set_index("rule")
@@ -229,16 +248,16 @@ def main() -> None:
             continue
         difference = (series - static_returns).dropna()
         statistic, p_value = stats.ttest_1samp(difference, 0.0)
-        table.loc[name, "excess_vs_static_annual"] = float(difference.mean() * 12)
+        table.loc[name, "excess_vs_static_annual"] = float(difference.mean() * periods)
         table.loc[name, "excess_p_value"] = float(p_value)
 
     for reference in ("IBOVESPA_return", "BOVA11_return"):
         if reference in panel.columns:
             series = panel[reference].reindex(index)
             table.loc[f"reference_{reference.replace('_return', '')}"] = {
-                **_metrics(series, cash), "average_weight": 1.0, "average_turnover": 0.0,
+                **_metrics(series, cash, periods), "average_weight": 1.0, "average_turnover": 0.0,
                 "cagr_after_tax": np.nan, "excess_vs_static_annual": np.nan, "excess_p_value": np.nan}
-    table.loc["reference_CDI"] = {**_metrics(cash, cash), "average_weight": 0.0, "average_turnover": 0.0,
+    table.loc["reference_CDI"] = {**_metrics(cash, cash, periods), "average_weight": 0.0, "average_turnover": 0.0,
                                   "cagr_after_tax": np.nan, "excess_vs_static_annual": np.nan, "excess_p_value": np.nan}
 
     output = Path(args.output)
@@ -257,7 +276,8 @@ def main() -> None:
         beaten = lost = candidates.iloc[0:0]
     significant = beaten
     summary = {
-        "months_evaluated": int(len(index)),
+        "frequency": args.frequency,
+        "periods_evaluated": int(len(index)),
         "evaluation_window": f"{index[0].date()} a {index[-1].date()}",
         "rules_tested": int(len(candidates)),
         "static_cagr": float(table.loc["static", "cagr"]),
