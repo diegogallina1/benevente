@@ -106,3 +106,28 @@ body{font-size:15px}.hero{grid-template-columns:minmax(0,42rem);min-height:auto}
 .dossier-shell { display: block; }
 .dossier-shell .embedded-dossier { width: 100%; }
 .dossier-shell .asset-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+
+/* A faixa de parâmetros tinha raio só no primeiro cartão e nenhum no último, o
+   que produzia um canto arredondado solto contra três cantos retos. A moldura
+   passa a ser do bloco inteiro, e os cartões apenas se dividem por dentro. */
+.research-signal { border: 1px solid #dce7e2; border-radius: 14px; overflow: hidden; background: #fff; }
+.research-signal > div:first-child { border-radius: 0; }
+.research-signal .text-link { border-left: 1px solid #dce7e2; }
+@media (max-width: 780px) {
+  .research-signal > div:first-child { border-radius: 0; }
+  .research-signal .text-link { border-left: 0; border-top: 1px solid #dce7e2; justify-content: center; }
+}
+
+/* Comparar com um ativo externo é uma ação de quem já leu o placar, não a
+   primeira coisa a se ver. Recolhida, ela deixa o gráfico e a tabela sozinhos. */
+.chart-add-details { border: 1px solid #dce7e2; border-radius: 10px; background: #fff; }
+.chart-add-details > summary { cursor: pointer; padding: .7rem .85rem; font-size: .78rem; font-weight: 700; color: #174e49; list-style: none; display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.chart-add-details > summary::-webkit-details-marker { display: none; }
+.chart-add-details > summary::after { content: "+"; font-family: "DM Mono", monospace; font-size: 1rem; color: #5e786f; }
+.chart-add-details[open] > summary::after { content: "−"; }
+.chart-add-details[open] > summary { border-bottom: 1px solid #dce7e2; }
+.chart-add-details .chart-add { border: 0; }
+
+/* O resumo desceu para logo acima do rodapé de integridade e agora fecha a
+   leitura do gráfico em vez de antecipá-la. */
+.comparison-summary { margin: 1rem 0 .2rem; }

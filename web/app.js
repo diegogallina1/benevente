@@ -469,7 +469,7 @@ function renderLineChart(period) {
       const anchor = index === 0 ? "start" : index === dates.length - 1 ? "end" : "middle";
       const label = dates.length > 24 ? String(dates[index]).slice(0, 4) : formatDateBr(dates[index]);
       return `<line class="line-grid" x1="${x(index)}" x2="${x(index)}" y1="${top}" y2="${height - bottom}" opacity=".45"/>`
-        + `<text class="line-grid-label" text-anchor="${anchor}" x="${x(index)}" y="${height-5}">${label}</text>`;
+        + `<text class="line-grid-label" text-anchor="${anchor}" x="${x(index)}" y="${height-24}">${label}</text>`;
     }).join("");
   const strategyName = selected.find(name => name.startsWith("Benevente"));
   lineLayer.innerHTML = selected.map((name, seriesIndex) => {
@@ -506,7 +506,7 @@ function renderLineChart(period) {
     ? `<line class="line-boundary" x1="${x(boundaryIndex)}" x2="${x(boundaryIndex)}" y1="${top}" y2="${height - bottom}"/>`
       + `<text class="line-boundary-label" x="${x(boundaryIndex) + 6}" y="${top + 12}">início da avaliação</text>`
     : "";
-  gridLayer.innerHTML = grid + boundaryMark; labelLayer.innerHTML = `${dateLabels}<text class="line-axis-title" text-anchor="middle" x="18" y="${top + plotH / 2}" transform="rotate(-90 18 ${top + plotH / 2})">Retorno acumulado (%)</text><text class="line-axis-title" text-anchor="middle" x="${left + plotW / 2}" y="${height - 1}">Data de observação</text>`;
+  gridLayer.innerHTML = grid + boundaryMark; labelLayer.innerHTML = `${dateLabels}<text class="line-axis-title" text-anchor="middle" x="18" y="${top + plotH / 2}" transform="rotate(-90 18 ${top + plotH / 2})">Retorno acumulado (%)</text><text class="line-axis-title" text-anchor="middle" x="${left + plotW / 2}" y="${height - 5}">Data de observação</text>`;
   document.querySelector("#chart-return-summary").innerHTML = selected.map((name, index) => {
     const series = allSeries[name].slice(startIndex, endIndex);
     const first = series.find(value => Number.isFinite(value));
