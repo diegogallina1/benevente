@@ -30,6 +30,14 @@ let chartFocus = null;
 let chartScale = "linear";
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 const colors = { "Benevente":"#0f766e","Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490", "BOVA11":"#4a5560" };
+// Any string that reaches innerHTML has to be escaped, including strings the
+// user typed into the compare box and the name of a file they imported. Nothing
+// here is persisted or shared, so the exposure is to the person's own browser
+// rather than to other visitors, but an unescaped sink is an unescaped sink and
+// the fix costs one function.
+const escapeHtml = value => String(value ?? "").replace(/[&<>"'`]/g, character => ({
+  "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;", "`": "&#96;",
+}[character]));
 const extraColors = ["#9c4f2a", "#7856a3", "#b87418", "#2a7c91"];
 const formatDateBr = value => {
   const date = new Date(`${String(value).slice(0, 10)}T12:00:00`);
@@ -298,7 +306,7 @@ function renderForecast() {
     [portfolio.historical_downside_p20, "P20"], [portfolio.historical_median_return, "mediana"], [portfolio.historical_upside_p80, "P80"]
   ].map(([value, label]) => `<span class="scenario-marker" style="left:${point(value)}">${label}<i></i>${signedScenario(value)}</span>`).join("")}<div class="scenario-scale"><span>${signedScenario(min)}</span><span>retorno anual histórico condicional</span><span>${signedScenario(max)}</span></div>`;
   document.querySelector("#scenario-caption").textContent = `Distribuição dos ${portfolio.historical_observations} retornos anuais líquidos da política ${profileName}. Custos e CDI residual pertencem ao protocolo de carteira; não é previsão de rentabilidade.`;
-  document.querySelector("#scenario-limitations").innerHTML = forecastData.limitations.map(note => `<span>${note}</span>`).join("");
+  document.querySelector("#scenario-limitations").innerHTML = forecastData.limitations.map(note => `<span>${escapeHtml(note)}</span>`).join("");
 }
 
 function renderCurrentDecision() {
@@ -403,7 +411,7 @@ function renderCurveToggles(period) {
   if (!selectedCurves.size || [...selectedCurves].some(name => !names.includes(name))) {
     selectedCurves = new Set(names.filter(name => !name.includes("após IR")));
   }
-  document.querySelector("#curve-toggles").innerHTML = names.map((name, index) => `<button type="button" class="curve-toggle ${selectedCurves.has(name) ? "active" : ""}" data-kind="${name}" style="--series-color:${seriesColor(name, index)}"><i></i>${name}</button>`).join("");
+  document.querySelector("#curve-toggles").innerHTML = names.map((name, index) => `<button type="button" class="curve-toggle ${selectedCurves.has(name) ? "active" : ""}" data-kind="${escapeHtml(name)}" style="--series-color:${seriesColor(name, index)}"><i></i>${escapeHtml(name)}</button>`).join("");
   document.querySelectorAll(".curve-toggle").forEach(button => button.addEventListener("click", () => {
     const name = button.dataset.kind;
     selectedCurves.has(name) ? selectedCurves.delete(name) : selectedCurves.add(name);
@@ -469,7 +477,7 @@ function renderLineChart(period) {
     const area = name === strategyName && runs.length === 1 && runs[0].length > 1
       ? `<path class="line-area" fill="${seriesColor(name, seriesIndex)}" d="${smoothPath(runs[0])} L${runs[0].at(-1).x.toFixed(2)},${height - bottom} L${runs[0][0].x.toFixed(2)},${height - bottom} Z"/>`
       : "";
-    return `${area}<path class="line-path ${reference ? "mvo-reference" : ""}" data-series="${name}" stroke="${seriesColor(name, seriesIndex)}" d="${path}"/>`;
+    return `${area}<path class="line-path ${reference ? "mvo-reference" : ""}" data-series="${escapeHtml(name)}" stroke="${seriesColor(name, seriesIndex)}" d="${path}"/>`;
   }).join("");
   // The legend and return chips carry the labels. End labels overlap when
   // funds, benchmarks and user-selected assets converge at the same point.
@@ -480,7 +488,7 @@ function renderLineChart(period) {
     const first = series.find(value => Number.isFinite(value));
     const last = [...series].reverse().find(value => Number.isFinite(value));
     const returnPct = (last / first - 1) * 100;
-    return `<span style="--series-color:${seriesColor(name, index)}"><i></i><b>${name}</b><strong>${returnPct >= 0 ? "+" : ""}${returnPct.toLocaleString("pt-BR", {maximumFractionDigits:1})}%</strong></span>`;
+    return `<span style="--series-color:${seriesColor(name, index)}"><i></i><b>${escapeHtml(name)}</b><strong>${returnPct >= 0 ? "+" : ""}${returnPct.toLocaleString("pt-BR", {maximumFractionDigits:1})}%</strong></span>`;
   }).join("");
   const start = dates[0], end = dates.at(-1);
   document.querySelector("#chart-zoom-status").textContent = chartZoom === 1 ? "Visão completa" : `${dates.length} pontos visíveis`;
@@ -501,7 +509,7 @@ function renderLineChart(period) {
     }).sort((first, second) => second.value - first.value);
     document.querySelector("#chart-inspector").innerHTML =
       `<b>${formatDateBr(dates[index])}</b>` + readings.map(item =>
-        `<span class="inspector-item" style="--series-color:${item.color}"><i></i>${item.name} <strong>${item.text}</strong></span>`).join("");
+        `<span class="inspector-item" style="--series-color:${item.color}"><i></i>${escapeHtml(item.name)} <strong>${item.text}</strong></span>`).join("");
   };
   const chart = document.querySelector("#line-chart");
   let dragStart = null;
@@ -556,7 +564,7 @@ function renderComparison(period) {
     const note = firstAvailable >= 0 ? `Disponível desde ${formatDateBr(profileDataset(period).dates[firstAvailable])}` : "Série adicionada";
     return metrics ? [name, { cumulative: values.at(-1) / values.find(Number.isFinite) - 1, cagr: metrics.cagr }, note] : null;
   }).filter(Boolean);
-  document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${name}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td>${note}</td></tr>`).join("");
+  document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${escapeHtml(name)}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td>${escapeHtml(note)}</td></tr>`).join("");
   const marketNote = bova ? ` Contra o BOVA11, ${pct(benevente.cumulative - bova.cumulative)}.` : "";
   document.querySelector("#research-note").textContent = `Janela de ${rows.length} ano(s): diferença para o CDI ${pct(versusCdi)} e para o MVO de referência ${pct(versusMvo)}.${marketNote} O MVO de referência é uma otimização independente sobre o mesmo universo elegível, não uma cópia da carteira. Período usado para desenvolver a regra: não é teste fora da amostra.`;
   renderCurveToggles(period); renderLineChart(period);

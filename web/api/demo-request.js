@@ -1,10 +1,38 @@
+import { applyBaseHeaders, hasAllowedOrigin, isRateLimited } from "./_guard.js";
+
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const clean = (value, limit) => String(value || "").trim().slice(0, limit);
+
+/**
+ * Trim, cap the length, and replace every control character with a space.
+ *
+ * The subject line is assembled from user input and a newline inside a header
+ * field is the classic way to append a header of your own. The filter compares
+ * code points rather than using a character class, so no control character has
+ * to appear in this source file, where a reviewer could not see it.
+ */
+function clean(value, limit) {
+  let output = "";
+  for (const character of String(value || "")) {
+    const code = character.codePointAt(0);
+    output += code < 0x20 || code === 0x7f ? " " : character;
+  }
+  return output.trim().slice(0, limit);
+}
 
 export default async function handler(request, response) {
+  applyBaseHeaders(response);
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
     return response.status(405).json({ error: "Método não permitido." });
+  }
+  if (!hasAllowedOrigin(request)) {
+    return response.status(403).json({ error: "Origem não autorizada." });
+  }
+  // Sending mail costs money and sender reputation. Five per hour per address
+  // is far above any honest use of a demonstration form.
+  if (isRateLimited(request, { limit: 5, windowMs: 60 * 60 * 1000, name: "demo" })) {
+    response.setHeader("Retry-After", "3600");
+    return response.status(429).json({ error: "Muitas solicitações. Tente novamente mais tarde." });
   }
   const name = clean(request.body?.name, 120);
   const email = clean(request.body?.email, 180);
@@ -29,7 +57,8 @@ export default async function handler(request, response) {
     }),
   });
   if (!emailResponse.ok) {
-    console.error("Lead email delivery failed", await emailResponse.text());
+    // The upstream body can echo the recipient address; log the status only.
+    console.error("Lead email delivery failed", emailResponse.status);
     return response.status(502).json({ error: "Não foi possível encaminhar a solicitação agora. Tente novamente." });
   }
   return response.status(200).json({ ok: true });

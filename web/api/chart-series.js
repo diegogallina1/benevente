@@ -1,17 +1,34 @@
-const SYMBOL = /^[A-Z0-9.^-]{1,20}$/;
+import { applyBaseHeaders, hasAllowedOrigin, isRateLimited } from "./_guard.js";
+
+// Letters and digits only. The previous class also allowed a dot and a caret,
+// which are not part of a B3 ticker and only widened what could be appended to
+// an upstream path. The ".SA" suffix is added here, by us, not accepted from
+// the caller.
+const SYMBOL = /^[A-Z0-9]{4,8}$/;
 
 export default async function handler(request, response) {
+  applyBaseHeaders(response);
   if (request.method !== "GET") {
     response.setHeader("Allow", "GET");
     return response.status(405).json({ error: "Método não permitido." });
   }
-  const symbol = String(request.query.symbol || "").trim().toUpperCase();
+  if (!hasAllowedOrigin(request)) {
+    return response.status(403).json({ error: "Origem não autorizada." });
+  }
+  // This route is an unauthenticated proxy onto somebody else's rate limit.
+  // Without a ceiling it is a free relay for anyone who finds the URL.
+  if (isRateLimited(request, { limit: 60, windowMs: 10 * 60 * 1000, name: "chart" })) {
+    response.setHeader("Retry-After", "600");
+    return response.status(429).json({ error: "Muitas consultas. Aguarde alguns minutos." });
+  }
+  const raw = String(request.query.symbol || "").trim().toUpperCase();
+  const symbol = raw.endsWith(".SA") ? raw.slice(0, -3) : raw;
   const start = new Date(String(request.query.start || ""));
   const end = new Date(String(request.query.end || ""));
   if (!SYMBOL.test(symbol) || Number.isNaN(start.valueOf()) || Number.isNaN(end.valueOf()) || end <= start) {
     return response.status(400).json({ error: "Informe ticker B3 válido e intervalo de datas válido." });
   }
-  const yahooSymbol = symbol.endsWith(".SA") ? symbol : `${symbol}.SA`;
+  const yahooSymbol = `${symbol}.SA`;
   const endpoint = new URL(`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}`);
   endpoint.searchParams.set("period1", String(Math.floor(start.valueOf() / 1000)));
   endpoint.searchParams.set("period2", String(Math.floor(end.valueOf() / 1000) + 86_400));
