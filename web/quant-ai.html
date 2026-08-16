@@ -15,14 +15,20 @@
   <body>
     <nav class="paper-nav shell">
       <a href="./">← Benevente Wealth System</a>
-      <a href="./quant-ai" class="current">Quant AI</a>
-      <a href="./btech">BTech</a>
+      <a href="./quant-ai" class="current">IEEE CiFEr</a>
+      <a href="./btech">Fucape BTech</a>
       <a href="./metodo">Metodologia</a>
     </nav>
     <main class="shell paper-page">
       <p class="eyebrow"><span></span> Benevente Quant AI · computational finance research</p>
       <h1>Separating what the model judges from what the optimiser decides.</h1>
       <p class="paper-lede">A language model reads dated accounting facts and returns a bounded confidence score. A convex solver, which is the only component that sees costs and constraints, turns those scores into weights. This page documents how the system is built, how it is used, and what happened when the architecture was tested against the controls this literature usually omits.</p>
+
+      <div class="paper-callout"><b>One term, defined once</b>CDI is the Brazilian interbank overnight rate, the
+      benchmark a domestic investor earns on cash with negligible credit risk. It is the local equivalent of a
+      risk-free short rate, and it is high: it compounded at 9.26% a year over the evaluation window. Any Brazilian
+      equity strategy is therefore competing against a cash return that would be unusual elsewhere, which is why it
+      appears as a benchmark throughout and why the defensive sleeve is held in it rather than in bills.</div>
 
       <h2>1 · Why the separation exists</h2>
       <p>Asking a language model for portfolio weights fails for reasons that have nothing to do with its financial reasoning. Weights must sum to one, respect a per-issuer ceiling, respect an asset-class ceiling, and trade off expected return against a covariance structure and against the cost of moving away from the book you already hold. That is a constrained optimisation, and free text is the wrong medium for its answer.</p>
