@@ -68,3 +68,9 @@ body{font-size:15px}.hero{grid-template-columns:minmax(0,42rem);min-height:auto}
    aligned on the thousands separator instead of drifting per row. */
 .comparison-table-wrap td.wealth-cell { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .comparison-table-wrap td.wealth-cell b { font-weight: 600; }
+
+/* O valor em reais acompanha o percentual na mesma métrica, em segunda linha,
+   para que mover o controle de patrimônio tenha efeito visível no painel onde
+   o controle está, e não apenas na prévia mais abaixo da página. */
+.result-metrics strong small, .weight-row b small { display: block; font-size: .72rem; font-weight: 500; opacity: .7; letter-spacing: 0; margin-top: .15rem; }
+.weight-row b { text-align: right; }

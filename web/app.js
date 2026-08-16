@@ -1,7 +1,7 @@
 const profiles = {
   conservador: { equity: 35, issuer: 10, review: "anual", mix: [["Ações", 35], ["CDI / defensivo", 65]], insight: "Exposição menor a ações, com cinco emissores e o restante em CDI. O limite do perfil é aplicado antes da otimização." },
   moderado: { equity: 55, issuer: 17.6, review: "anual", mix: [["Ações", 55], ["CDI / defensivo", 45]], insight: "Até 55% em ações entre cinco emissores. A configuração do ano é escolhida por Sharpe sobre os anos já encerrados, nunca sobre o ano avaliado." },
-  arrojado: { equity: 75, issuer: 15, review: "anual", mix: [["Ações", 75], ["CDI / defensivo", 25]], insight: "Até 75% em ações entre cinco emissores. Com o teto por emissor em 15%, os cinco ficam no limite e a cesta vira peso igual — o que reduz a inclinação para as maiores convicções." }
+  arrojado: { equity: 75, issuer: 15, review: "anual", mix: [["Ações", 75], ["CDI / defensivo", 25]], insight: "Até 75% em ações entre cinco emissores. Com o teto por emissor em 15%, os cinco ficam no limite e a cesta vira peso igual, o que reduz a inclinação para as maiores convicções." }
 };
 
 let researchData = null;
@@ -373,7 +373,13 @@ function renderUniverse() {
 }
 
 const wealth = document.querySelector("#wealth"), wealthOut = document.querySelector("#wealth-output");
-wealth.addEventListener("input", () => { wealthOut.value = money.format(wealth.value); });
+wealth.addEventListener("input", () => {
+  wealthOut.value = money.format(wealth.value);
+  // Sem isto o valor só era aplicado no próximo envio, e o controle parecia inerte.
+  if (!document.querySelector("#proposal-content")?.classList.contains("hidden")) {
+    document.querySelector("#proposal-form").requestSubmit();
+  }
+});
 document.querySelectorAll(".choice").forEach(button => button.addEventListener("click", () => {
   document.querySelectorAll(".choice").forEach(item => item.classList.remove("active"));
   button.classList.add("active"); currentProfile = button.dataset.profile;
@@ -401,11 +407,15 @@ document.querySelector("#proposal-form").addEventListener("submit", event => {
   document.querySelector("#proposal-empty").classList.add("hidden");
   document.querySelector("#proposal-content").classList.remove("hidden");
   document.querySelector("#profile-label").textContent = activeProfileLabel();
-  document.querySelector("#equity-weight").textContent = `${safeEquity}%`;
-  document.querySelector("#fixed-weight").textContent = `${100-safeEquity}%`;
+  // O controle de patrimônio ficava mudando apenas a prévia de 2026, muito
+  // abaixo na página, então mexer nele parecia não fazer nada. As duas métricas
+  // e a lista de pesos passam a exibir o valor em reais ao lado do percentual.
+  const capital = Math.max(0, Number(document.querySelector("#wealth")?.value) || 0);
+  document.querySelector("#equity-weight").innerHTML = `${safeEquity}%<small>${money.format(capital * safeEquity / 100)}</small>`;
+  document.querySelector("#fixed-weight").innerHTML = `${100-safeEquity}%<small>${money.format(capital * (100 - safeEquity) / 100)}</small>`;
   document.querySelector("#review-cycle").textContent = profile.review;
-  document.querySelector("#proposal-insight").textContent = `Benevente Wealth System usa a mesma triagem anual em todos os perfis: qualidade, valor, momento e liquidez. A cesta contém ao menos cinco ações; ativos que continuam elegíveis podem permanecer, reduzindo trocas sem justificativa.`;
-  document.querySelector("#weight-list").innerHTML = [["Ações selecionadas", safeEquity], ["CDI", 100 - safeEquity]].map(([name, weight]) => `<div class="weight-row"><span>${name}</span><div class="bar"><i style="width:${weight}%"></i></div><b>${weight}%</b></div>`).join("");
+  document.querySelector("#proposal-insight").textContent = `A triagem anual é uma só: qualidade, valor, momento e liquidez. A cesta contém ao menos cinco ações, e ativos que continuam elegíveis podem permanecer, o que reduz trocas sem justificativa. Os valores em reais aplicam o patrimônio escolhido acima aos pesos da política.`;
+  document.querySelector("#weight-list").innerHTML = [["Ações selecionadas", safeEquity], ["CDI", 100 - safeEquity]].map(([name, weight]) => `<div class="weight-row"><span>${name}</span><div class="bar"><i style="width:${weight}%"></i></div><b>${weight}%<small>${money.format(capital * weight / 100)}</small></b></div>`).join("");
   refreshDecisionStudio();
 });
 
@@ -568,7 +578,7 @@ function renderComparison(period) {
   const winMarket = ibovespa ? winsAgainst("benchmark_IBOVESPA") : null;
   const start = rows[0].decision_date, end = rows.at(-1).holding_end_exclusive;
   const versusCdi = benevente.cumulative - cdi.cumulative, versusMvo = benevente.cumulative - mvo.cumulative;
-  document.querySelector("#period-description").textContent = `${formatDateBr(start)} a ${formatDateBr(end)} · ${rows.length} decisões anuais com custos e imposto deduzidos.`;
+  document.querySelector("#period-description").textContent = `${formatDateBr(start)} a ${formatDateBr(end)} · ${rows.length} ano(s), uma decisão por ano, com custos e imposto deduzidos.`;
   const marketPhrase = winMarket === null ? "" : ` Contra o Ibovespa, venceu ${winMarket} de ${rows.length}.`;
   // A percentage is easy to nod at and hard to feel. The same number said in
   // reais is what a reader actually compares against the fund they already own,
