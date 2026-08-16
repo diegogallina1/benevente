@@ -55,6 +55,20 @@ class BrazilianTaxModel:
     monthly_sale_exemption_brl: float = 20_000.0
 
     @staticmethod
+    def fixed_income_rate_for(holding_days: float) -> float:
+        """Regressive table by holding period.
+
+        A protocol that rebalances more often does not merely pay more tax
+        because it realises more often; it pays a *higher rate* on the cash
+        sleeve, because the table punishes short holds. Comparing cadences with
+        a single rate would hide the part of the answer that matters most.
+        """
+        if holding_days <= 180: return .225
+        if holding_days <= 360: return .20
+        if holding_days <= 720: return .175
+        return .15
+
+    @staticmethod
     def _share(value: float) -> float:
         return max(0.0, min(1.0, float(value)))
 
@@ -186,6 +200,10 @@ class AnnualWalkForwardConfig:
     top_assets: int = 4
     minimum_average_daily_value_brl: float = 10_000_000
     risk_profile: str | None = None
+    # 12 reproduz a decisão anual de janeiro, byte a byte. Valores menores
+    # existem para responder se decidir com mais frequência compensa o giro,
+    # o custo e a alíquota maior que ela cria.
+    rebalance_months: int = 12
 
     def __post_init__(self) -> None:
         if self.end_year <= self.start_year:
@@ -306,6 +324,48 @@ def _first_trading_day(prices: pd.DataFrame, year: int) -> pd.Timestamp | None:
     rows = prices.loc[(prices.index >= pd.Timestamp(year=year, month=1, day=1)) &
                       (prices.index < pd.Timestamp(year=year + 1, month=1, day=1))]
     return None if rows.empty else pd.Timestamp(rows.index[0])
+
+
+def _decision_schedule(prices: pd.DataFrame, start_year: int, end_year: int,
+                       rebalance_months: int) -> list[tuple[int, pd.Timestamp, pd.Timestamp]]:
+    """Decision dates for a cadence, as (label, decision, next decision).
+
+    With ``rebalance_months == 12`` this returns exactly the January dates the
+    annual protocol has always used, so the published series is unaffected. For
+    shorter cadences the decision is the first session on or after each period
+    boundary, and the holding period ends when the next decision begins.
+    """
+    boundaries: list[pd.Timestamp] = []
+    year, month = start_year, 1
+    while year < end_year:
+        boundaries.append(pd.Timestamp(year=year, month=month, day=1))
+        month += rebalance_months
+        while month > 12:
+            month -= 12
+            year += 1
+    sessions = prices.index
+    schedule: list[tuple[int, pd.Timestamp, pd.Timestamp]] = []
+    for position, boundary in enumerate(boundaries):
+        available = sessions[sessions >= boundary]
+        if available.empty:
+            continue
+        decision = pd.Timestamp(available[0])
+        # The decision must fall inside its own period, otherwise a gap in the
+        # panel would silently shift a period onto the next one's data.
+        limit = (boundaries[position + 1] if position + 1 < len(boundaries)
+                 else pd.Timestamp(year=end_year, month=1, day=1))
+        if decision >= limit:
+            continue
+        following = sessions[sessions >= limit]
+        if following.empty:
+            observed = sessions[sessions >= decision]
+            if observed.empty:
+                continue
+            next_decision = pd.Timestamp(observed[-1]).normalize() + pd.Timedelta(days=1)
+        else:
+            next_decision = pd.Timestamp(following[0])
+        schedule.append((int(boundary.year), decision, next_decision))
+    return schedule
 
 
 def _format_weights(weights: pd.Series) -> str:
@@ -578,24 +638,14 @@ class AnnualWalkForwardEngine:
         transition_rows: list[dict] = []
         holding_rows: list[dict] = []
 
-        for year in range(protocol.start_year, protocol.end_year):
+        # A Jan-2025 decision can be evaluated through the last available 2025
+        # session even when the local total-return panel stops before Jan-2026.
+        # The schedule preserves the no-look-ahead decision while marking the
+        # close as an observed-data cutoff.
+        schedule = _decision_schedule(self.prices, protocol.start_year, protocol.end_year,
+                                      protocol.rebalance_months)
+        for year, decision, next_decision in schedule:
             decision_factor = (factors_by_year or {}).get(year, protocol.factor)
-            decision = _first_trading_day(self.prices, year)
-            # A Jan-2025 decision can be evaluated through the last available
-            # 2025 session even when the local total-return panel stops before
-            # Jan-2026.  This preserves the no-look-ahead decision while
-            # clearly marking the close as an observed-data cutoff.
-            if decision is None:
-                continue
-            next_decision = _first_trading_day(self.prices, year + 1)
-            if next_decision is None:
-                observed = self.prices.index[self.prices.index >= decision]
-                if observed.empty:
-                    continue
-                # Keep the public record semantically clear: the field is
-                # exclusive, therefore it is the calendar day after the last
-                # observed market session.
-                next_decision = pd.Timestamp(observed[-1]).normalize() + pd.Timedelta(days=1)
             # A historical panel has one fundamental snapshot per ticker per
             # annual decision. The decision may see several older filings, but
             # only the newest filing actually available at that date may enter

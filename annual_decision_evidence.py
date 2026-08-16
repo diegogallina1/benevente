@@ -19,11 +19,28 @@ class DecisionEvidence:
     allowed_by_date: dict[pd.Timestamp, frozenset[str]]
     issuer_by_date: dict[pd.Timestamp, dict[str, str]]
 
+    def _effective_date(self, decision_date: pd.Timestamp) -> pd.Timestamp | None:
+        """The most recent evidence date at or before the decision.
+
+        The universe is frozen once a year, at January. A decision taken in
+        July must therefore read the January gate: it is the newest evidence
+        that actually existed on that date. Reading the *following* January
+        would be look-ahead, and requiring an exact match would silently
+        reject every decision that is not taken in January, which is what
+        happens to any cadence shorter than a year.
+        """
+        stamp = pd.Timestamp(decision_date).normalize()
+        if stamp in self.allowed_by_date:
+            return stamp
+        earlier = [item for item in self.allowed_by_date if item <= stamp]
+        return max(earlier) if earlier else None
+
     def allows(self, decision_date: pd.Timestamp, ticker: str) -> bool:
-        return ticker in self.allowed_by_date.get(pd.Timestamp(decision_date).normalize(), frozenset())
+        return ticker in self.allowed(decision_date)
 
     def allowed(self, decision_date: pd.Timestamp) -> frozenset[str]:
-        return self.allowed_by_date.get(pd.Timestamp(decision_date).normalize(), frozenset())
+        effective = self._effective_date(decision_date)
+        return self.allowed_by_date.get(effective, frozenset()) if effective is not None else frozenset()
 
     def issuer_ids(self, decision_date: pd.Timestamp) -> dict[str, str]:
         """Return the economic issuer for each permitted share class.
@@ -32,7 +49,8 @@ class DecisionEvidence:
         themselves.  They therefore never create a false link with another
         listed company, while PETR3/PETR4-style classes share one exposure.
         """
-        return self.issuer_by_date.get(pd.Timestamp(decision_date).normalize(), {})
+        effective = self._effective_date(decision_date)
+        return self.issuer_by_date.get(effective, {}) if effective is not None else {}
 
 
 def build_decision_evidence(universe: pd.DataFrame, mapping: pd.DataFrame) -> tuple[DecisionEvidence, pd.DataFrame]:

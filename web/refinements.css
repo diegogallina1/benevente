@@ -78,3 +78,24 @@ body{font-size:15px}.hero{grid-template-columns:minmax(0,42rem);min-height:auto}
 /* Os três destinos do fim da página ficam lado a lado, porque são alternativas
    equivalentes de leitura e não uma sequência. */
 .estagio-links { display: flex; flex-wrap: wrap; gap: 1.2rem 2rem; margin-top: 1.4rem; }
+
+/* Quanto o patrimônio teria virado. Três cards, uma linha, sem gráfico próprio:
+   a comparação é entre três números e não precisa de mais nada para ser lida. */
+.wealth-panel { margin-top: 1.6rem; padding: 1.6rem; background: #f4f8f5; border: 1px solid #dce4df; }
+.wealth-form { display: grid; gap: .7rem; align-items: end; grid-template-columns: 1fr; margin-bottom: 1.3rem; }
+.wealth-form h3 { margin: .2rem 0 0; font-size: 1.35rem; letter-spacing: -.03em; }
+.wealth-form label { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; font-size: .82rem; color: #52655d; font-weight: 600; }
+.wealth-form output { font-family: "DM Mono", monospace; font-size: 1.1rem; color: #174e49; font-weight: 500; }
+.wealth-form input[type="range"] { width: 100%; }
+.wealth-form button { justify-self: start; }
+.wealth-cards-lede { margin: 0 0 .9rem; font-size: .88rem; color: #52655d; }
+.wealth-cards-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.wealth-card { padding: 1.1rem 1.2rem; background: #fff; border: 1px solid #dce4df; border-top: 3px solid var(--series-color, #0f766e); }
+.wealth-card header { display: grid; gap: .15rem; margin-bottom: .55rem; }
+.wealth-card header b { font-size: .95rem; color: #123c38; }
+.wealth-card header small { font-size: .74rem; color: #6b7d75; }
+.wealth-card strong { display: block; font-family: "DM Mono", monospace; font-size: 1.55rem; letter-spacing: -.03em; color: #123c38; font-variant-numeric: tabular-nums; }
+.wealth-card-foot { display: grid; gap: .2rem; margin-top: .5rem; font-size: .78rem; color: #6b7d75; }
+.wealth-card-foot .up { color: #1d5c56; font-weight: 700; }
+.wealth-card-foot .down { color: #9c3a2a; font-weight: 700; }
+.lab-grid.single-column { grid-template-columns: 1fr; }

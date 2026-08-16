@@ -11,9 +11,6 @@ let currentDecisionData = null;
 let fundPresetsData = null;
 let finalStrategyData = null;
 const comparisonWindows = { 1: 1, 2: 2, 3: 3, 5: 5, 11: 99 };
-// Round, unambiguous, and large enough that the gap between alternatives is
-// legible in reais rather than in fractions of a percentage point.
-const WEALTH_BASE = 100000;
 
 const modelSteps = {
   policy: { number:"01 · POLÍTICA", title:"A política vem antes do ativo.", text:"O responsável define patrimônio, perfil, limite de ações, concentração por emissor, custos e revisão anual.", uses:"Perfil e limites explícitos", blocks:"Pesos acima da política", produces:"Uma política reproduzível", rule:"<strong>Regra:</strong> sem política, não há carteira." },
@@ -375,10 +372,9 @@ function renderUniverse() {
 const wealth = document.querySelector("#wealth"), wealthOut = document.querySelector("#wealth-output");
 wealth.addEventListener("input", () => {
   wealthOut.value = money.format(wealth.value);
-  // Sem isto o valor só era aplicado no próximo envio, e o controle parecia inerte.
-  if (!document.querySelector("#proposal-content")?.classList.contains("hidden")) {
-    document.querySelector("#proposal-form").requestSubmit();
-  }
+  // Os cards seguem o cursor. Esperar o envio fazia o controle parecer inerte,
+  // que foi exatamente a reclamação que motivou esta seção.
+  renderWealthCards(currentPeriod);
 });
 document.querySelectorAll(".choice").forEach(button => button.addEventListener("click", () => {
   document.querySelectorAll(".choice").forEach(item => item.classList.remove("active"));
@@ -388,36 +384,37 @@ document.querySelectorAll(".choice").forEach(button => button.addEventListener("
 }));
 document.querySelector("#proposal-form").addEventListener("submit", event => {
   event.preventDefault();
-  const profile = profiles[currentProfile];
-  const requestedEquity = Math.max(0, Math.min(100, Number(profile.equity) || 0));
-  const issuerCap = Math.max(1, Math.min(100, Number(profile.issuer) || 1));
-  // This illustration assumes four selected issuers.  It shows the attainable
-  // allocation instead of silently treating a policy ceiling as a target.
-  const requiredIssuers = requestedEquity === 0 ? 0 : Math.ceil(requestedEquity / issuerCap);
-  // The live B3 discovery universe has hundreds of equities. The lab should
-  // not create a false CDI residue merely because its visual sample contains
-  // four issuers; enough diversified slots are assumed for the policy ceiling.
-  const availableIllustrativeIssuers = Math.max(4, requiredIssuers || 4);
-  const effectiveEquity = Math.min(requestedEquity, issuerCap * availableIllustrativeIssuers);
-  const safeEquity = Number.isFinite(effectiveEquity) ? effectiveEquity : 0;
-  const mix = [["Ações elegíveis", safeEquity], ["CDI / defensivo", 100 - safeEquity]];
-  const capNote = effectiveEquity < requestedEquity
-    ? ` Com ${availableIllustrativeIssuers} emissores ilustrativos e teto de ${issuerCap}% por emissor, a exposição efetiva fica em ${effectiveEquity}%; o restante permanece defensivo.`
-    : " A exposição é um teto de política, não uma meta ou previsão de retorno.";
-  document.querySelector("#proposal-empty").classList.add("hidden");
-  document.querySelector("#proposal-content").classList.remove("hidden");
-  document.querySelector("#profile-label").textContent = activeProfileLabel();
-  // O controle de patrimônio ficava mudando apenas a prévia de 2026, muito
-  // abaixo na página, então mexer nele parecia não fazer nada. As duas métricas
-  // e a lista de pesos passam a exibir o valor em reais ao lado do percentual.
-  const capital = Math.max(0, Number(document.querySelector("#wealth")?.value) || 0);
-  document.querySelector("#equity-weight").innerHTML = `${safeEquity}%<small>${money.format(capital * safeEquity / 100)}</small>`;
-  document.querySelector("#fixed-weight").innerHTML = `${100-safeEquity}%<small>${money.format(capital * (100 - safeEquity) / 100)}</small>`;
-  document.querySelector("#review-cycle").textContent = profile.review;
-  document.querySelector("#proposal-insight").textContent = `A triagem anual é uma só: qualidade, valor, momento e liquidez. A cesta contém ao menos cinco ações, e ativos que continuam elegíveis podem permanecer, o que reduz trocas sem justificativa. Os valores em reais aplicam o patrimônio escolhido acima aos pesos da política.`;
-  document.querySelector("#weight-list").innerHTML = [["Ações selecionadas", safeEquity], ["CDI", 100 - safeEquity]].map(([name, weight]) => `<div class="weight-row"><span>${name}</span><div class="bar"><i style="width:${weight}%"></i></div><b>${weight}%<small>${money.format(capital * weight / 100)}</small></b></div>`).join("");
+  renderWealthCards(currentPeriod);
   refreshDecisionStudio();
 });
+
+// Quanto o patrimônio escolhido teria virado em cada alternativa, na janela
+// aberta. Repetir a política em reais nao respondia nada: 55% de qualquer
+// quantia continua sendo 55%. A pergunta util e comparativa, e por isso as tres
+// series aparecem lado a lado com o multiplo, nao so com o valor final.
+function renderWealthCards(period) {
+  const host = document.querySelector("#wealth-cards");
+  if (!host || !researchData) return;
+  const rows = activeProfileRows().slice(-comparisonWindows[period]);
+  if (!rows.length) return;
+  const capital = Math.max(0, Number(document.querySelector("#wealth")?.value) || 0);
+  const growth = column => rows.every(item => Number.isFinite(Number(item[column])))
+    ? rows.reduce((value, item) => value * (1 + Number(item[column])), 1) : null;
+  const tracks = [
+    ["Benevente", "net_return", "Carteira publicada"],
+    ["CDI", "cdi_net_return", "Rendimento do caixa"],
+    ["Ibovespa", "benchmark_IBOVESPA", "Índice de retorno total da B3"],
+  ];
+  const cards = tracks.map(([name, column, note]) => {
+    const factor = growth(column);
+    if (factor === null) return "";
+    const final = capital * factor;
+    const gain = final - capital;
+    return `<article class="wealth-card" style="--series-color:${seriesColor(name, 0)}"><header><b>${escapeHtml(name)}</b><small>${escapeHtml(note)}</small></header><strong>${money.format(final)}</strong><div class="wealth-card-foot"><span>${factor.toLocaleString("pt-BR", {minimumFractionDigits: 1, maximumFractionDigits: 1})}x o valor aplicado</span><span class="${gain >= 0 ? "up" : "down"}">${gain >= 0 ? "+" : "−"}${money.format(Math.abs(gain))}</span></div></article>`;
+  }).join("");
+  const start = rows[0].decision_date, finish = rows.at(-1).holding_end_exclusive;
+  host.innerHTML = `<p class="wealth-cards-lede">Aplicando ${money.format(capital)} em ${formatDateBr(start)} e resgatando em ${formatDateBr(finish)}, sem aportes no meio.</p><div class="wealth-cards-grid">${cards}</div>`;
+}
 
 function renderCurveToggles(period) {
   const series = seriesFor(period), names = Object.keys(series);
@@ -523,11 +520,18 @@ function renderLineChart(period) {
   }).join("");
   const start = dates[0], end = dates.at(-1);
   document.querySelector("#chart-zoom-status").textContent = chartZoom === 1 ? "Visão completa" : `${dates.length} pontos visíveis`;
-    const phaseNote = data.note && boundaryIndex > 0 ? ` ${data.note}` : "";
   const granularity = data.granularity === "monthly"
     ? `${dates.length} pontos mensais (valor exato da carteira no fim de cada mês)`
     : `${dates.length} pontos anuais`;
-  document.querySelector("#line-chart-caption").textContent = `${selected.length} série(s) · ${granularity} · ${formatDateBr(start)} a ${formatDateBr(end)} · retorno acumulado em %. Escala ${chartScale === "log" ? "logarítmica" : "linear"}. Roda do mouse amplia, arraste desloca.${phaseNote}`;
+  // A legenda dizia apenas a extensão do desenho, que começa antes da avaliação
+  // porque inclui a janela de seleção. Lida ao lado de "11 anos" no cabeçalho,
+  // parecia contradição. Agora as duas datas são nomeadas pelo que são.
+  const evaluationStart = boundaryIndex > 0 ? dates[boundaryIndex] : null;
+  const window = evaluationStart
+    ? `avaliação de ${formatDateBr(evaluationStart)} a ${formatDateBr(end)}, com o contexto desde ${formatDateBr(start)}`
+    : `${formatDateBr(start)} a ${formatDateBr(end)}`;
+  const phaseNote = data.note && boundaryIndex > 0 ? ` ${data.note}` : "";
+  document.querySelector("#line-chart-caption").textContent = `${selected.length} série(s) · ${granularity} · ${window} · retorno acumulado em %. Escala ${chartScale === "log" ? "logarítmica" : "linear"}. Roda do mouse amplia, arraste desloca.${phaseNote}`;
   const inspect = event => {
     const rect = event.currentTarget.getBoundingClientRect();
     const viewX = (event.clientX - rect.left) * width / rect.width;
@@ -578,13 +582,12 @@ function renderComparison(period) {
   const winMarket = ibovespa ? winsAgainst("benchmark_IBOVESPA") : null;
   const start = rows[0].decision_date, end = rows.at(-1).holding_end_exclusive;
   const versusCdi = benevente.cumulative - cdi.cumulative, versusMvo = benevente.cumulative - mvo.cumulative;
-  document.querySelector("#period-description").textContent = `${formatDateBr(start)} a ${formatDateBr(end)} · ${rows.length} ano(s), uma decisão por ano, com custos e imposto deduzidos.`;
+  document.querySelector("#period-description").textContent = `Janela avaliada: ${formatDateBr(start)} a ${formatDateBr(end)}, ${rows.length} ano(s), uma decisão por ano, com custos e imposto deduzidos. O gráfico desenha também os anos anteriores, que escolheram a configuração e não entram em nenhuma métrica.`;
   const marketPhrase = winMarket === null ? "" : ` Contra o Ibovespa, venceu ${winMarket} de ${rows.length}.`;
   // A percentage is easy to nod at and hard to feel. The same number said in
   // reais is what a reader actually compares against the fund they already own,
   // so it travels beside every series instead of only in the headline.
-  const wealthFrom = stats => WEALTH_BASE * (1 + stats.cumulative);
-  document.querySelector("#comparison-summary").textContent = `Benevente ${plainPct(benevente.cumulative)} acumulado: ${money.format(WEALTH_BASE)} viram ${money.format(wealthFrom(benevente))}, contra ${money.format(wealthFrom(cdi))} no CDI${ibovespa ? ` e ${money.format(wealthFrom(ibovespa))} no Ibovespa` : ""}. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
+  document.querySelector("#comparison-summary").textContent = `Benevente ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
   // Gross of tax, like every fund factsheet, so these rows can sit beside a peer
   // without an adjustment nobody else applies. BOVA11 tracked the Ibovespa to
   // within two hundredths of a point a year, so showing both spent a line to
@@ -601,10 +604,10 @@ function renderComparison(period) {
     const note = firstAvailable >= 0 ? `Disponível desde ${formatDateBr(profileDataset(period).dates[firstAvailable])}` : "Série adicionada";
     return metrics ? [name, { cumulative: values.at(-1) / values.find(Number.isFinite) - 1, cagr: metrics.cagr }, note] : null;
   }).filter(Boolean);
-  document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${escapeHtml(name)}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td class="wealth-cell"><b>${money.format(wealthFrom(stats))}</b></td><td>${escapeHtml(note)}</td></tr>`).join("");
+  document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${escapeHtml(name)}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td>${escapeHtml(note)}</td></tr>`).join("");
   const marketNote = ibovespa ? ` Contra o Ibovespa, ${pct(benevente.cumulative - ibovespa.cumulative)}.` : "";
   document.querySelector("#research-note").textContent = `Janela de ${rows.length} ano(s): diferença para o CDI ${pct(versusCdi)} e para o MVO de referência ${pct(versusMvo)}.${marketNote} O MVO de referência é uma otimização independente sobre o mesmo universo elegível, não uma cópia da carteira. Período usado para desenvolver a regra: não é teste fora da amostra.`;
-  renderCurveToggles(period); renderLineChart(period);
+  renderCurveToggles(period); renderLineChart(period); renderWealthCards(period);
 }
 let currentPeriod = "11";
 document.querySelectorAll(".period:not(.unavailable)").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".period").forEach(item=>item.classList.remove("active"));button.classList.add("active");selectedCurves=new Set();chartZoom=1;chartFocus=null;currentPeriod=button.dataset.period;renderComparison(currentPeriod)}));
