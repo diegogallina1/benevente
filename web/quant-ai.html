@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="pt-BR">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Benevente Quant AI: arquitetura desacoplada entre modelo de linguagem e otimizador convexo, com os controles medidos." />
-    <title>Benevente Quant AI — arquitetura e evidência</title>
+    <meta name="description" content="Benevente Quant AI: decoupling language-model judgement from convex portfolio optimisation, with the controls actually measured." />
+    <title>Benevente Quant AI — architecture and evidence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
@@ -20,72 +20,99 @@
       <a href="./metodo">Metodologia</a>
     </nav>
     <main class="shell paper-page">
-      <p class="eyebrow"><span></span> Benevente Quant AI · pesquisa computacional</p>
-      <h1>Desacoplar o julgamento do modelo da decisão de peso.</h1>
-      <p class="paper-lede">Um modelo de linguagem lê os fatos e devolve um escore de confiança limitado. Quem decide quanto comprar é um solver convexo que enxerga custos e restrições. Esta página mostra a arquitetura, e mostra o que acontece quando ela é submetida aos controles que a literatura da área costuma omitir.</p>
+      <p class="eyebrow"><span></span> Benevente Quant AI · computational finance research</p>
+      <h1>Separating what the model judges from what the optimiser decides.</h1>
+      <p class="paper-lede">A language model reads dated accounting facts and returns a bounded confidence score. A convex solver, which is the only component that sees costs and constraints, turns those scores into weights. This page documents how the system is built, how it is used, and what happened when the architecture was tested against the controls this literature usually omits.</p>
 
-      <h2>A arquitetura</h2>
-      <p>Quatro agentes leem e opinam; nenhum deles é o otimizador. Cada um responde apenas em JSON validado por esquema, e o escore de cada ativo é obrigatoriamente um número em [−1, +1]. Esse escore entra na função objetivo como uma inclinação do retorno esperado, nunca como um peso:</p>
-      <div class="paper-callout"><b>Acoplamento</b>μ<sub>i</sub> ← μ<sub>i</sub> · (1 + λ·c<sub>i</sub>), com c<sub>i</sub> ∈ [−1, +1] e λ fixo. O programa quadrático maximiza μᵀw − (γ/2)·wᵀΣw − κ‖w − w<sub>anterior</sub>‖₁ sujeito a Σw = 1, w ≥ 0, teto de renda variável e teto por emissor. O modelo não pode violar uma restrição porque nunca escreve um peso.</div>
+      <h2>1 · Why the separation exists</h2>
+      <p>Asking a language model for portfolio weights fails for reasons that have nothing to do with its financial reasoning. Weights must sum to one, respect a per-issuer ceiling, respect an asset-class ceiling, and trade off expected return against a covariance structure and against the cost of moving away from the book you already hold. That is a constrained optimisation, and free text is the wrong medium for its answer.</p>
+      <p>The separation is therefore structural rather than advisory. The model's output type is a scalar in a closed interval. It has no channel through which a weight, a limit or an eligibility decision can reach the portfolio.</p>
+      <div class="paper-callout"><b>Coupling</b>μ<sub>i</sub> ← μ<sub>i</sub> · (1 + λ·c<sub>i</sub>), with c<sub>i</sub> ∈ [−1, +1].<br />
+      The solver maximises μᵀw − (γ/2)·wᵀΣw − κ‖w − w<sub>prev</sub>‖₁ subject to Σw = 1, w ≥ 0, an equity ceiling and a per-issuer ceiling. λ, γ and κ are fixed before the run and are not tuned per period.</div>
 
-      <h2>Os controles, e o que eles mediram</h2>
-      <p>A mesma decisão de janeiro foi executada em quatro braços sobre o mesmo universo elegível, com os mesmos custos e o mesmo otimizador. Treze decisões anuais na B3, modelo <code>gemini-3.1-flash-lite</code>, temperatura zero, respostas arquivadas por chamada.</p>
-      <table class="paper-table">
-        <thead><tr><th>Braço</th><th>O que muda</th><th>CAGR</th><th>Bate o CDI</th></tr></thead>
-        <tbody>
-          <tr><td>named</td><td>Vê ticker e setor</td><td class="num">13,00%</td><td class="num">7 de 13</td></tr>
-          <tr><td>deterministic</td><td>Fator pré-declarado no lugar do modelo</td><td class="num">12,67%</td><td class="num">8 de 13</td></tr>
-          <tr class="highlight"><td>anonymised</td><td>Só números datados, ativo sem identidade</td><td class="num">12,62%</td><td class="num">10 de 13</td></tr>
-          <tr><td>monolithic</td><td>O modelo devolve os pesos direto</td><td class="num">11,81%</td><td class="num">7 de 13</td></tr>
-          <tr><td>CDI</td><td>—</td><td class="num">9,59%</td><td class="num">—</td></tr>
-        </tbody>
-      </table>
-      <table class="paper-table">
-        <thead><tr><th>Pergunta</th><th>Diferença anual</th><th>p</th><th>Leitura</th></tr></thead>
-        <tbody>
-          <tr><td>O modelo agrega sobre o fator?</td><td class="num">−0,05 pp</td><td class="num">0,99</td><td>Não distinguível de zero</td></tr>
-          <tr><td>Desacoplar vence o prompt monolítico?</td><td class="num">+0,81 pp</td><td class="num">0,78</td><td>Não distinguível de zero</td></tr>
-          <tr><td>Reconhecer a empresa ajuda?</td><td class="num">+0,38 pp</td><td class="num">0,91</td><td>Não distinguível de zero</td></tr>
-        </tbody>
-      </table>
-      <div class="paper-callout warn"><b>O resultado é nulo, e é isso que ele diz</b>Nenhum dos três efeitos sobrevive ao teste. O modelo reproduz o ranking determinístico; não se beneficia de reconhecer a empresa; e, quando recebe os pesos, não viola uma única restrição em treze anos — apenas aloca pior. Quem gera o retorno é a triagem de valor e qualidade, não o método de ranqueamento em cima dela.</div>
-      <p>A contaminação temporal é a objeção padrão a qualquer backtest com modelo de linguagem: treinado com texto posterior à decisão, o modelo lembra o que aconteceu. Em vez de declarar que o risco foi considerado, aqui ele é medido — rodando a decisão com o ativo identificado e com o ativo anônimo. A diferença entre os dois é a contaminação, e ela deu 0,38 ponto percentual ao ano com p de 0,91.</p>
+      <h2>2 · Pipeline</h2>
+      <p>Each January the system executes five stages in a fixed order. Stages one to three are deterministic; the model only enters at stage four, and stage five is human.</p>
+      <h3>2.1 Dated universe</h3>
+      <p>The universe of record is the exchange's own historical quotation archive, not a vendor feed. This matters more than it sounds: a public adjusted-price provider serves the companies that still exist, so building a universe from one silently deletes every company that was delisted, acquired or wound up. In this panel that was 139 of 497 issuers, 77 of which disappear before 2020 — including several that fell 60% to 95% first. Rebuilding from the exchange archive restores them.</p>
+      <p>Corporate actions are recovered in two ways: confirmed against an archived provider event feed where one exists, and otherwise detected from round, persistent price ratios. The detector's precision and recall against the provider's own records are published with the panel rather than assumed, because for the delisted tail it is the only evidence available.</p>
+      <h3>2.2 Point-in-time fundamentals</h3>
+      <p>Fundamentals come from the regulator's standardised filings, carrying both the reference date and the date the filing was received. Only filings received on or before the decision date can enter. Trailing-twelve-month figures are bridged from the annual statement plus the current and comparative interim periods, using the year-to-date column only — the interim filing also publishes the isolated quarter, and mixing the two silently corrupts every ratio from the second quarter onwards.</p>
+      <h3>2.3 Screen</h3>
+      <p>Assets must clear liquidity, profitability, returns on capital and solvency. Operating companies and financial institutions are screened on different quantities because their standardised statements are not comparable; solvency for operating companies is derived from the standardised accounts rather than left undefined, which is what previously caused an accidental sector concentration.</p>
+      <h3>2.4 Ranking and allocation</h3>
+      <p>Survivors are ranked by a composite of quality, valuation yield and medium-term momentum, all computed from information available on the decision date. The ranking becomes the confidence vector, whether it is produced by the deterministic factor or by the model. The solver then allocates within the ceilings, and the residual is held in the domestic overnight rate.</p>
+      <h3>2.5 Human review</h3>
+      <p>The output is a proposal with the applied policy, the screen and its rejection reasons, the weights, the order sizes with lot rounding and participation in average traded volume, and the estimated cost. No order is transmitted. Execution is reconciled against the broker note afterwards.</p>
 
-      <h2>O que a correção metodológica custou</h2>
-      <p>Antes de qualquer resultado, sete defeitos de backtest foram encontrados e corrigidos. Todos empurravam os números na mesma direção.</p>
-      <ul>
-        <li>O comparador MVO era idêntico à estratégia em 11 de 11 anos: o gráfico comparava a curva com ela mesma.</li>
-        <li>139 de 497 emissores sumiam do painel por não estarem mais em um provedor público, incluindo CIEL3, AZUL4, BRML3 e ALLL3.</li>
-        <li>Deslistagem virava retorno zero e truncava o ano inteiro do livro.</li>
-        <li>Alavancagem e cobertura de juros eram sempre nulas, o que reprovava 433 empresas não financeiras por falta de dado.</li>
-        <li>A ponte de doze meses lia a linha trimestral ou a acumulada conforme a ordem do arquivo.</li>
-        <li>O custo era fixo em 15 pontos-base, sem imposto.</li>
-        <li>O retorno anual assumia rebalanceamento diário gratuito.</li>
-      </ul>
-      <p>E a seleção da própria regra foi corrigida: a estratégia publicada agora é escolhida por busca aninhada sobre 36 configurações, em que o ano avaliado nunca informa a própria escolha.</p>
+      <h2>3 · Holding, cost and tax</h2>
+      <p>The book is bought in January and held. This is worth stating because the natural vectorised expression of a backtest — compounding the inner product of returns and weights — silently rebalances to fixed weights every session at no cost, which is neither the protocol being evaluated nor something an investor can execute.</p>
+      <p>Costs are the exchange's published fee plus a slippage term that grows with the position's participation in the asset's average traded volume, so a thinly traded name is not assumed to trade like a liquid one. Taxation follows the domestic regime: gains realised at a review are taxed at the equity rate, the cash sleeve at the fixed-income rate, and positions carried into the next year defer their liability exactly as the law allows.</p>
+
+      <h2>4 · How the published rule was chosen</h2>
+      <p>This is the part that most backtests get wrong, and it was wrong here first. A grid of candidate rules was evaluated, the best was published, and its rank improved from 57th on the declared training criterion to 1st on the holdout — which is only possible if the holdout was read. Nothing downstream of that choice is out of sample.</p>
+      <p>The current protocol is nested. For decision year <i>t</i>, the configuration is ranked using only years that had already closed, by Sharpe of the excess return over cash; year <i>t</i> is then evaluated once. Changing configuration is charged a full-turnover rebalance, because in a real book it means liquidating one portfolio to buy another.</p>
+      <p>Three quantities are published alongside every result: the nested outcome, the full-sample winner, and the difference between them.</p>
       <div class="paper-metrics">
-        <div class="paper-metric"><span>Prêmio do hindsight</span><b>4,98 pp</b><small>ao ano, entre a vencedora da amostra completa e a escolha aninhada</small></div>
-        <div class="paper-metric"><span>Sharpe deflacionado</span><b>0,957</b><small>36 tentativas, 10 observações anuais</small></div>
-        <div class="paper-metric"><span>Alocação preditiva</span><b>0 de 7</b><small>regras batem o peso estático em 118 meses</small></div>
+        <div class="paper-metric"><span>Hindsight premium</span><b>4.98 pp</b><small>per year, between the full-sample winner and the nested choice, over 36 configurations</small></div>
+        <div class="paper-metric"><span>Deflated Sharpe</span><b>0.957</b><small>36 trials, 10 annual observations</small></div>
+        <div class="paper-metric"><span>Tactical allocation</span><b>0 of 7</b><small>predictive rules beat the static weight over 118 months</small></div>
       </div>
+      <p>The last figure is a separate study. Perfect monthly timing of the equity-versus-cash split would have been worth roughly 50 percentage points a year, so the prize is real; none of seven predictive rules, fitted walk-forward on observable state, captured any of it, across three training-window lengths.</p>
 
-      <h2>Resultado da estratégia publicada</h2>
+      <h2>5 · Experiment: four arms, one universe</h2>
+      <p>The same January decision was executed four ways over thirteen annual decisions, holding the eligible universe, the optimiser, the ceilings and the cost model constant. Model: <code>gemini-3.1-flash-lite</code>, temperature zero, structured output validated against a schema, every raw response archived.</p>
       <table class="paper-table">
-        <thead><tr><th>Série</th><th>CAGR 2016–2025</th><th>Anos vencidos</th></tr></thead>
+        <thead><tr><th>Arm</th><th>What differs</th><th>CAGR</th><th>Beats cash</th></tr></thead>
         <tbody>
-          <tr class="highlight"><td>Benevente</td><td class="num">15,31%</td><td class="num">—</td></tr>
-          <tr><td>Benevente após IR</td><td class="num">14,10%</td><td class="num">—</td></tr>
-          <tr><td>Ibovespa</td><td class="num">14,30%</td><td class="num">5 de 10</td></tr>
-          <tr><td>BOVA11</td><td class="num">14,28%</td><td class="num">5 de 10</td></tr>
-          <tr><td>MVO de referência</td><td class="num">9,57%</td><td class="num">6 de 10</td></tr>
-          <tr><td>CDI</td><td class="num">9,26%</td><td class="num">6 de 10</td></tr>
+          <tr><td>named</td><td>Model sees ticker and sector</td><td class="num">13.00%</td><td class="num">7 of 13</td></tr>
+          <tr><td>deterministic</td><td>Pre-declared factor replaces the model</td><td class="num">12.67%</td><td class="num">8 of 13</td></tr>
+          <tr class="highlight"><td>anonymised</td><td>Dated figures only, assets unidentifiable</td><td class="num">12.62%</td><td class="num">10 of 13</td></tr>
+          <tr><td>monolithic</td><td>Model returns weights directly</td><td class="num">11.81%</td><td class="num">7 of 13</td></tr>
+          <tr><td>Cash (CDI)</td><td>—</td><td class="num">9.59%</td><td class="num">—</td></tr>
         </tbody>
       </table>
-      <p>Contra o mercado a carteira empata: cinco anos de dez, com margem de 1,01 ponto percentual ao ano. O drawdown real, medido na série diária, é de 30,4%. A janela que ranqueou as configurações não pode testá-las; a avaliação prospectiva começa em 2026, a partir de um registro congelado com o SHA-256 de cada insumo.</p>
+      <p>The <b>anonymised</b> arm is the temporal-contamination control. A model trained on text written after 2019 remembers what happened to a company in 2019; asked to judge it in January 2019, it is not only reading the prompt. Removing the identity removes the memory. The difference between the two arms is the contamination, in return.</p>
+      <p>The <b>deterministic</b> arm is the added-value control. Without it, a result showing the model beating cash proves only that the screen works.</p>
+      <table class="paper-table">
+        <thead><tr><th>Hypothesis</th><th>Annualised gap</th><th>p</th><th>Reading</th></tr></thead>
+        <tbody>
+          <tr><td>The model adds over the factor</td><td class="num">−0.05 pp</td><td class="num">0.99</td><td>Indistinguishable from zero</td></tr>
+          <tr><td>Decoupling beats the monolithic prompt</td><td class="num">+0.81 pp</td><td class="num">0.78</td><td>Indistinguishable from zero</td></tr>
+          <tr><td>Recognising the company helps</td><td class="num">+0.38 pp</td><td class="num">0.91</td><td>Indistinguishable from zero</td></tr>
+        </tbody>
+      </table>
+      <div class="paper-callout warn"><b>The result is null, and that is the finding</b>None of the three effects survives testing. The model reproduces the deterministic ranking; it does not profit from recognising the company; and when handed the weights it violated no constraint in thirteen years — it simply allocated worse. What generates the return is the dated screen, not the ranking method layered on top of it. With thirteen annual observations these are underpowered tests, and the honest statement is that no effect was detected, not that none exists.</div>
+
+      <h2>6 · Published strategy</h2>
+      <table class="paper-table">
+        <thead><tr><th>Series</th><th>CAGR 2016–2025</th><th>Years won</th><th>Max drawdown</th></tr></thead>
+        <tbody>
+          <tr class="highlight"><td>Benevente</td><td class="num">15.31%</td><td class="num">—</td><td class="num">−30.4%</td></tr>
+          <tr><td>Benevente, after tax</td><td class="num">14.10%</td><td class="num">—</td><td class="num">—</td></tr>
+          <tr><td>Ibovespa</td><td class="num">14.30%</td><td class="num">5 of 10</td><td class="num">−38.4%</td></tr>
+          <tr><td>BOVA11 (investable ETF)</td><td class="num">14.28%</td><td class="num">5 of 10</td><td class="num">−39.3%</td></tr>
+          <tr><td>Neutral MVO, same universe</td><td class="num">9.57%</td><td class="num">6 of 10</td><td class="num">—</td></tr>
+          <tr><td>Cash (CDI)</td><td class="num">9.26%</td><td class="num">6 of 10</td><td class="num">0%</td></tr>
+        </tbody>
+      </table>
+      <p>Against the market this is a draw: five years out of ten, with a margin of about one percentage point a year, carrying 55% in equities. Against cash and against a neutral optimisation on the same eligible universe it wins. The neutral comparator is computed independently — an earlier version of this system compared the strategy against a copy of itself in eleven years out of eleven.</p>
+      <p>The evaluation window is also the window that ranked the configurations, so it describes the sample. Prospective evaluation begins in 2026 against a registration frozen with the SHA-256 of every input.</p>
 
       <div id="live-portfolio"></div>
 
-      <p class="paper-foot">Benevente Quant AI · pesquisa reproduzível. Os números desta página são lidos dos mesmos arquivos que o motor escreve. Não constitui recomendação de investimento, oferta ou promessa de retorno. Resultados históricos descrevem a amostra, não o futuro.</p>
+      <h2>7 · What is disclosed, and what is not</h2>
+      <p>Everything above describes the mechanism: the stages, the data construction, the estimators, the validation protocol and the measured results, including the ones that came out null. That is enough to evaluate the work and to reproduce the <i>methodology</i>.</p>
+      <p>Not disclosed here: the coefficients that weight the composite ranking, the numeric thresholds of the screen, the risk-aversion and signal-influence constants, and the exact configuration grid. Those are the operating parameters of a commercial system. They are held in the frozen registration, hashed, so that an independent reviewer can verify no parameter changed between the registration and any result claimed afterwards — without the parameters themselves being published.</p>
+
+      <h2>8 · Limitations</h2>
+      <ul>
+        <li>Ten annual evaluations for the strategy and thirteen for the model experiment. Every test here is underpowered; effect sizes are reported with their p-values rather than as findings.</li>
+        <li>Corporate actions for the delisted tail rest on a detector whose precision and recall are published but imperfect; distributions for issuers no provider still serves are imputed from the cross-section and flagged per ticker.</li>
+        <li>Contamination was measured for one model at one training cutoff. It should be expected to vary across models and to grow with recency.</li>
+        <li>Coverage is Brazil only. Partial-year monitoring uses exchange closing prices and excludes distributions until corporate events are reconciled against primary records.</li>
+      </ul>
+
+      <p class="paper-foot">Benevente Quant AI · reproducible research. Figures on this page are read from the same files the engine writes. This is not investment advice, an offer, or a promise of return. Historical results describe the sample, not the future.</p>
     </main>
     <script src="./paper.js"></script>
   </body>
