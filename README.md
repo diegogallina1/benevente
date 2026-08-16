@@ -275,12 +275,37 @@ horizonte alteram os limites ilustrativos de uma proposta. Não consulta dados
 de mercado, não executa o motor Python e não deve ser tratada como recomendação
 ou proposta investível.
 
-Depois de autenticar o Vercel CLI, publique-a a partir da pasta `web/`:
+### Deploy: o teste de segurança vem antes e depois, sempre
+
+`predeploy_security_check.py` é o portão. Ele sai com código diferente de zero
+quando algo regride, então **encadeie com `&&` em vez de rodar solto** — assim o
+deploy não acontece se a verificação falhar.
+
+```powershell
+python predeploy_security_check.py; if ($?) { cd web; npx.cmd vercel --prod --yes; cd .. }
+```
+
+E confirme no ambiente publicado, porque o que vale é o cabeçalho que chega ao
+navegador, não o que está no arquivo de configuração:
+
+```powershell
+python predeploy_security_check.py --live-only --url https://benevente-wealth-system.vercel.app
+```
+
+O modo estático confere que nenhuma variável de servidor é alcançável pelo
+cliente, que nenhum `.env` real está versionado, que cada função tem limite de
+taxa e checagem de origem, que os seis cabeçalhos estão configurados, e sinaliza
+interpolação em `innerHTML` sem escape. O modo publicado confirma que os
+cabeçalhos chegam, que origem externa recebe 403, que método errado recebe 405 e
+que ticker malformado recebe 400.
+
+Avisos não bloqueiam: a heurística de `innerHTML` erra para o lado do ruído de
+propósito. Falhas bloqueiam.
+
+Na primeira vez, autentique o CLI:
 
 ```powershell
 npx.cmd vercel login
-cd web
-npx.cmd vercel --prod --yes
 ```
 
 O motor auditável continua sendo a interface Streamlit e os comandos de
