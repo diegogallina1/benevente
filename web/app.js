@@ -54,12 +54,9 @@ function annualCurve(period) {
   // references come from the run itself instead of a separately aligned blob.
   const tracks = {
     "Benevente Quant AI": "net_return",
-    "Benevente após IR": "net_return_after_tax",
     "MVO de referência": "mvo_eligible_net_return",
     "CDI": "cdi_net_return",
-    "CDI após IR": "cdi_net_return_after_tax",
     "Ibovespa": "benchmark_IBOVESPA",
-    "BOVA11": "benchmark_BOVA11",
   };
   const series = {};
   Object.entries(tracks).forEach(([name, column]) => {
@@ -411,7 +408,7 @@ function renderCurveToggles(period) {
   // The after-tax pair stays available but off by default: seven lines at once
   // is unreadable, and the gross series are the ones the benchmarks match.
   if (!selectedCurves.size || [...selectedCurves].some(name => !names.includes(name))) {
-    selectedCurves = new Set(names.filter(name => !name.includes("após IR")));
+    selectedCurves = new Set(names);
   }
   document.querySelector("#curve-toggles").innerHTML = names.map((name, index) => `<button type="button" class="curve-toggle ${selectedCurves.has(name) ? "active" : ""}" data-kind="${escapeHtml(name)}" style="--series-color:${seriesColor(name, index)}"><i></i>${escapeHtml(name)}</button>`).join("");
   document.querySelectorAll(".curve-toggle").forEach(button => button.addEventListener("click", () => {
@@ -440,13 +437,13 @@ function renderLineChart(period) {
   const rawMin = Math.min(...transformedValues), rawMax = Math.max(...transformedValues);
   const min = chartScale === "log" ? rawMin : Math.floor(rawMin / 25) * 25;
   const max = chartScale === "log" ? rawMax : Math.ceil(rawMax / 25) * 25;
-  const width=900, height=410, left=54, right=28, top=18, bottom=38, plotW=width-left-right, plotH=height-top-bottom;
+  const width=900, height=410, left=82, right=28, top=18, bottom=40, plotW=width-left-right, plotH=height-top-bottom;
   const x = index => left + index * plotW / Math.max(dates.length - 1, 1);
   const y = value => top + (max - transformed(value)) * plotH / Math.max(max-min, .0001);
   const grid = Array.from({length:5}, (_, index) => min + index * (max-min) / 4).map(value => {
     const rawValue = chartScale === "log" ? Math.exp(value) : value;
     const yPosition = top + (max - value) * plotH / Math.max(max-min, .0001);
-    return `<line class="line-grid" x1="${left}" x2="${width-right}" y1="${yPosition}" y2="${yPosition}"/><text class="line-grid-label" x="4" y="${yPosition + 3}">${(rawValue - 100).toLocaleString("pt-BR", {maximumFractionDigits:0})}%</text>`;
+    return `<line class="line-grid" x1="${left}" x2="${width-right}" y1="${yPosition}" y2="${yPosition}"/><text class="line-grid-label" text-anchor="end" x="${left - 10}" y="${yPosition + 3}">${(rawValue - 100).toLocaleString("pt-BR", {maximumFractionDigits:0})}%</text>`;
   }).join("");
   // One tick per year when the window is long, otherwise per observation. A
   // three-label axis made it impossible to tell which year a move belonged to.
@@ -484,7 +481,7 @@ function renderLineChart(period) {
   // The legend and return chips carry the labels. End labels overlap when
   // funds, benchmarks and user-selected assets converge at the same point.
   directLabelLayer.innerHTML = "";
-  gridLayer.innerHTML = grid; labelLayer.innerHTML = `${dateLabels}<text class="line-axis-title" x="15" y="${top + plotH / 2}" transform="rotate(-90 15 ${top + plotH / 2})">Retorno acumulado (%)</text><text class="line-axis-title" text-anchor="middle" x="${left + plotW / 2}" y="${height - 1}">Data de observação</text>`;
+  gridLayer.innerHTML = grid; labelLayer.innerHTML = `${dateLabels}<text class="line-axis-title" text-anchor="middle" x="18" y="${top + plotH / 2}" transform="rotate(-90 18 ${top + plotH / 2})">Retorno acumulado (%)</text><text class="line-axis-title" text-anchor="middle" x="${left + plotW / 2}" y="${height - 1}">Data de observação</text>`;
   document.querySelector("#chart-return-summary").innerHTML = selected.map((name, index) => {
     const series = allSeries[name].slice(startIndex, endIndex);
     const first = series.find(value => Number.isFinite(value));
@@ -542,23 +539,24 @@ function renderComparison(period) {
   const afterTax = statsFor("net_return_after_tax");
   const cdiAfterTax = statsFor("cdi_net_return_after_tax");
   const ibovespa = statsFor("benchmark_IBOVESPA");
-  const bova = statsFor("benchmark_BOVA11");
+  // One market reference throughout, so the copy and the chart agree.
   const winCdi = winsAgainst("cdi_net_return");
   const winMvo = winsAgainst("mvo_eligible_net_return");
-  const winMarket = bova ? winsAgainst("benchmark_BOVA11") : null;
+  const winMarket = ibovespa ? winsAgainst("benchmark_IBOVESPA") : null;
   const start = rows[0].decision_date, end = rows.at(-1).holding_end_exclusive;
   const versusCdi = benevente.cumulative - cdi.cumulative, versusMvo = benevente.cumulative - mvo.cumulative;
   document.querySelector("#period-description").textContent = `${formatDateBr(start)} a ${formatDateBr(end)} · ${rows.length} decisões anuais com custos e imposto deduzidos.`;
-  const marketPhrase = winMarket === null ? "" : ` Contra o BOVA11, venceu ${winMarket} de ${rows.length}.`;
+  const marketPhrase = winMarket === null ? "" : ` Contra o Ibovespa, venceu ${winMarket} de ${rows.length}.`;
   document.querySelector("#comparison-summary").textContent = `Benevente ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
+  // Gross of tax, like every fund factsheet, so these rows can sit beside a peer
+  // without an adjustment nobody else applies. BOVA11 tracked the Ibovespa to
+  // within two hundredths of a point a year, so showing both spent a line to
+  // say the same thing twice.
   const baseRows = [
     ["Benevente", benevente, "Carteira publicada"],
-    afterTax ? ["Benevente após IR", afterTax, "Líquida de imposto"] : null,
     ["MVO de referência", mvo, "Otimização neutra independente"],
-    ["CDI", cdi, "Referência defensiva"],
-    cdiAfterTax ? ["CDI após IR", cdiAfterTax, "Referência defensiva líquida"] : null,
+    ["CDI", cdi, "Rendimento do caixa"],
     ibovespa ? ["Ibovespa", ibovespa, "Índice de retorno total da B3"] : null,
-    bova ? ["BOVA11", bova, "Comprar o mercado, investível"] : null,
   ].filter(Boolean);
   const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => {
     const metrics = metricsForSeries(values, profileDataset(period).dates);
@@ -567,11 +565,11 @@ function renderComparison(period) {
     return metrics ? [name, { cumulative: values.at(-1) / values.find(Number.isFinite) - 1, cagr: metrics.cagr }, note] : null;
   }).filter(Boolean);
   document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${escapeHtml(name)}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td>${escapeHtml(note)}</td></tr>`).join("");
-  const marketNote = bova ? ` Contra o BOVA11, ${pct(benevente.cumulative - bova.cumulative)}.` : "";
+  const marketNote = ibovespa ? ` Contra o Ibovespa, ${pct(benevente.cumulative - ibovespa.cumulative)}.` : "";
   document.querySelector("#research-note").textContent = `Janela de ${rows.length} ano(s): diferença para o CDI ${pct(versusCdi)} e para o MVO de referência ${pct(versusMvo)}.${marketNote} O MVO de referência é uma otimização independente sobre o mesmo universo elegível, não uma cópia da carteira. Período usado para desenvolver a regra: não é teste fora da amostra.`;
   renderCurveToggles(period); renderLineChart(period);
 }
-let currentPeriod = "3";
+let currentPeriod = "11";
 document.querySelectorAll(".period:not(.unavailable)").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".period").forEach(item=>item.classList.remove("active"));button.classList.add("active");selectedCurves=new Set();chartZoom=1;chartFocus=null;currentPeriod=button.dataset.period;renderComparison(currentPeriod)}));
 document.querySelector("#chart-zoom-in").addEventListener("click", () => { chartZoom = Math.min(5, chartZoom + 1); renderLineChart(currentPeriod); });
 document.querySelector("#chart-zoom-out").addEventListener("click", () => { chartZoom = Math.max(1, chartZoom - 1); renderLineChart(currentPeriod); });

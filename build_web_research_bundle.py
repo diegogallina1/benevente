@@ -74,14 +74,14 @@ def _profile_curves(profile_results: dict[str, dict]) -> dict[str, dict]:
         # after-tax pair is carried alongside so the page can show the strategy
         # and the CDI on the same footing instead of comparing a gross equity
         # result with a gross fixed-income one.
+        # Quoted gross of tax, like a fund factsheet, so a reader can put these
+        # rows beside a peer without applying an adjustment nobody else applies.
+        # The after-tax figures stay in annual_results.csv for the record.
         tracks = {
             "Benevente Wealth System": "net_return",
-            "Benevente após IR": "net_return_after_tax",
             "MVO de referência": "mvo_eligible_net_return",
             "CDI": "cdi_net_return",
-            "CDI após IR": "cdi_net_return_after_tax",
             "Ibovespa": "benchmark_IBOVESPA",
-            "BOVA11": "benchmark_BOVA11",
         }
         series: dict[str, list[float]] = {}
         for name, column in tracks.items():
@@ -95,12 +95,16 @@ def _profile_curves(profile_results: dict[str, dict]) -> dict[str, dict]:
     return payload
 
 
+# BOVA11 tracked the Ibovespa to within two hundredths of a point a year over
+# the published window, so plotting both spent a colour to say the same thing
+# twice. The Ibovespa stays because every Brazilian fund already reports against
+# it, which is what makes the chart comparable with a peer's factsheet. BOVA11
+# remains in the run artifacts for the investability argument in the paper.
 MONTHLY_SERIES_LABELS = {
     "strategy": "Benevente",
     "mvo": "MVO de referência",
     "cdi": "CDI",
     "IBOVESPA": "Ibovespa",
-    "BOVA11": "BOVA11",
 }
 
 
