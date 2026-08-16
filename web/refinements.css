@@ -98,4 +98,11 @@ body{font-size:15px}.hero{grid-template-columns:minmax(0,42rem);min-height:auto}
 .wealth-card-foot { display: grid; gap: .2rem; margin-top: .5rem; font-size: .78rem; color: #6b7d75; }
 .wealth-card-foot .up { color: #1d5c56; font-weight: 700; }
 .wealth-card-foot .down { color: #9c3a2a; font-weight: 700; }
-.lab-grid.single-column { grid-template-columns: 1fr; }
+
+
+/* O dossiê perdeu a coluna vizinha quando o painel de política saiu. Mantê-lo
+   no grid de duas colunas o espremia em um terço da largura e empilhava tudo
+   em três mil pixels de altura. Ele ocupa a largura inteira agora. */
+.dossier-shell { display: block; }
+.dossier-shell .embedded-dossier { width: 100%; }
+.dossier-shell .asset-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }

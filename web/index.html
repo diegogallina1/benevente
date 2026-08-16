@@ -99,12 +99,11 @@
           <div class="comparison-foot"><span><i>✓</i> Integridade validada: disponibilidade dos fundamentos, pesos, custos e recomposição.</span><span>Fontes: CVM, BCB e preços históricos documentados</span></div>
         </div>
         <div class="wealth-panel" aria-label="Quanto o patrimônio teria virado">
-          <form id="proposal-form" class="wealth-form">
+          <div class="wealth-form">
             <div><span class="control-label">QUANTO ISSO TERIA VIRADO</span><h3>Escolha o valor aplicado.</h3></div>
             <label for="wealth">Patrimônio aplicado no início da janela <output id="wealth-output">R$ 100.000</output></label>
             <input id="wealth" type="range" min="50000" max="1000000" step="50000" value="100000" />
-            <button class="button button-secondary" type="submit">Aplicar <span>→</span></button>
-          </form>
+          </div>
           <div id="wealth-cards" aria-live="polite"></div>
         </div>
         <p class="research-note" id="research-note">Leitura correta: esta é uma hipótese de pesquisa. A página calcula janelas com o arquivo anual auditado e não declara superioridade consistente se ela não estiver presente.</p>
@@ -115,7 +114,7 @@
            qual foi a cesta, por que cada papel entrou, e o que aconteceu. -->
       <section class="lab-section" id="dossie">
         <div class="shell lab-head"><div><p class="eyebrow light"><span></span> Dossiê ano a ano</p><h2>Abra qualquer ano e veja<br /><em>a cesta e o motivo de cada ativo.</em></h2></div><p>Escolha o janeiro que quiser inspecionar. O resultado do ano aparece ao lado da decisão, e nunca participou dela.</p></div>
-        <div class="shell lab-grid decision-studio">
+        <div class="shell dossier-shell">
           <section class="embedded-dossier" id="carteira" aria-label="Dossiê da decisão anual">
             <div class="embedded-dossier-head"><div><span class="control-label">DECISÃO HISTÓRICA</span><h3>A política e a cesta, <em>no mesmo lugar.</em></h3></div><p>Carteira única: até 55% em ações, cinco emissores no mínimo e teto de 17,6% por emissor. Escolha o janeiro e confira a cesta, o resultado posterior, CDI e MVO.</p></div>
             <div class="research-status" id="research-status" aria-live="polite"></div>

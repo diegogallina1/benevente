@@ -380,13 +380,9 @@ document.querySelectorAll(".choice").forEach(button => button.addEventListener("
   document.querySelectorAll(".choice").forEach(item => item.classList.remove("active"));
   button.classList.add("active"); currentProfile = button.dataset.profile;
   selectedCurves = new Set(); chartZoom = 1; chartFocus = null;
-  document.querySelector("#proposal-form").requestSubmit();
-}));
-document.querySelector("#proposal-form").addEventListener("submit", event => {
-  event.preventDefault();
-  renderWealthCards(currentPeriod);
   refreshDecisionStudio();
-});
+}));
+
 
 // Quanto o patrimônio escolhido teria virado em cada alternativa, na janela
 // aberta. Repetir a política em reais nao respondia nada: 55% de qualquer
@@ -720,5 +716,5 @@ Promise.all([fetch("./annual_research.json"), fetch("./fund_presets.json")]).the
   if (!research.ok || !fundPresets.ok) throw new Error("research unavailable");
   researchData = await research.json(); fundPresetsData = await fundPresets.json();
   extraSeries[1] = {}; extraSeries[2] = {}; extraSeries[3] = {}; extraSeries[5] = {}; extraSeries[11] = {};
-  document.querySelector("#proposal-form").requestSubmit();
+  refreshDecisionStudio();
 }).catch(() => { document.querySelector("#line-chart-caption").textContent = "Arquivos de pesquisa indisponíveis nesta cópia. Consulte o ambiente local para reproduzir a análise."; document.querySelector("#research-status").textContent = "Dados de pesquisa indisponíveis."; });
