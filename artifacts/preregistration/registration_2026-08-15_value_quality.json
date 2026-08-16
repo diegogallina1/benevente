@@ -1,0 +1,46 @@
+{
+  "registered_on": "2026-08-15",
+  "rule": "value_quality",
+  "parameters": {
+    "maximum_equity_weight": 0.55,
+    "maximum_asset_weight": 0.12,
+    "top_assets": 5,
+    "minimum_average_daily_value_brl": 10000000,
+    "risk_profile": "moderado",
+    "review_frequency": "annual, first trading session of the calendar year",
+    "cost_model": "B3 regular fee plus participation-dependent slippage, priced per ticker liquidity",
+    "tax_model": "15% on realised equity gains, 17.5% on the redeemed defensive sleeve"
+  },
+  "selection_rationale": "Chosen from the method this repository documents as its baseline, not from any performance ranking. The rule was fixed before the prospective window opened and no candidate search informed it.",
+  "evaluation": {
+    "prospective_from_year": 2026,
+    "in_sample_window": "2015-2025",
+    "in_sample_status": "Exploratory. The candidate grid, the factor family and the constraint set were all chosen while these years were visible. Reported historical figures describe the sample, not expected return.",
+    "success_criterion": {
+      "minimum_years": 3,
+      "must_beat_cdi_after_tax": true,
+      "must_beat_investable_market_etf": true,
+      "maximum_acceptable_drawdown": 0.35,
+      "falsification": "Failure to clear the CDI after tax over the full prospective window, or a drawdown beyond the stated limit, refutes the rule. A single good year does not confirm it and a single bad year does not refute it."
+    }
+  },
+  "inputs": [
+    {
+      "path": "data/prices_b3_total_return_full_2013_2025.csv",
+      "sha256": "c6c27c65a13ef6a322952e6cb2640f91a4321b90801faced77fc48c5ea69a3ac",
+      "bytes": 20369905
+    },
+    {
+      "path": "data/prices_b3_total_return_full_2013_2025_manifest.json",
+      "sha256": "ee5a0ba0fd83bf0d22672ada35268b7445ed631d0377f2aaa8fce7d970114f69",
+      "bytes": 1688
+    },
+    {
+      "path": "data/benchmarks_market_2013_2025.csv",
+      "sha256": "62924c079cc0c24cbd9520158db27eb47c45054d07c2b7e68270e21380ea6f32",
+      "bytes": 122264
+    }
+  ],
+  "amendment_policy": "Any change to the rule, the parameters or the input files creates a new registration with a new date. The superseded registration is kept; it is not edited.",
+  "registration_sha256": "528ecf74311a87c81f24b92a69dc97cb7ad6b925479556639e9ff1a6e8f01fac"
+}

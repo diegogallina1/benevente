@@ -1,0 +1,61 @@
+{
+  "registered_on": "2026-08-16",
+  "rule": "nested_configuration_selection",
+  "parameters": {
+    "maximum_equity_weight": 0.55,
+    "maximum_asset_weight": 0.176,
+    "top_assets": 5,
+    "minimum_average_daily_value_brl": 10000000,
+    "risk_profile": "moderado",
+    "review_frequency": "annual, first trading session of the calendar year",
+    "cost_model": "B3 regular fee plus participation-dependent slippage, priced per ticker liquidity",
+    "tax_model": "15% on realised equity gains, 17.5% on the redeemed defensive sleeve"
+  },
+  "selection_rationale": "Reemitido apos estender a base para decisoes desde 2012: COTAHIST 2010 baixado, painel de precos 2010-2025 com 514 emissores, universo B3 e ponte CVM de 2012, fundamentos de 2012. Busca aninhada sobre 36 configuracoes, avaliacao 2015-2025, ranking por Sharpe do excesso sobre o CDI usando apenas anos ja encerrados, troca cobrada como rebalanceamento integral. Configuracao viva para 2026: eq55_n5_triple_factor. Supersede o registro 7419c4a0, que avaliava 2016-2025 sobre a base anterior.",
+  "evaluation": {
+    "prospective_from_year": 2026,
+    "in_sample_window": "2015-2025",
+    "in_sample_status": "Exploratory. The candidate grid, the factor family and the constraint set were all chosen while these years were visible. Reported historical figures describe the sample, not expected return.",
+    "success_criterion": {
+      "minimum_years": 3,
+      "must_beat_cdi_after_tax": true,
+      "must_beat_investable_market_etf": true,
+      "maximum_acceptable_drawdown": 0.35,
+      "falsification": "Failure to clear the CDI after tax over the full prospective window, or a drawdown beyond the stated limit, refutes the rule. A single good year does not confirm it and a single bad year does not refute it."
+    }
+  },
+  "inputs": [
+    {
+      "path": "data/prices_b3_total_return_full_2010_2025.csv",
+      "sha256": "049fd0fcac979b80491f29d4e6a69f392fa9a700f4ba0818b11df361c3216536",
+      "bytes": 24172798
+    },
+    {
+      "path": "data/prices_b3_total_return_full_2010_2025_manifest.json",
+      "sha256": "b25d208874a110c503b888f35ca78121b0abf8c6310f182c6b557bf1184d6063",
+      "bytes": 1745
+    },
+    {
+      "path": "data/fundamentals_b3_cvm_full_2012_2025.csv",
+      "sha256": "2df683244a39134e245398cf785aa8817e380343266d7f871527493428c22abe",
+      "bytes": 2111182
+    },
+    {
+      "path": "data/benchmarks_market_2010_2025.csv",
+      "sha256": "e93db7fa04f4e5f5d517b5440d7b5b954e294fa4263bb0e689854dade4dd62f9",
+      "bytes": 149256
+    },
+    {
+      "path": "artifacts/configuration_search_2012/summary.json",
+      "sha256": "e3330a04727f8a8d27f52633d7ab3cacfc1759aa0abc0da670361e6ef2f1bbfe",
+      "bytes": 1347
+    },
+    {
+      "path": "artifacts/published_nested/protocol.json",
+      "sha256": "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d",
+      "bytes": 1081
+    }
+  ],
+  "amendment_policy": "Any change to the rule, the parameters or the input files creates a new registration with a new date. The superseded registration is kept; it is not edited.",
+  "registration_sha256": "b6f9225e8db6a588edfce60c7701ad09645e99df847321f3fa0a432d2d104fdf"
+}

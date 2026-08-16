@@ -26,7 +26,7 @@
 
       <div class="paper-callout"><b>One term, defined once</b>CDI is the Brazilian interbank overnight rate, the
       benchmark a domestic investor earns on cash with negligible credit risk. It is the local equivalent of a
-      risk-free short rate, and it is high: it compounded at 9.26% a year over the evaluation window. Any Brazilian
+      risk-free short rate, and it is high: it compounded at 9.61% a year over the evaluation window. Any Brazilian
       equity strategy is therefore competing against a cash return that would be unusual elsewhere, which is why it
       appears as a benchmark throughout and why the defensive sleeve is held in it rather than in bills.</div>
 
@@ -59,8 +59,8 @@
       <p>The current protocol is nested. For decision year <i>t</i>, the configuration is ranked using only years that had already closed, by Sharpe of the excess return over cash; year <i>t</i> is then evaluated once. Changing configuration is charged a full-turnover rebalance, because in a real book it means liquidating one portfolio to buy another.</p>
       <p>Three quantities are published alongside every result: the nested outcome, the full-sample winner, and the difference between them.</p>
       <div class="paper-metrics">
-        <div class="paper-metric"><span>Hindsight premium</span><b>4.98 pp</b><small>per year, between the full-sample winner and the nested choice, over 36 configurations</small></div>
-        <div class="paper-metric"><span>Deflated Sharpe</span><b>0.957</b><small>36 trials, 10 annual observations</small></div>
+        <div class="paper-metric"><span>Hindsight premium</span><b>0.65 pp</b><small>per year, between the full-sample winner and the nested choice, over 36 configurations</small></div>
+        <div class="paper-metric"><span>Deflated Sharpe</span><b>0.986</b><small>36 trials, 11 annual observations</small></div>
         <div class="paper-metric"><span>Tactical allocation</span><b>0 of 7</b><small>predictive rules beat the static weight over 118 months</small></div>
       </div>
       <p>The last figure is a separate study. Perfect monthly timing of the equity-versus-cash split would have been worth roughly 50 percentage points a year, so the prize is real; none of seven predictive rules, fitted walk-forward on observable state, captured any of it, across three training-window lengths.</p>
@@ -91,17 +91,17 @@
 
       <h2>6 · Published strategy</h2>
       <table class="paper-table">
-        <thead><tr><th>Series</th><th>CAGR 2016–2025</th><th>Years won</th><th>Max drawdown</th></tr></thead>
+        <thead><tr><th>Series</th><th>CAGR 2015–2025</th><th>Years won</th><th>Max drawdown</th></tr></thead>
         <tbody>
-          <tr class="highlight"><td>Benevente</td><td class="num">15.31%</td><td class="num">—</td><td class="num">−30.4%</td></tr>
-          <tr><td>Benevente, after tax</td><td class="num">14.10%</td><td class="num">—</td><td class="num">—</td></tr>
-          <tr><td>Ibovespa</td><td class="num">14.30%</td><td class="num">5 of 10</td><td class="num">−38.4%</td></tr>
-          <tr><td>BOVA11 (investable ETF)</td><td class="num">14.28%</td><td class="num">5 of 10</td><td class="num">−39.3%</td></tr>
-          <tr><td>Neutral MVO, same universe</td><td class="num">9.57%</td><td class="num">6 of 10</td><td class="num">—</td></tr>
-          <tr><td>Cash (CDI)</td><td class="num">9.26%</td><td class="num">6 of 10</td><td class="num">0%</td></tr>
+          <tr class="highlight"><td>Benevente</td><td class="num">17.86%</td><td class="num">—</td><td class="num">−47.8%</td></tr>
+          <tr><td>Benevente, after tax</td><td class="num">16.03%</td><td class="num">—</td><td class="num">—</td></tr>
+          <tr><td>Ibovespa</td><td class="num">11.77%</td><td class="num">7 of 11</td><td class="num">−38.4%</td></tr>
+          <tr><td>BOVA11 (investable ETF)</td><td class="num">11.72%</td><td class="num">7 of 11</td><td class="num">−39.3%</td></tr>
+          <tr><td>Neutral MVO, same universe</td><td class="num">7.83%</td><td class="num">10 of 11</td><td class="num">—</td></tr>
+          <tr><td>Cash (CDI)</td><td class="num">9.61%</td><td class="num">6 of 11</td><td class="num">0%</td></tr>
         </tbody>
       </table>
-      <p>Against the market this is a draw: five years out of ten, with a margin of about one percentage point a year, carrying 55% in equities. Against cash and against a neutral optimisation on the same eligible universe it wins. The neutral comparator is computed independently — an earlier version of this system compared the strategy against a copy of itself in eleven years out of eleven.</p>
+      <p>Against the market the strategy wins seven years out of eleven, with a margin of about six percentage points a year, on an equity budget the protocol itself varied between 55% and 95%. Against cash and against a neutral optimisation on the same eligible universe it wins. The neutral comparator is computed independently — an earlier version of this system compared the strategy against a copy of itself in eleven years out of eleven.</p>
       <p>The evaluation window is also the window that ranked the configurations, so it describes the sample. Prospective evaluation begins in 2026 against a registration frozen with the SHA-256 of every input.</p>
 
       <div id="live-portfolio"></div>

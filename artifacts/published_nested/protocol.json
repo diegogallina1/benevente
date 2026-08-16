@@ -1,0 +1,25 @@
+{
+  "factor": "nested_configuration_selection",
+  "start_year": 2015,
+  "end_year": 2026,
+  "maximum_equity_weight": 0.55,
+  "top_assets": 5,
+  "maximum_asset_weight": 0.176,
+  "signal": "triple_factor",
+  "selection_rule": "For decision year t the configuration is ranked on years before t only, by Sharpe of the excess return over CDI. Switching configurations is charged a full-turnover rebalance.",
+  "configurations_by_year": {
+    "2015": "eq55_n8_low_volatility",
+    "2016": "eq75_n5_value_quality",
+    "2017": "eq75_n5_value_quality",
+    "2018": "eq95_n5_value_quality",
+    "2019": "eq95_n5_triple_factor",
+    "2020": "eq95_n5_triple_factor",
+    "2021": "eq95_n5_triple_factor",
+    "2022": "eq75_n5_triple_factor",
+    "2023": "eq55_n5_triple_factor",
+    "2024": "eq55_n5_triple_factor",
+    "2025": "eq55_n5_triple_factor"
+  },
+  "live_configuration": "eq55_n5_triple_factor",
+  "in_sample_status": "The window that ranked the configurations cannot also test them. Evaluation of this rule begins with years after the frozen registration."
+}
