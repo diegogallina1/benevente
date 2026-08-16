@@ -55,3 +55,9 @@ body{font-size:15px}.hero{grid-template-columns:minmax(0,42rem);min-height:auto}
 .hero-answers li::before{content:"";position:absolute;left:0;top:.62em;width:.32rem;height:.32rem;border-radius:50%;background:#0f766e}
 .hero-answers b{color:#12312d;font-weight:800;margin-right:.3rem}
 @media(max-width:560px){.hero-answers li{font-size:.81rem}}
+
+/* The selection window: same curve, weaker claim. Dashed and faded, with a rule
+   at the date where evaluated evidence begins. */
+.line-selection{stroke-dasharray:5 5;opacity:.42;stroke-width:2}
+.line-boundary{stroke:#9aa9a4;stroke-width:1;stroke-dasharray:2 4}
+.line-boundary-label{font:700 9px "DM Mono",monospace;fill:#7d8f89}

@@ -121,6 +121,39 @@ def stitch_daily(selection: pd.DataFrame, runs: dict[str, Path]) -> pd.DataFrame
     return pd.concat(output, ignore_index=True) if output else pd.DataFrame()
 
 
+def prepend_selection_window(daily: pd.DataFrame, live_run: Path, first_year: int) -> pd.DataFrame:
+    """Carry the years that chose the configuration, marked as what they are.
+
+    A chart that starts in the first evaluated year hides the window the search
+    ranged over, and a reader reasonably asks what happened before. Splicing the
+    live configuration's own curve onto the front answers that — but those years
+    cannot be evidence, because they are the years that selected the rule. On
+    this panel that distinction is worth about five points of annual return, so
+    the segment is tagged and every headline metric keeps ignoring it.
+    """
+    path = live_run / "daily_curve.csv"
+    if not path.exists() or daily.empty:
+        return daily.assign(phase="evaluated")
+    source = pd.read_csv(path, parse_dates=["date"])
+    context = source[source.decision_year < first_year].copy()
+    if context.empty:
+        return daily.assign(phase="evaluated")
+    columns = [column for column in ("strategy", "mvo", "cdi", "equity_sleeve", "IBOVESPA", "BOVA11")
+               if column in context.columns and column in daily.columns]
+    # Chain the context onto the published series so the level is continuous at
+    # the join instead of restarting at 100.
+    for column in columns:
+        closing = float(context[column].iloc[-1])
+        opening = float(daily[column].iloc[0])
+        if closing > 0:
+            context[column] = context[column] / closing * opening
+    context["phase"] = "selection"
+    evaluated = daily.assign(phase="evaluated")
+    shared = [column for column in evaluated.columns if column in context.columns]
+    return (pd.concat([context[shared], evaluated[shared]], ignore_index=True)
+            .sort_values("date").reset_index(drop=True))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build the published artifacts of the nested configuration series.")
     parser.add_argument("--selection", default="artifacts/configuration_search/nested_selection_annual.csv")
@@ -146,6 +179,8 @@ def main() -> None:
             frame.to_csv(output / filename, index=False)
     daily = stitch_daily(selection, runs)
     if not daily.empty:
+        live_run = runs[str(selection.selected_configuration.iloc[-1])]
+        daily = prepend_selection_window(daily, live_run, int(selection.decision_year.min()))
         daily.to_csv(output / "daily_curve.csv", index=False)
     # The live configuration's limits travel with the protocol. Without them the
     # page that prints "até X em renda variável e Y por emissor" has nothing to

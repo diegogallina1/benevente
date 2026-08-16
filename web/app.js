@@ -10,7 +10,7 @@ let universeData = null;
 let currentDecisionData = null;
 let fundPresetsData = null;
 let finalStrategyData = null;
-const comparisonWindows = { 1: 1, 2: 2, 3: 3, 5: 5, 11: 11 };
+const comparisonWindows = { 1: 1, 2: 2, 3: 3, 5: 5, 11: 99 };
 
 const modelSteps = {
   policy: { number:"01 · POLÍTICA", title:"A política vem antes do ativo.", text:"O responsável define patrimônio, perfil, limite de ações, concentração por emissor, custos e revisão anual.", uses:"Perfil e limites explícitos", blocks:"Pesos acima da política", produces:"Uma política reproduzível", rule:"<strong>Regra:</strong> sem política, não há carteira." },
@@ -86,7 +86,10 @@ function monthlyDataset(period) {
     const base = window.find(value => Number.isFinite(value) && value > 0);
     if (base) series[name] = window.map(value => Number.isFinite(value) ? +(value / base * 100).toFixed(4) : null);
   });
-  return Object.keys(series).length ? { dates, series, granularity: "monthly" } : null;
+  const phases = Array.isArray(curve.phases) ? curve.phases.slice(start) : null;
+  return Object.keys(series).length
+    ? { dates, series, granularity: "monthly", phases, evaluationStarts: curve.evaluation_starts, note: curve.selection_note }
+    : null;
 }
 
 // Catmull-Rom through the points, converted to cubic Bezier. Control points are
@@ -471,17 +474,33 @@ function renderLineChart(period) {
       current.push({ x: x(index), y: y(value) });
     });
     if (current.length) runs.push(current);
+    const boundary = data.phases ? data.phases.findIndex(phase => phase === "evaluated") : -1;
     const path = runs.map(smoothPath).join(" ");
     const reference = name === "MVO anual" || name === "MVO de referência";
     const area = name === strategyName && runs.length === 1 && runs[0].length > 1
       ? `<path class="line-area" fill="${seriesColor(name, seriesIndex)}" d="${smoothPath(runs[0])} L${runs[0].at(-1).x.toFixed(2)},${height - bottom} L${runs[0][0].x.toFixed(2)},${height - bottom} Z"/>`
       : "";
-    return `${area}<path class="line-path ${reference ? "mvo-reference" : ""}" data-series="${escapeHtml(name)}" stroke="${seriesColor(name, seriesIndex)}" d="${path}"/>`;
+    // The selection stretch is redrawn on top, faded and dashed. It is the same
+    // curve; what changes is the claim attached to it.
+    let selection = "";
+    if (boundary > 0) {
+      const points = visibleSeries[name].slice(0, boundary + 1)
+        .map((value, index) => Number.isFinite(value) ? { x: x(index), y: y(value) } : null).filter(Boolean);
+      if (points.length > 1) {
+        selection = `<path class="line-path line-selection" data-series="${escapeHtml(name)}" stroke="${seriesColor(name, seriesIndex)}" d="${smoothPath(points)}"/>`;
+      }
+    }
+    return `${area}<path class="line-path ${reference ? "mvo-reference" : ""}" data-series="${escapeHtml(name)}" stroke="${seriesColor(name, seriesIndex)}" d="${path}"/>${selection}`;
   }).join("");
   // The legend and return chips carry the labels. End labels overlap when
   // funds, benchmarks and user-selected assets converge at the same point.
   directLabelLayer.innerHTML = "";
-  gridLayer.innerHTML = grid; labelLayer.innerHTML = `${dateLabels}<text class="line-axis-title" text-anchor="middle" x="18" y="${top + plotH / 2}" transform="rotate(-90 18 ${top + plotH / 2})">Retorno acumulado (%)</text><text class="line-axis-title" text-anchor="middle" x="${left + plotW / 2}" y="${height - 1}">Data de observação</text>`;
+    const boundaryIndex = data.phases ? data.phases.slice(startIndex, endIndex).findIndex(phase => phase === "evaluated") : -1;
+  const boundaryMark = boundaryIndex > 0
+    ? `<line class="line-boundary" x1="${x(boundaryIndex)}" x2="${x(boundaryIndex)}" y1="${top}" y2="${height - bottom}"/>`
+      + `<text class="line-boundary-label" x="${x(boundaryIndex) + 6}" y="${top + 12}">início da avaliação</text>`
+    : "";
+  gridLayer.innerHTML = grid + boundaryMark; labelLayer.innerHTML = `${dateLabels}<text class="line-axis-title" text-anchor="middle" x="18" y="${top + plotH / 2}" transform="rotate(-90 18 ${top + plotH / 2})">Retorno acumulado (%)</text><text class="line-axis-title" text-anchor="middle" x="${left + plotW / 2}" y="${height - 1}">Data de observação</text>`;
   document.querySelector("#chart-return-summary").innerHTML = selected.map((name, index) => {
     const series = allSeries[name].slice(startIndex, endIndex);
     const first = series.find(value => Number.isFinite(value));
@@ -491,10 +510,11 @@ function renderLineChart(period) {
   }).join("");
   const start = dates[0], end = dates.at(-1);
   document.querySelector("#chart-zoom-status").textContent = chartZoom === 1 ? "Visão completa" : `${dates.length} pontos visíveis`;
+    const phaseNote = data.note && boundaryIndex > 0 ? ` ${data.note}` : "";
   const granularity = data.granularity === "monthly"
     ? `${dates.length} pontos mensais (valor exato da carteira no fim de cada mês)`
     : `${dates.length} pontos anuais`;
-  document.querySelector("#line-chart-caption").textContent = `${selected.length} série(s) · ${granularity} · ${formatDateBr(start)} a ${formatDateBr(end)} · retorno acumulado em %. Escala ${chartScale === "log" ? "logarítmica" : "linear"}. Roda do mouse amplia, arraste desloca.`;
+  document.querySelector("#line-chart-caption").textContent = `${selected.length} série(s) · ${granularity} · ${formatDateBr(start)} a ${formatDateBr(end)} · retorno acumulado em %. Escala ${chartScale === "log" ? "logarítmica" : "linear"}. Roda do mouse amplia, arraste desloca.${phaseNote}`;
   const inspect = event => {
     const rect = event.currentTarget.getBoundingClientRect();
     const viewX = (event.clientX - rect.left) * width / rect.width;

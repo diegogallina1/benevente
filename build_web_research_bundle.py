@@ -131,12 +131,24 @@ def _monthly_curve(root: Path) -> dict | None:
     monthly = monthly[~monthly.index.duplicated(keep="first")]
     base = monthly.iloc[0]
     rebased = monthly.divide(base).multiply(100).round(4)
-    return {
+    payload = {
         "dates": [date.date().isoformat() for date in rebased.index],
         "series": {MONTHLY_SERIES_LABELS[column]: rebased[column].tolist() for column in columns},
         "basis": "Valor diário exato da carteira mantida no ano, amostrado no fim de cada mês e rebaseado em 100.",
         "daily_observations": int(len(daily)),
     }
+    if "phase" in daily.columns:
+        # The chart needs to know where the selection window ends, because the
+        # curve before that date is the rule applied to the years that chose it.
+        phases = daily.phase.reindex(monthly.index, method="ffill")
+        payload["phases"] = phases.fillna("evaluated").tolist()
+        evaluated = daily.index[daily.phase.eq("evaluated")]
+        if len(evaluated):
+            payload["evaluation_starts"] = evaluated.min().date().isoformat()
+            payload["selection_note"] = (
+                "O trecho anterior a " + evaluated.min().date().isoformat() + " é a janela que escolheu a "
+                "configuração. Ele aparece para dar contexto e não entra em nenhuma métrica publicada.")
+    return payload
 
 
 def _localized_records(root: Path) -> dict[str, list[dict]]:
