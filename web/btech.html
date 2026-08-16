@@ -41,6 +41,10 @@
       <p>Auditamos o próprio backtest e publicamos o resultado. Sete defeitos foram encontrados e corrigidos: comparador que era cópia da estratégia, painel de preços que descartava 139 empresas deslistadas, imposto ausente, custo fixo que ignorava liquidez, entre outros. Depois disso, medimos quanto a escolha a posteriori de uma regra inflaria o resultado: <b>0,65 ponto percentual ao ano</b> na base atual, contra 4,98 pontos quando o protocolo tinha um ano a menos de treino.</p>
       <div class="paper-callout warn"><b>Por que isso é argumento comercial</b>Qualquer concorrente mostra uma curva subindo. A pergunta que ninguém responde é quanto daquela curva vem de ter escolhido a regra depois de ver o resultado. Nós medimos, publicamos o número, e ainda assim o método permanece classificado como pesquisa até acumular anos avaliados depois do registro congelado.</div>
 
+      <h2>Decidir mais vezes por ano compensa?</h2>
+      <p>Testamos, mantendo a regra, os limites e o painel idênticos e variando apenas as datas de decisão. A reseleção anual rendeu 18,58% ao ano antes de custos, a trimestral 16,37% e a mensal 13,92%. Pareando por ano-calendário e já após imposto, a trimestral fica 1,55 ponto percentual abaixo da anual ao ano, com p de 0,376, e a mensal 3,27 pontos abaixo, com p de 0,306. Com onze anos pareados não dá para afirmar que atrapalha; dá para afirmar que <b>não há evidência de que ajude</b>.</p>
+      <div class="paper-callout warn"><b>O motivo não é o que se imagina</b>A perda está no retorno bruto, que cai 4,66 pontos de anual para mensal antes de qualquer dedução. O custo de execução sobe só 0,08 ponto ao ano e o imposto modelado até diminui. Reordenar a cesta todo mês piora a escolha antes de encarecer a operação, porque qualidade, valor e momento se movem em horizonte anual e o giro mensal desfaz posições antes da tese se realizar.</div>
+
       <h2>Resultado da carteira publicada</h2>
       <table class="paper-table">
         <thead><tr><th>Série</th><th>CAGR 2015–2025</th><th>Anos vencidos</th><th>Drawdown</th></tr></thead>
