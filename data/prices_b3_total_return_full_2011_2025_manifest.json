@@ -1,0 +1,23 @@
+{
+  "price_basis": "total_return",
+  "source_tier": "public_reproducible_research",
+  "provider": "B3 COTAHIST official archive with Yahoo Finance adjusted close where available",
+  "extraction_timestamp": "2026-08-16T00:52:30Z",
+  "coverage_start": "2011-01-03",
+  "coverage_end": "2025-12-30",
+  "corporate_actions": "Splits, groupings and large bonuses detected from round COTAHIST price ratios and back-adjusted; every applied factor is listed in the adjustments report.",
+  "cdi_source": "Banco Central do Brasil SGS 12 (CDI diário), carried from the provider panel",
+  "file_sha256": "9bc6ad08d6a3ca2dc1253e94f17541d863d36d5f30bbc1c232f81b43b11bef85",
+  "survivorship": "Universe of record is COTAHIST, which retains delisted tickers. No ticker is dropped for being absent from a current provider feed.",
+  "distribution_imputation": "Provider-less tickers receive the annual cross-sectional median distribution yield measured on overlapping tickers; see the coverage report for which tickers are affected.",
+  "split_detector_recall_vs_provider_events": 0.2325056433408578,
+  "split_detector_events_compared": 443,
+  "split_detector_note": "Recall and precision are measured only where a provider event archive exists. Both are published because the same rule is the sole corporate-action evidence for the delisted tickers the provider no longer serves.",
+  "ticker_count": 497,
+  "basis_counts": {
+    "total_return_provider_spliced_with_cotahist": 246,
+    "total_return_imputed_distribution": 139,
+    "total_return_provider": 112
+  },
+  "research_restriction": "Imputed distributions and detected corporate actions must be reconciled against B3 or CVM primary records before any commercial performance claim."
+}

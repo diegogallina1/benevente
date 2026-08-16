@@ -8,7 +8,7 @@ O arquivo anual compactado é publicado pela CVM em:
 
 O Benevente baixa o ZIP correspondente a `--itr-year`, guarda-o em `work/cvm_cache/` e lê os arquivos consolidados `DRE_con`, `BPA_con`, `BPP_con`, `DFC_MI_con` e o índice `itr_cia_aberta_AAAA.csv`. O índice fornece `DT_REFER`, `VERSAO` e `DT_RECEB`.
 
-## Regra ponto-no-tempo
+## Regra de disponibilidade na data
 
 Para uma data de decisão $D$, por emissor, somente pode ser usado o ITR cuja `DT_RECEB <= D`. Entre as versões elegíveis, o sistema escolhe a maior `DT_REFER`, seguida pela maior versão. Portanto, empresas que ainda não entregaram o segundo trimestre continuam no primeiro trimestre; não há preenchimento artificial.
 
@@ -16,7 +16,7 @@ Para evitar tratar um trimestre como resultado anual, as rubricas de resultado e
 
 `TTM = DFP anual anterior + ITR atual (ÚLTIMO) − ITR comparativo (PENÚLTIMO)`.
 
-O balanço usa o valor `ÚLTIMO` no `DT_REFER` do ITR. O arquivo final registra tanto `as_of_date` quanto `available_date` para auditoria e futuros testes ponto-no-tempo.
+O balanço usa o valor `ÚLTIMO` no `DT_REFER` do ITR. O arquivo final registra tanto `as_of_date` quanto `available_date` para auditoria e futuros testes de disponibilidade na data.
 
 ## Dados de mercado e histórico de preços
 

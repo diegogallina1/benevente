@@ -10,7 +10,9 @@ class MeanVarianceOptimizer:
         self.config = config
 
     def optimize(self, historical_returns: pd.DataFrame, scores: dict[str, float], equity_cap: float,
-                 signal_influence: float | None = None, eligible_assets: set[str] | None = None) -> pd.Series:
+                 signal_influence: float | None = None, eligible_assets: set[str] | None = None,
+                 previous_weights: pd.Series | None = None, turnover_penalty: float = 0.0,
+                 minimum_selected_weight: float = 0.0) -> pd.Series:
         assets = list(historical_returns.columns)
         n = len(assets)
         mu = historical_returns.mean().to_numpy() * 252
@@ -26,9 +28,20 @@ class MeanVarianceOptimizer:
             1.0 if asset == "TITULO_CDI" else self.config.max_asset_weight if eligible_assets is None or asset in eligible_assets else 0.0
             for asset in assets
         ])
-        constraints = [cp.sum(w) == 1, w >= 0, w <= upper_bounds,
+        lower_bounds = np.array([
+            0.0 if asset == "TITULO_CDI" or eligible_assets is None or asset not in eligible_assets else minimum_selected_weight
+            for asset in assets
+        ])
+        if np.any(lower_bounds > upper_bounds):
+            raise ValueError("Minimum selected weight exceeds an asset upper bound.")
+        constraints = [cp.sum(w) == 1, w >= lower_bounds, w <= upper_bounds,
                        cp.sum(w[equity_indices]) <= equity_cap]
-        objective = cp.Maximize(mu @ w - (self.config.risk_aversion_gamma / 2) * cp.quad_form(w, covariance))
+        previous = (previous_weights.reindex(assets, fill_value=0.0).to_numpy()
+                    if previous_weights is not None else np.zeros(n))
+        objective = cp.Maximize(
+            mu @ w - (self.config.risk_aversion_gamma / 2) * cp.quad_form(w, covariance)
+            - max(0.0, turnover_penalty) * cp.norm1(w - previous)
+        )
         problem = cp.Problem(objective, constraints)
         problem.solve(solver=cp.CLARABEL)
         if problem.status not in {cp.OPTIMAL, cp.OPTIMAL_INACCURATE} or w.value is None:

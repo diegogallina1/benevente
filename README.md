@@ -2,24 +2,62 @@
 
 **Benevente Quant AI** é o framework acadêmico de pesquisa. **Benevente Wealth
 System** é a solução B2B de apoio à decisão. Ambos compartilham o mesmo núcleo:
-seleção determinística de valor e qualidade, alocação restrita, dados
-ponto-no-tempo e uma trilha que permite revisar cada decisão.
+seleção determinística de valor e qualidade, alocação restrita, decisão tomada
+apenas com os dados disponíveis na data e uma trilha que permite revisar cada
+decisão.
 
 O sistema não promete superar CDI, Ibovespa ou qualquer benchmark; não emite
 recomendação autônoma e não transmite ordens. Seu objetivo é tornar uma tese de
 carteira de médio/longo prazo reproduzível, verificável e revisável por uma
 pessoa responsável.
 
+## Estado da evidência
+
+**Toda a série 2015–2025 é amostra de desenvolvimento, não teste.** A grade de
+sinais avaliou 73 candidatos, e a regra que foi publicada ficou em 57º pelo
+critério de treino declarado e em 1º no holdout — ou seja, foi escolhida depois
+de olhar o holdout. Nenhum recálculo do período histórico desfaz isso; só anos
+posteriores ao registro congelado testam a regra.
+
+Números honestos do período, contra referências independentes, estão em
+`artifacts/audit_evidence/`. A verificação estatística das 73 tentativas está em
+`artifacts/inference_audit/`. O registro congelado está em
+`artifacts/preregistration/`.
+
 ## O que já é executável
 
-- Backtest reproduzível B3/CDI, com custos e slippage modelados;
+- Backtest reproduzível B3/CDI, com custos por liquidez e imposto de renda
+  modelados;
+- Painel de preços **sem viés de sobrevivência**: o universo de registro é o
+  COTAHIST da B3, que mantém empresas deslistadas;
+- Comparação contra CDI, um MVO neutro independente, o Ibovespa e o **BOVA11**,
+  sempre na mesma janela;
 - Janelas históricas pré-especificadas de 5, 10 e 15 anos;
-- Cálculo TTM com ITR/DFP oficial da CVM e corte por data de recebimento;
-- Filtros que rejeitam ativos sem liquidez, qualidade ou dados de solvência
-  comparáveis;
+- Cálculo TTM com ITR/DFP oficial da CVM, período acumulado e corte por data de
+  recebimento;
+- Filtros que rejeitam ativos sem liquidez, qualidade ou solvência comparável,
+  com alavancagem e cobertura de juros derivadas das contas padronizadas;
 - Proposta para carteira-sombra: pesos, quantidades, lotes, custo, participação
   no volume, caixa residual e arquivos de auditoria;
-- Conciliação posterior entre a proposta e a nota de corretagem.
+- Conciliação posterior entre a proposta e a nota de corretagem;
+- Correção por múltiplas tentativas: Sharpe deflacionado e probabilidade de
+  sobreajuste de backtest.
+
+## Correções de metodologia (auditoria de 2026-08-15)
+
+Sete defeitos foram encontrados e corrigidos. Cada um alterava os números na
+direção de fazer a estratégia parecer melhor do que era.
+
+| Defeito | Efeito | Correção |
+| --- | --- | --- |
+| Benchmark MVO idêntico à estratégia em 11/11 anos | O gráfico comparava a curva com ela mesma | `unconstrained_long_only_mvo` constrói o comparador do universo elegível, sem compartilhar nenhuma etapa com a regra candidata |
+| 139 de 497 emissores sem preço; 77 somem até 2020 | Viés de sobrevivência: CIEL3, AZUL4, BRML3, ALLL3 e BIDI4 desapareciam da amostra | `build_b3_total_return_panel.py` reconstrói o painel a partir do COTAHIST, com ações corporativas detectadas e auditadas |
+| Deslistagem virava retorno zero, e `dropna()` truncava o ano inteiro | Perda de empresa que sai da bolsa não era contabilizada | `realised_returns_with_delisting` liquida no último preço observável e leva o caixa para o CDI |
+| `debt_to_ebitda` e `interest_coverage` sempre nulos | 433 empresas não-financeiras reprovadas por falta de dado, não por qualidade; a carteira virava uma cesta de bancos | EBITDA, dívida líquida e cobertura derivados das contas padronizadas da CVM |
+| Ponte TTM lia a linha trimestral ou a acumulada conforme a ordem do arquivo | Fundamentos errados a partir do 2º trimestre | `_accumulated_only` mantém só o período acumulado |
+| Custo fixo de 15 bps, sem IR | Subestimava o custo de papéis ilíquidos e ignorava 15% sobre ganho realizado | Custo B3 por participação no volume e `BrazilianTaxModel` |
+| `(1 + r @ w).prod()` | Rebalanceamento diário gratuito, impossível de executar | Buy and hold real dentro do ano |
+| Ibovespa rotulado como "índice de preço" | A ressalva era falsa e favorecia a estratégia | O Ibovespa é índice de retorno total da B3; o BOVA11 entrou como referência investível |
 
 ## Instalação e teste
 
@@ -33,6 +71,35 @@ python main.py --offline
 
 O modo `--offline` gera dados sintéticos determinísticos apenas para testar o
 software. Ele não é evidência de retorno de mercado.
+
+## Reproduzir o resultado corrigido
+
+Esta é a sequência que gera os números publicados. Cada etapa escreve manifesto
+com SHA-256 dos arquivos que consumiu.
+
+```powershell
+# 1. Painel de preços sem viés de sobrevivência (COTAHIST + provedor)
+python build_b3_total_return_panel.py
+python build_b3_total_return_panel.py --no-imputation --output data/prices_b3_price_return_full_2013_2025.csv --manifest data/prices_b3_price_return_full_2013_2025_manifest.json --coverage-report artifacts/b3_price_return_full_coverage.csv --actions-report artifacts/b3_corporate_action_adjustments_bound.csv --detector-report artifacts/b3_split_detector_validation_bound.csv
+
+# 2. Referências de mercado (Ibovespa e BOVA11)
+python build_market_benchmarks.py
+
+# 3. Fundamentos CVM com solvência derivada
+python build_full_b3_cvm_fundamentals.py --universe data/b3_historical_universes.csv --mapping data/b3_historical_cvm_ticker_map.csv --start-year 2013 --end-year 2025 --output data/fundamentals_b3_cvm_full_2013_2025_v2.csv --coverage-report artifacts/fundamentals_b3_cvm_full_coverage_v2.csv
+
+# 4. Walk-forward anual, um perfil por vez
+python annual_walk_forward.py --prices data/prices_b3_total_return_full_2013_2025.csv --total-return-manifest data/prices_b3_total_return_full_2013_2025_manifest.json --fundamentals data/fundamentals_b3_cvm_full_2013_2025_v2.csv --universe data/b3_historical_universes.csv --mapping data/b3_historical_cvm_ticker_map.csv --benchmarks data/benchmarks_market_2013_2025.csv --start-year 2015 --end-year 2026 --factor mvo_risk_adjusted --risk-profile moderado --top-assets 5 --output artifacts/v2_mvo_moderado
+
+# 5. Placar honesto e verificação estatística
+python build_audit_evidence.py --results artifacts/v2_mvo_moderado/annual_results.csv --output artifacts/audit_evidence
+python audit_signal_grid_inference.py
+python preregistration.py
+```
+
+O painel `--no-imputation` é o limite conservador: para os emissores que nenhum
+provedor ainda serve, ele conta apenas retorno de preço, sem proventos. Rodar as
+duas versões dá a banda de incerteza da imputação.
 
 ## Pesquisa histórica
 
@@ -112,16 +179,36 @@ deixados derivar durante o ano antes de medir o giro da revisão seguinte.
 ### Regra de prontidão comercial
 
 Uma estratégia só pode ser apresentada como candidata a alfa se, em um
-holdout congelado e líquido de custos modelados, superar **CDI e MVO clássico**,
-mantiver Sharpe excedente ao CDI positivo, drawdown dentro do limite e pelo
-menos 24 períodos mensais. Caso contrário, a saída é obrigatoriamente
-`research_only`: ela pode ser estudada, mas não é prova para uma alegação
-comercial de retorno superior.
+holdout congelado e líquido de custos modelados, superar **CDI e o MVO de
+referência**, mantiver Sharpe excedente ao CDI positivo, drawdown dentro do
+limite e pelo menos 24 períodos mensais. Caso contrário, a saída é
+obrigatoriamente `research_only`.
+
+`build_audit_evidence.py` aplica essa regra e escreve o veredito. Hoje ele
+retorna `research_only`, e o motivo não é o retorno: a janela 2015–2025 foi
+usada para escolher regra, família de fatores e restrições, logo não existe
+holdout congelado. Esse status só muda com anos avaliados **depois** do
+registro em `artifacts/preregistration/`.
+
+O que o período mostra, com referências independentes e após custos:
+
+| Referência | CAGR da carteira | CAGR da referência | Anos vencidos |
+| --- | --- | --- | --- |
+| CDI | 11,6% | 9,6% | 7 de 11 |
+| MVO de referência | 11,6% | 9,3% | 7 de 11 |
+| Ibovespa | 11,6% | 11,8% | 4 de 11 |
+| BOVA11 (investível) | 11,6% | 11,7% | 4 de 11 |
+| CDI após IR | 10,4% | 7,9% | 7 de 11 |
+
+Ou seja: a carteira supera o CDI e a otimização neutra, mas **não supera o
+mercado de ações**. Com 55% em renda variável, ela entrega retorno próximo ao do
+Ibovespa com metade do risco direcional — essa é a afirmação sustentável, e não
+"bate o Ibovespa".
 
 O portal aberto da CVM disponibiliza DFP desde 2010 e ITR desde 2011. Portanto,
-um estudo "fundamentalista ponto-no-tempo" de 20 anos iniciado em 2006 exige
-uma fonte adicional de fundamentos históricos e um universo de constituintes
-datado; o sistema não preenche 2006–2010 com informação posterior. Consulte o
+um estudo fundamentalista de 20 anos iniciado em 2006 exige uma fonte adicional
+de fundamentos históricos e um universo de constituintes datado; o sistema não
+preenche 2006–2010 com informação posterior. Consulte o
 [Portal de Dados Abertos da CVM](https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/DFP/DADOS/) para a disponibilidade dos arquivos.
 
 ## Comparação com fundo de gestão ativa
@@ -152,7 +239,7 @@ Há quatro áreas numa interface única:
   solvência; produz pesos restritos, custo estimado e uma trilha de auditoria.
   O modo de demonstração é inteiramente sintético e só testa o fluxo. Para uma
   proposta rastreável, o usuário carrega histórico de preços e fundamentos
-  ponto-no-tempo com fonte e data de disponibilidade.
+  datados, com fonte e data de disponibilidade.
 - **Pesquisa e fundo ativo:** executa o backtest, mostra CDI/Ibovespa/MVO e, no
   modo real, o comparativo do fundo CVM escolhido;
 - **Carteira-sombra:** cria a linha-base ou importa um CSV de NAV observado para
@@ -267,9 +354,11 @@ se aplicável, CNPJ do fundo ativo de comparação. A ativação não envia orde
   jamais define pontuações, limites, pesos ou envia ordens. Os sinais de
   alocação são determinísticos e versionados.
 - Sharpe, retorno, CDI e comparações com fundos mostrados pelo sistema são
-  medidas históricas e não meta, previsão ou garantia de superação.
+  medidas históricas e não meta, previsão ou garantia de superação. O Sharpe
+  histórico da regra publicada não sobrevive à correção por 73 tentativas:
+  veja `artifacts/inference_audit/`.
 - A cobertura atual é Brasil/B3. ETFs globais negociados na B3 só entram depois
-  de módulo próprio de transparência e dados ponto-no-tempo.
+  de módulo próprio de transparência e dados datados.
 - Custos Clear/B3 são estimativas versionadas e precisam ser confrontados com a
   nota de corretagem, inclusive em caso de alteração de tabela.
 - Uso comercial, suitability, consultoria ou gestão exigem estrutura regulatória,

@@ -6,10 +6,10 @@
     "equities_at_decision": 361,
     "identifier_bridge_accepted": 311,
     "liquid_equities_examined": 138,
-    "mapped_liquid_equities_processed": 20,
+    "mapped_liquid_equities_processed": 126,
     "fundamental_snapshots": 115,
-    "screened_with_complete_price_history": 111,
-    "eligible_after_screen": 12
+    "screened_with_complete_price_history": 115,
+    "eligible_after_screen": 29
   },
   "method": [
     "universo B3 datado",
@@ -19,39 +19,68 @@
   ],
   "holdings": [
     {
+      "ticker": "DIRR3",
+      "weight": 0.12,
+      "score": 0.8226600985221675,
+      "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
       "ticker": "ABCB4",
       "weight": 0.12,
-      "score": 0.9166666666666666,
+      "score": 0.6798029556650247,
+      "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "PETR4",
+      "weight": 0.12,
+      "score": 0.6748768472906405,
       "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
       "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
     },
     {
       "ticker": "BRSR6",
       "weight": 0.12,
-      "score": 0.7222222222222222,
+      "score": 0.6009852216748769,
       "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
       "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
     },
     {
-      "ticker": "BBDC3",
+      "ticker": "CURY3",
       "weight": 0.12,
-      "score": 0.6805555555555557,
-      "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
-      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
-    },
-    {
-      "ticker": "ITUB3",
-      "weight": 0.12,
-      "score": 0.5972222222222222,
+      "score": 0.5862068965517241,
       "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
       "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
     }
   ],
-  "cdi_weight": 0.52,
+  "cdi_weight": 0.4,
   "monitoring": {
     "through": "2026-08-12",
-    "portfolio_price_return": -0.007896159705808148,
-    "label": "Retorno parcial por preço B3; não inclui proventos e não é comparável ao retorno total histórico."
+    "profiles": {
+      "conservador": {
+        "equity_weight": 0.35,
+        "cdi_weight": 0.65,
+        "equity_price_return": -0.017396968274529412,
+        "cdi_return": 0.08532564247679741,
+        "portfolio_partial_return": 0.04937272871383303
+      },
+      "equilibrado": {
+        "equity_weight": 0.55,
+        "cdi_weight": 0.44999999999999996,
+        "equity_price_return": -0.017396968274529412,
+        "cdi_return": 0.08532564247679741,
+        "portfolio_partial_return": 0.02882820656356766
+      },
+      "arrojado": {
+        "equity_weight": 0.75,
+        "cdi_weight": 0.25,
+        "equity_price_return": -0.017396968274529412,
+        "cdi_return": 0.08532564247679741,
+        "portfolio_partial_return": 0.008283684413302295
+      }
+    },
+    "label": "Resultado parcial: preços de fechamento B3 nas ações e CDI diário do BCB. Ações ainda não incluem proventos."
   },
   "limitations": [
     "Não é recomendação individual ou ordem.",

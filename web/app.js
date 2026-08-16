@@ -1,7 +1,7 @@
 const profiles = {
-  conservador: { equity: 35, issuer: 10, review: "trimestral", mix: [["Ações elegíveis", 35], ["CDI / defensivo", 65]], insight: "A prioridade é preservar margem de segurança. A parcela variável fica limitada e qualquer tese deve justificar o risco adicional." },
-  moderado: { equity: 55, issuer: 12, review: "trimestral", mix: [["Ações elegíveis", 55], ["CDI / defensivo", 45]], insight: "Há espaço para ações que passam no filtro, sem transformar retorno passado em promessa. O CDI preserva flexibilidade para revisar a tese." },
-  arrojado: { equity: 80, issuer: 15, review: "semestral", mix: [["Ações elegíveis", 80], ["CDI / defensivo", 20]], insight: "Aceita maior oscilação, com mais emissores para tornar o limite de renda variável viável sem eliminar diversificação." }
+  conservador: { equity: 35, issuer: 10, review: "anual", mix: [["Ações", 35], ["CDI / defensivo", 65]], insight: "Exposição menor a ações, com cinco emissores e o restante em CDI. O limite do perfil é aplicado antes da otimização." },
+  moderado: { equity: 55, issuer: 17.6, review: "anual", mix: [["Ações", 55], ["CDI / defensivo", 45]], insight: "Até 55% em ações entre cinco emissores. A configuração do ano é escolhida por Sharpe sobre os anos já encerrados, nunca sobre o ano avaliado." },
+  arrojado: { equity: 75, issuer: 15, review: "anual", mix: [["Ações", 75], ["CDI / defensivo", 25]], insight: "Até 75% em ações entre cinco emissores. Com o teto por emissor em 15%, os cinco ficam no limite e a cesta vira peso igual — o que reduz a inclinação para as maiores convicções." }
 };
 
 let researchData = null;
@@ -9,26 +9,27 @@ let forecastData = null;
 let universeData = null;
 let currentDecisionData = null;
 let fundPresetsData = null;
-const comparisonWindows = { 1: 1, 3: 3, 5: 5, 11: 11 };
+let finalStrategyData = null;
+const comparisonWindows = { 1: 1, 2: 2, 3: 3, 5: 5, 11: 11 };
 
 const modelSteps = {
-  policy: { number:"01 · POLÍTICA", title:"A política vem antes do ativo.", text:"O responsável define patrimônio, perfil, horizonte, concentração máxima, limite de renda variável, perda tolerada, custo e frequência de revisão.", uses:"Perfil, horizonte e limites explícitos", blocks:"Pesos que ultrapassem a política", produces:"Uma política versionada por proposta", rule:"<strong>Regra:</strong> sem reconhecimento explícito da política, não há proposta operacional." },
-  data: { number:"02 · DADOS", title:"Uma informação só entra quando era pública.", text:"Cada fundamento tem data contábil e data de divulgação. Preços, liquidez, lote e capitalização têm data e fonte registradas.", uses:"CVM ITR/DFP, BCB e dados de mercado", blocks:"Dados futuros, nulos ou sem fonte", produces:"Pacote de dados da decisão", rule:"<strong>Regra:</strong> o documento divulgado depois da decisão é rejeitado." },
-  screen: { number:"03 · FILTRO", title:"Primeiro eliminar, depois ranquear.", text:"O filtro determinístico busca valor e qualidade. Para não financeiras: caixa, ROIC, dívida e cobertura; para financeiras: ROE e preço sobre valor patrimonial.", uses:"Liquidez, valor, rentabilidade e solvência", blocks:"Ativos frágeis ou com métrica ausente", produces:"Tela de elegibilidade e motivo de bloqueio", rule:"<strong>Regra:</strong> ausência de dado comparável é reprovação, não uma inferência favorável." },
-  optimizer: { number:"04 · OTIMIZAÇÃO", title:"Otimizar não é adivinhar.", text:"Somente os ativos elegíveis entram numa otimização restrita. Os pesos obedecem limites por emissor, exposição a ações e uma reserva residual em CDI.", uses:"Retornos históricos e restrições da política", blocks:"Concentração e ativos reprovados", produces:"Pesos, custos e caixa residual", rule:"<strong>Regra:</strong> uma LLM não define pesos e não pode mudar uma regra rígida." },
+  policy: { number:"01 · POLÍTICA", title:"A política vem antes do ativo.", text:"O responsável define patrimônio, perfil, limite de ações, concentração por emissor, custos e revisão anual.", uses:"Perfil e limites explícitos", blocks:"Pesos acima da política", produces:"Uma política reproduzível", rule:"<strong>Regra:</strong> sem política, não há carteira." },
+  data: { number:"02 · DADOS", title:"A decisão usa somente o passado.", text:"Em janeiro, o motor usa os retornos disponíveis até aquela data e a taxa CDI do período histórico.", uses:"Preços ajustados e CDI", blocks:"Dados posteriores à decisão", produces:"Janela de cálculo registrada", rule:"<strong>Regra:</strong> o retorno do ano não participa da montagem da carteira." },
+  screen: { number:"03 · CINCO EMISSORES", title:"Diversificação mínima explícita.", text:"O motor escolhe cinco emissores distintos com retorno histórico disponível. Classes diferentes do mesmo emissor não contam duas vezes.", uses:"Retorno médio histórico e vínculo de emissor", blocks:"Menos de cinco emissores comparáveis", produces:"Universo MVO da revisão", rule:"<strong>Regra:</strong> se não houver cinco emissores, a carteira não é formada." },
+  optimizer: { number:"04 · OTIMIZADOR", title:"Pesos por retorno e risco históricos.", text:"O MVO distribui os pesos dos cinco emissores dentro do teto de ações e de concentração do perfil; CDI recebe o saldo.", uses:"Médias, covariâncias, custos e limites", blocks:"Concentração acima do teto", produces:"Pesos e custo de rebalanceamento", rule:"<strong>Regra:</strong> a seleção dos cinco emissores é o único grau de liberdade; o MVO de referência otimiza o universo elegível inteiro e serve de comparação independente." },
   review: { number:"05 · REVISÃO", title:"O resultado é uma proposta, não uma ordem.", text:"A instituição revisa tese, riscos, pesos e custos. Se decidir implementar, registra a operação e confere a nota de corretagem depois.", uses:"Proposta, evidências e custo estimado", blocks:"Execução automática", produces:"Carteira-sombra e registro de decisão", rule:"<strong>Regra:</strong> resultados prospectivos ficam separados do backtest histórico." }
 };
 
 let currentProfile = "moderado";
 let selectedCurves = new Set();
-const extraSeries = { 1: {}, 3: {}, 5: {}, 11: {} };
+const extraSeries = { 1: {}, 2: {}, 3: {}, 5: {}, 11: {} };
 const addedSeries = new Map();
 let chartSource = "ticker";
 let chartZoom = 1;
 let chartFocus = null;
 let chartScale = "linear";
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
-const colors = { "Benevente Quant AI":"#0f766e", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "Ibovespa":"#7a8490" };
+const colors = { "Benevente":"#0f766e","Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490", "BOVA11":"#4a5560" };
 const extraColors = ["#9c4f2a", "#7856a3", "#b87418", "#2a7c91"];
 const formatDateBr = value => {
   const date = new Date(`${String(value).slice(0, 10)}T12:00:00`);
@@ -40,38 +41,86 @@ function annualCurve(period) {
   const rows = researchData.annual.slice(-comparisonWindows[period]);
   if (!rows.length) return null;
   const dates = [rows[0].decision_date, ...rows.map(item => item.holding_end_exclusive)];
-  const series = { "Benevente Quant AI": [100], "MVO clássico (elegível)": [100], CDI: [100] };
-  rows.forEach(item => {
-    series["Benevente Quant AI"].push(+(series["Benevente Quant AI"].at(-1) * (1 + item.net_return)).toFixed(4));
-    series["MVO clássico (elegível)"].push(+(series["MVO clássico (elegível)"].at(-1) * (1 + item.mvo_eligible_net_return)).toFixed(4));
-    series.CDI.push(+(series.CDI.at(-1) * (1 + item.cdi_net_return)).toFixed(4));
+  // Every track is compounded on the same decision dates. The MVO reference is
+  // now an independent optimisation over the eligible universe, and the market
+  // references come from the run itself instead of a separately aligned blob.
+  const tracks = {
+    "Benevente Quant AI": "net_return",
+    "Benevente após IR": "net_return_after_tax",
+    "MVO de referência": "mvo_eligible_net_return",
+    "CDI": "cdi_net_return",
+    "CDI após IR": "cdi_net_return_after_tax",
+    "Ibovespa": "benchmark_IBOVESPA",
+    "BOVA11": "benchmark_BOVA11",
+  };
+  const series = {};
+  Object.entries(tracks).forEach(([name, column]) => {
+    if (!rows.every(item => Number.isFinite(Number(item[column])))) return;
+    series[name] = [100];
+    rows.forEach(item => series[name].push(+(series[name].at(-1) * (1 + Number(item[column]))).toFixed(4)));
   });
-  const ibovespa = researchData.meta.ibovespa;
-  const fullDates = ibovespa?.dates || [];
-  const startIndex = fullDates.indexOf(dates[0]);
-  if (startIndex >= 0 && ibovespa?.values_base_100?.length >= startIndex + dates.length && fullDates.slice(startIndex, startIndex + dates.length).every((date, index) => date === dates[index])) {
-    const window = ibovespa.values_base_100.slice(startIndex, startIndex + dates.length);
-    series[ibovespa.label] = window.map(value => +(value / window[0] * 100).toFixed(4));
-  }
   return { dates, series };
 }
+// Month ends of the exact daily book value. Eleven January points could not
+// show a drawdown or when a year turned; the raw daily series reads as a smear
+// at page width. Roughly a hundred monthly points is the readable middle.
+function monthlyDataset(period) {
+  const curve = researchData?.monthly_curve;
+  const years = comparisonWindows[period];
+  if (!curve?.dates?.length || !years) return null;
+  const last = new Date(`${curve.dates.at(-1)}T12:00:00`);
+  const cutoff = new Date(last);
+  cutoff.setFullYear(cutoff.getFullYear() - years);
+  let start = curve.dates.findIndex(date => new Date(`${date}T12:00:00`) >= cutoff);
+  if (start < 0) start = 0;
+  if (curve.dates.length - start < 3) start = Math.max(0, curve.dates.length - 3);
+  const dates = curve.dates.slice(start);
+  const series = {};
+  Object.entries(curve.series).forEach(([name, values]) => {
+    const window = values.slice(start);
+    const base = window.find(value => Number.isFinite(value) && value > 0);
+    if (base) series[name] = window.map(value => Number.isFinite(value) ? +(value / base * 100).toFixed(4) : null);
+  });
+  return Object.keys(series).length ? { dates, series, granularity: "monthly" } : null;
+}
+
+// Catmull-Rom through the points, converted to cubic Bezier. Control points are
+// clamped inside each segment's own range so a smooth curve never invents a
+// peak or a trough the data does not contain.
+function smoothPath(points) {
+  if (points.length < 2) return "";
+  if (points.length === 2) return `M${points[0].x},${points[0].y} L${points[1].x},${points[1].y}`;
+  const clamp = (value, a, b) => Math.min(Math.max(value, Math.min(a, b)), Math.max(a, b));
+  let path = `M${points[0].x.toFixed(2)},${points[0].y.toFixed(2)}`;
+  for (let index = 0; index < points.length - 1; index += 1) {
+    const p0 = points[index - 1] || points[index];
+    const p1 = points[index];
+    const p2 = points[index + 1];
+    const p3 = points[index + 2] || p2;
+    const c1x = p1.x + (p2.x - p0.x) / 6;
+    const c1y = clamp(p1.y + (p2.y - p0.y) / 6, p1.y, p2.y);
+    const c2x = p2.x - (p3.x - p1.x) / 6;
+    const c2y = clamp(p2.y - (p3.y - p1.y) / 6, p1.y, p2.y);
+    path += ` C${c1x.toFixed(2)},${c1y.toFixed(2)} ${c2x.toFixed(2)},${c2y.toFixed(2)} ${p2.x.toFixed(2)},${p2.y.toFixed(2)}`;
+  }
+  return path;
+}
+
 function profileDataset(period) {
+  const monthly = monthlyDataset(period);
+  if (monthly) return monthly;
   const profileCurve = researchData?.profile_curves?.[activeProfileKey()];
   if (!profileCurve || !comparisonWindows[period]) return annualCurve(period);
   const keep = Math.min(comparisonWindows[period] + 1, profileCurve.dates.length);
   const dates = profileCurve.dates.slice(-keep);
-  const series = Object.fromEntries(Object.entries(profileCurve.series).map(([name, values]) => [name, values.slice(-keep)]));
-  const ibovespa = researchData?.meta?.ibovespa;
-  const startIndex = ibovespa?.dates?.indexOf(dates[0]) ?? -1;
-  if (startIndex >= 0 && ibovespa?.values_base_100?.length >= startIndex + dates.length
-    && ibovespa.dates.slice(startIndex, startIndex + dates.length).every((date, index) => date === dates[index])) {
-    const window = ibovespa.values_base_100.slice(startIndex, startIndex + dates.length);
-    series[ibovespa.label] = window.map(value => +(value / window[0] * 100).toFixed(4));
-  }
-  return {
-    dates,
-    series,
-  };
+  // Each track is rebased to 100 on the first date of the selected window so
+  // the comparison never mixes starting points.
+  const series = Object.fromEntries(Object.entries(profileCurve.series).map(([name, values]) => {
+    const window = values.slice(-keep);
+    const base = window[0];
+    return [name, Number.isFinite(base) && base > 0 ? window.map(value => +(value / base * 100).toFixed(4)) : window];
+  }));
+  return { dates, series };
 }
 function seriesFor(period) {
   const base = profileDataset(period);
@@ -141,6 +190,10 @@ function activeProfileKey() {
   return ({ conservador: "conservador", moderado: "equilibrado", arrojado: "arrojado" })[currentProfile] || "equilibrado";
 }
 
+function activeProfileLabel() {
+  return ({ conservador: "Conservador", moderado: "Equilibrado", arrojado: "Arrojado" })[currentProfile] || "Equilibrado";
+}
+
 function activePolicy() {
   const policy = profiles[currentProfile];
   return {
@@ -160,7 +213,7 @@ function renderProfileHistory() {
   if (!container || !researchData) return;
   const rows = activeProfileRows();
   if (!rows.length) { container.innerHTML = ""; return; }
-  const label = ({ conservador: "Conservador", moderado: "Equilibrado", arrojado: "Arrojado" })[currentProfile];
+  const label = activeProfileLabel();
   container.innerHTML = `<div class="profile-history-head"><div><span class="control-label">HISTÓRICO DA POLÍTICA</span><b>${label}</b><small>Resultado líquido de cada cesta anual congelada antes do período.</small></div><span>${rows.length} anos completos</span></div><div class="profile-year-grid">${rows.map(row => `<button type="button" class="profile-year ${String(selectedAnnualDecision()?.decision_year) === String(row.decision_year) ? "active" : ""}" data-year="${row.decision_year}"><small>${row.decision_year}</small><b>${pct(row.net_return)}</b><span>MVO ${pct(row.mvo_eligible_net_return)} · CDI ${pct(row.cdi_net_return)}</span></button>`).join("")}</div>`;
   container.querySelectorAll(".profile-year").forEach(button => button.addEventListener("click", () => {
     document.querySelector("#decision-year").value = button.dataset.year;
@@ -189,7 +242,7 @@ function renderAssetWorkbench() {
   const equities = holdings.filter(item => item.ticker !== "TITULO_CDI");
   const equityWeight = equities.reduce((sum, item) => sum + item.weight, 0);
   const transitionByTicker = Object.fromEntries(transitions.map(item => [item.ticker, item]));
-  document.querySelector("#dossier-policy").textContent = `Regra anual de ${String(researchData.meta.strategy || "valor e qualidade").toLowerCase()}. Até ${plainPct(decision.target_equity_weight)} em renda variável e ${plainPct(researchData.meta.protocol.maximum_asset_weight)} por emissor. O retorno foi apurado depois de ${formatDateBr(decision.decision_date)} e não influenciou a escolha.`;
+  document.querySelector("#dossier-policy").textContent = `Benevente Wealth System · ${activeProfileLabel()}. Cinco ações no mínimo, até ${plainPct(decision.target_equity_weight)} em renda variável e ${plainPct(researchData.meta.protocol.maximum_asset_weight)} por emissor. O retorno foi apurado depois de ${formatDateBr(decision.decision_date)} e não influenciou a escolha.`;
   const coverage = researchData.meta.coverage;
   const source = researchData.meta.source_tier === "public_reproducible_research" ? "fonte pública de pesquisa" : "fonte qualificada";
   const series = coverage.price_tickers ? `${coverage.price_tickers.toLocaleString("pt-BR")} séries ajustadas` : "séries ajustadas";
@@ -216,8 +269,6 @@ function refreshDecisionStudio() {
   renderAssetWorkbench();
   renderProfileHistory();
   renderComparison(currentPeriod);
-  renderCurrentDecision();
-  renderForecast();
 }
 
 function pctPlain(value) { return Number.isFinite(value) ? `${(value * 100).toLocaleString("pt-BR", {maximumFractionDigits: 1})}%` : "—"; }
@@ -254,29 +305,30 @@ function renderCurrentDecision() {
   if (!currentDecisionData) return;
   const { universe, holdings, monitoring, decision_date: date } = currentDecisionData;
   const policy = activePolicy();
+  const hasMinimumDiversification = holdings.length >= 5;
   const requestedEquity = Math.min(policy.equity / 100, 1);
   const feasibleEquity = Math.min(requestedEquity, holdings.length * policy.issuer / 100);
-  const visibleHoldings = holdings.map(asset => ({ ...asset, weight: feasibleEquity / holdings.length })).filter(asset => asset.weight > .0001);
+  const visibleHoldings = hasMinimumDiversification ? holdings.map(asset => ({ ...asset, weight: feasibleEquity / holdings.length })).filter(asset => asset.weight > .0001) : [];
   const cdiWeight = Math.max(0, 1 - visibleHoldings.reduce((sum, asset) => sum + asset.weight, 0));
   const capital = Number(document.querySelector("#wealth")?.value) || 0;
-  const priceReturn = monitoring?.portfolio_price_return;
+  const monitoringProfile = monitoring?.profiles?.[activeProfileKey()];
+  const partialReturn = monitoringProfile?.portfolio_partial_return;
   const profileName = ({ conservador: "Conservadora", moderado: "Equilibrada", arrojado: "Arrojada" })[currentProfile] || "Equilibrada";
   const requestedLabel = ({ conservador: "Conservador", moderado: "Equilibrado", arrojado: "Arrojado" })[currentProfile] || "Equilibrado";
-  const hasComparableMonitoring = currentProfile === "moderado";
-  document.querySelector("#current-decision-heading").innerHTML = `Carteira ${profileName}<br /><em>em janeiro de 2026.</em>`;
-  document.querySelector("#current-decision-intro").textContent = `Triagem feita em ${formatDateBr(date)}, com dados públicos, liquidez e concentração. A IA explica a decisão; pesos e critérios seguem a regra.`;
-  document.querySelector("#current-decision-label").textContent = `CARTEIRA-CANDIDATA · ${requestedLabel.toUpperCase()}`;
+  document.querySelector("#current-decision-heading").innerHTML = `Prévia de janeiro<br /><em>de 2026.</em>`;
+  document.querySelector("#current-decision-intro").textContent = hasMinimumDiversification ? `A prévia usa a mesma triagem histórica do Benevente Wealth System, antes do período acompanhado.` : `A política exige ao menos cinco ações. A triagem de ${formatDateBr(date)} encontrou apenas ${holdings.length} com cobertura completa, por isso nenhuma carteira é sugerida.`;
+  document.querySelector("#current-decision-label").textContent = hasMinimumDiversification ? `PRÉVIA · ${requestedLabel.toUpperCase()}` : "PRÉVIA BLOQUEADA";
   document.querySelector("#current-decision-summary").innerHTML = [
     ["DECISÃO", formatDateBr(date)],
-    ["AÇÕES", pctPlain(1 - cdiWeight)],
-    ["RESULTADO PARCIAL", hasComparableMonitoring && Number.isFinite(priceReturn) ? signedScenario(priceReturn) : "Indisponível"],
+    ["AÇÕES", hasMinimumDiversification ? pctPlain(1 - cdiWeight) : "Mínimo não atingido"],
+    ["RESULTADO PARCIAL", hasMinimumDiversification && Number.isFinite(partialReturn) ? signedScenario(partialReturn) : "Não calculado"],
   ].map(([label, value]) => `<div><small>${label}</small><b>${value}</b></div>`).join("");
-  document.querySelector("#current-decision-assets").innerHTML = [...visibleHoldings.map(asset => `<article class="suggestion-asset"><div class="suggestion-row"><div><small>ATIVO SELECIONADO</small><b>${asset.ticker}</b></div><div><small>PESO · ${money.format(capital * asset.weight)}</small><strong>${pctPlain(asset.weight)}</strong></div></div><p>${asset.why}</p></article>`), cdiWeight > .0001 ? `<article class="suggestion-asset"><div class="suggestion-row"><div><small>RESERVA DEFENSIVA</small><b>CDI</b></div><div><small>PESO · ${money.format(capital * cdiWeight)}</small><strong>${pctPlain(cdiWeight)}</strong></div></div><p>Reserva resultante do teto de renda variável da política selecionada.</p></article>` : ""].join("");
+  document.querySelector("#current-decision-assets").innerHTML = hasMinimumDiversification ? [...visibleHoldings.map(asset => `<article class="suggestion-asset"><div class="suggestion-row"><div><small>ATIVO SELECIONADO</small><b>${asset.ticker}</b></div><div><small>PESO · ${money.format(capital * asset.weight)}</small><strong>${pctPlain(asset.weight)}</strong></div></div><p>${asset.why}</p></article>`), cdiWeight > .0001 ? `<article class="suggestion-asset"><div class="suggestion-row"><div><small>RESERVA DEFENSIVA</small><b>CDI</b></div><div><small>PESO · ${money.format(capital * cdiWeight)}</small><strong>${pctPlain(cdiWeight)}</strong></div></div><p>Reserva resultante do teto de renda variável da política selecionada.</p></article>` : ""].join("") : `<article class="suggestion-asset"><div class="suggestion-row"><div><small>CONTROLE DE DIVERSIFICAÇÃO</small><b>Carteira não formada</b></div><div><small>EXIGIDO</small><strong>5 ações</strong></div></div><p>Foram encontradas ${holdings.length} ações com dados completos. O Benevente não completa a carteira com nomes sem a mesma cobertura apenas para exibir uma sugestão.</p></article>`;
   const feasibility = feasibleEquity < requestedEquity ? ` Com os ${holdings.length} ativos processados nesta prévia, a exposição atingida é ${pctPlain(feasibleEquity)}; o restante fica em CDI.` : "";
-  const monitoringText = hasComparableMonitoring
-    ? ` Até ${formatDateBr(monitoring?.through || date)}: ${monitoring?.label || "resultado parcial indisponível"}.`
-    : " O resultado parcial está disponível apenas para os pesos do perfil Equilibrado; o site não reaproveita esse número para outro perfil.";
-  document.querySelector("#current-decision-caption").textContent = `Perfil ${requestedLabel}: teto de ${policy.equity}% em renda variável e ${policy.issuer}% por emissor. Os pesos da candidata refletem esse perfil.${feasibility}${monitoringText}`;
+  const monitoringText = hasMinimumDiversification && Number.isFinite(partialReturn)
+    ? ` Até ${formatDateBr(monitoring?.through || date)}: ações ${signedScenario(monitoringProfile.equity_price_return)}, CDI ${signedScenario(monitoringProfile.cdi_return)} e carteira ${signedScenario(partialReturn)}. ${monitoring?.label || ""}`
+    : " Aguardando preços e CDI suficientes para calcular a carteira deste perfil.";
+  document.querySelector("#current-decision-caption").textContent = hasMinimumDiversification ? `Prévia de pesquisa. Perfil ${requestedLabel}: teto de ${policy.equity}% em renda variável e ${policy.issuer}% por emissor.${feasibility}${monitoringText}` : `Prévia bloqueada: são necessárias cinco ações com dados comparáveis. O monitoramento parcial não é exibido como desempenho de uma carteira que não foi formada.`;
 }
 
 function moneyCompact(value) { return new Intl.NumberFormat("pt-BR", {style:"currency",currency:"BRL",notation:"compact",maximumFractionDigits:1}).format(value || 0); }
@@ -308,7 +360,7 @@ function renderUniverse() {
 }
 
 const wealth = document.querySelector("#wealth"), wealthOut = document.querySelector("#wealth-output");
-wealth.addEventListener("input", () => { wealthOut.value = money.format(wealth.value); renderCurrentDecision(); });
+wealth.addEventListener("input", () => { wealthOut.value = money.format(wealth.value); });
 document.querySelectorAll(".choice").forEach(button => button.addEventListener("click", () => {
   document.querySelectorAll(".choice").forEach(item => item.classList.remove("active"));
   button.classList.add("active"); currentProfile = button.dataset.profile;
@@ -335,18 +387,22 @@ document.querySelector("#proposal-form").addEventListener("submit", event => {
     : " A exposição é um teto de política, não uma meta ou previsão de retorno.";
   document.querySelector("#proposal-empty").classList.add("hidden");
   document.querySelector("#proposal-content").classList.remove("hidden");
-  document.querySelector("#profile-label").textContent = currentProfile === "moderado" ? "equilibrado" : currentProfile;
+  document.querySelector("#profile-label").textContent = activeProfileLabel();
   document.querySelector("#equity-weight").textContent = `${safeEquity}%`;
   document.querySelector("#fixed-weight").textContent = `${100-safeEquity}%`;
   document.querySelector("#review-cycle").textContent = profile.review;
-  document.querySelector("#proposal-insight").textContent = profile.insight + capNote + (requestedEquity === 100 ? " Sem reserva defensiva, a política precisa de validação reforçada de liquidez e tolerância a perda." : "");
-  document.querySelector("#weight-list").innerHTML = mix.map(([name, weight]) => `<div class="weight-row"><span>${name}</span><div class="bar"><i style="width:${weight}%"></i></div><b>${weight}%</b></div>`).join("");
+  document.querySelector("#proposal-insight").textContent = `Benevente Wealth System usa a mesma triagem anual em todos os perfis: qualidade, valor, momento e liquidez. A cesta contém ao menos cinco ações; ativos que continuam elegíveis podem permanecer, reduzindo trocas sem justificativa.`;
+  document.querySelector("#weight-list").innerHTML = [["Ações selecionadas", safeEquity], ["CDI", 100 - safeEquity]].map(([name, weight]) => `<div class="weight-row"><span>${name}</span><div class="bar"><i style="width:${weight}%"></i></div><b>${weight}%</b></div>`).join("");
   refreshDecisionStudio();
 });
 
 function renderCurveToggles(period) {
   const series = seriesFor(period), names = Object.keys(series);
-  if (!selectedCurves.size || [...selectedCurves].some(name => !names.includes(name))) selectedCurves = new Set(names);
+  // The after-tax pair stays available but off by default: seven lines at once
+  // is unreadable, and the gross series are the ones the benchmarks match.
+  if (!selectedCurves.size || [...selectedCurves].some(name => !names.includes(name))) {
+    selectedCurves = new Set(names.filter(name => !name.includes("após IR")));
+  }
   document.querySelector("#curve-toggles").innerHTML = names.map((name, index) => `<button type="button" class="curve-toggle ${selectedCurves.has(name) ? "active" : ""}" data-kind="${name}" style="--series-color:${seriesColor(name, index)}"><i></i>${name}</button>`).join("");
   document.querySelectorAll(".curve-toggle").forEach(button => button.addEventListener("click", () => {
     const name = button.dataset.kind;
@@ -374,7 +430,7 @@ function renderLineChart(period) {
   const rawMin = Math.min(...transformedValues), rawMax = Math.max(...transformedValues);
   const min = chartScale === "log" ? rawMin : Math.floor(rawMin / 25) * 25;
   const max = chartScale === "log" ? rawMax : Math.ceil(rawMax / 25) * 25;
-  const width=900, height=410, left=54, right=144, top=18, bottom=38, plotW=width-left-right, plotH=height-top-bottom;
+  const width=900, height=410, left=54, right=28, top=18, bottom=38, plotW=width-left-right, plotH=height-top-bottom;
   const x = index => left + index * plotW / Math.max(dates.length - 1, 1);
   const y = value => top + (max - transformed(value)) * plotH / Math.max(max-min, .0001);
   const grid = Array.from({length:5}, (_, index) => min + index * (max-min) / 4).map(value => {
@@ -382,18 +438,42 @@ function renderLineChart(period) {
     const yPosition = top + (max - value) * plotH / Math.max(max-min, .0001);
     return `<line class="line-grid" x1="${left}" x2="${width-right}" y1="${yPosition}" y2="${yPosition}"/><text class="line-grid-label" x="4" y="${yPosition + 3}">${(rawValue - 100).toLocaleString("pt-BR", {maximumFractionDigits:0})}%</text>`;
   }).join("");
-  const dateLabels = [0, Math.floor((dates.length-1)/2), dates.length-1].map(index => `<text class="line-grid-label" text-anchor="${index===0?"start":index===dates.length-1?"end":"middle"}" x="${x(index)}" y="${height-5}">${formatDateBr(dates[index])}</text>`).join("");
+  // One tick per year when the window is long, otherwise per observation. A
+  // three-label axis made it impossible to tell which year a move belonged to.
+  const tickIndexes = [];
+  let lastLabelYear = null;
+  dates.forEach((date, index) => {
+    const year = String(date).slice(0, 4);
+    if (year !== lastLabelYear) { tickIndexes.push(index); lastLabelYear = year; }
+  });
+  if (!tickIndexes.includes(dates.length - 1)) tickIndexes.push(dates.length - 1);
+  const dense = tickIndexes.length > 9;
+  const dateLabels = tickIndexes.filter((_, position) => !dense || position % 2 === 0 || position === tickIndexes.length - 1)
+    .map(index => {
+      const anchor = index === 0 ? "start" : index === dates.length - 1 ? "end" : "middle";
+      const label = dates.length > 24 ? String(dates[index]).slice(0, 4) : formatDateBr(dates[index]);
+      return `<line class="line-grid" x1="${x(index)}" x2="${x(index)}" y1="${top}" y2="${height - bottom}" opacity=".45"/>`
+        + `<text class="line-grid-label" text-anchor="${anchor}" x="${x(index)}" y="${height-5}">${label}</text>`;
+    }).join("");
+  const strategyName = selected.find(name => name.startsWith("Benevente"));
   lineLayer.innerHTML = selected.map((name, seriesIndex) => {
-    let active = false;
-    const path = visibleSeries[name].map((value,index) => { if (!Number.isFinite(value)) { active = false; return ""; } const command = active ? "L" : "M"; active = true; return `${command}${x(index).toFixed(2)},${y(value).toFixed(2)}`; }).join(" ");
-    return `<path class="line-path" data-series="${name}" stroke="${seriesColor(name, seriesIndex)}" d="${path}"/>`;
+    const runs = [];
+    let current = [];
+    visibleSeries[name].forEach((value, index) => {
+      if (!Number.isFinite(value)) { if (current.length) runs.push(current); current = []; return; }
+      current.push({ x: x(index), y: y(value) });
+    });
+    if (current.length) runs.push(current);
+    const path = runs.map(smoothPath).join(" ");
+    const reference = name === "MVO anual" || name === "MVO de referência";
+    const area = name === strategyName && runs.length === 1 && runs[0].length > 1
+      ? `<path class="line-area" fill="${seriesColor(name, seriesIndex)}" d="${smoothPath(runs[0])} L${runs[0].at(-1).x.toFixed(2)},${height - bottom} L${runs[0][0].x.toFixed(2)},${height - bottom} Z"/>`
+      : "";
+    return `${area}<path class="line-path ${reference ? "mvo-reference" : ""}" data-series="${name}" stroke="${seriesColor(name, seriesIndex)}" d="${path}"/>`;
   }).join("");
-  directLabelLayer.innerHTML = selected.map((name, seriesIndex) => {
-    const series = visibleSeries[name], lastIndex = series.reduce((result, value, index) => Number.isFinite(value) ? index : result, -1);
-    if (lastIndex < 0) return "";
-    const returnPct = (series[lastIndex] / 100 - 1) * 100;
-    return `<g class="line-direct-label"><circle cx="${x(lastIndex)}" cy="${y(series[lastIndex])}" r="4" fill="${seriesColor(name, seriesIndex)}"/><text x="${x(lastIndex) + 9}" y="${y(series[lastIndex]) - 5}" fill="${seriesColor(name, seriesIndex)}">${name}</text><text x="${x(lastIndex) + 9}" y="${y(series[lastIndex]) + 11}" fill="#607480">${returnPct >= 0 ? "+" : ""}${returnPct.toLocaleString("pt-BR", {maximumFractionDigits:1})}%</text></g>`;
-  }).join("");
+  // The legend and return chips carry the labels. End labels overlap when
+  // funds, benchmarks and user-selected assets converge at the same point.
+  directLabelLayer.innerHTML = "";
   gridLayer.innerHTML = grid; labelLayer.innerHTML = `${dateLabels}<text class="line-axis-title" x="15" y="${top + plotH / 2}" transform="rotate(-90 15 ${top + plotH / 2})">Retorno acumulado (%)</text><text class="line-axis-title" text-anchor="middle" x="${left + plotW / 2}" y="${height - 1}">Data de observação</text>`;
   document.querySelector("#chart-return-summary").innerHTML = selected.map((name, index) => {
     const series = allSeries[name].slice(startIndex, endIndex);
@@ -404,13 +484,24 @@ function renderLineChart(period) {
   }).join("");
   const start = dates[0], end = dates.at(-1);
   document.querySelector("#chart-zoom-status").textContent = chartZoom === 1 ? "Visão completa" : `${dates.length} pontos visíveis`;
-  document.querySelector("#line-chart-caption").textContent = `${selected.length} série(s) visível(is) · ${formatDateBr(start)} a ${formatDateBr(end)} · retorno acumulado em %. Escala ${chartScale === "log" ? "logarítmica" : "linear"}. Use a roda do mouse para ampliar e arraste para deslocar.`;
+  const granularity = data.granularity === "monthly"
+    ? `${dates.length} pontos mensais (valor exato da carteira no fim de cada mês)`
+    : `${dates.length} pontos anuais`;
+  document.querySelector("#line-chart-caption").textContent = `${selected.length} série(s) · ${granularity} · ${formatDateBr(start)} a ${formatDateBr(end)} · retorno acumulado em %. Escala ${chartScale === "log" ? "logarítmica" : "linear"}. Roda do mouse amplia, arraste desloca.`;
   const inspect = event => {
     const rect = event.currentTarget.getBoundingClientRect();
     const viewX = (event.clientX - rect.left) * width / rect.width;
     const index = Math.max(0, Math.min(dates.length - 1, Math.round((viewX - left) / plotW * (dates.length - 1))));
     const cursor = document.querySelector("#line-chart-cursor"); cursor.classList.remove("hidden"); cursor.setAttribute("x1", x(index)); cursor.setAttribute("x2", x(index)); cursor.setAttribute("y1", top); cursor.setAttribute("y2", height-bottom);
-    document.querySelector("#chart-inspector").innerHTML = `<b>${formatDateBr(dates[index])}</b> · ${selected.map(name => `${name}: <b>${Number.isFinite(visibleSeries[name][index]) ? pct(visibleSeries[name][index] / visibleSeries[name].find(Number.isFinite) - 1) : "—"}</b>`).join(" &nbsp;|&nbsp; ")}`;
+    const readings = selected.map((name, order) => {
+      const value = visibleSeries[name][index];
+      const base = visibleSeries[name].find(Number.isFinite);
+      const text = Number.isFinite(value) ? pct(value / base - 1) : "—";
+      return { name, text, value: Number.isFinite(value) ? value / base : -Infinity, color: seriesColor(name, order) };
+    }).sort((first, second) => second.value - first.value);
+    document.querySelector("#chart-inspector").innerHTML =
+      `<b>${formatDateBr(dates[index])}</b>` + readings.map(item =>
+        `<span class="inspector-item" style="--series-color:${item.color}"><i></i>${item.name} <strong>${item.text}</strong></span>`).join("");
   };
   const chart = document.querySelector("#line-chart");
   let dragStart = null;
@@ -431,16 +522,34 @@ function renderComparison(period) {
   refreshExtraSeriesForPeriod(period);
   const length = comparisonWindows[period];
   const rows = activeProfileRows().slice(-length);
-  const benevente = wealthStats(rows.map(item => item.net_return));
-  const mvo = wealthStats(rows.map(item => item.mvo_eligible_net_return));
-  const cdi = wealthStats(rows.map(item => item.cdi_net_return));
-  const winCdi = rows.filter(item => item.net_return > item.cdi_net_return).length;
-  const winMvo = rows.filter(item => item.net_return > item.mvo_eligible_net_return).length;
+  const statsFor = column => rows.every(item => Number.isFinite(Number(item[column])))
+    ? wealthStats(rows.map(item => Number(item[column]))) : null;
+  const winsAgainst = (column, strategyColumn = "net_return") =>
+    rows.filter(item => Number(item[strategyColumn]) > Number(item[column])).length;
+  const benevente = statsFor("net_return");
+  const mvo = statsFor("mvo_eligible_net_return");
+  const cdi = statsFor("cdi_net_return");
+  const afterTax = statsFor("net_return_after_tax");
+  const cdiAfterTax = statsFor("cdi_net_return_after_tax");
+  const ibovespa = statsFor("benchmark_IBOVESPA");
+  const bova = statsFor("benchmark_BOVA11");
+  const winCdi = winsAgainst("cdi_net_return");
+  const winMvo = winsAgainst("mvo_eligible_net_return");
+  const winMarket = bova ? winsAgainst("benchmark_BOVA11") : null;
   const start = rows[0].decision_date, end = rows.at(-1).holding_end_exclusive;
   const versusCdi = benevente.cumulative - cdi.cumulative, versusMvo = benevente.cumulative - mvo.cumulative;
-  document.querySelector("#period-description").textContent = `${formatDateBr(start)} a ${formatDateBr(end)} · ${rows.length} decisões anuais com custos deduzidos.`;
-  document.querySelector("#comparison-summary").textContent = `Benevente ${plainPct(benevente.cumulative)} acumulado. Diferença para CDI ${pct(versusCdi)}. Diferença para MVO clássico ${pct(versusMvo)}.`;
-  const baseRows = [["Benevente Quant AI", benevente, versusMvo >= 0 ? "Acima do MVO" : "Abaixo do MVO"], ["MVO clássico (elegível)", mvo, "Mesmo universo"], ["CDI", cdi, "Reserva defensiva"]];
+  document.querySelector("#period-description").textContent = `${formatDateBr(start)} a ${formatDateBr(end)} · ${rows.length} decisões anuais com custos e imposto deduzidos.`;
+  const marketPhrase = winMarket === null ? "" : ` Contra o BOVA11, venceu ${winMarket} de ${rows.length}.`;
+  document.querySelector("#comparison-summary").textContent = `Benevente ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
+  const baseRows = [
+    ["Benevente", benevente, "Carteira publicada"],
+    afterTax ? ["Benevente após IR", afterTax, "Líquida de imposto"] : null,
+    ["MVO de referência", mvo, "Otimização neutra independente"],
+    ["CDI", cdi, "Referência defensiva"],
+    cdiAfterTax ? ["CDI após IR", cdiAfterTax, "Referência defensiva líquida"] : null,
+    ibovespa ? ["Ibovespa", ibovespa, "Índice de retorno total da B3"] : null,
+    bova ? ["BOVA11", bova, "Comprar o mercado, investível"] : null,
+  ].filter(Boolean);
   const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => {
     const metrics = metricsForSeries(values, profileDataset(period).dates);
     const firstAvailable = values.findIndex(value => Number.isFinite(Number(value)));
@@ -448,7 +557,8 @@ function renderComparison(period) {
     return metrics ? [name, { cumulative: values.at(-1) / values.find(Number.isFinite) - 1, cagr: metrics.cagr }, note] : null;
   }).filter(Boolean);
   document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${name}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td>${note}</td></tr>`).join("");
-  document.querySelector("#research-note").textContent = `Na janela de ${rows.length} ano(s), o Benevente ${versusCdi >= 0 ? "superou" : "ficou abaixo do"} CDI em ${plainPct(Math.abs(versusCdi))} e ${versusMvo >= 0 ? "superou" : "ficou abaixo do"} MVO clássico em ${plainPct(Math.abs(versusMvo))}. Não é garantia de retorno.`;
+  const marketNote = bova ? ` Contra o BOVA11, ${pct(benevente.cumulative - bova.cumulative)}.` : "";
+  document.querySelector("#research-note").textContent = `Janela de ${rows.length} ano(s): diferença para o CDI ${pct(versusCdi)} e para o MVO de referência ${pct(versusMvo)}.${marketNote} O MVO de referência é uma otimização independente sobre o mesmo universo elegível, não uma cópia da carteira. Período usado para desenvolver a regra: não é teste fora da amostra.`;
   renderCurveToggles(period); renderLineChart(period);
 }
 let currentPeriod = "3";
@@ -554,10 +664,9 @@ function renderModel(step) { const item=modelSteps[step]; document.querySelector
 document.querySelectorAll(".model-step").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".model-step").forEach(item=>item.classList.remove("active"));button.classList.add("active");renderModel(button.dataset.step)}));
 
 renderModel("policy");
-Promise.all([fetch("./annual_research.json"), fetch("./forecast_research.json"), fetch("./b3_universe.json"), fetch("./current_decision_2026.json"), fetch("./fund_presets.json")]).then(async ([research, forecast, universe, currentDecision, fundPresets]) => {
-  if (!research.ok || !forecast.ok || !universe.ok || !currentDecision.ok || !fundPresets.ok) throw new Error("research unavailable");
-  researchData = await research.json(); forecastData = await forecast.json(); universeData = await universe.json(); currentDecisionData = await currentDecision.json(); fundPresetsData = await fundPresets.json();
-  extraSeries[1] = {}; extraSeries[3] = {}; extraSeries[5] = {}; extraSeries[11] = {};
+Promise.all([fetch("./annual_research.json"), fetch("./fund_presets.json")]).then(async ([research, fundPresets]) => {
+  if (!research.ok || !fundPresets.ok) throw new Error("research unavailable");
+  researchData = await research.json(); fundPresetsData = await fundPresets.json();
+  extraSeries[1] = {}; extraSeries[2] = {}; extraSeries[3] = {}; extraSeries[5] = {}; extraSeries[11] = {};
   document.querySelector("#proposal-form").requestSubmit();
-  renderUniverse();
 }).catch(() => { document.querySelector("#line-chart-caption").textContent = "Arquivos de pesquisa indisponíveis nesta cópia. Consulte o ambiente local para reproduzir a análise."; document.querySelector("#research-status").textContent = "Dados de pesquisa indisponíveis."; });

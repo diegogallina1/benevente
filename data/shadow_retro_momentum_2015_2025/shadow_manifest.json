@@ -1,0 +1,26 @@
+{
+  "strategy": "Momentum Anual Diversificado Ajustado por Volatilidade",
+  "status": "retrospective_shadow_process_rehearsal",
+  "decision_rule": "At January t, rank 12-month returns and weight every eligible instrument by rank² / 12-month volatility.",
+  "cost_model": {
+    "rate_per_unit_turnover": 0.0015,
+    "description": "0.10% transaction cost + 0.05% slippage per unit of turnover"
+  },
+  "source_manifest": "yahoo_adjusted_total_return_2013_2025_manifest.json",
+  "source_hash": "352ad4052c13c8c050ff670646fbabadb6de9a749633afc313caa4605f661f55",
+  "summary": {
+    "years": 11,
+    "candidate_cagr": 0.1741748692318974,
+    "mvo_cagr": 0.2847530097959732,
+    "cdi_cagr": 0.0962821746340441,
+    "years_beating_cdi": 6,
+    "years_beating_mvo": 4,
+    "years_beating_both": 3,
+    "worst_candidate_year": -0.08314961256468151
+  },
+  "limitations": [
+    "Public adjusted-price research data; reconcile dividends, JCP, delistings and corporate actions before live use.",
+    "MVO is a same-universe unconstrained long-only comparator, not an investable recommendation.",
+    "The process is retrospective and does not establish prospective performance."
+  ]
+}

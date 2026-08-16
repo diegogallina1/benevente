@@ -17,12 +17,22 @@ import pandas as pd
 class DecisionEvidence:
     """Accepted B3/CVM tickers at every annual decision date."""
     allowed_by_date: dict[pd.Timestamp, frozenset[str]]
+    issuer_by_date: dict[pd.Timestamp, dict[str, str]]
 
     def allows(self, decision_date: pd.Timestamp, ticker: str) -> bool:
         return ticker in self.allowed_by_date.get(pd.Timestamp(decision_date).normalize(), frozenset())
 
     def allowed(self, decision_date: pd.Timestamp) -> frozenset[str]:
         return self.allowed_by_date.get(pd.Timestamp(decision_date).normalize(), frozenset())
+
+    def issuer_ids(self, decision_date: pd.Timestamp) -> dict[str, str]:
+        """Return the economic issuer for each permitted share class.
+
+        Tickers without a reliable company identifier deliberately fall back to
+        themselves.  They therefore never create a false link with another
+        listed company, while PETR3/PETR4-style classes share one exposure.
+        """
+        return self.issuer_by_date.get(pd.Timestamp(decision_date).normalize(), {})
 
 
 def build_decision_evidence(universe: pd.DataFrame, mapping: pd.DataFrame) -> tuple[DecisionEvidence, pd.DataFrame]:
@@ -40,10 +50,20 @@ def build_decision_evidence(universe: pd.DataFrame, mapping: pd.DataFrame) -> tu
         raise ValueError(f"CVM mapping missing columns: {sorted(missing)}")
     b3 = universe[universe.asset_class.eq("equity")].copy()
     b3["decision_date"] = pd.to_datetime(b3.decision_date).dt.normalize()
-    accepted = mapping[mapping.mapping_status.eq("accepted")][["universe_year", "ticker"]].drop_duplicates()
+    mapping_for_join = mapping.copy()
+    if "cnpj_cia" not in mapping_for_join:
+        mapping_for_join["cnpj_cia"] = None
+    accepted = mapping_for_join[mapping_for_join.mapping_status.eq("accepted")][["universe_year", "ticker", "cnpj_cia"]].drop_duplicates()
     joined = b3.merge(accepted, on=["universe_year", "ticker"], how="inner")
     allowed = {
         decision: frozenset(group.ticker)
+        for decision, group in joined.groupby("decision_date", sort=True)
+    }
+    issuer_by_date = {
+        decision: {
+            row.ticker: str(row.cnpj_cia) if pd.notna(row.cnpj_cia) and str(row.cnpj_cia).strip() else row.ticker
+            for row in group.itertuples(index=False)
+        }
         for decision, group in joined.groupby("decision_date", sort=True)
     }
     manifest = (b3.groupby(["universe_year", "decision_date"]).size().rename("b3_equities").reset_index()
@@ -52,7 +72,7 @@ def build_decision_evidence(universe: pd.DataFrame, mapping: pd.DataFrame) -> tu
     manifest["accepted_identifier_equities"] = manifest.accepted_identifier_equities.fillna(0).astype(int)
     manifest["accepted_identifier_share"] = manifest.accepted_identifier_equities / manifest.b3_equities
     manifest["decision_date"] = pd.to_datetime(manifest["decision_date"]).dt.date.astype(str)
-    return DecisionEvidence(allowed), manifest.sort_values("decision_date").reset_index(drop=True)
+    return DecisionEvidence(allowed, issuer_by_date), manifest.sort_values("decision_date").reset_index(drop=True)
 
 
 def load_decision_evidence(universe_path: str | Path, mapping_path: str | Path) -> tuple[DecisionEvidence, pd.DataFrame]:

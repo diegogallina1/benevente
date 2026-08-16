@@ -33,8 +33,131 @@ from portfolio_recommendation import PortfolioProposal, ValuePortfolioPlanner
 RISK_PROFILE_LIMITS: dict[str, dict[str, float | str]] = {
     "conservador": {"maximum_equity_weight": .35, "maximum_asset_weight": .10, "review_frequency": "trimestral"},
     "moderado": {"maximum_equity_weight": .55, "maximum_asset_weight": .12, "review_frequency": "trimestral"},
-    "arrojado": {"maximum_equity_weight": .80, "maximum_asset_weight": .15, "review_frequency": "semestral"},
+    "arrojado": {"maximum_equity_weight": .75, "maximum_asset_weight": .15, "review_frequency": "semestral"},
 }
+
+
+@dataclass(frozen=True)
+class BrazilianTaxModel:
+    """Personal-investor Brazilian taxation of an annually rebalanced book.
+
+    Equity gains realised in ordinary (non day-trade) trades are taxed at 15%,
+    with the monthly exemption for total sales up to twenty thousand reais.
+    The defensive sleeve follows the regressive fixed-income table; an annual
+    review falls in the 361-to-720-day band at 17.5%.
+
+    The model assumes the rebalanced fraction of each sleeve is realised at the
+    review, which is what an annual protocol actually does.  Gains on positions
+    that are merely held are deferred, exactly as the law treats them.
+    """
+    equity_rate: float = .15
+    fixed_income_rate: float = .175
+    monthly_sale_exemption_brl: float = 20_000.0
+
+    @staticmethod
+    def _share(value: float) -> float:
+        return max(0.0, min(1.0, float(value)))
+
+    def annual_tax_brl(self, equity_gain_brl: float, equity_realised_share: float, equity_sold_brl: float,
+                       fixed_income_gain_brl: float, fixed_income_redeemed_share: float) -> float:
+        realised_equity_gain = equity_gain_brl * self._share(equity_realised_share)
+        equity_tax = (self.equity_rate * realised_equity_gain
+                      if realised_equity_gain > 0 and equity_sold_brl > self.monthly_sale_exemption_brl else 0.0)
+        realised_fixed_income_gain = fixed_income_gain_brl * self._share(fixed_income_redeemed_share)
+        fixed_income_tax = self.fixed_income_rate * realised_fixed_income_gain if realised_fixed_income_gain > 0 else 0.0
+        return equity_tax + fixed_income_tax
+
+
+def unconstrained_long_only_mvo(returns: pd.DataFrame, gamma: float = 10.0) -> pd.Series:
+    """Long-only mean-variance optimum over an eligible universe.
+
+    This is the neutral quantitative comparator: it maximises trailing mean
+    return net of variance with no alpha signal, no issuer cap and no asset
+    count.  It must never be derived from the candidate rule, otherwise the
+    published comparison degenerates into the strategy plotted against itself.
+    """
+    import cvxpy as cp
+    import numpy as np
+
+    clean = returns.dropna(axis=1, how="any")
+    if clean.empty or clean.shape[1] == 0:
+        return pd.Series(dtype=float)
+    if clean.shape[1] == 1:
+        return pd.Series(1.0, index=clean.columns)
+    mean = clean.mean().to_numpy() * 252
+    covariance = clean.cov().to_numpy() * 252 + np.eye(clean.shape[1]) * 1e-5
+    weights = cp.Variable(clean.shape[1])
+    problem = cp.Problem(cp.Maximize(mean @ weights - gamma / 2 * cp.quad_form(weights, cp.psd_wrap(covariance))),
+                         [cp.sum(weights) == 1, weights >= 0])
+    problem.solve(solver=cp.CLARABEL)
+    if problem.status not in {cp.OPTIMAL, cp.OPTIMAL_INACCURATE} or weights.value is None:
+        raise RuntimeError(f"Neutral MVO comparator did not solve: {problem.status}")
+    value = np.maximum(weights.value, 0)
+    total = float(value.sum())
+    if total <= 0:
+        return pd.Series(1.0 / clean.shape[1], index=clean.columns)
+    return pd.Series(value / total, index=clean.columns)
+
+
+def realised_returns_with_delisting(prices: pd.DataFrame, cash_column: str = "TITULO_CDI") -> pd.DataFrame:
+    """Daily returns where a delisted position is liquidated into cash.
+
+    Dropping every row that contains a missing quote truncated the holding year
+    at the first delisting and silently deleted the rest of the period for the
+    whole book.  Forward-filling instead froze the price and reported a zero
+    return for a name that had stopped existing.  Both understate the cost of
+    holding a company that leaves the exchange.
+
+    The realistic treatment is to sell at the last observable price and hold the
+    proceeds in the defensive sleeve until the next annual review.
+    """
+    returns = prices.pct_change()
+    cash = returns[cash_column] if cash_column in returns else pd.Series(0.0, index=returns.index)
+    for column in returns.columns:
+        if column == cash_column:
+            continue
+        valid = prices[column].last_valid_index()
+        if valid is not None and valid < returns.index[-1]:
+            after = returns.index > valid
+            returns.loc[after, column] = cash.loc[after]
+        first = prices[column].first_valid_index()
+        if first is not None:
+            returns.loc[returns.index < first, column] = 0.0
+    return returns.iloc[1:].fillna(0.0)
+
+
+def _liquidity_map(screen: pd.DataFrame) -> dict[str, float]:
+    """Average daily traded value per ticker, as known at the decision date."""
+    if screen.empty or "average_daily_value_brl" not in screen:
+        return {}
+    frame = screen.set_index("ticker") if "ticker" in screen.columns else screen
+    return {str(ticker): float(value) for ticker, value in frame.average_daily_value_brl.items()
+            if pd.notna(value) and float(value) > 0}
+
+
+def _execution_cost_brl(target: pd.Series, previous: pd.Series, wealth: float,
+                        liquidity: dict[str, float]) -> float:
+    """Cost of moving from the drifted book to the target, priced by liquidity.
+
+    Every rebalance now uses the same published B3 fee plus a participation
+    dependent slippage term. A flat basis-point charge understates the cost of
+    a thinly traded name, which is exactly where a small-cap tilt looks best.
+    """
+    costs = ClearB3CostModel()
+    total = 0.0
+    for ticker in set(target.index) | set(previous.index):
+        if ticker == "TITULO_CDI":
+            continue
+        notional = abs(float(target.get(ticker, 0.0)) - float(previous.get(ticker, 0.0))) * wealth
+        if notional <= 0:
+            continue
+        average_daily_value = liquidity.get(ticker)
+        if average_daily_value is None or average_daily_value <= 0:
+            # Without an observed traded value the conservative assumption is
+            # the strategy's own liquidity floor, never a frictionless trade.
+            average_daily_value = 1_000_000.0
+        total += costs.estimate(notional, average_daily_value).total_brl
+    return total
 
 
 def _price_column_for_ticker(ticker: str, columns: pd.Index) -> str | None:
@@ -102,13 +225,49 @@ def _decision_action(old: float, new: float, tolerance: float = 1e-6) -> str:
     return "not_held"
 
 
+def apply_annual_taxes(results: pd.DataFrame, tax_model: BrazilianTaxModel) -> pd.DataFrame:
+    """Charge Brazilian tax to the year whose gain the next review realises.
+
+    A gain is only taxable once the position is sold, so the fraction realised
+    for year *t* is the share of the book that the review at the start of year
+    *t + 1* actually turns over.  The last evaluated year is charged as a full
+    liquidation, which is the conservative terminal assumption rather than an
+    indefinite deferral that would flatter the series.
+    """
+    frame = results.copy()
+    for label, gain_column, cash_column, turnover_column, net_column in (
+        ("", "equity_gain_rate", "cash_weight", "turnover", "net_return"),
+        ("mvo_", "mvo_equity_gain_rate", "mvo_cash_weight", "mvo_turnover", "mvo_eligible_net_return"),
+    ):
+        if gain_column not in frame:
+            continue
+        # Turnover counts the buy and the sell leg, so half of it is the share
+        # of the book that was actually sold.
+        realised = (frame[turnover_column].shift(-1) / 2).clip(upper=1.0)
+        realised = realised.fillna(1.0)
+        equity_tax = tax_model.equity_rate * frame[gain_column].clip(lower=0) * realised
+        cash_gain = frame[cash_column] * frame.cdi_net_return
+        cash_tax = tax_model.fixed_income_rate * cash_gain.clip(lower=0) * realised
+        frame[f"{label}realised_share_for_tax"] = realised
+        frame[f"{label}tax_rate"] = equity_tax + cash_tax
+        frame[f"{label}net_return_after_tax"] = frame[net_column] - (equity_tax + cash_tax)
+    frame["cdi_net_return_after_tax"] = frame.cdi_net_return - tax_model.fixed_income_rate * frame.cdi_net_return.clip(lower=0)
+    return frame
+
+
 def _annual_benchmark_summary(results: pd.DataFrame) -> pd.DataFrame:
     """Report a stress-test comparison, never a prediction or approval."""
     columns = {
         "Benevente Quant AI": "net_return",
+        "Benevente Quant AI (após IR)": "net_return_after_tax",
         "MVO elegível": "mvo_eligible_net_return",
+        "MVO elegível (após IR)": "mvo_net_return_after_tax",
         "CDI": "cdi_net_return",
+        "CDI (após IR)": "cdi_net_return_after_tax",
     }
+    columns.update({f"Referência {name.removeprefix('benchmark_')}": name
+                    for name in results.columns if str(name).startswith("benchmark_")})
+    columns = {name: column for name, column in columns.items() if column in results.columns}
     rows: list[dict] = []
     for name, column in columns.items():
         series = results[column].dropna()
@@ -123,7 +282,10 @@ def _annual_benchmark_summary(results: pd.DataFrame) -> pd.DataFrame:
             "max_drawdown": float((wealth / wealth.cummax() - 1).min()),
         })
     benevente = results.net_return
-    for benchmark, column in (("CDI", "cdi_net_return"), ("MVO elegível", "mvo_eligible_net_return")):
+    comparisons = [("CDI", "cdi_net_return"), ("MVO elegível", "mvo_eligible_net_return")]
+    comparisons.extend((f"Referência {str(name).removeprefix('benchmark_')}", str(name))
+                       for name in results.columns if str(name).startswith("benchmark_"))
+    for benchmark, column in comparisons:
         comparison = pd.concat([benevente, results[column]], axis=1).dropna()
         comparison.columns = ["benevente", "benchmark"]
         excess = comparison.benevente - comparison.benchmark
@@ -174,14 +336,93 @@ def _recent_market_sessions(prices: pd.DataFrame, decision: pd.Timestamp,
 class AnnualWalkForwardEngine:
     """Freeze, hold, review: a portfolio process a committee can audit."""
     def __init__(self, prices: pd.DataFrame, snapshots: list[FundamentalSnapshot], config: SystemConfig,
-                 decision_evidence: DecisionEvidence | None = None) -> None:
+                 decision_evidence: DecisionEvidence | None = None,
+                 benchmarks: pd.DataFrame | None = None,
+                 tax_model: BrazilianTaxModel | None = None) -> None:
         self.prices = prices.copy().sort_index()
         self.prices.index = pd.to_datetime(self.prices.index)
         self.snapshots = snapshots
         self.config = config
         self.decision_evidence = decision_evidence
+        self.tax_model = tax_model or BrazilianTaxModel()
+        self.daily_curve = pd.DataFrame()
+        # External market references (Ibovespa, an index ETF) are evaluated on
+        # the same decision dates so the comparison never mixes windows.
+        self.benchmarks = None
+        if benchmarks is not None and not benchmarks.empty:
+            self.benchmarks = benchmarks.copy().sort_index()
+            self.benchmarks.index = pd.to_datetime(self.benchmarks.index)
         if "TITULO_CDI" not in self.prices:
             raise ValueError("Annual walk-forward requires TITULO_CDI in the price history.")
+
+    def _daily_path(self, realised_returns: pd.DataFrame, target: pd.Series, mvo_target: pd.Series,
+                    cost_rate: float, mvo_cost_rate: float, decision: pd.Timestamp, next_decision: pd.Timestamp,
+                    level: dict[str, float], benchmark_levels: dict[str, float]) -> list[dict]:
+        """Exact daily value of a book that is bought in January and held.
+
+        Weights are fixed for the year, so compounding each asset separately and
+        summing the weighted paths reproduces the buy-and-hold value on every
+        session. Rebalancing cost is charged on the first day, which is when the
+        trades happen.
+        """
+        growth = (1 + realised_returns).cumprod()
+        rows: list[dict] = []
+
+        def sleeve(weights: pd.Series, charge: float) -> pd.Series:
+            aligned = weights.reindex(growth.columns).fillna(0.0)
+            return growth.mul(aligned, axis=1).sum(axis=1) - charge
+
+        strategy_path = sleeve(target, cost_rate)
+        mvo_path = sleeve(mvo_target, mvo_cost_rate)
+        cdi_path = growth["TITULO_CDI"] if "TITULO_CDI" in growth else pd.Series(1.0, index=growth.index)
+        # The equity sleeve on its own, renormalised to a full allocation. A
+        # study of how much to hold in equities needs the return of holding
+        # only equities, not the blended book.
+        equity_weights = target.drop(labels="TITULO_CDI", errors="ignore")
+        equity_total = float(equity_weights.sum())
+        equity_path = (sleeve(equity_weights / equity_total, 0.0) if equity_total > 0
+                       else pd.Series(1.0, index=growth.index))
+        level.setdefault("equity_sleeve", 100.0)
+        opening = dict(level)
+        window = None
+        if self.benchmarks is not None:
+            window = self.benchmarks.loc[(self.benchmarks.index >= decision) & (self.benchmarks.index < next_decision)]
+        for date in growth.index:
+            row = {
+                "date": date.date().isoformat(),
+                "decision_year": int(decision.year),
+                "strategy": round(opening["strategy"] * float(strategy_path.loc[date]), 6),
+                "mvo": round(opening["mvo"] * float(mvo_path.loc[date]), 6),
+                "cdi": round(opening["cdi"] * float(cdi_path.loc[date]), 6),
+                "equity_sleeve": round(opening["equity_sleeve"] * float(equity_path.loc[date]), 6),
+            }
+            if window is not None and not window.empty:
+                for column in window.columns:
+                    series = window[column].dropna()
+                    if series.empty or date not in series.index:
+                        continue
+                    opening_level = benchmark_levels.setdefault(str(column), 100.0)
+                    row[str(column)] = round(opening_level * float(series.loc[date] / series.iloc[0]), 6)
+            rows.append(row)
+        if rows:
+            for key in ("strategy", "mvo", "cdi", "equity_sleeve"):
+                level[key] = rows[-1][key]
+            for key in list(benchmark_levels):
+                if key in rows[-1]:
+                    benchmark_levels[key] = rows[-1][key]
+        return rows
+
+    def _benchmark_returns(self, decision: pd.Timestamp, next_decision: pd.Timestamp) -> dict[str, float]:
+        """Holding-period return of each external reference, same window."""
+        if self.benchmarks is None:
+            return {}
+        window = self.benchmarks.loc[(self.benchmarks.index >= decision) & (self.benchmarks.index < next_decision)]
+        result: dict[str, float] = {}
+        for column in window.columns:
+            series = window[column].dropna()
+            if len(series) >= 2 and float(series.iloc[0]) > 0:
+                result[str(column)] = float(series.iloc[-1] / series.iloc[0] - 1)
+        return result
 
     @staticmethod
     def factor_scores(history: pd.DataFrame, factor: str) -> dict[str, float] | None:
@@ -191,7 +432,7 @@ class AnnualWalkForwardEngine:
         the fundamental value/quality ranking. No realized holding-period
         return enters this function.
         """
-        if factor in {"value_quality", "triple_factor"}:
+        if factor in {"value_quality", "triple_factor", "mvo_neutral", "mvo_low_volatility", "mvo_risk_adjusted"}:
             return None
         equities = [ticker for ticker in history.columns if ticker != "TITULO_CDI"]
         if not equities:
@@ -284,9 +525,17 @@ class AnnualWalkForwardEngine:
         return weights.clip(upper=maximum_asset_weight)
 
     def triple_factor_proposal(self, history: pd.DataFrame, snapshots: list[FundamentalSnapshot], decision: pd.Timestamp,
-                               current_weights: pd.Series, protocol: AnnualWalkForwardConfig, wealth: float) -> PortfolioProposal:
+                               current_weights: pd.Series, protocol: AnnualWalkForwardConfig, wealth: float,
+                               issuer_ids: dict[str, str] | None = None) -> PortfolioProposal:
         screen = self.triple_factor_screen(snapshots, history, decision, protocol)
-        selected = screen[screen.eligible].sort_values(["factor_score", "ticker"], ascending=[False, True]).head(protocol.top_assets)
+        eligible = screen[screen.eligible].copy()
+        # Multiple share classes are one economic exposure.  Select the
+        # highest-ranked liquid class, rather than reporting artificial
+        # diversification through two tickers of the same issuer.
+        eligible["issuer_id"] = eligible.ticker.map(issuer_ids or {}).fillna(eligible.ticker)
+        selected = (eligible.sort_values(["factor_score", "average_daily_value_brl", "ticker"], ascending=[False, False, True])
+                    .drop_duplicates("issuer_id", keep="first")
+                    .head(protocol.top_assets))
         if selected.empty:
             raise ValueError("No eligible assets under the triple-factor point-in-time screen.")
         attainable_equity = min(protocol.maximum_equity_weight, protocol.maximum_asset_weight * len(selected))
@@ -308,6 +557,12 @@ class AnnualWalkForwardEngine:
         previous = pd.Series(0.0, index=self.prices.columns)
         mvo_previous = pd.Series(0.0, index=self.prices.columns)
         previous_screen: pd.DataFrame | None = None
+        # A chart built from eleven January points cannot show a drawdown, a
+        # recovery or when a year actually turned. The book is held fixed
+        # inside each year, so the daily path is exact rather than interpolated.
+        daily_rows: list[dict] = []
+        daily_level = {"strategy": 100.0, "mvo": 100.0, "cdi": 100.0}
+        benchmark_levels: dict[str, float] = {}
         yearly_rows: list[dict] = []
         transition_rows: list[dict] = []
         holding_rows: list[dict] = []
@@ -376,7 +631,8 @@ class AnnualWalkForwardEngine:
             factor_signal = self.factor_scores(history, decision_factor)
             if decision_factor == "triple_factor":
                 proposal = self.triple_factor_proposal(history.tail(protocol.minimum_history_days), known_snapshots,
-                                                       decision, previous, protocol, wealth)
+                                                       decision, previous, protocol, wealth,
+                                                       self.decision_evidence.issuer_ids(decision) if self.decision_evidence else None)
             else:
                 proposal = ValuePortfolioPlanner(planner_config).propose(
                     history.tail(protocol.minimum_history_days), known_snapshots, decision,
@@ -387,23 +643,62 @@ class AnnualWalkForwardEngine:
                 )
             active_columns = list(history.columns)
             target = proposal.weights.reindex(active_columns, fill_value=0.0)
-            # Same historical information and constraints, but no alpha score:
-            # a fair annual MVO baseline for the very same eligible universe.
+            # The canonical MVO rule selects five unique issuers solely by
+            # trailing expected return, then optimises their weights with no
+            # predictive alpha. It is deliberately isolated from the legacy
+            # comparator so other historical protocols remain reproducible.
             eligible = set(proposal.screen.loc[proposal.screen.eligible, "ticker"])
             neutral_scores = {ticker: 0.0 for ticker in history.columns}
             neutral_scores["TITULO_CDI"] = 1.0
-            # The comparator may only see assets that passed the same dated
-            # screen. Restricting the input columns (rather than assigning
-            # zero upper bounds to hundreds of ineligible names) also avoids
-            # numerical instability in a rank-deficient full-universe
-            # covariance matrix.
-            mvo_columns = [ticker for ticker in active_columns if ticker == "TITULO_CDI" or ticker in eligible]
-            mvo_target = MeanVarianceOptimizer(planner_config).optimize(
-                history.loc[:, mvo_columns].tail(protocol.minimum_history_days),
-                {ticker: neutral_scores[ticker] for ticker in mvo_columns},
-                equity_cap=protocol.maximum_equity_weight, signal_influence=0.0,
-                eligible_assets=eligible,
-            ).reindex(active_columns, fill_value=0.0)
+            if decision_factor.startswith("mvo_"):
+                issuer_ids = self.decision_evidence.issuer_ids(decision) if self.decision_evidence else {}
+                mvo_history = history.loc[:, [ticker for ticker in active_columns if ticker in eligible]]
+                expected_returns = mvo_history.mean() * 252
+                volatility = mvo_history.std(ddof=1).replace(0, pd.NA) * (252 ** .5)
+
+                def select_five_unique_issuers(signal: pd.Series) -> list[str]:
+                    ranked = signal.fillna(float("-inf")).sort_values(ascending=False)
+                    selected: list[str] = []
+                    selected_issuers: set[str] = set()
+                    for ticker in ranked.index:
+                        issuer = issuer_ids.get(ticker, ticker)
+                        if issuer not in selected_issuers:
+                            selected.append(ticker)
+                            selected_issuers.add(issuer)
+                        if len(selected) == 5:
+                            break
+                    return selected
+
+                if decision_factor == "mvo_low_volatility":
+                    candidate_signal = -volatility
+                elif decision_factor == "mvo_risk_adjusted":
+                    candidate_signal = expected_returns / volatility
+                else:
+                    candidate_signal = expected_returns
+                candidate_selected = select_five_unique_issuers(candidate_signal)
+                if len(candidate_selected) < 5:
+                    continue
+                candidate_columns = [*candidate_selected, "TITULO_CDI"]
+                target = MeanVarianceOptimizer(planner_config).optimize(
+                    history.loc[:, candidate_columns].tail(protocol.minimum_history_days),
+                    {ticker: neutral_scores[ticker] for ticker in candidate_columns},
+                    equity_cap=protocol.maximum_equity_weight, signal_influence=0.0,
+                    eligible_assets=set(candidate_selected), previous_weights=previous,
+                    minimum_selected_weight=.02,
+                ).reindex(active_columns, fill_value=0.0)
+                proposal = replace(proposal, weights=target)
+            # The neutral comparator is built from the eligible universe by an
+            # unconstrained long-only mean-variance optimisation. It shares no
+            # step with the candidate rule, so an ``mvo_`` candidate can no
+            # longer end up compared against a copy of itself.
+            mvo_universe = [ticker for ticker in active_columns if ticker in eligible or ticker == "TITULO_CDI"]
+            neutral_weights = unconstrained_long_only_mvo(
+                history.loc[:, mvo_universe].tail(protocol.minimum_history_days),
+                gamma=self.config.risk_aversion_gamma * 4,
+            )
+            if neutral_weights.empty:
+                continue
+            mvo_target = neutral_weights.reindex(active_columns, fill_value=0.0)
             realised_slice = self.prices.loc[
                 (self.prices.index >= decision) & (self.prices.index < next_decision),
                 [*history_source_columns, "TITULO_CDI"],
@@ -413,19 +708,35 @@ class AnnualWalkForwardEngine:
             realised_prices = realised_slice.loc[realised_coverage >= realised_threshold].rename(
                 columns={ticker_columns[ticker]: ticker for ticker in complete_tickers}
             )
-            realised_returns = realised_prices.pct_change().dropna()
+            if len(realised_prices) < 2:
+                continue
+            realised_returns = realised_returns_with_delisting(realised_prices)
             if realised_returns.empty:
                 continue
+            # Buy and hold. Compounding ``returns @ weights`` daily would
+            # silently rebalance the book to fixed weights every session, free
+            # of cost, which is not the annual protocol being evaluated.
             asset_growth = (1 + realised_returns).prod()
-            gross_return = float((1 + realised_returns @ target).prod() - 1)
-            cost_rate = proposal.estimated_rebalance_cost_brl / wealth if wealth else 0.0
+            gross_return = float((target * asset_growth.reindex(target.index).fillna(1.0)).sum() - 1)
+            liquidity = _liquidity_map(proposal.screen)
+            cost_brl = _execution_cost_brl(target, previous, wealth, liquidity)
+            cost_rate = cost_brl / wealth if wealth else 0.0
             net_return = gross_return - cost_rate
-            mvo_gross_return = float((1 + realised_returns @ mvo_target).prod() - 1)
-            mvo_turnover = float((mvo_target - mvo_previous).abs().sum())
-            mvo_net_return = mvo_gross_return - (self.config.transaction_cost + self.config.slippage) * mvo_turnover
-            cdi_net_return = float((1 + realised_returns["TITULO_CDI"]).prod() - 1)
+            mvo_gross_return = float((mvo_target * asset_growth.reindex(mvo_target.index).fillna(1.0)).sum() - 1)
+            mvo_cost_rate = _execution_cost_brl(mvo_target, mvo_previous, wealth, liquidity) / wealth if wealth else 0.0
+            mvo_net_return = mvo_gross_return - mvo_cost_rate
+            cdi_net_return = float(asset_growth.get("TITULO_CDI", 1.0) - 1)
             closing_wealth = wealth * (1 + net_return)
             turnover = float((target - previous).abs().sum())
+            benchmark_returns = self._benchmark_returns(decision, next_decision)
+            daily_rows.extend(self._daily_path(realised_returns, target, mvo_target, cost_rate, mvo_cost_rate,
+                                               decision, next_decision, daily_level, benchmark_levels))
+            equity_weight = float(target.drop(labels="TITULO_CDI").sum())
+            equity_growth = target.drop(labels="TITULO_CDI") * asset_growth.reindex(target.index).drop(labels="TITULO_CDI").fillna(1.0)
+            equity_gain_rate = float(equity_growth.sum()) - equity_weight
+            mvo_equity_weight = float(mvo_target.drop(labels="TITULO_CDI").sum())
+            mvo_equity_gain_rate = float((mvo_target.drop(labels="TITULO_CDI") *
+                                          asset_growth.reindex(mvo_target.index).drop(labels="TITULO_CDI").fillna(1.0)).sum()) - mvo_equity_weight
             screen = proposal.screen.set_index("ticker")
             yearly_rows.append({
                 "decision_year": year, "decision_date": decision.date().isoformat(),
@@ -434,9 +745,17 @@ class AnnualWalkForwardEngine:
                 "net_return": net_return, "opening_wealth_brl": wealth, "closing_wealth_brl": closing_wealth,
                 "turnover": turnover, "weights_at_decision": _format_weights(target),
                 "known_snapshot_count": len(known_snapshots),
-                "factor": decision_factor, "target_equity_weight": float(target.drop(labels="TITULO_CDI").sum()),
+                "factor": decision_factor, "target_equity_weight": equity_weight,
                 "mvo_eligible_net_return": mvo_net_return,
+                "mvo_turnover": float((mvo_target - mvo_previous).abs().sum()),
+                "mvo_equity_gain_rate": mvo_equity_gain_rate,
+                "mvo_cash_weight": float(mvo_target.get("TITULO_CDI", 0.0)),
+                "equity_gain_rate": equity_gain_rate,
+                "cash_weight": float(target.get("TITULO_CDI", 0.0)),
                 "cdi_net_return": cdi_net_return,
+                "eligible_universe_size": len(eligible),
+                "priced_universe_size": len(complete_tickers),
+                **{f"benchmark_{name}": value for name, value in benchmark_returns.items()},
             })
             for ticker in active_columns:
                 old, new = float(previous.get(ticker, 0.0)), float(target.get(ticker, 0.0))
@@ -499,6 +818,10 @@ class AnnualWalkForwardEngine:
         results = pd.DataFrame(yearly_rows)
         if results.empty:
             raise ValueError("No annual decisions were produced. Supply at least 252 prior prices and snapshots available before each review date.")
+        results = apply_annual_taxes(results, self.tax_model)
+        # Kept on the engine rather than returned so the three-tuple contract
+        # every existing caller relies on stays unchanged.
+        self.daily_curve = pd.DataFrame(daily_rows)
         return results, pd.DataFrame(transition_rows), pd.DataFrame(holding_rows)
 
 
@@ -582,14 +905,18 @@ def main() -> None:
     parser.add_argument("--start-year", type=int, required=True)
     parser.add_argument("--end-year", type=int, required=True, help="First year not held; e.g. 2026 evaluates through 2025.")
     parser.add_argument("--output", default="artifacts/annual_walk_forward")
-    parser.add_argument("--factor", choices=["value_quality", "momentum_12m", "low_volatility", "triple_factor"], default="value_quality")
+    parser.add_argument("--factor", choices=["value_quality", "momentum_12m", "low_volatility", "triple_factor", "mvo_neutral", "mvo_low_volatility", "mvo_risk_adjusted"], default="value_quality")
     parser.add_argument("--maximum-equity-weight", type=float, default=.55)
     parser.add_argument("--maximum-asset-weight", type=float, default=.12)
     parser.add_argument("--top-assets", type=int, default=4)
     parser.add_argument("--risk-profile", choices=list(RISK_PROFILE_LIMITS),
                         help="Apply pre-declared investor allocation guardrails; overrides manual equity and issuer caps.")
+    parser.add_argument("--benchmarks", help="CSV with date and one column per external market reference index level.")
     parser.add_argument("--training-end-year", type=int, help="Optional factor-selection cutoff; output is then evaluated only after this year.")
     parser.add_argument("--adaptive-factors", action="store_true", help="Select a pre-declared factor from prior years before each next-year decision.")
+    parser.add_argument("--factor-family", default="value_quality,momentum_12m,low_volatility",
+                        help="Comma-separated candidates the nested selection may choose from. Declare it before "
+                             "running; widening it after seeing a result is another trial.")
     args = parser.parse_args()
     if bool(args.universe) != bool(args.mapping):
         parser.error("--universe and --mapping must be supplied together.")
@@ -620,25 +947,42 @@ def main() -> None:
                                        maximum_asset_weight=args.maximum_asset_weight,
                                        top_assets=args.top_assets)
     protocol = protocol_for_risk_profile(protocol, args.risk_profile)
+    benchmarks = None
+    if args.benchmarks:
+        benchmarks = pd.read_csv(args.benchmarks, parse_dates=["date"]).set_index("date")
+
+    # One engine instance so the daily curve of the final evaluation run is
+    # still available after any training passes have overwritten it.
+    engine = AnnualWalkForwardEngine(prices, snapshots, SystemConfig(), evidence, benchmarks)
+
+    def build_engine() -> AnnualWalkForwardEngine:
+        return engine
+
+    family = tuple(item.strip() for item in args.factor_family.split(",") if item.strip())
+    if not family:
+        parser.error("--factor-family must name at least one candidate.")
     if args.adaptive_factors:
-        results, transitions, holdings, factor_choices = run_adaptive_factor_walk_forward(
-            AnnualWalkForwardEngine(prices, snapshots, SystemConfig(), evidence), protocol)
+        results, transitions, holdings, factor_choices = run_adaptive_factor_walk_forward(build_engine(), protocol, family)
         leaderboard = None
     elif args.training_end_year:
-        factor, leaderboard = select_factor_out_of_sample(engine=AnnualWalkForwardEngine(prices, snapshots, SystemConfig(), evidence),
-                                                           base=protocol, training_end_year=args.training_end_year)
+        factor, leaderboard = select_factor_out_of_sample(engine=build_engine(), base=protocol,
+                                                          training_end_year=args.training_end_year, factors=family)
         protocol = replace(protocol, start_year=args.training_end_year, factor=factor)
-        results, transitions, holdings = AnnualWalkForwardEngine(prices, snapshots, SystemConfig(), evidence).run(protocol)
+        results, transitions, holdings = build_engine().run(protocol)
         factor_choices = None
     else:
         leaderboard = None
-        results, transitions, holdings = AnnualWalkForwardEngine(prices, snapshots, SystemConfig(), evidence).run(protocol)
+        results, transitions, holdings = build_engine().run(protocol)
         factor_choices = None
     output = Path(args.output); output.mkdir(parents=True, exist_ok=True)
     results.to_csv(output / "annual_results.csv", index=False)
     transitions.to_csv(output / "annual_transitions.csv", index=False)
     holdings.to_csv(output / "annual_holdings.csv", index=False)
     _annual_benchmark_summary(results).to_csv(output / "annual_benchmark_summary.csv", index=False)
+    if not engine.daily_curve.empty:
+        daily = engine.daily_curve
+        daily = daily[daily.decision_year.isin(results.decision_year)]
+        daily.to_csv(output / "daily_curve.csv", index=False)
     input_manifest_payload = input_manifest.as_dict()
     input_manifest_payload["total_return_source_tier"] = return_source_manifest.get("source_tier", "unclassified")
     input_manifest_payload["institutional_performance_verified"] = (
@@ -651,7 +995,18 @@ def main() -> None:
         leaderboard.to_csv(output / "factor_training_leaderboard.csv", index=False)
     if factor_choices is not None:
         factor_choices.to_csv(output / "adaptive_factor_choices.csv", index=False)
-    (output / "protocol.json").write_text(json.dumps(asdict(protocol), indent=2), encoding="utf-8")
+    protocol_payload = asdict(protocol)
+    if args.adaptive_factors:
+        # The published protocol has to name the whole candidate set, not only
+        # the factor that happened to win. A reader cannot judge a selection
+        # without knowing how many options it ranged over.
+        protocol_payload["factor"] = "nested_annual_selection"
+        protocol_payload["factor_family"] = list(family)
+        protocol_payload["selection_rule"] = (
+            "For decision year t the factor is ranked on years start_year..t-1 only, by net cumulative return "
+            "penalised by drawdown and turnover. Year t is then evaluated once. No year informs its own selection."
+        )
+    (output / "protocol.json").write_text(json.dumps(protocol_payload, indent=2, ensure_ascii=False), encoding="utf-8")
     print(results.to_string(index=False, float_format=lambda value: f"{value:.4f}"))
 
 

@@ -1,0 +1,864 @@
+{
+  "name": "Momentum Anual Diversificado Ajustado por Volatilidade",
+  "status": "exploratory_selected_after_reading_the_holdout",
+  "selection_warning": "Esta regra ficou em 57º de 73 pelo critério de treino declarado e em 1º no holdout. Foi escolhida depois de olhar o resultado do holdout, portanto o excesso sobre o CDI que ela mostra é estatística dentro da amostra, não evidência fora dela. Ver artifacts/inference_audit/signal_grid_inference.json.",
+  "method": "Retorno de 12 meses em ranking transversal; peso proporcional ao quadrado do ranking dividido pela volatilidade de 12 meses.",
+  "rule_limits": "Nenhum filtro de qualidade, setor, emissor, peso máximo ou número máximo de ativos.",
+  "data_limitation": "Pesquisa com preços ajustados de fonte pública, restrita aos emissores que o provedor ainda serve: esta série específica ainda carrega viés de sobrevivência. O painel corrigido está em data/prices_b3_total_return_full_2013_2025.csv.",
+  "source": "Yahoo Finance via yfinance adjusted close",
+  "years": [
+    {
+      "year": 2015,
+      "decision_date": "2015-01-02",
+      "eligible_assets": 257,
+      "net_return": -0.04250351124445223,
+      "gross_return": -0.04100351124445223,
+      "cdi_return": 0.1318997108790032,
+      "turnover": 1.0,
+      "top_holdings": [
+        {
+          "ticker": "SUZB3",
+          "weight": 0.19669990623813033
+        },
+        {
+          "ticker": "PINE3",
+          "weight": 0.046029953985731835
+        },
+        {
+          "ticker": "EUCA3",
+          "weight": 0.04007233834399009
+        },
+        {
+          "ticker": "TAEE3",
+          "weight": 0.02858025769690997
+        },
+        {
+          "ticker": "FESA3",
+          "weight": 0.028569439252062814
+        },
+        {
+          "ticker": "EKTR3",
+          "weight": 0.0272689159835146
+        },
+        {
+          "ticker": "PCAR3",
+          "weight": 0.02531040276892976
+        },
+        {
+          "ticker": "RNEW3",
+          "weight": 0.02316450643063124
+        },
+        {
+          "ticker": "SAPR3",
+          "weight": 0.020975668334263443
+        },
+        {
+          "ticker": "BRKM6",
+          "weight": 0.015800567853643827
+        },
+        {
+          "ticker": "CEGR3",
+          "weight": 0.012639674930458972
+        },
+        {
+          "ticker": "ECPR4",
+          "weight": 0.011903468649621447
+        },
+        {
+          "ticker": "WEGE3",
+          "weight": 0.00964940908543604
+        },
+        {
+          "ticker": "PEAB3",
+          "weight": 0.009526707966635737
+        },
+        {
+          "ticker": "BMIN3",
+          "weight": 0.008899795859502988
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "decision_date": "2016-01-04",
+      "eligible_assets": 258,
+      "net_return": 0.13462216438423297,
+      "gross_return": 0.13579827333665784,
+      "cdi_return": 0.13939289494698648,
+      "turnover": 0.7840726349499066,
+      "top_holdings": [
+        {
+          "ticker": "SUZB3",
+          "weight": 0.14531164119606615
+        },
+        {
+          "ticker": "PINE3",
+          "weight": 0.05648849146069718
+        },
+        {
+          "ticker": "BSLI3",
+          "weight": 0.05521567628977101
+        },
+        {
+          "ticker": "GEPA3",
+          "weight": 0.05259196818642481
+        },
+        {
+          "ticker": "TAEE3",
+          "weight": 0.036485388688391726
+        },
+        {
+          "ticker": "EALT3",
+          "weight": 0.036442692704037036
+        },
+        {
+          "ticker": "MRSA3B",
+          "weight": 0.03318682383075663
+        },
+        {
+          "ticker": "RNEW3",
+          "weight": 0.026669086762440154
+        },
+        {
+          "ticker": "CEEB3",
+          "weight": 0.024218928612577812
+        },
+        {
+          "ticker": "EKTR3",
+          "weight": 0.01695336836471716
+        },
+        {
+          "ticker": "AGRO3",
+          "weight": 0.010194012052838545
+        },
+        {
+          "ticker": "PEAB3",
+          "weight": 0.010193092180542861
+        },
+        {
+          "ticker": "ENMT4",
+          "weight": 0.010182728919147512
+        },
+        {
+          "ticker": "RPAD3",
+          "weight": 0.00907916469911689
+        },
+        {
+          "ticker": "ABEV3",
+          "weight": 0.00878367207753223
+        }
+      ]
+    },
+    {
+      "year": 2017,
+      "decision_date": "2017-01-02",
+      "eligible_assets": 260,
+      "net_return": 0.4304984738759426,
+      "gross_return": 0.43190158975232373,
+      "cdi_return": 0.09869747716374477,
+      "turnover": 0.9354105842541129,
+      "top_holdings": [
+        {
+          "ticker": "SUZB3",
+          "weight": 0.03353182434164381
+        },
+        {
+          "ticker": "EALT3",
+          "weight": 0.02872691259389138
+        },
+        {
+          "ticker": "PINE3",
+          "weight": 0.024790269089812314
+        },
+        {
+          "ticker": "BSLI3",
+          "weight": 0.01651275357477285
+        },
+        {
+          "ticker": "TAEE3",
+          "weight": 0.014932449438288833
+        },
+        {
+          "ticker": "FLRY3",
+          "weight": 0.014559976554099949
+        },
+        {
+          "ticker": "UNIP6",
+          "weight": 0.012466187972533382
+        },
+        {
+          "ticker": "RADL3",
+          "weight": 0.011698014282972234
+        },
+        {
+          "ticker": "CPFE3",
+          "weight": 0.011357496309497417
+        },
+        {
+          "ticker": "EQTL3",
+          "weight": 0.01123805756646663
+        },
+        {
+          "ticker": "SAPR4",
+          "weight": 0.011031665543523984
+        },
+        {
+          "ticker": "CSMG3",
+          "weight": 0.010996480923816068
+        },
+        {
+          "ticker": "MDIA3",
+          "weight": 0.010626918521051831
+        },
+        {
+          "ticker": "PNVL3",
+          "weight": 0.010626176399496787
+        },
+        {
+          "ticker": "LUXM4",
+          "weight": 0.010151744434207017
+        }
+      ]
+    },
+    {
+      "year": 2018,
+      "decision_date": "2018-01-02",
+      "eligible_assets": 262,
+      "net_return": 0.2600310017881949,
+      "gross_return": 0.2611804882450459,
+      "cdi_return": 0.06393224883871174,
+      "turnover": 0.7663243045673394,
+      "top_holdings": [
+        {
+          "ticker": "ENMT3",
+          "weight": 0.014478973820187289
+        },
+        {
+          "ticker": "FESA4",
+          "weight": 0.013584985815897337
+        },
+        {
+          "ticker": "BSLI3",
+          "weight": 0.012742356915815488
+        },
+        {
+          "ticker": "CVCB3",
+          "weight": 0.012304245639871784
+        },
+        {
+          "ticker": "SLCE3",
+          "weight": 0.011978584855980988
+        },
+        {
+          "ticker": "EKTR3",
+          "weight": 0.01102583067191983
+        },
+        {
+          "ticker": "PRIO3",
+          "weight": 0.010960580278050535
+        },
+        {
+          "ticker": "RENT3",
+          "weight": 0.010932074807633732
+        },
+        {
+          "ticker": "TGMA3",
+          "weight": 0.01061689101158627
+        },
+        {
+          "ticker": "BGIP4",
+          "weight": 0.010248147598535274
+        },
+        {
+          "ticker": "ANIM3",
+          "weight": 0.010042950693996
+        },
+        {
+          "ticker": "CGRA4",
+          "weight": 0.010022584505431762
+        },
+        {
+          "ticker": "PTBL3",
+          "weight": 0.010010105595895265
+        },
+        {
+          "ticker": "AZZA3",
+          "weight": 0.009881982355102509
+        },
+        {
+          "ticker": "FLRY3",
+          "weight": 0.0097112046074572
+        }
+      ]
+    },
+    {
+      "year": 2019,
+      "decision_date": "2019-01-02",
+      "eligible_assets": 266,
+      "net_return": 0.5938346007005414,
+      "gross_return": 0.5950505831476496,
+      "cdi_return": 0.05933780936875266,
+      "turnover": 0.8106549647387905,
+      "top_holdings": [
+        {
+          "ticker": "CPFE3",
+          "weight": 0.01627278582244218
+        },
+        {
+          "ticker": "IRBR3",
+          "weight": 0.01594305749100165
+        },
+        {
+          "ticker": "CEGR3",
+          "weight": 0.013830066889908179
+        },
+        {
+          "ticker": "REDE3",
+          "weight": 0.01287613906276925
+        },
+        {
+          "ticker": "EGIE3",
+          "weight": 0.012412162360113412
+        },
+        {
+          "ticker": "CRPG6",
+          "weight": 0.01206640353836487
+        },
+        {
+          "ticker": "TRIS3",
+          "weight": 0.011929825059436275
+        },
+        {
+          "ticker": "CLSC4",
+          "weight": 0.011694299452273144
+        },
+        {
+          "ticker": "AGRO3",
+          "weight": 0.011682143020910547
+        },
+        {
+          "ticker": "ENMT4",
+          "weight": 0.011552267592545988
+        },
+        {
+          "ticker": "TEND3",
+          "weight": 0.011069593442665584
+        },
+        {
+          "ticker": "CRPG5",
+          "weight": 0.01106327224058252
+        },
+        {
+          "ticker": "CPLE3",
+          "weight": 0.010829954355538242
+        },
+        {
+          "ticker": "CSMG3",
+          "weight": 0.010595155819142442
+        },
+        {
+          "ticker": "CMIG3",
+          "weight": 0.010354244369339174
+        }
+      ]
+    },
+    {
+      "year": 2020,
+      "decision_date": "2020-01-02",
+      "eligible_assets": 268,
+      "net_return": -0.0022407315292919984,
+      "gross_return": 0.0007505131446967628,
+      "cdi_return": 0.0274025853352573,
+      "turnover": 1.9941631159925073,
+      "top_holdings": [
+        {
+          "ticker": "PINE3",
+          "weight": 0.9970364106696561
+        },
+        {
+          "ticker": "ENEV3",
+          "weight": 4.5647440088393535e-05
+        },
+        {
+          "ticker": "CEEB3",
+          "weight": 3.7839963655068734e-05
+        },
+        {
+          "ticker": "ALPA4",
+          "weight": 3.751521813980521e-05
+        },
+        {
+          "ticker": "TRIS3",
+          "weight": 3.6816791086326046e-05
+        },
+        {
+          "ticker": "CPLE3",
+          "weight": 3.534244477802839e-05
+        },
+        {
+          "ticker": "EMAE4",
+          "weight": 3.411480587576578e-05
+        },
+        {
+          "ticker": "WEGE3",
+          "weight": 3.307096761638008e-05
+        },
+        {
+          "ticker": "ALOS3",
+          "weight": 3.2740918199556035e-05
+        },
+        {
+          "ticker": "EZTC3",
+          "weight": 3.245368836499996e-05
+        },
+        {
+          "ticker": "TOTS3",
+          "weight": 3.2225974261815683e-05
+        },
+        {
+          "ticker": "SYNE3",
+          "weight": 3.1115410141355085e-05
+        },
+        {
+          "ticker": "CGAS5",
+          "weight": 3.086641335561765e-05
+        },
+        {
+          "ticker": "CSAN3",
+          "weight": 3.064607943696237e-05
+        },
+        {
+          "ticker": "EVEN3",
+          "weight": 3.062539556689649e-05
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "decision_date": "2021-01-04",
+      "eligible_assets": 273,
+      "net_return": 0.20163855375020787,
+      "gross_return": 0.2046285447005063,
+      "cdi_return": 0.04415820920482849,
+      "turnover": 1.9933273001989478,
+      "top_holdings": [
+        {
+          "ticker": "REDE3",
+          "weight": 0.029488266015600298
+        },
+        {
+          "ticker": "ECPR3",
+          "weight": 0.019498687836865966
+        },
+        {
+          "ticker": "LUXM4",
+          "weight": 0.01395917813830824
+        },
+        {
+          "ticker": "ISAE4",
+          "weight": 0.012681376901982915
+        },
+        {
+          "ticker": "BAUH4",
+          "weight": 0.011776301801582817
+        },
+        {
+          "ticker": "FRAS3",
+          "weight": 0.01169698044463542
+        },
+        {
+          "ticker": "EMAE4",
+          "weight": 0.011300095452558471
+        },
+        {
+          "ticker": "KEPL3",
+          "weight": 0.010892128924797854
+        },
+        {
+          "ticker": "USIM6",
+          "weight": 0.01074649851671936
+        },
+        {
+          "ticker": "CRPG6",
+          "weight": 0.010724268521519276
+        },
+        {
+          "ticker": "TAEE3",
+          "weight": 0.010609598252762018
+        },
+        {
+          "ticker": "AGRO3",
+          "weight": 0.010576671603681139
+        },
+        {
+          "ticker": "BRAP4",
+          "weight": 0.010425355591384371
+        },
+        {
+          "ticker": "BRAP3",
+          "weight": 0.010326855430927498
+        },
+        {
+          "ticker": "CRPG5",
+          "weight": 0.010313533907724555
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "decision_date": "2022-01-03",
+      "eligible_assets": 297,
+      "net_return": 0.014764973580934183,
+      "gross_return": 0.01593855128870647,
+      "cdi_return": 0.12294915546054375,
+      "turnover": 0.7823851385148581,
+      "top_holdings": [
+        {
+          "ticker": "EQPA6",
+          "weight": 0.06781386707574381
+        },
+        {
+          "ticker": "LUXM4",
+          "weight": 0.0165545474766081
+        },
+        {
+          "ticker": "ENMT4",
+          "weight": 0.0147629843467013
+        },
+        {
+          "ticker": "ENMT3",
+          "weight": 0.014152496659094045
+        },
+        {
+          "ticker": "UNIP3",
+          "weight": 0.011416264487137015
+        },
+        {
+          "ticker": "TAEE3",
+          "weight": 0.011011409683406411
+        },
+        {
+          "ticker": "TAEE4",
+          "weight": 0.010737394875990338
+        },
+        {
+          "ticker": "VIVT3",
+          "weight": 0.00996789004043468
+        },
+        {
+          "ticker": "ECPR3",
+          "weight": 0.009630345218940599
+        },
+        {
+          "ticker": "EQPA3",
+          "weight": 0.009444773740338615
+        },
+        {
+          "ticker": "FRAS3",
+          "weight": 0.009362678184584186
+        },
+        {
+          "ticker": "CMIG3",
+          "weight": 0.00925533543196131
+        },
+        {
+          "ticker": "BMEB4",
+          "weight": 0.009120062733912818
+        },
+        {
+          "ticker": "GOAU3",
+          "weight": 0.00854918363181097
+        },
+        {
+          "ticker": "SLCE3",
+          "weight": 0.00847773746202607
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "decision_date": "2023-01-02",
+      "eligible_assets": 332,
+      "net_return": 0.27954067458521414,
+      "gross_return": 0.2806984857038519,
+      "cdi_return": 0.1293265758525719,
+      "turnover": 0.7718740790918397,
+      "top_holdings": [
+        {
+          "ticker": "COCE3",
+          "weight": 0.0426559056703877
+        },
+        {
+          "ticker": "EQPA6",
+          "weight": 0.031121373670476554
+        },
+        {
+          "ticker": "ECPR4",
+          "weight": 0.030278170031425224
+        },
+        {
+          "ticker": "NUTR3",
+          "weight": 0.017840546842494382
+        },
+        {
+          "ticker": "ECPR3",
+          "weight": 0.014417337040313137
+        },
+        {
+          "ticker": "BEES3",
+          "weight": 0.014407293713002676
+        },
+        {
+          "ticker": "ENMT3",
+          "weight": 0.013689174456337707
+        },
+        {
+          "ticker": "ENMT4",
+          "weight": 0.012053713096573238
+        },
+        {
+          "ticker": "BBSE3",
+          "weight": 0.011333213594340216
+        },
+        {
+          "ticker": "CEEB3",
+          "weight": 0.01106783527763569
+        },
+        {
+          "ticker": "HYPE3",
+          "weight": 0.00939214189545948
+        },
+        {
+          "ticker": "LAND3",
+          "weight": 0.009385224353969218
+        },
+        {
+          "ticker": "CPFE3",
+          "weight": 0.008563788928145242
+        },
+        {
+          "ticker": "TAEE3",
+          "weight": 0.008460603606325844
+        },
+        {
+          "ticker": "ITUB3",
+          "weight": 0.008458556500610502
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "decision_date": "2024-01-02",
+      "eligible_assets": 333,
+      "net_return": -0.08314961256468151,
+      "gross_return": -0.08194058538798232,
+      "cdi_return": 0.10777090353467478,
+      "turnover": 0.806018117799458,
+      "top_holdings": [
+        {
+          "ticker": "CXSE3",
+          "weight": 0.012962056048911678
+        },
+        {
+          "ticker": "BEES3",
+          "weight": 0.012437541498614885
+        },
+        {
+          "ticker": "SAPR4",
+          "weight": 0.011939739792604561
+        },
+        {
+          "ticker": "SAPR3",
+          "weight": 0.011133997817342828
+        },
+        {
+          "ticker": "BMEB4",
+          "weight": 0.010838142853140286
+        },
+        {
+          "ticker": "BBAS3",
+          "weight": 0.010221053049839742
+        },
+        {
+          "ticker": "FRAS3",
+          "weight": 0.009753363273916111
+        },
+        {
+          "ticker": "UGPA3",
+          "weight": 0.009751114853994174
+        },
+        {
+          "ticker": "RAPT3",
+          "weight": 0.009019170674730858
+        },
+        {
+          "ticker": "PETR4",
+          "weight": 0.008995024137163734
+        },
+        {
+          "ticker": "POMO3",
+          "weight": 0.008965101598287974
+        },
+        {
+          "ticker": "VIVT3",
+          "weight": 0.008846521264544957
+        },
+        {
+          "ticker": "POMO4",
+          "weight": 0.008827955927799322
+        },
+        {
+          "ticker": "LAVV3",
+          "weight": 0.008631250303379528
+        },
+        {
+          "ticker": "CMIN3",
+          "weight": 0.008457681216859723
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "decision_date": "2025-01-02",
+      "eligible_assets": 325,
+      "net_return": 0.3129330945267275,
+      "gross_return": 0.3139634606942996,
+      "cdi_return": 0.14209253474057149,
+      "turnover": 0.6869107783813984,
+      "top_holdings": [
+        {
+          "ticker": "BAUH4",
+          "weight": 0.02439984927810736
+        },
+        {
+          "ticker": "BBSE3",
+          "weight": 0.013588327842000123
+        },
+        {
+          "ticker": "CLSC3",
+          "weight": 0.012571649915392917
+        },
+        {
+          "ticker": "GEPA4",
+          "weight": 0.012011776944653241
+        },
+        {
+          "ticker": "TAEE4",
+          "weight": 0.011986903483375645
+        },
+        {
+          "ticker": "CLSC4",
+          "weight": 0.011930616248749597
+        },
+        {
+          "ticker": "KLBN3",
+          "weight": 0.011759026450743596
+        },
+        {
+          "ticker": "KLBN4",
+          "weight": 0.011472379471736304
+        },
+        {
+          "ticker": "PSSA3",
+          "weight": 0.011227744325639532
+        },
+        {
+          "ticker": "ENMT3",
+          "weight": 0.010978286087153474
+        },
+        {
+          "ticker": "WEGE3",
+          "weight": 0.010802392896156733
+        },
+        {
+          "ticker": "CMIG4",
+          "weight": 0.010643739168951788
+        },
+        {
+          "ticker": "TAEE3",
+          "weight": 0.010592234304326846
+        },
+        {
+          "ticker": "CEEB3",
+          "weight": 0.010487617996674891
+        },
+        {
+          "ticker": "CMIG3",
+          "weight": 0.010391249921473191
+        }
+      ]
+    }
+  ],
+  "curve": {
+    "dates": [
+      "2015-01-02",
+      "2016-01-04",
+      "2017-01-02",
+      "2018-01-02",
+      "2019-01-02",
+      "2020-01-02",
+      "2021-01-04",
+      "2022-01-03",
+      "2023-01-02",
+      "2024-01-02",
+      "2025-01-02",
+      "2025-12-31"
+    ],
+    "strategy": [
+      100.0,
+      95.7496,
+      108.6396,
+      155.4088,
+      195.8199,
+      312.1045,
+      311.4052,
+      374.1965,
+      379.7215,
+      485.8691,
+      445.4693,
+      584.8714
+    ],
+    "mvo": [
+      100.0,
+      124.734,
+      217.0078,
+      407.0661,
+      672.9025,
+      811.6162,
+      1064.0899,
+      1625.8027,
+      1643.3198,
+      1984.4687,
+      2277.2317,
+      1574.0412
+    ],
+    "cdi": [
+      100.0,
+      113.19,
+      128.9679,
+      141.6967,
+      150.7557,
+      159.7012,
+      164.0774,
+      171.3228,
+      192.3868,
+      217.2675,
+      240.6826,
+      274.8818
+    ],
+    "ibovespa": [
+      100.0,
+      86.8672,
+      122.8335,
+      160.5603,
+      187.6072,
+      244.4199,
+      244.389,
+      214.2192,
+      219.2777,
+      273.5344,
+      247.6191,
+      332.1343
+    ]
+  }
+}

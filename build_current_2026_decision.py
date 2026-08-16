@@ -18,6 +18,7 @@ import pandas as pd
 from annual_walk_forward import AnnualWalkForwardConfig, AnnualWalkForwardEngine, _price_column_for_ticker, _recent_market_sessions
 from advisor import snapshots_from_frame
 from b3_universe import parse_cotahist
+from brapi_total_return import _fetch_cdi
 from build_full_b3_cvm_fundamentals import build_full_panel
 from config import SystemConfig
 from optimizer import MeanVarianceOptimizer
@@ -27,7 +28,12 @@ from portfolio_recommendation import ValuePortfolioPlanner
 def current_mapping(universe: pd.DataFrame, prior_mapping: pd.DataFrame) -> pd.DataFrame:
     """Carry only an already-audited B3/CVM bridge with the same ticker *and* ISIN."""
     equities = universe[universe.asset_class.eq("equity")][["ticker", "isin"]].copy()
-    prior = prior_mapping[(prior_mapping.universe_year.eq(2025)) & prior_mapping.mapping_status.eq("accepted")].copy()
+    prior = prior_mapping[prior_mapping.mapping_status.eq("accepted")].copy()
+    if "universe_year" in prior:
+        prior = prior[prior.universe_year.eq(2025)].copy()
+    # The current bridge export is already dated to 2026. It is accepted only
+    # after the same-ticker and same-ISIN intersection below, never by ticker
+    # name alone.
     carried = equities.merge(prior, on=["ticker", "isin"], how="inner", suffixes=("", "_prior"))
     carried["universe_year"] = 2026
     carried["decision_date"] = universe.decision_date.iloc[0]
@@ -49,6 +55,47 @@ def _partial_prices(cache_dir: Path, tickers: set[str], start: pd.Timestamp) -> 
     return quotations.pivot_table(index="trade_date", columns="ticker", values="close_price_brl", aggfunc="last").sort_index()
 
 
+def monitoring_by_profile(prices: pd.DataFrame, decision: pd.Timestamp, raw_path: Path) -> dict:
+    """Calculate the ongoing return for every published policy.
+
+    Equity sleeves use B3 closing prices, without cash distributions.  The
+    defensive sleeve uses the official CDI daily series.  Both sleeves start
+    on the decision date and are combined with their *initial* policy weights,
+    so the monitor never borrows the Equilibrado result for another profile.
+    """
+    complete = prices.dropna(axis=1, how="any")
+    if complete.empty or len(complete) < 2:
+        return {"through": None, "profiles": {}, "label": "Dados de preço insuficientes para o acompanhamento."}
+    equity_return = float((complete.iloc[-1] / complete.iloc[0]).mean() - 1)
+    through = pd.Timestamp(complete.index.max()).normalize()
+    cdi_levels = _fetch_cdi(decision, through, raw_path)
+    cdi_levels = cdi_levels.reindex(complete.index).ffill().bfill()
+    if cdi_levels.isna().any() or len(cdi_levels) < 2:
+        raise ValueError("Série CDI incompleta no período de acompanhamento")
+    cdi_return = float(cdi_levels.iloc[-1] / cdi_levels.iloc[0] - 1)
+    policies = {
+        "conservador": {"equity_cap": .35, "issuer_cap": .10},
+        "equilibrado": {"equity_cap": .55, "issuer_cap": .12},
+        "arrojado": {"equity_cap": .80, "issuer_cap": .15},
+    }
+    profiles = {}
+    for name, policy in policies.items():
+        equity_weight = min(policy["equity_cap"], len(complete.columns) * policy["issuer_cap"])
+        cdi_weight = 1 - equity_weight
+        profiles[name] = {
+            "equity_weight": equity_weight,
+            "cdi_weight": cdi_weight,
+            "equity_price_return": equity_return,
+            "cdi_return": cdi_return,
+            "portfolio_partial_return": equity_weight * equity_return + cdi_weight * cdi_return,
+        }
+    return {
+        "through": str(through.date()),
+        "profiles": profiles,
+        "label": "Resultado parcial: preços de fechamento B3 nas ações e CDI diário do BCB. Ações ainda não incluem proventos.",
+    }
+
+
 def build_current_decision(price_path: str | Path, universe_path: str | Path, mapping_path: str | Path,
                            cvm_cache_dir: str | Path, b3_cache_dir: str | Path, output: str | Path) -> dict:
     cvm_cache = Path(cvm_cache_dir); b3_cache = Path(b3_cache_dir); destination = Path(output); destination.mkdir(parents=True, exist_ok=True)
@@ -66,11 +113,11 @@ def build_current_decision(price_path: str | Path, universe_path: str | Path, ma
     # the most liquid mapped issuers first yields a reviewable decision
     # universe without turning a published research refresh into an opaque,
     # multi-hour batch job. The inventory itself is still complete.
-    liquid_mapped = liquid_universe.merge(mapping[["universe_year", "ticker"]], on=["universe_year", "ticker"], how="inner")
-    selection_universe = (liquid_mapped.sort_values("average_daily_value_brl", ascending=False)
-                           .head(20).drop(columns=[]))
-    selection_universe = universe.merge(selection_universe[["universe_year", "ticker"]], on=["universe_year", "ticker"], how="inner")
-    fundamentals, coverage = build_full_panel(selection_universe, mapping, 2026, 2026, cvm_cache)
+    # An earlier version built a twenty-name shortlist and then immediately
+    # rebuilt the full liquid panel over it, so the shortlist was dead work and
+    # the published metadata reported a universe the run had not used.
+    selection_universe = liquid_universe.merge(mapping[["universe_year", "ticker"]],
+                                               on=["universe_year", "ticker"], how="inner")
     fundamentals, coverage = build_full_panel(liquid_universe, mapping, 2026, 2026, cvm_cache)
     fundamentals.to_csv(destination / "fundamentals_2026.csv", index=False)
     coverage.to_csv(destination / "fundamental_coverage_2026.csv", index=False)
@@ -86,7 +133,7 @@ def build_current_decision(price_path: str | Path, universe_path: str | Path, ma
     known = [item for item in known if item.ticker in complete]
     source_columns = [columns[ticker] for ticker in complete]
     history = prior_prices.loc[sessions, [*source_columns, "TITULO_CDI"]].rename(columns={columns[ticker]: ticker for ticker in complete}).pct_change().dropna()
-    protocol = AnnualWalkForwardConfig(2026, 2027, factor="value_quality", maximum_equity_weight=.55, maximum_asset_weight=.12, top_assets=4)
+    protocol = AnnualWalkForwardConfig(2026, 2027, factor="triple_factor", maximum_equity_weight=.55, maximum_asset_weight=.12, top_assets=5)
     planner_config = replace(SystemConfig(), rolling_window_days=252, max_asset_weight=.12)
     scores = engine.factor_scores(history, "value_quality")
     proposal = ValuePortfolioPlanner(planner_config).propose(history.tail(252), known, decision,
@@ -101,26 +148,25 @@ def build_current_decision(price_path: str | Path, universe_path: str | Path, ma
     targets = proposal.weights.reindex(active, fill_value=0.0)
     # A listed company may have more than one share class.  Treating them as
     # independent positions would disguise concentration, so retain only the
-    # best-scored class per CVM issuer and cap the published candidate at four
+    # best-scored class per CVM issuer and cap the published candidate at five
     # issuers.  The remaining weight is the explicit CDI reserve.
     issuer_lookup = mapping[["ticker", "cnpj_cia"]].drop_duplicates("ticker")
     ranked = (proposal.screen[proposal.screen.eligible]
               .merge(issuer_lookup, on="ticker", how="left")
               .sort_values("value_quality_score", ascending=False)
               .drop_duplicates("cnpj_cia")
-              .head(4))
+              .head(5))
     selected = ranked.reset_index(drop=True)
     targets = pd.Series(0.0, index=active)
     for ticker in selected.ticker:
         targets.loc[ticker] = .12
     targets.loc["TITULO_CDI"] = 1 - float(targets.drop("TITULO_CDI", errors="ignore").sum())
-    # Official B3 partial-year price monitoring.  This is intentionally not compared to total-return history.
+    # Official B3 partial-year monitoring. Equity performance remains
+    # price-only until corporate events are reconciled, while the CDI sleeve
+    # is calculated from the official daily BCB series.
     partial = _partial_prices(b3_cache, set(selected.ticker), decision)
-    available = partial.dropna(how="all")
-    selected_columns = [ticker for ticker in selected.ticker if ticker in available.columns]
-    partial_returns = available[selected_columns].pct_change().dropna()
-    price_return = float((1 + partial_returns @ targets.reindex(selected_columns, fill_value=0.0)).prod() - 1) if not partial_returns.empty else None
-    last_observation = str(available.index.max().date()) if not available.empty else None
+    available = partial.dropna(axis=1, how="all")
+    monitoring = monitoring_by_profile(available, decision, destination / "bcb_sgs_12_cdi_2026.json")
     holdings = []
     for item in selected.itertuples(index=False):
         holdings.append({"ticker": item.ticker.removesuffix(".SA"), "weight": float(targets[item.ticker]),
@@ -134,8 +180,7 @@ def build_current_decision(price_path: str | Path, universe_path: str | Path, ma
                      "screened_with_complete_price_history": int(len(known)), "eligible_after_screen": int(len(eligible))},
         "method": ["universo B3 datado", "ponte B3/CVM por ticker e ISIN", "ITR/DFP disponível até a decisão", "liquidez, valor, qualidade e limites de concentração"],
         "holdings": holdings, "cdi_weight": cdi_weight,
-        "monitoring": {"through": last_observation, "portfolio_price_return": price_return,
-                       "label": "Retorno parcial por preço B3; não inclui proventos e não é comparável ao retorno total histórico."},
+        "monitoring": monitoring,
         "limitations": ["Não é recomendação individual ou ordem.", "O universo completo é inventariado; nesta versão, a seleção de ações exige ponte B3/CVM e fundamentos comparáveis.", "Acompanhamento de 2026 usa preço oficial B3 sem ajuste de proventos; reconciliação é necessária antes de qualquer alegação institucional."],
     }
     (destination / "current_decision_2026.json").write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")

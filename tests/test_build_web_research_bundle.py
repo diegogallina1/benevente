@@ -36,7 +36,7 @@ def test_bundle_carries_source_qualification_and_holdout_status(tmp_path: Path):
     assert result["meta"]["strategy"] == "Valor e qualidade"
 
 
-def test_bundle_aligns_ibovespa_price_index_to_annual_decision_dates(tmp_path: Path):
+def test_bundle_aligns_ibovespa_to_annual_decision_dates_as_a_total_return_index(tmp_path: Path):
     source = tmp_path / "run"; source.mkdir()
     pd.DataFrame([
         {"decision_year": 2024, "decision_date": "2024-01-02", "holding_end_exclusive": "2025-01-02", "net_return": .1, "mvo_eligible_net_return": .08, "cdi_net_return": .06},
@@ -48,7 +48,12 @@ def test_bundle_aligns_ibovespa_price_index_to_annual_decision_dates(tmp_path: P
     pd.DataFrame({"Date": ["2024-01-02", "2025-01-02"], "IBOVESPA": [100000, 120000]}).to_csv(ibov, index=False)
     result = build_web_research_bundle(source, tmp_path / "research.json", ibovespa_price_input=ibov)
     assert result["meta"]["ibovespa"]["values_base_100"] == [100.0, 120.0]
-    assert "índice de preço" in result["meta"]["ibovespa"]["limitation"].lower()
+    # B3 computes the Ibovespa as a total-return index. The bundle used to warn
+    # that it excluded proventos, which understated the bar the strategy had to
+    # clear; the caveat must now point at investability instead.
+    limitation = result["meta"]["ibovespa"]["limitation"].lower()
+    assert "índice de preço" not in limitation
+    assert "retorno total" in limitation and "bova11" in limitation
 
 
 def test_bundle_includes_profile_specific_history_when_sources_are_provided(tmp_path: Path):
@@ -61,4 +66,4 @@ def test_bundle_includes_profile_specific_history_when_sources_are_provided(tmp_
         (root / "protocol.json").write_text(json.dumps({"factor": "value_quality"}), encoding="utf-8")
     result = build_web_research_bundle(source, tmp_path / "research.json", profile_sources={"conservador": conservative})
     assert result["profiles"]["conservador"]["annual"][0]["net_return"] == .07
-    assert result["profile_curves"]["conservador"]["series"]["Benevente Quant AI"] == [100.0, 107.0]
+    assert result["profile_curves"]["conservador"]["series"]["Benevente Wealth System"] == [100.0, 107.0]

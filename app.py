@@ -99,7 +99,7 @@ def render_home() -> None:
     with learn:
         st.markdown("<p class='note'><b>O que está operante:</b> filtros de valor/qualidade, limites, custos e auditoria. A futura camada LLM será apenas explicativa: nunca altera pesos ou envia ordens.</p>", unsafe_allow_html=True)
     st.subheader("Princípios de confiança")
-    st.markdown("<span class='badge'>Dados ponto-no-tempo</span><span class='badge'>Revisão humana obrigatória</span><span class='badge'>Custos Clear/B3 modelados</span><span class='badge'>Trilha de auditoria</span>", unsafe_allow_html=True)
+    st.markdown("<span class='badge'>Dados datados</span><span class='badge'>Revisão humana obrigatória</span><span class='badge'>Custos Clear/B3 modelados</span><span class='badge'>Trilha de auditoria</span>", unsafe_allow_html=True)
 
 
 def render_builder() -> None:
@@ -135,7 +135,7 @@ def render_builder() -> None:
             decision_date = d1.date_input("Data de decisão", value=date.today())
             d2.markdown("<p class='note'>Necessários: <b>histórico de preços</b> com <code>date</code>, tickers e <code>TITULO_CDI</code>; e <b>fundamentos</b> com data de disponibilidade e fonte.</p>", unsafe_allow_html=True)
             prices_upload = st.file_uploader("Histórico de preços (.csv)", type=["csv"])
-            fundamentals_upload = st.file_uploader("Fundamentos ponto-no-tempo (.csv)", type=["csv"])
+            fundamentals_upload = st.file_uploader("Fundamentos com data de disponibilidade (.csv)", type=["csv"])
             universe_upload = st.file_uploader(
                 "Universo B3 datado (.csv, opcional)", type=["csv"],
                 help="Inclua ações, ETFs, BDRs, FIIs e renda fixa com classe, fonte e data. O sistema registra a cobertura; somente ações com fundamentos e preços completos podem entrar nesta versão do otimizador.",

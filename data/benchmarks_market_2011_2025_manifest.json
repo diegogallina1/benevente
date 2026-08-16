@@ -1,0 +1,25 @@
+{
+  "extraction_timestamp": "2026-08-16T00:52:40Z",
+  "provider": "Yahoo Finance via yfinance",
+  "references": {
+    "IBOVESPA": {
+      "symbol": "^BVSP",
+      "basis": "total_return_index",
+      "investable": false,
+      "note": "B3 computes the Ibovespa as a total-return index: proventos are reinvested in the index. It is therefore directly comparable with an adjusted-close equity panel.",
+      "first_date": "2011-01-03",
+      "last_date": "2025-12-30",
+      "observations": 3718
+    },
+    "BOVA11": {
+      "symbol": "BOVA11.SA",
+      "basis": "total_return_etf_adjusted_close",
+      "investable": true,
+      "note": "iShares Ibovespa ETF. The quoted price is already net of the fund's management fee, so this is the investable bar. Brokerage, spread and tax on redemption are still outside the series.",
+      "first_date": "2011-01-03",
+      "last_date": "2025-12-30",
+      "observations": 3726
+    }
+  },
+  "comparison_rule": "Every reference is evaluated on the same decision and holding-end dates as the strategy. Comparing different windows is the most common way an equity curve is made to look good."
+}

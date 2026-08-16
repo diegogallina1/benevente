@@ -11,3 +11,9 @@ artifacts/
 .pytest_cache/
 data/prices_yahoo_adjusted_total_return_*.csv
 data/yahoo_adjusted_total_return_*_manifest.json
+# Painéis de preço derivados: reconstruíveis por build_b3_total_return_panel.py
+# a partir do COTAHIST em cache. Os manifestos ficam versionados porque contêm
+# o SHA-256 que identifica exatamente qual arquivo gerou cada resultado.
+data/prices_b3_total_return_full_*.csv
+data/prices_b3_price_return_full_*.csv
+data/prices_b3_cotahist_2011_2026.csv
