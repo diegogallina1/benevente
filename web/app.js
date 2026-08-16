@@ -199,7 +199,9 @@ function activeProfileKey() {
 }
 
 function activeProfileLabel() {
-  return ({ conservador: "Conservador", moderado: "Equilibrado", arrojado: "Arrojado" })[currentProfile] || "Equilibrado";
+  // The three-profile ladder was withdrawn when the issuer cap was found to
+  // invert it. One published portfolio, one name.
+  return "Carteira Benevente";
 }
 
 function activePolicy() {

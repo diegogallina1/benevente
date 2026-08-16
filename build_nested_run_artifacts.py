@@ -16,9 +16,32 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 
 import pandas as pd
+
+
+def _configuration_limits(name: str) -> dict:
+    """Recover the policy limits encoded in a configuration name.
+
+    Names look like ``eq55_n5_triple_factor``: equity budget, holding count and
+    signal. The issuer ceiling is derived from the first two by the same rule
+    the search used, so the published protocol always agrees with the run.
+    """
+    from research_configuration_search import ISSUER_CAP_SLACK, MAXIMUM_ISSUER_CAP
+
+    match = re.match(r"eq(\d+)_n(\d+)_(.+)", name)
+    if not match:
+        return {}
+    equity = int(match.group(1)) / 100
+    count = int(match.group(2))
+    return {
+        "maximum_equity_weight": round(equity, 6),
+        "top_assets": count,
+        "maximum_asset_weight": round(min(MAXIMUM_ISSUER_CAP, equity / count * ISSUER_CAP_SLACK), 6),
+        "signal": match.group(3),
+    }
 
 
 def stitch_annual(selection: pd.DataFrame, runs: dict[str, Path]) -> pd.DataFrame:
@@ -124,10 +147,17 @@ def main() -> None:
     daily = stitch_daily(selection, runs)
     if not daily.empty:
         daily.to_csv(output / "daily_curve.csv", index=False)
+    # The live configuration's limits travel with the protocol. Without them the
+    # page that prints "até X em renda variável e Y por emissor" has nothing to
+    # read and renders NaN, which in a financial product reads as a broken
+    # system rather than a missing field.
+    live = str(selection.selected_configuration.iloc[-1])
+    live_limits = _configuration_limits(live)
     protocol = {
         "factor": "nested_configuration_selection",
         "start_year": int(annual.decision_year.min()),
         "end_year": int(annual.decision_year.max()) + 1,
+        **live_limits,
         "selection_rule": ("For decision year t the configuration is ranked on years before t only, by Sharpe of the "
                            "excess return over CDI. Switching configurations is charged a full-turnover rebalance."),
         "configurations_by_year": {int(row.decision_year): row.selected_configuration for row in selection.itertuples(index=False)},

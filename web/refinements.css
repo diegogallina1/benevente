@@ -46,3 +46,12 @@ body{font-size:15px}.hero{grid-template-columns:minmax(0,42rem);min-height:auto}
 
 .profile-picker{display:none}
 .single-policy-note{margin:.5rem 0 0;color:#54706a;font-size:.78rem;line-height:1.5}
+
+/* Hero answers, added 2026-08-16 after a first-visit review found the page
+   explained the method better than the offer. Three lines, plain language,
+   above every technical proof on the page. */
+.hero-answers{list-style:none;margin:1.4rem 0 0;padding:0;display:grid;gap:.55rem;max-width:44rem}
+.hero-answers li{position:relative;padding-left:1rem;color:#4f6259;font-size:.86rem;line-height:1.6}
+.hero-answers li::before{content:"";position:absolute;left:0;top:.62em;width:.32rem;height:.32rem;border-radius:50%;background:#0f766e}
+.hero-answers b{color:#12312d;font-weight:800;margin-right:.3rem}
+@media(max-width:560px){.hero-answers li{font-size:.81rem}}

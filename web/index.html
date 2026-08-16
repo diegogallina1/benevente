@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./enhancements.css" />
     <link rel="stylesheet" href="./lab.css" />
     <link rel="stylesheet" href="./commercial.css" />
+    <link rel="stylesheet" href="./paper.css" />
     <link rel="stylesheet" href="./refinements.css" />
   </head>
   <body>
@@ -21,8 +22,8 @@
       <nav aria-label="Navegação principal">
         <a href="#laboratorio">Testar</a>
         <a href="#comparar">Resultados</a>
-        <a href="./quant-ai">IEEE CiFEr</a>
-        <a href="./btech">Fucape BTech</a>
+        <a href="./quant-ai">Evidência científica</a>
+        <a href="./btech">O produto</a>
         <a href="#modelo">Método</a>
       </nav>
       <a class="nav-cta" href="#contato">Falar com a equipe <span>↗</span></a>
@@ -31,9 +32,14 @@
     <main id="inicio">
       <section class="hero shell">
         <div class="hero-copy">
-          <p class="eyebrow"><span></span> Benevente Wealth System · B2B institucional</p>
-          <h1>Qual carteira, por quê,<br /><em>e quem aprovou.</em></h1>
-          <p class="lede">Toda decisão sai com os dados que existiam na data, o motivo de cada ativo entrar ou sair, e o retorno depois dos custos e do imposto.</p>
+          <p class="eyebrow"><span></span> Benevente Wealth System · software B2B</p>
+          <h1>Software para documentar, testar<br /><em>e justificar decisões de carteira.</em></h1>
+          <p class="lede">Um escritório que recomenda carteira precisa responder, meses depois: quais dados existiam na data, qual regra foi aplicada e quem aprovou. Planilha não responde nenhuma das três. O Benevente entrega a proposta já com essas respostas anexadas.</p>
+          <ul class="hero-answers">
+            <li><b>O que é</b> Um espaço de pesquisa e governança de carteira, instalado sobre dados públicos da B3, da CVM e do Banco Central.</li>
+            <li><b>Para quem</b> Gestoras, multi-family offices e assessorias que respondem por carteira de cliente.</li>
+            <li><b>O que entrega</b> Carteira proposta, motivo de cada ativo, custo e imposto estimados, e trilha de auditoria com hash de cada arquivo.</li>
+          </ul>
           <div class="hero-actions">
             <a class="button button-primary" href="#laboratorio">Testar <span>→</span></a>
             <a class="text-link" href="#contato">Falar com a equipe <span>→</span></a>
@@ -42,13 +48,17 @@
       </section>
 
       <section class="proof shell" aria-label="Resumo do produto">
-        <div><strong>3</strong><span>perfis de risco</span></div>
-        <div><strong>11</strong><span>decisões anuais</span></div>
-        <p>Para gestoras, multi-family offices e assessorias que respondem por carteira de cliente.</p>
+        <div><strong>10</strong><span>decisões anuais auditadas</span></div>
+        <div><strong>497</strong><span>emissores no painel, com os deslistados</span></div>
+        <p>Cada decisão foi congelada em janeiro e só depois teve o resultado apurado.</p>
+      </section>
+
+      <section class="shell" aria-label="Carteira em operação" style="padding:1.5rem 0 0">
+        <div id="live-portfolio"></div>
       </section>
 
       <section class="research-signal shell" aria-label="Estado atual da pesquisa">
-        <div class="research-signal-lede"><span>ESTADO DA PESQUISA</span><strong>2015–2025</strong><p>11 decisões anuais. Cada uma usa apenas dados disponíveis no início do ano.</p></div>
+        <div class="research-signal-lede"><span>ESTADO DA PESQUISA</span><strong>2016–2025</strong><p>10 decisões anuais. Cada uma usa apenas dados disponíveis no início do ano.</p></div>
         <div><span>ESTRATÉGIA ATUAL</span><strong>Seleção aninhada</strong><p>O fator de cada ano é escolhido só com os anos já encerrados. Cinco ações, com custos, imposto e limites por perfil.</p></div>
         <div><span>BASE DE PREÇOS</span><strong>358</strong><p>Instrumentos com retorno ajustado na pesquisa pública.</p></div>
         <div><span>REGRA MÍNIMA</span><strong>5 ações</strong><p>Uma classe por emissor na pesquisa quantitativa mais recente.</p></div>
@@ -111,7 +121,7 @@
           <div class="comparison-foot"><span><i>✓</i> Integridade validada: disponibilidade dos fundamentos, pesos, custos e recomposição.</span><span>Fontes: CVM, BCB e preços históricos documentados</span></div>
         </div>
         <p class="research-note" id="research-note">Leitura correta: esta é uma hipótese de pesquisa. A página calcula janelas com o arquivo anual auditado e não declara superioridade consistente se ela não estiver presente.</p>
-        <div class="benchmark-panel candidate-disclosure"><div><span class="control-label">COMO LER</span><h3>CDI é a referência de liquidez. MVO é a alocação quantitativa neutra.</h3><p>Compare apenas a mesma janela. A base auditada cobre 2015–2025; 2026 ainda não é retorno anual fechado.</p></div><div class="benchmark-actions"><a class="button button-secondary" href="./metodo.html">Ver método <span>→</span></a></div></div>
+        <div class="benchmark-panel candidate-disclosure"><div><span class="control-label">COMO LER</span><h3>CDI é o rendimento do caixa, a referência que qualquer carteira precisa superar para valer a pena. MVO de referência é uma carteira quantitativa neutra, montada sobre os mesmos ativos elegíveis sem nenhum palpite nosso — serve para mostrar quanto da diferença vem da seleção e quanto viria de qualquer otimizador.</h3><p>Compare apenas a mesma janela. A base auditada cobre 2015–2025; 2026 ainda não é retorno anual fechado.</p></div><div class="benchmark-actions"><a class="button button-secondary" href="./metodo.html">Ver método <span>→</span></a></div></div>
       </section>
 
       <section class="model-shell" id="modelo">
@@ -139,5 +149,6 @@
 
     <footer class="footer"><div class="shell"><a class="brand" href="#inicio"><span class="brand-mark">B</span><span>Benevente</span></a><p><b>Benevente Wealth System</b> · solução B2B para instituições que respondem por decisões de carteira<br /><b>Benevente Quant AI</b> · versão acadêmica e pesquisa reproduzível</p><span>© 2026 Benevente</span></div></footer>
     <script src="./app.js"></script>
+    <script src="./paper.js"></script>
   </body>
 </html>
