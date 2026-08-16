@@ -687,7 +687,11 @@ document.querySelector("#chart-add-form").addEventListener("submit", async event
 });
 document.querySelector("#decision-year").addEventListener("change", renderAssetWorkbench);
 
-document.querySelector("#demo-request-form").addEventListener("submit", async event => {
+// O formulário de demonstração só existe onde há convite comercial. Enquanto
+// o projeto está em pesquisa, a home não o carrega, e sem esta guarda o
+// addEventListener em null derrubaria todo o script registrado adiante.
+const demoForm = document.querySelector("#demo-request-form");
+if (demoForm) demoForm.addEventListener("submit", async event => {
   event.preventDefault();
   const form = event.currentTarget;
   const response = document.querySelector("#demo-form-response");
