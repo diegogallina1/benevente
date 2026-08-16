@@ -1,0 +1,40 @@
+/* Shared shell for the two paper-facing pages. They are argument pages, not
+   product pages: a reader arrives from a call for papers or a committee and
+   wants the claim, the evidence and the limits, in that order. */
+.paper-nav{padding:1.1rem 0;border-bottom:1px solid #dce4df;display:flex;gap:1.4rem;align-items:center;flex-wrap:wrap}
+.paper-nav a{color:#174e49;text-decoration:none;font-weight:700;font-size:.86rem}
+.paper-nav a.current{color:#0f766e;border-bottom:2px solid #0f766e;padding-bottom:.2rem}
+.paper-page{max-width:900px;padding:4.5rem 0 6rem}
+.paper-page h1{font-size:clamp(2.2rem,5.4vw,3.9rem);letter-spacing:-.055em;line-height:1.05;margin:.6rem 0 1rem}
+.paper-page h2{font-size:1.45rem;letter-spacing:-.03em;margin:3.2rem 0 .8rem;color:#12312d}
+.paper-page h3{font-size:1.02rem;margin:1.8rem 0 .4rem;color:#174e49}
+.paper-page p,.paper-page li{color:#4f6259;line-height:1.78;max-width:790px}
+.paper-page li+li{margin-top:.45rem}
+.paper-lede{font-size:1.12rem;color:#3d5952}
+.paper-callout{margin:1.8rem 0;padding:1.25rem 1.5rem;background:#e8f1ec;border-left:3px solid #1d5c56}
+.paper-callout b{display:block;color:#174e49;margin-bottom:.35rem}
+.paper-callout.warn{background:#fbf1e8;border-left-color:#a9642f}
+.paper-callout.warn b{color:#8a4f22}
+.paper-table{width:100%;border-collapse:collapse;margin:1.4rem 0;font-size:.86rem}
+.paper-table th{text-align:left;font:700 .68rem "DM Mono",monospace;letter-spacing:.06em;color:#6d8290;padding:0 .6rem .7rem 0;text-transform:uppercase}
+.paper-table td{padding:.62rem .6rem .62rem 0;border-top:1px solid #e6edea;color:#4f6259;vertical-align:top}
+.paper-table td:first-child{font-weight:700;color:#12312d}
+.paper-table td.num{font-family:"DM Mono",monospace;white-space:nowrap}
+.paper-table tr.highlight td{background:#f2f8f5}
+.paper-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.8rem;margin:1.6rem 0}
+.paper-metric{border:1px solid #d9e6e0;border-radius:11px;padding:.9rem 1rem;background:#fff}
+.paper-metric span{display:block;font:700 .62rem "DM Mono",monospace;letter-spacing:.08em;color:#6d8290;text-transform:uppercase}
+.paper-metric b{display:block;font:800 1.5rem/1.15 "DM Mono",monospace;color:#0f766e;margin:.35rem 0 .2rem}
+.paper-metric small{display:block;color:#6b8078;font-size:.71rem;line-height:1.45}
+.paper-metric.negative b{color:#a9412f}
+.paper-portfolio{border:1px solid #d9e6e0;border-radius:13px;padding:1.3rem 1.5rem;background:#f9fcfa;margin:1.6rem 0}
+.paper-portfolio h3{margin-top:0}
+.paper-holdings{display:grid;gap:.45rem;margin:1rem 0 0}
+.paper-holding{display:grid;grid-template-columns:5.2rem 1fr 4.2rem;gap:.7rem;align-items:center;font-size:.83rem}
+.paper-holding b{font:700 .85rem "DM Mono",monospace;color:#12312d}
+.paper-holding .bar{height:9px;border-radius:20px;background:#e3ece7;overflow:hidden}
+.paper-holding .bar i{display:block;height:100%;border-radius:20px;background:#0f766e}
+.paper-holding .bar.cash i{background:#3b779a}
+.paper-holding span{font:.78rem "DM Mono",monospace;color:#52706a;text-align:right}
+.paper-foot{margin-top:3.5rem;padding-top:1.4rem;border-top:1px solid #dce4df;color:#7c8f88;font-size:.78rem;line-height:1.7}
+@media(max-width:640px){.paper-page{padding:3rem 0 4rem}.paper-table{font-size:.79rem}.paper-holding{grid-template-columns:4.4rem 1fr 3.6rem}}

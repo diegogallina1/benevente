@@ -25,6 +25,15 @@ from optimizer import MeanVarianceOptimizer
 from portfolio_recommendation import ValuePortfolioPlanner
 
 
+# The configuration the nested search left live for 2026. Kept here as named
+# constants so the published book, the frozen registration and the site copy
+# cannot drift apart silently.
+LIVE_FACTOR = "triple_factor"
+LIVE_EQUITY_CAP = .55
+LIVE_ISSUER_CAP = .176
+LIVE_TOP_ASSETS = 5
+
+
 def current_mapping(universe: pd.DataFrame, prior_mapping: pd.DataFrame) -> pd.DataFrame:
     """Carry only an already-audited B3/CVM bridge with the same ticker *and* ISIN."""
     equities = universe[universe.asset_class.eq("equity")][["ticker", "isin"]].copy()
@@ -55,7 +64,8 @@ def _partial_prices(cache_dir: Path, tickers: set[str], start: pd.Timestamp) -> 
     return quotations.pivot_table(index="trade_date", columns="ticker", values="close_price_brl", aggfunc="last").sort_index()
 
 
-def monitoring_by_profile(prices: pd.DataFrame, decision: pd.Timestamp, raw_path: Path) -> dict:
+def monitoring_by_profile(prices: pd.DataFrame, decision: pd.Timestamp, raw_path: Path,
+                          target_weights: pd.Series | None = None) -> dict:
     """Calculate the ongoing return for every published policy.
 
     Equity sleeves use B3 closing prices, without cash distributions.  The
@@ -66,21 +76,30 @@ def monitoring_by_profile(prices: pd.DataFrame, decision: pd.Timestamp, raw_path
     complete = prices.dropna(axis=1, how="any")
     if complete.empty or len(complete) < 2:
         return {"through": None, "profiles": {}, "label": "Dados de preço insuficientes para o acompanhamento."}
-    equity_return = float((complete.iloc[-1] / complete.iloc[0]).mean() - 1)
+    # Weight each holding by the weight actually published, not by an equal
+    # split. The book is score-tilted inside the issuer cap, so an equal-weight
+    # monitor would report a portfolio nobody holds.
+    weights = (target_weights.reindex(complete.columns).fillna(0.0) if target_weights is not None
+               else pd.Series(1.0 / len(complete.columns), index=complete.columns))
+    equity_weight_total = float(weights.sum())
+    normalised = weights / equity_weight_total if equity_weight_total > 0 else weights
+    growth = complete.iloc[-1] / complete.iloc[0]
+    equity_return = float((growth * normalised).sum() - 1)
     through = pd.Timestamp(complete.index.max()).normalize()
     cdi_levels = _fetch_cdi(decision, through, raw_path)
     cdi_levels = cdi_levels.reindex(complete.index).ffill().bfill()
     if cdi_levels.isna().any() or len(cdi_levels) < 2:
         raise ValueError("Série CDI incompleta no período de acompanhamento")
     cdi_return = float(cdi_levels.iloc[-1] / cdi_levels.iloc[0] - 1)
-    policies = {
-        "conservador": {"equity_cap": .35, "issuer_cap": .10},
-        "equilibrado": {"equity_cap": .55, "issuer_cap": .12},
-        "arrojado": {"equity_cap": .80, "issuer_cap": .15},
-    }
+    # One published policy. The three-profile ladder was withdrawn because the
+    # issuer cap interacted with the equity budget and inverted it: the
+    # conservative book kept its conviction tilt while the aggressive one had
+    # every name pinned at the cap and became equal weight.
+    policies = {"benevente": {"equity_cap": LIVE_EQUITY_CAP, "issuer_cap": LIVE_ISSUER_CAP}}
     profiles = {}
     for name, policy in policies.items():
-        equity_weight = min(policy["equity_cap"], len(complete.columns) * policy["issuer_cap"])
+        equity_weight = equity_weight_total if target_weights is not None else min(
+            policy["equity_cap"], len(complete.columns) * policy["issuer_cap"])
         cdi_weight = 1 - equity_weight
         profiles[name] = {
             "equity_weight": equity_weight,
@@ -133,44 +152,42 @@ def build_current_decision(price_path: str | Path, universe_path: str | Path, ma
     known = [item for item in known if item.ticker in complete]
     source_columns = [columns[ticker] for ticker in complete]
     history = prior_prices.loc[sessions, [*source_columns, "TITULO_CDI"]].rename(columns={columns[ticker]: ticker for ticker in complete}).pct_change().dropna()
-    protocol = AnnualWalkForwardConfig(2026, 2027, factor="triple_factor", maximum_equity_weight=.55, maximum_asset_weight=.12, top_assets=5)
-    planner_config = replace(SystemConfig(), rolling_window_days=252, max_asset_weight=.12)
-    scores = engine.factor_scores(history, "value_quality")
-    proposal = ValuePortfolioPlanner(planner_config).propose(history.tail(252), known, decision,
-                                                              maximum_equity_weight=.55, maximum_asset_weight=.12,
-                                                              scores_override=scores)
-    eligible = set(proposal.screen.loc[proposal.screen.eligible, "ticker"])
+    # The live configuration frozen by the nested search: the triple-factor
+    # rule over five issuers, 55% equity, and an issuer cap with enough slack
+    # that it never binds mechanically. An earlier version declared this
+    # protocol and then scored with value/quality and a 12% cap, so the
+    # published 2026 book did not match the rule the site was publishing.
+    protocol = AnnualWalkForwardConfig(2026, 2027, factor=LIVE_FACTOR, maximum_equity_weight=LIVE_EQUITY_CAP,
+                                       maximum_asset_weight=LIVE_ISSUER_CAP, top_assets=LIVE_TOP_ASSETS)
+    planner_config = replace(SystemConfig(), rolling_window_days=252, max_asset_weight=LIVE_ISSUER_CAP)
     active = list(history.columns)
+    issuer_lookup = mapping[["ticker", "cnpj_cia"]].drop_duplicates("ticker")
+    issuer_ids = {row.ticker: str(row.cnpj_cia) for row in issuer_lookup.itertuples(index=False)}
+    proposal = engine.triple_factor_proposal(history.tail(252), known, decision,
+                                             pd.Series(0.0, index=active), protocol,
+                                             float(SystemConfig().initial_portfolio_value_brl), issuer_ids)
+    eligible = set(proposal.screen.loc[proposal.screen.eligible, "ticker"])
     mvo_columns = [ticker for ticker in active if ticker == "TITULO_CDI" or ticker in eligible]
     mvo = MeanVarianceOptimizer(planner_config).optimize(history.loc[:, mvo_columns].tail(252),
-                                                          {ticker: 0.0 for ticker in mvo_columns}, equity_cap=.55,
+                                                          {ticker: 0.0 for ticker in mvo_columns}, equity_cap=LIVE_EQUITY_CAP,
                                                           signal_influence=0.0, eligible_assets=eligible).reindex(active, fill_value=0.0)
     targets = proposal.weights.reindex(active, fill_value=0.0)
-    # A listed company may have more than one share class.  Treating them as
-    # independent positions would disguise concentration, so retain only the
-    # best-scored class per CVM issuer and cap the published candidate at five
-    # issuers.  The remaining weight is the explicit CDI reserve.
-    issuer_lookup = mapping[["ticker", "cnpj_cia"]].drop_duplicates("ticker")
-    ranked = (proposal.screen[proposal.screen.eligible]
-              .merge(issuer_lookup, on="ticker", how="left")
-              .sort_values("value_quality_score", ascending=False)
-              .drop_duplicates("cnpj_cia")
-              .head(5))
-    selected = ranked.reset_index(drop=True)
-    targets = pd.Series(0.0, index=active)
-    for ticker in selected.ticker:
-        targets.loc[ticker] = .12
-    targets.loc["TITULO_CDI"] = 1 - float(targets.drop("TITULO_CDI", errors="ignore").sum())
+    held = [ticker for ticker in targets.index if ticker != "TITULO_CDI" and targets[ticker] > 1e-6]
+    selected = (proposal.screen[proposal.screen.ticker.isin(held)]
+                .merge(issuer_lookup, on="ticker", how="left")
+                .sort_values("factor_score", ascending=False)
+                .reset_index(drop=True))
     # Official B3 partial-year monitoring. Equity performance remains
     # price-only until corporate events are reconciled, while the CDI sleeve
     # is calculated from the official daily BCB series.
     partial = _partial_prices(b3_cache, set(selected.ticker), decision)
     available = partial.dropna(axis=1, how="all")
-    monitoring = monitoring_by_profile(available, decision, destination / "bcb_sgs_12_cdi_2026.json")
+    monitoring = monitoring_by_profile(available, decision, destination / "bcb_sgs_12_cdi_2026.json",
+                                       targets.reindex(available.columns).fillna(0.0))
     holdings = []
     for item in selected.itertuples(index=False):
         holdings.append({"ticker": item.ticker.removesuffix(".SA"), "weight": float(targets[item.ticker]),
-                         "score": float(item.value_quality_score), "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
+                         "score": float(item.factor_score), "why": "Aprovado na triagem datada e classificado por qualidade, earnings yield e momento de 12 meses.",
                          "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."})
     cdi_weight = float(targets.get("TITULO_CDI", 0.0))
     result = {

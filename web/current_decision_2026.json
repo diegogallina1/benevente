@@ -8,8 +8,8 @@
     "liquid_equities_examined": 138,
     "mapped_liquid_equities_processed": 126,
     "fundamental_snapshots": 115,
-    "screened_with_complete_price_history": 115,
-    "eligible_after_screen": 29
+    "screened_with_complete_price_history": 114,
+    "eligible_after_screen": 91
   },
   "method": [
     "universo B3 datado",
@@ -19,65 +19,51 @@
   ],
   "holdings": [
     {
-      "ticker": "DIRR3",
-      "weight": 0.12,
-      "score": 0.8226600985221675,
-      "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
-      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
-    },
-    {
-      "ticker": "ABCB4",
-      "weight": 0.12,
-      "score": 0.6798029556650247,
-      "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
-      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
-    },
-    {
-      "ticker": "PETR4",
-      "weight": 0.12,
-      "score": 0.6748768472906405,
-      "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
-      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
-    },
-    {
-      "ticker": "BRSR6",
-      "weight": 0.12,
-      "score": 0.6009852216748769,
-      "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
+      "ticker": "VIVA3",
+      "weight": 0.176,
+      "score": 4.058999501405638,
+      "why": "Aprovado na triagem datada e classificado por qualidade, earnings yield e momento de 12 meses.",
       "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
     },
     {
       "ticker": "CURY3",
-      "weight": 0.12,
-      "score": 0.5862068965517241,
-      "why": "Aprovado no ranking de valor e qualidade, após liquidez e critérios de segurança.",
+      "weight": 0.166174385588229,
+      "score": 2.263544327070749,
+      "why": "Aprovado na triagem datada e classificado por qualidade, earnings yield e momento de 12 meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "CMIN3",
+      "weight": 0.11978639787599599,
+      "score": 1.7575294657429243,
+      "why": "Aprovado na triagem datada e classificado por qualidade, earnings yield e momento de 12 meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "BBSE3",
+      "weight": 0.0651209233899438,
+      "score": 1.161221157154992,
+      "why": "Aprovado na triagem datada e classificado por qualidade, earnings yield e momento de 12 meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "LEVE3",
+      "weight": 0.02291829314583127,
+      "score": 0.7008615006180371,
+      "why": "Aprovado na triagem datada e classificado por qualidade, earnings yield e momento de 12 meses.",
       "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
     }
   ],
-  "cdi_weight": 0.4,
+  "cdi_weight": 0.44999999999999996,
   "monitoring": {
     "through": "2026-08-12",
     "profiles": {
-      "conservador": {
-        "equity_weight": 0.35,
-        "cdi_weight": 0.65,
-        "equity_price_return": -0.017396968274529412,
-        "cdi_return": 0.08532564247679741,
-        "portfolio_partial_return": 0.04937272871383303
-      },
-      "equilibrado": {
+      "benevente": {
         "equity_weight": 0.55,
         "cdi_weight": 0.44999999999999996,
-        "equity_price_return": -0.017396968274529412,
+        "equity_price_return": -0.09484095309477358,
         "cdi_return": 0.08532564247679741,
-        "portfolio_partial_return": 0.02882820656356766
-      },
-      "arrojado": {
-        "equity_weight": 0.75,
-        "cdi_weight": 0.25,
-        "equity_price_return": -0.017396968274529412,
-        "cdi_return": 0.08532564247679741,
-        "portfolio_partial_return": 0.008283684413302295
+        "portfolio_partial_return": -0.013765985087566643
       }
     },
     "label": "Resultado parcial: preços de fechamento B3 nas ações e CDI diário do BCB. Ações ainda não incluem proventos."

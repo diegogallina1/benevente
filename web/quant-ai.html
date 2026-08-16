@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Benevente Quant AI: arquitetura desacoplada entre modelo de linguagem e otimizador convexo, com os controles medidos." />
+    <title>Benevente Quant AI — arquitetura e evidência</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="./commercial.css" />
+    <link rel="stylesheet" href="./paper.css" />
+  </head>
+  <body>
+    <nav class="paper-nav shell">
+      <a href="./">← Benevente Wealth System</a>
+      <a href="./quant-ai" class="current">Quant AI</a>
+      <a href="./btech">BTech</a>
+      <a href="./metodo">Metodologia</a>
+    </nav>
+    <main class="shell paper-page">
+      <p class="eyebrow"><span></span> Benevente Quant AI · pesquisa computacional</p>
+      <h1>Desacoplar o julgamento do modelo da decisão de peso.</h1>
+      <p class="paper-lede">Um modelo de linguagem lê os fatos e devolve um escore de confiança limitado. Quem decide quanto comprar é um solver convexo que enxerga custos e restrições. Esta página mostra a arquitetura, e mostra o que acontece quando ela é submetida aos controles que a literatura da área costuma omitir.</p>
+
+      <h2>A arquitetura</h2>
+      <p>Quatro agentes leem e opinam; nenhum deles é o otimizador. Cada um responde apenas em JSON validado por esquema, e o escore de cada ativo é obrigatoriamente um número em [−1, +1]. Esse escore entra na função objetivo como uma inclinação do retorno esperado, nunca como um peso:</p>
+      <div class="paper-callout"><b>Acoplamento</b>μ<sub>i</sub> ← μ<sub>i</sub> · (1 + λ·c<sub>i</sub>), com c<sub>i</sub> ∈ [−1, +1] e λ fixo. O programa quadrático maximiza μᵀw − (γ/2)·wᵀΣw − κ‖w − w<sub>anterior</sub>‖₁ sujeito a Σw = 1, w ≥ 0, teto de renda variável e teto por emissor. O modelo não pode violar uma restrição porque nunca escreve um peso.</div>
+
+      <h2>Os controles, e o que eles mediram</h2>
+      <p>A mesma decisão de janeiro foi executada em quatro braços sobre o mesmo universo elegível, com os mesmos custos e o mesmo otimizador. Treze decisões anuais na B3, modelo <code>gemini-3.1-flash-lite</code>, temperatura zero, respostas arquivadas por chamada.</p>
+      <table class="paper-table">
+        <thead><tr><th>Braço</th><th>O que muda</th><th>CAGR</th><th>Bate o CDI</th></tr></thead>
+        <tbody>
+          <tr><td>named</td><td>Vê ticker e setor</td><td class="num">13,00%</td><td class="num">7 de 13</td></tr>
+          <tr><td>deterministic</td><td>Fator pré-declarado no lugar do modelo</td><td class="num">12,67%</td><td class="num">8 de 13</td></tr>
+          <tr class="highlight"><td>anonymised</td><td>Só números datados, ativo sem identidade</td><td class="num">12,62%</td><td class="num">10 de 13</td></tr>
+          <tr><td>monolithic</td><td>O modelo devolve os pesos direto</td><td class="num">11,81%</td><td class="num">7 de 13</td></tr>
+          <tr><td>CDI</td><td>—</td><td class="num">9,59%</td><td class="num">—</td></tr>
+        </tbody>
+      </table>
+      <table class="paper-table">
+        <thead><tr><th>Pergunta</th><th>Diferença anual</th><th>p</th><th>Leitura</th></tr></thead>
+        <tbody>
+          <tr><td>O modelo agrega sobre o fator?</td><td class="num">−0,05 pp</td><td class="num">0,99</td><td>Não distinguível de zero</td></tr>
+          <tr><td>Desacoplar vence o prompt monolítico?</td><td class="num">+0,81 pp</td><td class="num">0,78</td><td>Não distinguível de zero</td></tr>
+          <tr><td>Reconhecer a empresa ajuda?</td><td class="num">+0,38 pp</td><td class="num">0,91</td><td>Não distinguível de zero</td></tr>
+        </tbody>
+      </table>
+      <div class="paper-callout warn"><b>O resultado é nulo, e é isso que ele diz</b>Nenhum dos três efeitos sobrevive ao teste. O modelo reproduz o ranking determinístico; não se beneficia de reconhecer a empresa; e, quando recebe os pesos, não viola uma única restrição em treze anos — apenas aloca pior. Quem gera o retorno é a triagem de valor e qualidade, não o método de ranqueamento em cima dela.</div>
+      <p>A contaminação temporal é a objeção padrão a qualquer backtest com modelo de linguagem: treinado com texto posterior à decisão, o modelo lembra o que aconteceu. Em vez de declarar que o risco foi considerado, aqui ele é medido — rodando a decisão com o ativo identificado e com o ativo anônimo. A diferença entre os dois é a contaminação, e ela deu 0,38 ponto percentual ao ano com p de 0,91.</p>
+
+      <h2>O que a correção metodológica custou</h2>
+      <p>Antes de qualquer resultado, sete defeitos de backtest foram encontrados e corrigidos. Todos empurravam os números na mesma direção.</p>
+      <ul>
+        <li>O comparador MVO era idêntico à estratégia em 11 de 11 anos: o gráfico comparava a curva com ela mesma.</li>
+        <li>139 de 497 emissores sumiam do painel por não estarem mais em um provedor público, incluindo CIEL3, AZUL4, BRML3 e ALLL3.</li>
+        <li>Deslistagem virava retorno zero e truncava o ano inteiro do livro.</li>
+        <li>Alavancagem e cobertura de juros eram sempre nulas, o que reprovava 433 empresas não financeiras por falta de dado.</li>
+        <li>A ponte de doze meses lia a linha trimestral ou a acumulada conforme a ordem do arquivo.</li>
+        <li>O custo era fixo em 15 pontos-base, sem imposto.</li>
+        <li>O retorno anual assumia rebalanceamento diário gratuito.</li>
+      </ul>
+      <p>E a seleção da própria regra foi corrigida: a estratégia publicada agora é escolhida por busca aninhada sobre 36 configurações, em que o ano avaliado nunca informa a própria escolha.</p>
+      <div class="paper-metrics">
+        <div class="paper-metric"><span>Prêmio do hindsight</span><b>4,98 pp</b><small>ao ano, entre a vencedora da amostra completa e a escolha aninhada</small></div>
+        <div class="paper-metric"><span>Sharpe deflacionado</span><b>0,957</b><small>36 tentativas, 10 observações anuais</small></div>
+        <div class="paper-metric"><span>Alocação preditiva</span><b>0 de 7</b><small>regras batem o peso estático em 118 meses</small></div>
+      </div>
+
+      <h2>Resultado da estratégia publicada</h2>
+      <table class="paper-table">
+        <thead><tr><th>Série</th><th>CAGR 2016–2025</th><th>Anos vencidos</th></tr></thead>
+        <tbody>
+          <tr class="highlight"><td>Benevente</td><td class="num">15,31%</td><td class="num">—</td></tr>
+          <tr><td>Benevente após IR</td><td class="num">14,10%</td><td class="num">—</td></tr>
+          <tr><td>Ibovespa</td><td class="num">14,30%</td><td class="num">5 de 10</td></tr>
+          <tr><td>BOVA11</td><td class="num">14,28%</td><td class="num">5 de 10</td></tr>
+          <tr><td>MVO de referência</td><td class="num">9,57%</td><td class="num">6 de 10</td></tr>
+          <tr><td>CDI</td><td class="num">9,26%</td><td class="num">6 de 10</td></tr>
+        </tbody>
+      </table>
+      <p>Contra o mercado a carteira empata: cinco anos de dez, com margem de 1,01 ponto percentual ao ano. O drawdown real, medido na série diária, é de 30,4%. A janela que ranqueou as configurações não pode testá-las; a avaliação prospectiva começa em 2026, a partir de um registro congelado com o SHA-256 de cada insumo.</p>
+
+      <div id="live-portfolio"></div>
+
+      <p class="paper-foot">Benevente Quant AI · pesquisa reproduzível. Os números desta página são lidos dos mesmos arquivos que o motor escreve. Não constitui recomendação de investimento, oferta ou promessa de retorno. Resultados históricos descrevem a amostra, não o futuro.</p>
+    </main>
+    <script src="./paper.js"></script>
+  </body>
+</html>
