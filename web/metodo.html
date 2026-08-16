@@ -3,15 +3,15 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Metodologia do Benevente Quant AI." />
-    <title>Benevente Quant AI — Metodologia</title>
+    <meta name="description" content="Metodologia do Benevente: como os dados são montados, como a regra é escolhida, o que foi tentado e o que falhou." />
+    <title>Benevente — Metodologia</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
     <link rel="stylesheet" href="./commercial.css" />
     <link rel="stylesheet" href="./paper.css" />
-    <style>.method-page{max-width:860px;padding:7rem 0}.method-page h1{font-size:clamp(2.5rem,6vw,4.7rem);letter-spacing:-.06em;line-height:1.03}.method-page h2{font-size:1.6rem;margin:3rem 0 .7rem}.method-page p,.method-page li{color:#52655d;line-height:1.8;max-width:760px}.method-page li+li{margin-top:.5rem}.method-callout{margin:2rem 0;padding:1.4rem 1.6rem;background:#e8f1ec;border-left:3px solid #1d5c56}.method-callout b{display:block;color:#174e49;margin-bottom:.4rem}.method-nav{padding:1.2rem 0;border-bottom:1px solid #dce4df}.method-nav a{color:#174e49;text-decoration:none;font-weight:700}</style>
   </head>
   <body>
     <nav class="paper-nav shell">
@@ -20,24 +20,111 @@
       <a href="./btech">Produto</a>
       <a href="./metodo" class="current">Método</a>
     </nav>
-    <main class="shell method-page">
-      <p class="eyebrow"><span></span> Benevente Quant AI · documentação pública</p>
-      <h1>Metodologia completa do Benevente Quant AI.</h1>
-      <p>Esta página descreve o núcleo acadêmico/reproduzível do Benevente. Não é oferta de investimento, relatório de performance ou declaração de conformidade regulatória.</p>
-      <div class="method-callout"><b>Princípio central</b>Uma LLM pode organizar uma tese e perguntas de revisão a partir de fatos aprovados. Ela não aprova ativos, não calcula sinais, não altera restrições e não define pesos.</div>
-      <h2>1. Política antes do portfólio</h2>
-      <p>Perfil, horizonte, concentração máxima, perda tolerada, custo e frequência de revisão são versionados antes da seleção. Os perfis representam limites institucionais de exemplo; a política formal continua sob responsabilidade da instituição.</p>
-      <h2>2. Dados disponíveis na decisão</h2>
-      <p>Cada decisão registra data contábil, data de divulgação, fonte e dados de mercado usados. Documentos e preços publicados depois da decisão são excluídos. Sem histórico datado do universo, não se declara cobertura integral da B3.</p>
-      <h2>3. Elegibilidade e alocação</h2>
-      <ul><li>Empresas não financeiras: liquidez, geração de caixa, ROIC, dívida e cobertura de juros.</li><li>Instituições financeiras: liquidez, rentabilidade e preço sobre patrimônio.</li><li>Após o filtro, a otimização aplica teto de renda variável, teto por emissor e parcela em CDI.</li></ul>
-      <h2>4. Evidência e validação</h2>
-      <p>As janelas arquivadas são exibidas com CDI, Ibovespa, BOVA11 e um MVO de referência calculado de forma independente sobre o mesmo universo elegível. No acumulado de 2015 a 2025 a carteira supera as quatro referências, e ano a ano o placar é desigual: vence o MVO de referência em 10 dos 11 anos, o Ibovespa e o BOVA11 em 7, e o CDI em 6. O ganho vem acompanhado de risco maior, com queda máxima de 47,8% em base diária. A janela 2015–2025 foi usada para escolher regra e restrições, portanto é amostra de desenvolvimento e não teste fora da amostra.</p>
-      <h2>5. Candidata de valor e qualidade em pesquisa</h2>
-      <p>A regra separa risco do sinal. Os perfis definem teto de ações e concentração. Entre ativos líquidos e com dados disponíveis, o ranking determinístico combina valor e qualidade. Para empresas não financeiras, considera geração de caixa, retorno sobre capital e solvência. Para instituições financeiras, usa retorno sobre patrimônio e valor. A carteira é definida no primeiro pregão de janeiro antes de observar o retorno daquele ano.</p>
-      <p>Quatro regras foram comparadas somente no treino 2015–2020. Valor e qualidade foi a única que superou CDI e MVO elegível nessa etapa. Mantida no teste 2021–2024, superou ambos nessa amostra. Esses números foram substituídos. A execução publicada hoje avalia 2015–2025 sobre um painel que parte do COTAHIST da B3 e mantém as empresas deslistadas, e chega a 17,86% a.a. após custos, contra 9,61% do CDI, 7,83% do MVO de referência e 11,77% do Ibovespa. As versões anteriores mediam janelas mais curtas, a última delas 2016–2025, e a primeira delas sobre um painel de provedor público que descartava 139 emissores deslistados. Nenhuma é comparável com a atual. Por isso, o resultado é pesquisa, não promessa comercial.</p>
-      <h2>6. Uso comercial responsável</h2>
-      <p>O Wealth System entrega esse método em uma experiência B2B. Integração, suitability, licenças de dados, aprovação e enquadramento regulatório são definidos com a instituição usuária. O produto não transmite ordens.</p>
+    <main class="shell paper-page">
+      <p class="eyebrow"><span></span> Documentação pública</p>
+      <h1>Como isso é feito, o que foi tentado e o que falhou.</h1>
+      <p class="paper-lede">Esta página descreve o método inteiro: de onde vêm os dados, como a regra decide, como a regra foi escolhida, e o que aconteceu com cada hipótese testada. Inclui as que não deram certo, porque um método que só relata acertos não pode ser verificado. Não é oferta de investimento, relatório de performance nem declaração de conformidade regulatória.</p>
+
+      <div class="paper-callout"><b>Princípio central</b>Nenhuma decisão pode usar informação que não existia na data em que foi tomada. Todo o resto do método é consequência disso.</div>
+
+      <h2>1 · A base de dados</h2>
+      <h3>1.1 O universo de registro é a bolsa</h3>
+      <p>O painel de preços é construído a partir do arquivo histórico de cotações da própria B3, não de um provedor. A razão é mensurável: um provedor público de preço ajustado serve as empresas que ainda existem, então montar o universo a partir dele apaga toda companhia deslistada, adquirida ou liquidada. No painel atual isso seriam <b>166 de 514 emissores</b>, dos quais 77 desaparecem antes de 2020 e 58 já haviam perdido mais de 60% do próprio topo quando pararam de negociar. São exatamente os piores retornos da amostra.</p>
+      <p>O painel cobre <b>4.066 pregões</b>, de 04/01/2010 a 30/12/2025. A data inicial não é arbitrária: cada decisão anual exige 253 sessões anteriores de retorno, e 2011 teve apenas 249 pregões. Sem baixar 2010, a primeira decisão possível ficaria presa em 2015 em vez de 2012.</p>
+
+      <h3>1.2 Eventos societários sem a ajuda do provedor</h3>
+      <p>Papéis deslistados não são servidos por nenhum provedor, então desdobramentos, grupamentos e bonificações grandes precisam ser detectados a partir de razões de preço redondas e persistentes no próprio arquivo da bolsa. O detector foi validado contra o arquivo de eventos de um provedor, no subconjunto de papéis em que esse arquivo existe, e <b>os dois lados são publicados</b>: precisão de 88,1%, com 340 de 386 ajustes coincidindo com evento confirmado, e recall de 23,3%, com 103 de 443 eventos detectados. O recall baixo é limitação real: o detector é conservador e prefere não ajustar a ajustar errado.</p>
+
+      <h3>1.3 Fundamentos com data de recebimento</h3>
+      <p>Vêm dos formulários ITR e DFP da CVM. A data de recebimento pelo regulador é usada como porta: um documento só entra na decisão de janeiro do ano <i>t</i> se foi recebido antes daquela data. A série de doze meses é montada como anual mais o acumulado do ano corrente menos o acumulado comparativo, usando apenas a coluna acumulada. O ITR também publica o trimestre isolado, e misturar as duas corrompe todo indicador a partir do segundo trimestre.</p>
+      <p>A ponte entre o ticker da B3 e o CNPJ da CVM é construída ano a ano e sua cobertura é publicada em vez de suposta. Em 2012, primeiro ano da série, 266 de 314 ações tiveram ponte aceita e 171 tiveram fundamentos completos, porque a série do ITR começa em 2011 e 2012 é o primeiro ano em que a construção de doze meses tem os dois lados.</p>
+
+      <h2>2 · Como a decisão é tomada</h2>
+      <ol>
+        <li><b>Política.</b> Teto de renda variável, teto por emissor, número mínimo de posições e penalização de giro são versionados antes da seleção.</li>
+        <li><b>Elegibilidade.</b> Empresas não financeiras passam por liquidez, geração de caixa, retorno sobre capital, dívida e cobertura de juros. Instituições financeiras usam liquidez, rentabilidade e preço sobre patrimônio, porque as demonstrações padronizadas das duas não são comparáveis. Cada reprovação é registrada com o motivo.</li>
+        <li><b>Ordenação.</b> Os aprovados são ordenados por um composto de qualidade, valor e momento de médio prazo, tudo calculado com informação disponível na data.</li>
+        <li><b>Alocação.</b> Uma otimização convexa distribui os pesos dentro dos tetos; o residual fica em CDI.</li>
+        <li><b>Revisão humana.</b> A saída é uma proposta com política, tela, pesos, ordens com lote e participação no volume, e custo estimado. Nenhuma ordem é transmitida.</li>
+      </ol>
+      <p>A carteira é comprada no primeiro pregão de janeiro e mantida. Isso precisa ser dito porque a forma natural de escrever um backtest vetorizado, compondo o produto interno de retornos e pesos, rebalanceia para pesos fixos todo dia e de graça, o que não é o protocolo avaliado nem algo que alguém consiga executar.</p>
+
+      <h2>3 · Custos e imposto</h2>
+      <p>Custo é a taxa da B3 mais um termo de deslizamento que cresce com a participação da ordem no volume médio diário do papel, de modo que uma ação pouco líquida não é tratada como se fosse líquida. O imposto segue o regime brasileiro: 15% sobre ganho realizado em renda variável e a tabela regressiva na parcela em caixa, que é 17,5% na faixa de 361 a 720 dias em que a revisão anual cai. O imposto é cobrado no ano em que a revisão seguinte efetivamente realiza o ganho, e o último ano avaliado é cobrado como liquidação integral, hipótese terminal conservadora em vez de um diferimento indefinido que embelezaria a série.</p>
+
+      <h2>4 · Como a regra foi escolhida</h2>
+      <p>Esta é a parte que a maioria dos backtests erra, e que erramos primeiro. Uma grade de regras candidatas foi avaliada, a melhor foi publicada, e o seu posto passou de 57º no critério de treino declarado para 1º no holdout. Isso só é possível se o holdout foi lido. Nada a jusante daquela escolha era fora da amostra.</p>
+      <p>O protocolo atual é <b>aninhado</b>. Para a decisão do ano <i>t</i>, as 36 configurações são ordenadas usando somente os anos já encerrados antes de <i>t</i>, por Sharpe do excesso sobre o CDI; o ano <i>t</i> é então avaliado uma vez. Trocar de configuração é cobrado como rebalanceamento integral, porque num livro real significa liquidar uma carteira para comprar outra. Como o ranqueamento exige três anos encerrados, <b>2012 a 2014 é a janela de seleção e 2015 a 2025 é a janela de avaliação</b>, com onze decisões.</p>
+      <p>Três quantidades são publicadas junto de qualquer resultado: o desfecho aninhado, o vencedor da amostra inteira, e a diferença entre os dois. Essa diferença é o <b>prêmio de retrospectiva</b>, hoje em <b>0,65 ponto percentual ao ano</b>. Ela mede exatamente o que um concorrente ganharia publicando o vencedor da busca como se fosse resultado obtenível. Com um ano a menos de treino esse prêmio era de 4,98 pontos.</p>
+      <p>Com 36 tentativas, o Sharpe da vencedora é enviesado para cima pela própria busca, e por isso é deflacionado: Sharpe observado de 0,933 contra um máximo esperado sob a hipótese nula de 0,355, resultando em <b>Sharpe deflacionado de 0,986</b>, significante a 95%.</p>
+
+      <h2>5 · O que foi tentado e não funcionou</h2>
+      <p>Quatro hipóteses foram testadas e nenhuma se sustentou. Aparecem aqui com o mesmo detalhe do resultado positivo.</p>
+
+      <h3>5.1 Prever o regime do ano</h3>
+      <p><b>Como foi testado:</b> cinco indicadores disponíveis em janeiro, entre prêmio de lucro sobre o CDI, nível do CDI, retorno e volatilidade do mercado nos doze meses anteriores e distância do topo, foram usados para decidir se o ano seria de ações ou de caixa, ajustados em janela expansível.</p>
+      <p><b>Resultado:</b> sobre 8 anos, o melhor preditor acertou 3 de 4 chamadas efetivas, com p de 0,31 contra cara-ou-coroa. O prêmio para quem acertasse todas era de 6,5 pontos percentuais ao ano. <b>Sem sinal, e sem poder estatístico para afirmar o contrário.</b></p>
+
+      <h3>5.2 Mudar a proporção entre ações e caixa com mais frequência</h3>
+      <p><b>Como foi testado:</b> para responder à objeção de poder, a mesma pergunta foi levada a 118 períodos mensais e 521 períodos semanais, com sete regras de alocação contínua em cada frequência, todas pré-declaradas e ajustadas walk-forward. Cada regra paga custo sobre o peso que move e, na variante após imposto, o imposto que o giro força a realizar.</p>
+      <p><b>Resultado:</b> nenhuma das sete superou o peso estático de forma significante em nenhuma das duas frequências, e a de média-variância foi significativamente pior. O oráculo, que conhece o futuro, teria feito 72,8% ao ano no mensal e 137,1% no semanal contra 21,1% do estático. <b>O prêmio por acertar o tempo é enorme e nada que testamos o captura.</b></p>
+
+      <h3>5.3 Reselecionar a cesta com mais frequência</h3>
+      <p><b>Como foi testado:</b> pergunta diferente da anterior. Não a proporção, mas a própria cesta, retriada, reordenada e reotimizada. A regra, os limites, o universo e o painel foram mantidos idênticos; só as datas de decisão mudaram. Para isso o motor ganhou cadência configurável, e a porta de evidência passou a ler o universo datado mais recente até a data da decisão em vez de exigir coincidência exata, que descartava silenciosamente toda decisão fora de janeiro. O caminho anual publicado foi conferido contra o artefato existente e reproduz com diferença zero.</p>
+      <table class="paper-table">
+        <thead><tr><th>Cadência</th><th>Decisões</th><th>CAGR bruto</th><th>Após IR</th><th>Giro no ano</th></tr></thead>
+        <tbody>
+          <tr class="highlight"><td>Anual</td><td class="num">11</td><td class="num">18,58%</td><td class="num">17,09%</td><td class="num">62,1%</td></tr>
+          <tr><td>Trimestral</td><td class="num">44</td><td class="num">16,37%</td><td class="num">15,60%</td><td class="num">116,0%</td></tr>
+          <tr><td>Mensal</td><td class="num">132</td><td class="num">13,92%</td><td class="num">13,32%</td><td class="num">177,6%</td></tr>
+        </tbody>
+      </table>
+      <p><b>Resultado:</b> pareando por ano-calendário e já após imposto, a trimestral fica 1,55 ponto abaixo da anual ao ano, com p de 0,376, e a mensal 3,27 pontos abaixo, com p de 0,306. Com onze anos pareados não dá para afirmar que atrapalha; dá para afirmar que <b>não há evidência de que ajude</b>.</p>
+      <div class="paper-callout warn"><b>O motivo não é o que se imagina</b>A perda está no retorno bruto, que cai 4,66 pontos de anual para mensal antes de qualquer dedução. O custo de execução sobe só 0,08 ponto ao ano e o imposto modelado até diminui, porque cada revisão mensal realiza uma fatia menor do livro. Reordenar a cesta todo mês piora a escolha antes de encarecer a operação, porque qualidade, valor e momento se movem em horizonte anual e o giro desfaz posições antes da tese se realizar. Registramos que o modelo tributário subestima a conta do braço mensal, já que cobra imposto sobre o ganho do próprio período e não sobre o ganho acumulado da posição vendida. O viés favorece quem perdeu.</div>
+
+      <h3>5.4 Usar um modelo de linguagem como fonte de retorno</h3>
+      <p><b>Como foi testado:</b> quatro braços sobre 13 anos, mesmo universo elegível. <i>Nomeado</i>, em que o modelo vê os nomes das empresas e devolve um escore limitado que inclina o retorno esperado dentro do otimizador. <i>Anonimizado</i>, idêntico mas com as empresas identificadas apenas por números. <i>Determinístico</i>, controle sem modelo, ordenando pelo escore de fator pré-declarado. <i>Monolítico</i>, o contrafactual em que o modelo devolve pesos direto, sem otimizador e sem restrições.</p>
+      <table class="paper-table">
+        <thead><tr><th>Comparação</th><th>Diferença anual</th><th>p</th></tr></thead>
+        <tbody>
+          <tr><td>Nomeado menos anonimizado (contaminação temporal)</td><td class="num">+0,38 p.p.</td><td class="num">0,905</td></tr>
+          <tr><td>Anonimizado menos determinístico (valor do modelo)</td><td class="num">−0,05 p.p.</td><td class="num">0,989</td></tr>
+          <tr><td>Anonimizado menos monolítico (valor do desacoplamento)</td><td class="num">+0,81 p.p.</td><td class="num">0,777</td></tr>
+        </tbody>
+      </table>
+      <p><b>Resultado:</b> três nulos. Não há evidência de contaminação temporal, que era a objeção mais séria a qualquer uso de modelo de linguagem em backtest histórico. O modelo não agrega retorno: reproduz o ranqueamento determinístico em vez de acrescentar julgamento. E manter o modelo longe dos pesos não custa desempenho, enquanto o braço monolítico, que recebeu a caneta, violou restrições de política. <b>O modelo se justifica por organizar e explicar decisões, não por gerá-las.</b></p>
+
+      <h2>6 · Defeitos encontrados na própria auditoria</h2>
+      <p>Sete defeitos foram encontrados e corrigidos. Todos inflavam o resultado.</p>
+      <table class="paper-table">
+        <thead><tr><th>Defeito</th><th>Efeito</th><th>Correção</th></tr></thead>
+        <tbody>
+          <tr><td>Comparador MVO idêntico à estratégia</td><td>Comparação da estratégia consigo mesma</td><td>Implementação independente</td></tr>
+          <tr><td>Painel de provedor descartava deslistadas</td><td>Viés de sobrevivência</td><td>Universo reconstruído do arquivo da B3</td></tr>
+          <tr><td>Ano de deslistagem descartado inteiro</td><td>Perda truncava o ano</td><td>Liquidação da posição em CDI</td></tr>
+          <tr><td>Imposto ausente</td><td>Retorno superestimado</td><td>Modelo tributário brasileiro</td></tr>
+          <tr><td>Custo fixo ignorando liquidez</td><td>Ordem grande sem penalidade</td><td>Deslizamento por participação no volume</td></tr>
+          <tr><td>Rebalanceamento diário implícito</td><td>Artefato de vetorização</td><td>Trajetória de compra e manutenção</td></tr>
+          <tr><td>Filtro de sessões usando pico global</td><td>Anos legítimos descartados</td><td>Pico móvel local</td></tr>
+        </tbody>
+      </table>
+      <p>Depois da última correção o CAGR publicado caiu e a queda máxima subiu de 30,4% para 47,8%. O número foi publicado assim mesmo.</p>
+
+      <h2>7 · Como é rodado</h2>
+      <p>Cada etapa é um programa próprio, com entradas e saídas em arquivo, e cada saída carrega o SHA-256 do arquivo que a gerou. A ordem é: construir o universo datado da B3, construir a ponte B3/CVM, extrair os fundamentos com data de recebimento, montar o painel de retorno total com detecção de eventos societários, montar as referências de mercado, rodar a busca aninhada sobre as 36 configurações, costurar a série publicada a partir da configuração que cada ano escolheu, e gerar a evidência de auditoria e o pacote do site.</p>
+      <p>O registro pré-especificado é emitido no fim, carrega o hash de cada entrada e da própria configuração, e é versionado no repositório para que a data fique carimbada por terceiro. Um registro que exista só no disco de quem o escreveu não demonstra anterioridade nenhuma. Um portão de segurança estático e ao vivo roda antes e depois de cada publicação, e sai com código diferente de zero quando algo regride.</p>
+      <p>Os coeficientes do escore, os limiares da tela, as constantes de aversão a risco e a grade de configurações não são publicados. Estão registrados de forma verificável pelo hash, de modo que a anterioridade é demonstrável sem que a implementação seja replicável por leitura. É uma escolha deliberada e está declarada aqui para que se saiba exatamente o que está e o que não está divulgado.</p>
+
+      <h2>8 · Limitações</h2>
+      <ul>
+        <li>A janela avaliada é a mesma que serviu para desenvolver a regra. Onze anos avaliados não são onze anos de validação prospectiva.</li>
+        <li>O detector de eventos societários tem recall de 23,3%. Proventos, JCP e eventos de papéis deslistados ainda exigem reconciliação contra registro primário da B3 ou da CVM.</li>
+        <li>Papéis sem cobertura de provedor recebem o rendimento mediano da seção transversal do ano. É aproximação, e os afetados estão no relatório de cobertura.</li>
+        <li>A queda máxima chegou a 47,8% em base diária. Nenhuma suitability razoável coloca um cliente conservador nessa carteira.</li>
+        <li>Onze observações anuais são poucas. O Sharpe deflacionado corrige o viés de busca, não o tamanho da amostra.</li>
+        <li>Uso comercial exige licença de dados, enquadramento regulatório, suitability e aprovação formal. Nada disso existe hoje.</li>
+      </ul>
+
       <p><a class="text-link" href="./#estagio">Em que estágio o projeto está →</a></p>
     </main>
   </body>

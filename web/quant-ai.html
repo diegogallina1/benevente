@@ -63,12 +63,41 @@
         <div class="paper-metric"><span>Deflated Sharpe</span><b>0.986</b><small>36 trials, 11 annual observations</small></div>
         <div class="paper-metric"><span>Tactical allocation</span><b>0 of 7</b><small>predictive rules beat the static weight over 118 months</small></div>
       </div>
-      <h3>Does deciding more often help?</h3>
+      <h3>4.1 Does deciding more often help?</h3>
       <p>A distinct question from the one above, and the one most readers ask first: not whether the equity share should move more often, but whether the basket itself should be reselected more often. Holding the rule, the limits and the panel fixed and varying only the decision dates, annual reselection compounded at 18.58% before costs, quarterly at 16.37% and monthly at 13.92%. Paired by calendar year and measured after tax, quarterly trails the annual decision by 1.55 percentage points a year (p = 0.376) and monthly by 3.27 (p = 0.306). Eleven paired years cannot support the stronger claim, so the honest statement is that there is no evidence more frequent decisions help.</p>
       <p>The mechanism is not the one usually assumed. The loss sits in the gross return, which falls 4.66 points from annual to monthly before any deduction; execution cost rises by only 0.08 points a year, and modelled tax actually falls, because each monthly review realises a smaller slice of the book. Reselecting monthly degrades the selection before it raises the bill. The tax model understates the monthly arm's liability, since it charges tax on each period's own gain rather than on the accumulated gain of the position actually sold — a bias in favour of the arm that lost anyway.</p>
       <p>The last figure is a separate study. Perfect monthly timing of the equity-versus-cash split would have been worth roughly 50 percentage points a year, so the prize is real; none of seven predictive rules, fitted walk-forward on observable state, captured any of it, across three training-window lengths.</p>
 
-      <h2>5 · Experiment: four arms, one universe</h2>
+      <h2>5 · Everything that was tried</h2>
+      <p>Four hypotheses were tested against the published protocol. None survived. They are listed together because a reader assessing a method needs the failure inventory as much as the result, and because each one closes a specific objection that would otherwise remain open.</p>
+      <table class="paper-table">
+        <thead><tr><th>Hypothesis</th><th>How it was tested</th><th>Outcome</th></tr></thead>
+        <tbody>
+          <tr><td>The year's regime can be forecast</td><td>Five January-observable predictors, expanding window, 8 years</td><td>Best predictor 3 of 4 live calls, p = 0.31. No signal.</td></tr>
+          <tr><td>The equity share should move more often</td><td>Seven continuous rules, 118 monthly and 521 weekly periods</td><td>None beat the static weight; mean-variance was significantly worse.</td></tr>
+          <tr><td>The basket should be reselected more often</td><td>Same rule and limits, cadence varied to quarterly and monthly</td><td>−1.55 and −3.27 points a year after tax, p = 0.38 and 0.31.</td></tr>
+          <tr><td>A language model adds return</td><td>Four arms over 13 years, named / anonymised / deterministic / monolithic</td><td>Three nulls. The model reproduces the deterministic ranking.</td></tr>
+        </tbody>
+      </table>
+      <p>Two of these are reported as "no evidence of benefit" rather than "proven harmful", and the distinction is not cosmetic. Eleven paired annual observations cannot reject a null of no difference, so the honest claim is the weaker one, even where every point estimate leans the same way.</p>
+
+      <h2>6 · Defects found by auditing our own backtest</h2>
+      <p>Seven defects were found and corrected. Every one of them inflated the result, which is what one should expect: an error that hurts your own numbers gets noticed immediately, and an error that helps them does not.</p>
+      <table class="paper-table">
+        <thead><tr><th>Defect</th><th>Effect</th><th>Correction</th></tr></thead>
+        <tbody>
+          <tr><td>MVO comparator identical to the strategy</td><td>Strategy compared against itself</td><td>Independent implementation</td></tr>
+          <tr><td>Vendor panel dropped delisted issuers</td><td>Survivorship bias</td><td>Universe rebuilt from the exchange archive</td></tr>
+          <tr><td>Delisting year discarded entirely</td><td>The loss truncated the year</td><td>Position liquidated into cash</td></tr>
+          <tr><td>No tax</td><td>Return overstated</td><td>Domestic tax regime modelled</td></tr>
+          <tr><td>Flat cost ignoring liquidity</td><td>Large orders unpenalised</td><td>Slippage by participation in volume</td></tr>
+          <tr><td>Implicit daily rebalancing</td><td>Vectorisation artefact</td><td>Exact buy-and-hold path</td></tr>
+          <tr><td>Session filter using a global peak</td><td>Legitimate years discarded</td><td>Local rolling peak</td></tr>
+        </tbody>
+      </table>
+      <p>After the last correction the published CAGR fell and the daily drawdown rose from 30.4% to 47.8%. The figures were published as they came out.</p>
+
+      <h2>7 · Experiment: four arms, one universe</h2>
       <p>The same January decision was executed four ways over thirteen annual decisions, holding the eligible universe, the optimiser, the ceilings and the cost model constant. Model: <code>gemini-3.1-flash-lite</code>, temperature zero, structured output validated against a schema, every raw response archived.</p>
       <table class="paper-table">
         <thead><tr><th>Arm</th><th>What differs</th><th>CAGR</th><th>Beats cash</th></tr></thead>
@@ -92,7 +121,7 @@
       </table>
       <div class="paper-callout warn"><b>The result is null, and that is the finding</b>None of the three effects survives testing. The model reproduces the deterministic ranking; it does not profit from recognising the company; and when handed the weights it violated no constraint in thirteen years — it simply allocated worse. What generates the return is the dated screen, not the ranking method layered on top of it. With thirteen annual observations these are underpowered tests, and the honest statement is that no effect was detected, not that none exists.</div>
 
-      <h2>6 · Published strategy</h2>
+      <h2>8 · Published strategy</h2>
       <table class="paper-table">
         <thead><tr><th>Series</th><th>CAGR 2015–2025</th><th>Years won</th><th>Max drawdown</th></tr></thead>
         <tbody>
@@ -109,11 +138,11 @@
 
       <div id="live-portfolio"></div>
 
-      <h2>7 · What is disclosed, and what is not</h2>
+      <h2>9 · What is disclosed, and what is not</h2>
       <p>Everything above describes the mechanism: the stages, the data construction, the estimators, the validation protocol and the measured results, including the ones that came out null. That is enough to evaluate the work and to reproduce the <i>methodology</i>.</p>
       <p>Not disclosed here: the coefficients that weight the composite ranking, the numeric thresholds of the screen, the risk-aversion and signal-influence constants, and the exact configuration grid. Those are the operating parameters of a commercial system. They are held in the frozen registration, hashed, so that an independent reviewer can verify no parameter changed between the registration and any result claimed afterwards — without the parameters themselves being published.</p>
 
-      <h2>8 · Limitations</h2>
+      <h2>10 · Limitations</h2>
       <ul>
         <li>Ten annual evaluations for the strategy and thirteen for the model experiment. Every test here is underpowered; effect sizes are reported with their p-values rather than as findings.</li>
         <li>Corporate actions for the delisted tail rest on a detector whose precision and recall are published but imperfect; distributions for issuers no provider still serves are imputed from the cross-section and flagged per ticker.</li>
