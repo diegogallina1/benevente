@@ -92,7 +92,7 @@
           <tr><td>Anonimizado menos monolítico (valor do desacoplamento)</td><td class="num">+0,81 p.p.</td><td class="num">0,777</td></tr>
         </tbody>
       </table>
-      <p><b>Resultado:</b> três nulos. Não há evidência de contaminação temporal, que era a objeção mais séria a qualquer uso de modelo de linguagem em backtest histórico. O modelo não agrega retorno: reproduz o ranqueamento determinístico em vez de acrescentar julgamento. E manter o modelo longe dos pesos não custa desempenho, enquanto o braço monolítico, que recebeu a caneta, violou restrições de política. <b>O modelo se justifica por organizar e explicar decisões, não por gerá-las.</b></p>
+      <p><b>Resultado:</b> três nulos. Não há evidência de contaminação temporal, que era a objeção mais séria a qualquer uso de modelo de linguagem em backtest histórico. O modelo não agrega retorno: reproduz o ranqueamento determinístico em vez de acrescentar julgamento. E manter o modelo longe dos pesos não custa desempenho. O braço monolítico, que recebeu a caneta, não estourou nenhum teto, mas devolveu carteiras que não somavam um em 5 dos 13 anos, variando de 0,92 a 1,017, e omitiu 65 e 83 ativos elegíveis em 2021 e 2022. O otimizador não é cerimônia porque impede violação de limite; é porque garante uma alocação aritmeticamente válida sem precisar de conserto. <b>O modelo se justifica por organizar e explicar decisões, não por gerá-las.</b></p>
 
       <h2>6 · Defeitos encontrados na própria auditoria</h2>
       <p>Sete defeitos foram encontrados e corrigidos. Todos inflavam o resultado.</p>

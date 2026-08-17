@@ -1,98 +1,233 @@
 \documentclass[10pt,conference]{IEEEtran}
 \usepackage{booktabs}
 \usepackage{url}
+\usepackage{amsmath}
 \usepackage{graphicx}
 
-\title{Benevente Quant AI: An Auditable Value--Quality Research and Shadow-Portfolio Framework for Brazilian Equities}
+\title{Decoupling Language-Model Judgement from Constrained Portfolio Optimisation:\\A Measurement Protocol and Three Null Results}
 \author{Author information withheld for double-blind review}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-This paper presents Benevente Quant AI, a reproducible research framework for Brazilian-equity and CDI allocation. The framework separates point-in-time data controls, deterministic value--quality eligibility, optional structured large-language-model review, and constrained portfolio optimization. An archived evaluation over pre-specified 5-, 10-, and 15-year windows applies modeled frictions and compares the strategy with CDI, Ibovespa, and constrained mean--variance optimization. The strategy did not exceed CDI over five years, exceeded CDI in the reported 10- and 15-year windows, and was slightly below classical constrained optimization over fifteen years; it therefore provides conditional historical evidence, not a general outperformance claim. The operational component is a R\$100,000 prospective shadow-portfolio protocol. It uses CVM ITR and DFP filings, attributable market-data snapshots, archived price history, liquidity and cost gates, lot-rounded review-only orders, and broker-note reconciliation. No broker API or autonomous investment action is enabled.
+Language models are increasingly proposed as portfolio allocators. We argue that the interesting question is not whether such a model can produce weights, but whether it should, and we give an architecture and a measurement protocol that make the question answerable. The model's only output is a bounded confidence score that tilts expected returns inside a convex program; the solver, which alone sees the covariance structure, the caps and the turnover penalty, produces every weight. To test what that separation is worth, we run four arms over thirteen years on the same eligible universe: the model with company names, the model with names removed, a deterministic factor control with no model, and a monolithic arm in which the model returns weights directly. All three effects are indistinguishable from zero: temporal contamination $+0.38$ pp/yr ($p=0.91$), value added over the deterministic control $-0.05$ pp/yr ($p=0.99$), and the value of decoupling $+0.81$ pp/yr ($p=0.78$). The monolithic arm breached no ceiling, but returned weights that failed to sum to one in five of thirteen years and silently omitted eligible names in two. Because null results are only informative when the measuring instrument is sound, we describe the evaluation infrastructure in equal detail: a survivorship-free panel rebuilt from the exchange's own quotation archive (514 issuers, 166 of which stop trading), receipt-date gating of regulatory filings, a nested selection protocol whose hindsight premium is measured at 0.65 pp/yr, and a deflated Sharpe ratio of 0.986 over 36 trials. We report seven defects found by auditing our own backtest, all of which had inflated the result.
 \end{abstract}
 
 \begin{IEEEkeywords}
-portfolio optimization, Brazilian equities, CVM, reproducibility, value investing, audit trail, large language models
+portfolio optimisation, large language models, backtest overfitting, deflated Sharpe ratio, survivorship bias, point-in-time data, emerging markets
 \end{IEEEkeywords}
 
 \section{Introduction}
-Long-horizon allocation requires more than an optimizer: returns, accounting reports, liquidity, costs, constraints, and the information available on a decision date must agree. Benevente Quant AI is a research framework designed to make that process inspectable. Its commercial B2B presentation is called Benevente Wealth System; this paper addresses the academic framework.
 
-The system is not an autonomous trading engine and does not claim to beat CDI, Ibovespa, or any other benchmark. Its research question is narrower: whether a transparent, constrained process can be evaluated reproducibly after modeled frictions. Individualized securities advice and portfolio management for third parties require the applicable legal, contractual, and professional structure; an algorithm does not remove those responsibilities \cite{cvm19,cvmrobo}.
+A language model asked for portfolio weights will produce them. Whether it should be asked is a separate question, and the literature has largely skipped it: papers that report a model beating a benchmark rarely include the control that would distinguish the model's judgement from the ranking signal it was given, and rarely test whether the model profited from recognising companies whose subsequent fate is in its training corpus.
 
-The framework follows Markowitz's risk--return setting while treating estimation error, concentration and turnover as first-class constraints. Black and Litterman's equilibrium-plus-views formulation motivates a strict separation between qualitative views and mechanical allocation \cite{blacklitterman}; the present implementation does not claim to be a Black--Litterman allocator. Evidence that optimized portfolios often fail to dominate simple diversification out of sample motivates explicit caps and a frozen benchmark protocol \cite{demiguel}. Transaction frictions are evaluated as part of the strategy rather than appended as an afterthought, consistent with evidence that costs and turnover can materially change anomaly profitability \cite{novymarx}.
+This paper takes the opposite route. We fix an architecture in which the model \emph{cannot} set a weight, then measure what that restriction costs. The measurement requires three comparisons that are usually conflated:
 
-\section{Method}
-At every rebalance, estimators only use returns available through $t-1$. The portfolio weights $w$ solve a long-only constrained mean--variance problem:
+\begin{enumerate}
+\item \textbf{Temporal contamination.} Does the model do better when it can see company names than when it sees only anonymised financial facts? A positive, significant gap means it is remembering, not reasoning.
+\item \textbf{Added value.} Does the model beat a deterministic control that ranks the same universe by the same pre-declared factor? Without this arm, any result merely restates the factor.
+\item \textbf{Value of decoupling.} Does routing a bounded score through a convex solver beat letting the model emit weights directly? This is what the architecture is for.
+\end{enumerate}
+
+Our contribution is threefold. First, the decoupled architecture and the protocol that makes these three questions separately answerable. Second, three null results on Brazilian equities over thirteen years, reported with the power caveats they deserve. Third, and inseparably, the evaluation infrastructure: a null result is only informative if the instrument would have detected an effect, so we document the panel construction, the point-in-time gating, the multiple-testing correction and the defects we found in our own work.
+
+\section{Related work}
+
+Markowitz's mean--variance formulation \cite{markowitz} remains the allocation substrate, with estimation error, concentration and turnover treated as first-class constraints rather than afterthoughts. Black and Litterman \cite{blacklitterman} established the pattern we follow structurally: qualitative views are combined with a mechanical allocator through a defined interface rather than replacing it. DeMiguel et al. \cite{demiguel} show that optimised portfolios frequently fail to dominate naive diversification out of sample, which motivates explicit caps and a frozen comparator. Novy-Marx and Velikov \cite{novymarx} show that frictions can erase anomaly profitability, which is why cost and tax are inside the evaluated protocol here rather than appended to it.
+
+On inference, Bailey and L\'opez de Prado \cite{deflated} give the deflated Sharpe ratio, which corrects the observed statistic for the number of trials and the higher moments of the return distribution; Bailey et al. \cite{pbo} give the probability of backtest overfitting. Harvey et al. \cite{harvey} document how weak the standard significance bar is once the size of the search is acknowledged. These are not optional refinements for a paper that evaluates 36 configurations.
+
+\section{Architecture}
+
+\subsection{The interface}
+
+Let $\mu \in \mathbb{R}^{n}$ be the expected-return vector estimated from information available at the decision date, $\Sigma$ the covariance estimate, and $w_{\text{prev}}$ the incumbent book. The model returns a confidence vector $c \in [-1,+1]^{n}$, and the only channel through which it reaches the portfolio is
+
 \begin{equation}
- \max_w \quad \hat{\mu}^{\top}w - \frac{\gamma}{2}w^{\top}\hat{\Sigma}w,
- \quad \sum_i w_i=1,
+\mu_i \leftarrow \mu_i \cdot (1 + \lambda c_i), \qquad c_i \in [-1,+1].
 \end{equation}
-subject to non-negative weights, an issuer cap, a policy-specific equity cap, and a residual CDI sleeve. The optimization is deterministic once inputs and policy are fixed.
 
-Before optimization, the value--quality selector rejects securities with insufficient capitalization or liquidity. For non-financial issuers it requires positive free-cash-flow yield, minimum ROIC, verified debt-to-EBITDA, and verified interest coverage. For financial issuers it uses metrics suited to their statements, including ROE and price-to-book. Missing or non-comparable fields are rejection conditions. An optional LLM can create a structured skeptical thesis for assets already eligible, but cannot select an asset, define weights, override a hard filter, or submit an order.
+The allocation is then the solution of
 
-Historical experiments apply 10 basis points of transaction cost plus 5 basis points of slippage to executed turnover. The live proposal separately estimates Clear/B3 assumptions and requires reconciliation to the actual broker note. These are assumptions, not observed universal trading costs.
-
-\section{Data and Point-in-Time Controls}
-The archived backtest uses adjusted B3 prices and Ibovespa data obtained through Yahoo Finance, with CDI, Selic, and IPCA from Banco Central do Brasil SGS. Inputs are stored with each run. The current universe is fixed and based on surviving tickers, so survivorship bias remains a material limitation.
-
-For a current proposal, Benevente downloads CVM quarterly ITR and annual DFP archives \cite{cvmitr,cvmdfp}. For income-statement and cash-flow items, it computes
 \begin{equation}
- X_{TTM}=X_{DFP,y-1}+X_{ITR,q,y}-X_{ITR,q,y-1}.
+\max_{w} \; \mu^{\top}w - \frac{\gamma}{2} w^{\top}\Sigma w - \kappa \lVert w - w_{\text{prev}} \rVert_1
 \end{equation}
-The receipt date $DT\_RECEB$ is the availability date and $DT\_REFER$ is the accounting observation date. A filing received after the decision date is rejected. Market capitalization, average daily traded value, closing price, and lot size come from a dated B3, broker, or licensed-vendor snapshot. The optimizer uses a separately archived price-history CSV, including a CDI sleeve; future observations, null prices, or an insufficient history block the run.
 
-The investor horizon is selectable at 1, 2, 5, 10, or 15 years. It changes the return-estimation sample to 252, 504, 756, 1260, or 1260 trading days, respectively. This makes the horizon an explicit estimation choice, while risk profile controls the equity cap, issuer cap, drawdown tolerance, and review interval.
+subject to $\sum_i w_i = 1$, $w \ge 0$, an asset-class ceiling, and a per-issuer ceiling. The constants $\lambda$, $\gamma$ and $\kappa$ are fixed before the run and are not tuned per period.
 
-\section{Archived Empirical Evaluation}
-The 5-, 10-, and 15-year windows were pre-specified to end on 30 June 2026 and start on 1 July 2021, 2016, and 2011. Each uses a separate one-year lookback. Independent validation checks input continuity, duplicate dates, null values, and wealth-curve recomposition.
+Two properties follow, and they are properties of the type system rather than of the prompt. The model's output is a scalar in a closed interval, so there is no syntactic route by which it can express a weight, relax a ceiling, or admit an ineligible asset. And the solver is the only component that sees $\Sigma$, the caps and the turnover penalty, so the trade-off between expected return and risk is made where those quantities exist.
 
-\begin{table*}[t]
-\caption{Archived horizon results after modeled frictions.}
+\subsection{Pipeline}
+
+Each January the system executes five stages in a fixed order. Stages one to three are deterministic, the model enters only at stage four, and stage five is human.
+
+\emph{(i) Dated universe.} The universe of record is the exchange's own historical quotation archive, not a vendor feed. \emph{(ii) Point-in-time fundamentals.} Regulatory filings \cite{cvmitr,cvmdfp} carry both a reference date and a receipt date; only filings received on or before the decision date may enter. \emph{(iii) Screen.} Assets must clear liquidity, profitability, return on capital and solvency, with operating companies and financial institutions screened on different quantities because their standardised statements are not comparable. \emph{(iv) Ranking and allocation.} Survivors are ranked, the ranking becomes the confidence vector, and the solver allocates within the ceilings, with the residual held in the domestic overnight rate \cite{bcb}. \emph{(v) Human review.} The output is a proposal carrying the applied policy, the screen with its rejection reasons, the weights, order sizes with lot rounding and participation in average traded volume, and the estimated cost. No order is transmitted.
+
+\section{Evaluation infrastructure}
+
+A null result is a claim about an instrument as much as about a treatment. This section describes the instrument.
+
+\subsection{Survivorship}
+
+A public adjusted-price provider serves the companies that still exist, so a universe built from one silently deletes every company that was delisted, acquired or wound up. Rebuilding from the exchange archive over 2010--2025 yields 4{,}066 sessions and 514 issuers, of which \textbf{166 stop trading before December 2025}; 77 of those disappear before 2020, and 58 had already fallen more than 60\% from their own peak when they stopped trading. These are precisely the worst returns in the sample.
+
+Delisted tickers are not served by any provider, so corporate actions must be recovered from round, persistent price ratios in the archive itself. We validate the detector against an archived provider event feed on the subset where one exists and publish both sides: precision 88.1\% (340 of 386 applied adjustments coincide with a confirmed event) and recall 23.3\% (103 of 443 provider events detected). The low recall is a real limitation and is stated as one; the detector is deliberately conservative and prefers not to adjust over adjusting wrongly.
+
+\subsection{Availability gating}
+
+Trailing-twelve-month quantities are bridged as annual plus current year-to-date minus comparative year-to-date, using the year-to-date column only. The interim filing also publishes the isolated quarter, and mixing the two silently corrupts every ratio from the second quarter onward. This is the kind of defect that produces a better backtest and no error message.
+
+\subsection{Holding, cost and tax}
+
+The book is bought in January and held. This is worth stating because the natural vectorised expression of a backtest, compounding the inner product of returns and weights, silently rebalances to fixed weights every session at zero cost, which is neither the protocol under evaluation nor anything an investor can execute. Costs are the published exchange fee plus a slippage term growing with the position's participation in average traded volume. Taxation follows the domestic regime, with gains taxed when a review actually realises them and the final year charged as a full liquidation.
+
+\subsection{Choosing the rule without reading the answer}
+
+Our first protocol failed this test, and the failure is instructive. A grid of candidate rules was evaluated, the best was published, and its rank moved from 57th on the declared training criterion to 1st on the holdout, which is only possible if the holdout was read.
+
+The current protocol is nested. For decision year $t$, the 36 configurations are ranked using only years that closed before $t$, by Sharpe of the excess return over cash; year $t$ is then evaluated once. Changing configuration is charged a full-turnover rebalance. Ranking requires three closed years, so 2012--2014 is the selection window and \textbf{2015--2025 is the evaluation window}, giving eleven decisions.
+
+Three quantities are published with every result: the nested outcome, the full-sample winner, and the difference between them. That difference, the \emph{hindsight premium}, is what an author would gain by publishing the search winner as though it were attainable. On this panel it is \textbf{0.65 pp/yr}. On a panel with one year less of training it was 4.98 pp/yr, which is a useful calibration of how much the measure moves with sample length.
+
+With 36 trials, the winner's Sharpe is biased upward by the search itself. The observed excess-return Sharpe is 0.933 against an expected maximum under the null of 0.355, giving a \textbf{deflated Sharpe of 0.986}, significant at 95\%.
+
+\section{Experiment}
+
+\subsection{Design}
+
+Four arms over thirteen years, same eligible universe, same solver, same caps:
+
+\begin{itemize}
+\item \textbf{Named:} the model sees company names and returns a bounded score.
+\item \textbf{Anonymised:} identical, but issuers are identified only by integers.
+\item \textbf{Deterministic:} control with no model, ranking by the pre-declared factor score.
+\item \textbf{Monolithic:} the counterfactual in which the model returns weights directly, with no solver and no constraints.
+\end{itemize}
+
+Comparisons are paired by year and tested with a paired $t$-test.
+
+\begin{table}[t]
+\caption{Four arms, thirteen years, same eligible universe.}
 \centering
-\begin{tabular}{llrrrr}
+\begin{tabular}{lrrr}
 \toprule
-Horizon & Strategy & Cumulative return & CAGR & Annual volatility & Maximum drawdown \\
+Arm & CAGR & Years beating cash & Mean equity weight \\
 \midrule
-5 years & Benevente Quant AI & 69.87\% & 11.38\% & 8.69\% & -11.00\% \\
-        & CDI & 76.47\% & 12.25\% & 0.67\% & 0.00\% \\
-        & Ibovespa & 38.09\% & 6.78\% & 16.78\% & -20.43\% \\
-10 years & Benevente Quant AI & 226.23\% & 12.78\% & 15.04\% & -29.59\% \\
-         & CDI & 141.66\% & 9.39\% & 1.13\% & 0.00\% \\
-         & Ibovespa & 220.60\% & 12.58\% & 24.79\% & -45.68\% \\
-15 years & Benevente Quant AI & 408.29\% & 11.65\% & 12.23\% & -18.93\% \\
-         & CDI & 298.23\% & 9.82\% & 1.00\% & 0.00\% \\
-         & Ibovespa & 174.10\% & 7.08\% & 23.39\% & -40.77\% \\
+Named & 13.00\% & 7 of 13 & 43.8\% \\
+Anonymised & 12.62\% & 10 of 13 & 44.7\% \\
+Deterministic & 12.67\% & 8 of 13 & 52.2\% \\
+Monolithic & 11.81\% & 7 of 13 & 55.0\% \\
+\midrule
+Cash (CDI) & 9.59\% & --- & --- \\
 \bottomrule
 \end{tabular}
-\label{tab:horizons}
-\end{table*}
+\label{tab:arms}
+\end{table}
 
-The results are mixed. Benevente Quant AI did not beat CDI over five years. It exceeded CDI in the reported ten- and fifteen-year windows; in the ten-year window it had the largest cumulative return among the displayed benchmarks. Over fifteen years, classical constrained MVO returned 413.78\%, modestly above Benevente's 408.29\%. These observations do not establish persistent alpha, causal benefit from the LLM, or a performance expectation.
+\begin{table}[t]
+\caption{The three effects. None survives testing.}
+\centering
+\begin{tabular}{lrr}
+\toprule
+Effect & Annualised & $p$ \\
+\midrule
+Contamination (named $-$ anonymised) & $+0.38$ pp & 0.91 \\
+Added value (anonymised $-$ deterministic) & $-0.05$ pp & 0.99 \\
+Decoupling (anonymised $-$ monolithic) & $+0.81$ pp & 0.78 \\
+\bottomrule
+\end{tabular}
+\label{tab:effects}
+\end{table}
 
-\section{Prospective R\$100,000 Shadow Portfolio}
-The prospective protocol starts with a R\$100,000 virtual portfolio, not automatic investment. A policy records a risk profile (conservative, moderate, growth, aggressive, or custom), horizon, equity and issuer limits, drawdown tolerance, maximum rebalance cost, review interval, and excluded tickers. It must be explicitly acknowledged before a proposal is issued.
+\subsection{Results}
 
-The proposal gate requires: (i) the most recent CVM filing that was public at the decision date; (ii) TTM fundamentals; (iii) market and price-history files that are dated and attributable; (iv) a fail-closed fundamental screen; and (v) concentration, freshness, liquidity, and cost checks. The package preserves the policy, snapshots, fundamentals, screen, weights, data-source metadata, and order summary. Initial buy instructions are rounded down to the declared lot, include a limit reference price and estimated cost, and are rejected if an order would exceed 5\% of average daily traded value. The system does not send them anywhere.
+Table~\ref{tab:effects} reports three nulls, and each means something different.
 
-If a responsible person elects to act, they independently approve each line and enter it manually at the broker. An execution export with broker-note identifier, quantity, price, and fees is subsequently reconciled against the proposed order. Prospective NAV reporting separately records portfolio value, CDI, Ibovespa, realized costs, turnover, and drawdown. Twelve, twenty-four, and sixty-month prospective observations should be appended without modifying the frozen historical experiment.
+\emph{No detectable contamination.} The named arm did not profit from recognising companies whose fate the model could plausibly know from training. This was the most serious objection to any use of a language model on historical data, and it did not materialise in this configuration. We do not claim contamination is absent in general; we claim it was not detected here, at this model's training cutoff.
 
-\section{Limitations and Conclusion}
-The value--quality extension has no historical return claim yet because a historical point-in-time fundamental panel has not been constructed across the full backtest period. The fixed universe, secondary historical price source, modeled costs, taxes, bid--ask spreads, corporate actions, delistings, and realized broker conditions all limit inference. The shadow portfolio is a protocol for evidence collection, not investment validation.
+\emph{No detectable added value.} The model reproduces the deterministic ranking rather than adding judgement. The gap is five hundredths of a percentage point, with a negative sign. This is an uncomfortable finding for the prevailing narrative about language models in investment management, which is a reason to publish it rather than a reason not to.
 
-Benevente Quant AI nevertheless provides an auditable research baseline: data availability is explicit, filters fail closed, constraints are deterministic, performance artifacts can be reproduced, and the current proposal workflow archives data and requires human review. The principal next research task is a historical CVM fundamental panel with dated constituents and filings, evaluated walk-forward without altering rules after results are observed.
+\emph{Decoupling is free.} Keeping the model away from the weights did not cost performance. More importantly, the monolithic arm \textbf{breached no ceiling in thirteen years}, a point in its favour that we report because the opposite would have been the convenient finding. What it did produce was arithmetically invalid: weights failing to sum to one in five of thirteen years, ranging from 0.92 to 1.017, and 65 and 83 eligible names silently omitted in 2021 and 2022. The argument for the solver is therefore not that it prevents a limit breach. It is that it returns an allocation requiring no repair, and that repair on a malformed weight vector is itself an unlogged decision.
+
+Thirteen annual observations make these underpowered tests. The honest statement is that no effect was detected, not that none exists.
+
+\subsection{A robustness result: decision cadence}
+
+A reviewer will ask whether an annual decision is simply too slow. We test it by holding the rule, the limits, the universe and the panel fixed and varying only the decision dates. Annual reselection compounds at 18.58\% before costs, quarterly at 16.37\%, monthly at 13.92\%. Paired by calendar year and measured after tax, quarterly trails the annual decision by 1.55 pp/yr ($p=0.38$) and monthly by 3.27 pp/yr ($p=0.31$).
+
+The mechanism is not the one usually assumed. The loss sits in the \emph{gross} return, which falls 4.66 points from annual to monthly before any deduction; execution cost rises by only 0.08 points a year, and modelled tax falls, because each monthly review realises a smaller slice of the book. More frequent reselection degrades the selection before it raises the bill. We note that our tax model understates the monthly arm's liability, since it charges tax on each period's own gain rather than on the accumulated gain of the position actually sold; the bias favours the arm that lost anyway.
+
+\section{Published strategy}
+
+For completeness, the protocol's own eleven-year record, net of modelled costs.
+
+\begin{table}[t]
+\caption{Nested protocol, 2015--2025, net of costs.}
+\centering
+\begin{tabular}{lrrr}
+\toprule
+Series & CAGR & Years won & Max daily drawdown \\
+\midrule
+Benevente & 17.86\% & --- & $-47.8$\% \\
+Benevente, after tax & 16.03\% & --- & --- \\
+Ibovespa & 11.77\% & 7 of 11 & $-47.0$\% \\
+BOVA11 (investable ETF) & 11.72\% & 7 of 11 & --- \\
+Cash (CDI) & 9.61\% & 6 of 11 & 0\% \\
+Neutral MVO, same universe & 7.83\% & 10 of 11 & --- \\
+\bottomrule
+\end{tabular}
+\label{tab:published}
+\end{table}
+
+The drawdown is not incidental. The nested protocol raised the equity budget to 95\% between 2018 and 2021, and the portfolio took essentially the same fall as the index. This is a concentrated book that recovered faster, not a smoothed version of the market.
+
+\section{Defects found by auditing our own backtest}
+
+Seven defects were found and corrected. Every one inflated the result, which is what one should expect: an error that hurts your own numbers is noticed immediately and an error that helps them is not.
+
+\begin{table}[t]
+\caption{Defects, all of which had inflated the result.}
+\centering
+\small
+\begin{tabular}{p{3.1cm}p{4.1cm}}
+\toprule
+Defect & Correction \\
+\midrule
+MVO comparator identical to the strategy & Independent implementation \\
+Vendor panel dropped delisted issuers & Universe rebuilt from the exchange archive \\
+Delisting year discarded entirely & Position liquidated into cash \\
+No tax modelled & Domestic tax regime \\
+Flat cost ignoring liquidity & Slippage by participation in volume \\
+Implicit daily rebalancing & Exact buy-and-hold path \\
+Session filter using a global peak & Local rolling peak \\
+\bottomrule
+\end{tabular}
+\label{tab:defects}
+\end{table}
+
+After the final correction the published CAGR fell and the daily drawdown rose from 30.4\% to 47.8\%. The figures were published as they came out.
+
+\section{Limitations}
+
+The evaluation window is also the development window; eleven evaluated years are not eleven years of prospective validation, and the 0.65 pp hindsight premium bounds that problem without eliminating it. The corporate-action detector's 23.3\% recall means distributions and events on delisted names still require reconciliation against primary records before any commercial performance claim. Issuers without provider coverage receive the annual cross-sectional median distribution yield, an approximation whose affected names are listed with the panel. Eleven annual observations are few; the deflated Sharpe corrects the search bias, not the sample size. The language-model experiment uses one model at one training cutoff, and separating contamination from capability requires repeating it across models with different cutoffs. Finally, the ranking coefficients, screen thresholds and the configuration grid are withheld; they are committed under hash so that priority is demonstrable without the implementation being reproducible from the text, and we state this explicitly rather than implying full disclosure.
+
+\section{Conclusion}
+
+We set out to measure what a language model contributes to portfolio construction when it is denied the ability to set weights. On thirteen years of Brazilian equities, under an architecture where its only output is a bounded score entering a convex program, the answer is: nothing detectable. It does not profit from recognising companies, it does not beat the deterministic factor it was given, and keeping it away from the weights costs nothing. What generates the return is the dated screen, not the ranking method layered on top of it.
+
+We consider this the useful result. An architecture that constrains a model to a bounded, typed output is cheap, gives up nothing measurable, and removes an entire class of failure that the monolithic arm demonstrated concretely by returning weight vectors that did not sum to one. The burden of proof for handing a language model the pen should sit with those proposing it, and meeting that burden requires the deterministic control and the anonymised arm that this protocol makes routine.
 
 \begin{thebibliography}{00}
 \bibitem{markowitz} H. Markowitz, ``Portfolio Selection,'' \emph{The Journal of Finance}, vol. 7, no. 1, pp. 77--91, 1952.
-\bibitem{blacklitterman} F. Black and R. Litterman, ``Global Portfolio Optimization,'' \emph{Financial Analysts Journal}, vol. 48, no. 5, pp. 28--43, 1992, doi: 10.2469/faj.v48.n5.28.
-\bibitem{demiguel} V. DeMiguel, L. Garlappi, and R. Uppal, ``Optimal versus Naive Diversification: How Inefficient is the 1/N Portfolio Strategy?'' \emph{The Review of Financial Studies}, vol. 22, no. 5, pp. 1915--1953, 2009, doi: 10.1093/rfs/hhm075.
-\bibitem{novymarx} R. Novy-Marx and M. Velikov, ``A Taxonomy of Anomalies and Their Trading Costs,'' \emph{The Review of Financial Studies}, vol. 29, no. 1, pp. 104--147, 2016, doi: 10.1093/rfs/hhv063.
+\bibitem{blacklitterman} F. Black and R. Litterman, ``Global Portfolio Optimization,'' \emph{Financial Analysts Journal}, vol. 48, no. 5, pp. 28--43, 1992.
+\bibitem{demiguel} V. DeMiguel, L. Garlappi, and R. Uppal, ``Optimal versus Naive Diversification: How Inefficient is the 1/N Portfolio Strategy?'' \emph{The Review of Financial Studies}, vol. 22, no. 5, pp. 1915--1953, 2009.
+\bibitem{novymarx} R. Novy-Marx and M. Velikov, ``A Taxonomy of Anomalies and Their Trading Costs,'' \emph{The Review of Financial Studies}, vol. 29, no. 1, pp. 104--147, 2016.
+\bibitem{deflated} D. H. Bailey and M. L\'opez de Prado, ``The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting, and Non-Normality,'' \emph{The Journal of Portfolio Management}, vol. 40, no. 5, pp. 94--107, 2014.
+\bibitem{pbo} D. H. Bailey, J. Borwein, M. L\'opez de Prado, and Q. J. Zhu, ``The Probability of Backtest Overfitting,'' \emph{Journal of Computational Finance}, vol. 20, no. 4, pp. 39--69, 2016.
+\bibitem{harvey} C. R. Harvey, Y. Liu, and H. Zhu, ``\ldots and the Cross-Section of Expected Returns,'' \emph{The Review of Financial Studies}, vol. 29, no. 1, pp. 5--68, 2016.
 \bibitem{cvmitr} Comiss\~ao de Valores Mobili\'arios, ``Formul\'ario de Informa\c{c}\~oes Trimestrais (ITR),'' CVM Open Data. [Online]. Available: \url{https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/}
 \bibitem{cvmdfp} Comiss\~ao de Valores Mobili\'arios, ``Demonstra\c{c}\~oes Financeiras Padronizadas (DFP),'' CVM Open Data. [Online]. Available: \url{https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp}
-\bibitem{cvmrobo} Comiss\~ao de Valores Mobili\'arios, ``Rob\^os de investimentos,'' Portal do Investidor. [Online]. Available: \url{https://www.gov.br/investidor/pt-br/investir/como-investir/profissionais-do-mercado/robos-de-investimentos}
-\bibitem{cvm19} Comiss\~ao de Valores Mobili\'arios, ``Resolu\c{c}\~ao CVM n. 19,'' 2021. [Online]. Available: \url{https://conteudo.cvm.gov.br/legislacao/resolucoes/resol019.html}
+\bibitem{bcb} Banco Central do Brasil, ``Sistema Gerenciador de S\'eries Temporais, s\'erie 12 (CDI).'' [Online]. Available: \url{https://www3.bcb.gov.br/sgspub/}
 \end{thebibliography}
 \end{document}
