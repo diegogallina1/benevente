@@ -56,13 +56,15 @@ The allocation is then the solution of
 
 subject to $\sum_i w_i = 1$, $w \ge 0$, an asset-class ceiling, and a per-issuer ceiling. The constants $\lambda$, $\gamma$ and $\kappa$ are fixed before the run and are not tuned per period.
 
+One clarification matters for reproducibility, because the two are easy to conflate. The solver above is what the language-model experiment of Section~VII uses, and it is the allocator for every arm in that experiment. The strategy whose eleven-year record appears in Section~IX uses a simpler allocator on the same screen: a hard top-$N$ cut on the factor score, one share class per issuer, with weights assigned in proportion to score inside the same ceilings. We report both because the paper's claims about the model concern the first and the claims about realised returns concern the second, and a reader entitled to check either should not have to guess which is which.
+
 Two properties follow, and they are properties of the type system rather than of the prompt. The model's output is a scalar in a closed interval, so there is no syntactic route by which it can express a weight, relax a ceiling, or admit an ineligible asset. And the solver is the only component that sees $\Sigma$, the caps and the turnover penalty, so the trade-off between expected return and risk is made where those quantities exist.
 
 \subsection{Pipeline}
 
 Each January the system executes five stages in a fixed order. Stages one to three are deterministic, the model enters only at stage four, and stage five is human.
 
-\emph{(i) Dated universe.} The universe of record is the exchange's own historical quotation archive, not a vendor feed. \emph{(ii) Point-in-time fundamentals.} Regulatory filings \cite{cvmitr,cvmdfp} carry both a reference date and a receipt date; only filings received on or before the decision date may enter. \emph{(iii) Screen.} Assets must clear liquidity, profitability, return on capital and solvency, with operating companies and financial institutions screened on different quantities because their standardised statements are not comparable. \emph{(iv) Ranking and allocation.} Survivors are ranked, the ranking becomes the confidence vector, and the solver allocates within the ceilings, with the residual held in the domestic overnight rate \cite{bcb}. \emph{(v) Human review.} The output is a proposal carrying the applied policy, the screen with its rejection reasons, the weights, order sizes with lot rounding and participation in average traded volume, and the estimated cost. No order is transmitted.
+\emph{(i) Dated universe.} The universe of record is the exchange's own historical quotation archive, not a vendor feed. \emph{(ii) Point-in-time fundamentals.} Regulatory filings \cite{cvmitr,cvmdfp} carry both a reference date and a receipt date; only filings received on or before the decision date may enter. \emph{(iii) Screen.} Assets must clear liquidity, profitability, return on capital and solvency, with operating companies and financial institutions screened on different quantities because their standardised statements are not comparable. \emph{(iv) Ranking and allocation.} Survivors are ranked and the ranking becomes the confidence vector; allocation is by the solver in the experimental arms and by the score-proportional top-$N$ rule in the published strategy, in both cases within the ceilings and with the residual held in the domestic overnight rate \cite{bcb}. \emph{(v) Human review.} The output is a proposal carrying the applied policy, the screen with its rejection reasons, the weights, order sizes with lot rounding and participation in average traded volume, and the estimated cost. No order is transmitted.
 
 \section{Evaluation infrastructure}
 
@@ -157,6 +159,41 @@ Thirteen annual observations make these underpowered tests. The honest statement
 A reviewer will ask whether an annual decision is simply too slow. We test it by holding the rule, the limits, the universe and the panel fixed and varying only the decision dates. Annual reselection compounds at 18.58\% before costs, quarterly at 16.37\%, monthly at 13.92\%. Paired by calendar year and measured after tax, quarterly trails the annual decision by 1.55 pp/yr ($p=0.38$) and monthly by 3.27 pp/yr ($p=0.31$).
 
 The mechanism is not the one usually assumed. The loss sits in the \emph{gross} return, which falls 4.66 points from annual to monthly before any deduction; execution cost rises by only 0.08 points a year, and modelled tax falls, because each monthly review realises a smaller slice of the book. More frequent reselection degrades the selection before it raises the bill. We note that our tax model understates the monthly arm's liability, since it charges tax on each period's own gain rather than on the accumulated gain of the position actually sold; the bias favours the arm that lost anyway.
+
+\subsection{A second robustness result: position persistence}
+
+The top-$N$ cut has a property worth measuring: an incumbent that remains excellent but slips one rank is sold in
+full. Over eleven years the book carried over 36\% of its names, and 21 of the 35 names it ever held lasted a single
+year. We therefore add a retention buffer $\beta$: an incumbent is kept while it remains eligible and ranks within
+$N + \beta$, and the remaining slots are filled from the top of the ranking. $\beta = 0$ is the published rule.
+
+\begin{table}[t]
+\caption{Retention buffer, nested selection, 2015--2025.}
+\centering
+\begin{tabular}{rrrrr}
+\toprule
+$\beta$ & CAGR & Excess Sharpe & Carryover & Names lasting 1 yr \\
+\midrule
+0 & 18.51\% & 0.597 & 36\% & 21 \\
+1 & 18.80\% & 0.606 & 42\% & 16 \\
+2 & 18.70\% & 0.610 & 42\% & 16 \\
+3 & 18.49\% & 0.593 & 44\% & 15 \\
+5 & 18.30\% & 0.579 & 44\% & 15 \\
+8 & 18.30\% & 0.568 & 50\% & 10 \\
+\bottomrule
+\end{tabular}
+\label{tab:persistence}
+\end{table}
+
+A small buffer helps and a large one hurts, which is the shape one would expect if the factor carries real but decaying
+information. Paired against the hard cut, $\beta=1$ gains 0.33 pp/yr ($p=0.14$) and $\beta=2$ gains 0.18 pp/yr
+($p=0.12$); neither clears conventional significance on eleven observations. The nested protocol, given $\beta$ as a
+further choice, converges on $\beta=1$ from 2017 and returns 18.61\%, a gain of 0.10 pp/yr over the published rule.
+
+We report this as a stability result rather than a return result. The return difference is not established; the change
+in the book is unambiguous, with carryover rising from 36\% to 42\% and single-year names falling from 21 to 16. Where
+that matters is outside the return series: fewer round trips, a longer deferral of realised gains, and a book an
+adviser can explain without justifying why last year's thesis was abandoned.
 
 \section{Published strategy}
 

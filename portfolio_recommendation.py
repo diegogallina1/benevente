@@ -28,7 +28,8 @@ class ValuePortfolioPlanner:
     def propose(self, historical_returns: pd.DataFrame, snapshots: list[FundamentalSnapshot], decision_date: pd.Timestamp,
                 current_weights: pd.Series | None = None, horizon_years: int = 5,
                 maximum_equity_weight: float = 0.80, maximum_asset_weight: float | None = None,
-                scores_override: dict[str, float] | None = None) -> PortfolioProposal:
+                scores_override: dict[str, float] | None = None,
+                turnover_penalty: float = 0.0) -> PortfolioProposal:
         if horizon_years not in {1, 2, 5, 10, 15}:
             raise ValueError("Benevente supports 1-, 2-, 5-, 10-, and 15-year investor horizons.")
         screen = ValueQualitySelector(self.config).score(snapshots, decision_date)
@@ -61,6 +62,13 @@ class ValuePortfolioPlanner:
             {asset: scores[asset] for asset in optimizer_assets},
             equity_cap=maximum_equity_weight, signal_influence=self.config.value_quality_influence,
             eligible_assets=eligible_assets,
+            # Until now the incumbent book only ever reached the cost estimate,
+            # never the objective, so nothing in the optimisation rewarded
+            # keeping a position that was still good. The default of zero
+            # reproduces that behaviour exactly; a positive value is what the
+            # persistence study varies.
+            previous_weights=current_weights.reindex(optimizer_assets, fill_value=0.0) if turnover_penalty > 0 else None,
+            turnover_penalty=turnover_penalty,
         )
         weights = optimized.reindex(assets, fill_value=0.0)
         liquidity = screen.set_index("ticker").average_daily_value_brl.to_dict()

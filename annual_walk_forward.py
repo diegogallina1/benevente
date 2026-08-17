@@ -204,6 +204,13 @@ class AnnualWalkForwardConfig:
     # existem para responder se decidir com mais frequência compensa o giro,
     # o custo e a alíquota maior que ela cria.
     rebalance_months: int = 12
+    # Peso do termo L1 que penaliza afastar-se do livro vigente. Zero é o
+    # comportamento publicado: nada na otimização recompensa manter um papel.
+    # Só afeta os caminhos que passam pelo otimizador convexo.
+    turnover_penalty: float = 0.0
+    # Folga de permanência no corte do ranking. Zero reproduz o corte duro no
+    # topo N, em que escorregar uma posição custa a posição inteira.
+    retention_buffer: int = 0
 
     def __post_init__(self) -> None:
         if self.end_year <= self.start_year:
@@ -604,9 +611,26 @@ class AnnualWalkForwardEngine:
         # highest-ranked liquid class, rather than reporting artificial
         # diversification through two tickers of the same issuer.
         eligible["issuer_id"] = eligible.ticker.map(issuer_ids or {}).fillna(eligible.ticker)
-        selected = (eligible.sort_values(["factor_score", "average_daily_value_brl", "ticker"], ascending=[False, False, True])
-                    .drop_duplicates("issuer_id", keep="first")
-                    .head(protocol.top_assets))
+        ranked = (eligible.sort_values(["factor_score", "average_daily_value_brl", "ticker"], ascending=[False, False, True])
+                  .drop_duplicates("issuer_id", keep="first")
+                  .reset_index(drop=True))
+        if protocol.retention_buffer <= 0:
+            selected = ranked.head(protocol.top_assets)
+        else:
+            # Sem folga, um papel que continua excelente mas escorrega uma
+            # posição é vendido inteiro, o que é a razão pela qual o livro gira
+            # metade a cada janeiro. Com folga, o incumbente permanece enquanto
+            # seguir elegível e dentro do topo N mais o buffer; as vagas que
+            # sobram são preenchidas pelo topo do ranking.
+            held = {ticker for ticker, weight in current_weights.items()
+                    if ticker != "TITULO_CDI" and float(weight) > 1e-6}
+            horizon = ranked.head(protocol.top_assets + protocol.retention_buffer)
+            keep = horizon[horizon.ticker.isin(held)]
+            remaining = protocol.top_assets - len(keep)
+            newcomers = ranked[~ranked.ticker.isin(keep.ticker)].head(max(0, remaining))
+            selected = (pd.concat([keep, newcomers])
+                        .sort_values("factor_score", ascending=False)
+                        .head(protocol.top_assets))
         if selected.empty:
             raise ValueError("No eligible assets under the triple-factor point-in-time screen.")
         attainable_equity = min(protocol.maximum_equity_weight, protocol.maximum_asset_weight * len(selected))
@@ -701,6 +725,7 @@ class AnnualWalkForwardEngine:
                     maximum_equity_weight=protocol.maximum_equity_weight,
                     maximum_asset_weight=protocol.maximum_asset_weight,
                     scores_override=factor_signal,
+                    turnover_penalty=protocol.turnover_penalty,
                 )
             active_columns = list(history.columns)
             target = proposal.weights.reindex(active_columns, fill_value=0.0)

@@ -59,7 +59,7 @@
       <p>Com 36 tentativas, o Sharpe da vencedora é enviesado para cima pela própria busca, e por isso é deflacionado: Sharpe observado de 0,933 contra um máximo esperado sob a hipótese nula de 0,355, resultando em <b>Sharpe deflacionado de 0,986</b>, significante a 95%.</p>
 
       <h2>5 · O que foi tentado e não funcionou</h2>
-      <p>Quatro hipóteses foram testadas e nenhuma se sustentou. Aparecem aqui com o mesmo detalhe do resultado positivo.</p>
+      <p>Cinco hipóteses foram testadas. Quatro não se sustentaram e a quinta produziu um ganho pequeno demais para ser afirmado. Aparecem aqui com o mesmo detalhe do resultado positivo.</p>
 
       <h3>5.1 Prever o regime do ano</h3>
       <p><b>Como foi testado:</b> cinco indicadores disponíveis em janeiro, entre prêmio de lucro sobre o CDI, nível do CDI, retorno e volatilidade do mercado nos doze meses anteriores e distância do topo, foram usados para decidir se o ano seria de ações ou de caixa, ajustados em janela expansível.</p>
@@ -81,6 +81,22 @@
       </table>
       <p><b>Resultado:</b> pareando por ano-calendário e já após imposto, a trimestral fica 1,55 ponto abaixo da anual ao ano, com p de 0,376, e a mensal 3,27 pontos abaixo, com p de 0,306. Com onze anos pareados não dá para afirmar que atrapalha; dá para afirmar que <b>não há evidência de que ajude</b>.</p>
       <div class="paper-callout warn"><b>O motivo não é o que se imagina</b>A perda está no retorno bruto, que cai 4,66 pontos de anual para mensal antes de qualquer dedução. O custo de execução sobe só 0,08 ponto ao ano e o imposto modelado até diminui, porque cada revisão mensal realiza uma fatia menor do livro. Reordenar a cesta todo mês piora a escolha antes de encarecer a operação, porque qualidade, valor e momento se movem em horizonte anual e o giro desfaz posições antes da tese se realizar. Registramos que o modelo tributário subestima a conta do braço mensal, já que cobra imposto sobre o ganho do próprio período e não sobre o ganho acumulado da posição vendida. O viés favorece quem perdeu.</div>
+
+      <h3>5.4 Manter o que continua bom, em vez de refazer a cesta</h3>
+      <p><b>Como foi testado:</b> a regra publicada faz um corte duro no topo do ranking, então um papel que continua excelente mas escorrega uma posição é vendido inteiro. Isso explica o giro: ao longo de onze anos a carteira reteve apenas 36% dos nomes de um ano para o outro, e 21 dos 35 papéis que passaram por ela ficaram um único ano. Introduzimos uma folga de permanência: o incumbente é mantido enquanto seguir elegível e dentro do topo N mais a folga, e as vagas restantes são preenchidas pelo topo do ranking. Folga zero é a regra publicada. A folga entrou no mesmo protocolo aninhado que escolhe todo o resto, então ela não é um parâmetro ajustado sobre a janela avaliada.</p>
+      <table class="paper-table">
+        <thead><tr><th>Folga</th><th>CAGR</th><th>Sharpe do excesso</th><th>Retenção</th><th>Papéis de 1 ano</th></tr></thead>
+        <tbody>
+          <tr><td>0 (publicada)</td><td class="num">18,51%</td><td class="num">0,597</td><td class="num">36%</td><td class="num">21</td></tr>
+          <tr class="highlight"><td>1</td><td class="num">18,80%</td><td class="num">0,606</td><td class="num">42%</td><td class="num">16</td></tr>
+          <tr><td>2</td><td class="num">18,70%</td><td class="num">0,610</td><td class="num">42%</td><td class="num">16</td></tr>
+          <tr><td>3</td><td class="num">18,49%</td><td class="num">0,593</td><td class="num">44%</td><td class="num">15</td></tr>
+          <tr><td>5</td><td class="num">18,30%</td><td class="num">0,579</td><td class="num">44%</td><td class="num">15</td></tr>
+          <tr><td>8</td><td class="num">18,30%</td><td class="num">0,568</td><td class="num">50%</td><td class="num">10</td></tr>
+        </tbody>
+      </table>
+      <p><b>Resultado:</b> uma folga pequena ajuda e uma folga grande atrapalha, que é o formato esperado se o fator carrega informação real porém decrescente. Contra o corte duro, a folga de 1 ganha 0,33 ponto percentual ao ano com p de 0,138, e a de 2 ganha 0,18 ponto com p de 0,118. Nenhuma das duas passa no teste. O protocolo aninhado, recebendo a folga como mais uma escolha, converge para 1 a partir de 2017 e rende 18,61%, ganho de 0,10 ponto ao ano sobre a regra publicada.</p>
+      <div class="paper-callout"><b>É resultado de estabilidade, não de retorno</b>A diferença de retorno não está estabelecida. A mudança na carteira está: a retenção sobe de 36% para 42% e os papéis de um único ano caem de 21 para 16. O valor disso aparece fora da série de retorno, em menos idas e vindas, em diferimento maior do ganho realizado, e numa carteira que o assessor consegue explicar sem justificar por que a tese do ano passado foi abandonada. Adotar a folga se justifica por esses motivos, não pelos 0,33 ponto.</div>
 
       <h3>5.4 Usar um modelo de linguagem como fonte de retorno</h3>
       <p><b>Como foi testado:</b> quatro braços sobre 13 anos, mesmo universo elegível. <i>Nomeado</i>, em que o modelo vê os nomes das empresas e devolve um escore limitado que inclina o retorno esperado dentro do otimizador. <i>Anonimizado</i>, idêntico mas com as empresas identificadas apenas por números. <i>Determinístico</i>, controle sem modelo, ordenando pelo escore de fator pré-declarado. <i>Monolítico</i>, o contrafactual em que o modelo devolve pesos direto, sem otimizador e sem restrições.</p>
