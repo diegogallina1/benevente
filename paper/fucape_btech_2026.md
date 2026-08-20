@@ -1,14 +1,12 @@
-# Benevente Wealth System: um artefato de decisão e governança de carteira para escritórios de investimento do Espírito Santo
-
-Artigo tecnológico submetido ao 6º Business Tech Congress, 2026.
+# Benevente Wealth System: governança auditável de carteiras para escritórios de investimento do Espírito Santo
 
 ---
 
 ## Resumo
 
-Escritórios de investimento capixabas, entre multi-family offices, consultorias de valores mobiliários e assessorias, recomendam carteiras que precisam ser justificadas meses depois de montadas, diante do cliente, da área de conformidade ou do regulador. Três perguntas voltam sempre: quais dados existiam na data da decisão, qual regra foi aplicada sobre eles e quem aprovou. Planilha não responde nenhuma. Plataforma de terceiro costuma responder à segunda de forma opaca. Este trabalho tem como objetivo construir e avaliar o Benevente Wealth System, um artefato de software que produz a proposta de carteira e sua trilha de auditoria no mesmo ato. A avaliação combina design science, seleção anual aninhada e teste histórico sequencial. Cada decisão sai acompanhada da política vigente, dos fundamentos recebidos pela CVM até a data de corte, da elegibilidade com o motivo de cada reprovação, dos pesos, das ordens propostas com lote e participação no volume, do custo estimado e do SHA-256 dos arquivos que geraram os números. O artefato foi avaliado em onze decisões anuais, de 2015 a 2025, sobre um painel da B3 reconstruído do arquivo histórico de cotações e que conserva 166 emissores que deixam de negociar antes do fim da amostra. A carteira publicada, denominada Benevente 1, rendeu 17,86% ao ano após custos, ou 16,03% após imposto de renda, contra 11,77% do Ibovespa, 9,61% do CDI e 7,83% de uma otimização média-variância independente sobre o mesmo universo elegível. Venceu o mercado em sete dos onze anos e a otimização neutra em dez. Uma extensão experimental, Benevente 2, preserva a seleção anual e reduz temporariamente a exposição quando queda e volatilidade observadas no fechamento anterior ultrapassam limiares registrados. Na amostra completa ela reduziu a queda máxima de 47,8% para 28,7%, mas no recorte temporal de 2019 a 2025 não demonstrou retorno adicional (p = 0,964). Reportamos também o que não funcionou: previsão anual de regime, realocação mensal e semanal da proporção entre ações e caixa, reseleção mais frequente da própria cesta e o uso de um modelo de linguagem como fonte de retorno. A contribuição tecnológica não é uma promessa de rentabilidade. É um sistema verificável que separa dado, regra, alocação, explicação e aprovação, inclusive quando uma melhoria protege o capital sem comprovar alfa.
+Escritórios de investimento precisam explicar uma carteira meses depois de montá-la: quais dados estavam disponíveis, qual regra foi aplicada e quem aprovou a decisão. Este trabalho constrói e avalia o Benevente Wealth System, software de apoio à decisão que produz a proposta de carteira e o respectivo registro de auditoria no mesmo fluxo. A pesquisa combina design science, escolha anual de configuração somente com anos já encerrados e teste histórico sequencial. Foram avaliadas onze decisões, de 2015 a 2025, em um painel reconstruído da B3 que preserva 166 emissores que deixaram de negociar antes do fim da amostra. O Benevente 1 rendeu 17,86% ao ano após custos e 16,03% após imposto, contra 11,77% do Ibovespa, 9,61% do CDI e 7,83% de uma otimização média-variância independente. Uma extensão experimental, Benevente 2, reduziu a queda máxima de 47,8% para 28,7%, mas não demonstrou retorno adicional no recorte de 2019 a 2025. O experimento também rejeitou previsão anual de regime, realocações frequentes e o uso do modelo de linguagem como fonte de retorno. A contribuição é um processo verificável que separa dados, regra quantitativa, alocação, explicação e aprovação humana.
 
-Palavras-chave: governança de investimentos; trilha de auditoria; alocação de carteira; informação disponível na data; viés de sobrevivência; pesquisa reprodutível.
+Palavras-chave: governança de investimentos; alocação de carteira; trilha de auditoria; design science; pesquisa reprodutível.
 
 ---
 
@@ -30,7 +28,9 @@ O objetivo é materializar e avaliar esse artefato para o contexto B2B de escrit
 
 ---
 
-## 2. Fundamentação e posicionamento
+## 2. Problema prático e fundamentação
+
+O público inicial do Benevente são escritórios de investimento, consultorias de valores mobiliários e estruturas de gestão patrimonial que precisam recomendar, revisar e defender carteiras. Nesse ambiente, a dificuldade não termina quando o peso de cada ativo é calculado. A instituição precisa preservar o contexto da decisão, demonstrar por que um ativo foi aceito ou recusado e comparar o resultado com alternativas reconhecíveis pelo cliente. Para uma operação capixaba, dominar esse processo também reduz a dependência de infraestrutura analítica produzida fora do estado. Trata-se de uma hipótese de valor a ser testada em campo, não de um impacto econômico já observado.
 
 Três problemas metodológicos bem documentados na literatura de finanças quantitativas foram tratados como requisitos de projeto, não como ressalvas de rodapé.
 
@@ -154,7 +154,7 @@ A configuração candidata foi escolhida somente em 2015--2018. Um alerta é aci
 
 ---
 
-## 5. Resultados
+## 5. Resultados e discussão
 
 ### 5.1 Desempenho da carteira publicada
 
@@ -263,52 +263,59 @@ Depois da última correção, o CAGR publicado caiu, a queda máxima subiu de 30
 
 ---
 
-## 6. Contribuição tecnológica e aderência ao mercado
+## 6. Aplicabilidade, implantação e modelo de uso
 
-O fluxo de uso foi desenhado para que cada tela responda à pergunta criada pela anterior. Primeiro, a instituição escolhe a política e aceita os limites. Segundo, o sistema mostra quais arquivos e demonstrações estavam disponíveis e quais passaram na validação. Terceiro, a triagem informa ativos aprovados e reprovados com motivos. Quarto, a carteira candidata apresenta pesos, parcela em CDI, custo e comparação com as referências. Quinto, a pessoa revisa a tese em linguagem natural, aprova ou rejeita e registra a justificativa. Por fim, o dossiê reúne a decisão inteira, inclusive a versão da regra e os hashes dos arquivos. O usuário não precisa alternar entre um laboratório técnico e um documento separado; a experiência e a prova são duas visões do mesmo registro.
+### 6.1 Público e proposta de valor
 
-Para o escritório. O sistema entrega, por decisão, um dossiê completo, com política aplicada, dados com data e hash, tela de elegibilidade com motivo de cada reprovação, pesos, ordens com lote e participação no volume, e custo estimado. O que antes era reconstruído a mão sob pressão passa a ser subproduto da própria operação.
+O produto foi concebido para escritórios de investimento, consultorias de valores mobiliários, gestores patrimoniais e estruturas de multi-family office. Para a instituição, o Benevente transforma a documentação em consequência do próprio trabalho: a política aplicada, os dados e seus hashes, a elegibilidade, os pesos, as ordens, o custo estimado e a aprovação permanecem ligados à mesma decisão. Para o profissional, isso reduz o tempo gasto reconstruindo uma recomendação. Para o cliente, permite responder tanto por que um papel entrou quanto por que outro ficou de fora.
 
-Para o cliente final. A pergunta "por que este papel?" passa a ter resposta datada e verificável, e a pergunta simétrica, "por que não aquele?", também.
+O benefício comercial não deve ser apresentado como promessa de superar o mercado. A evidência histórica sustenta a utilidade da regra de pesquisa, mas o valor contratável está na consistência do processo, na comparação explícita com alternativas e na capacidade de revisão. O retorno continua sendo medido, acompanhado e discutido, sem se tornar garantia, remuneração vinculada a desempenho ou substituto de suitability.
 
-Para o ecossistema capixaba. A hipótese comercial não é “rendemos mais”. É que um escritório local com processo demonstrável pode reter uma parcela maior do trabalho analítico e do relacionamento de longo prazo no estado. Essa hipótese precisa ser testada em entrevistas e pilotos; o backtest não a comprova.
+### 6.2 Fluxo operacional
 
-Modelo de oferta a validar. A primeira versão comercial pode ser licenciada por instituição, com cobrança por usuários e número de políticas acompanhadas, e um serviço de implantação para integrar fontes, identidade, aprovação e arquivo documental. Não há preço publicado nem receita comprovada. As métricas do piloto devem ser tempo para produzir um dossiê, percentual de decisões com evidência completa, divergência entre custo previsto e nota conciliada, número de revisões exigidas e disposição a pagar. Retorno da carteira permanece uma medida de pesquisa e acompanhamento, nunca base de remuneração ou garantia contratual.
+O uso começa pela política da instituição. Depois de escolher o perfil e aceitar seus limites, o usuário vê quais arquivos e demonstrações estavam disponíveis e quais passaram na validação. A triagem mostra aprovados e reprovados com o respectivo motivo. A carteira candidata apresenta pesos, parcela defensiva, custo e comparação com CDI, Ibovespa, BOVA11 e MVO. Em seguida, o profissional revisa a tese em linguagem natural, registra riscos, aprova ou rejeita a proposta e informa a justificativa. O dossiê final reúne esse percurso e a versão da regra. Laboratório e documento de decisão são, portanto, duas vistas do mesmo registro, e não etapas desconectadas.
 
-Maturidade. O artefato está em estágio de pesquisa reprodutível, não de produto validado institucionalmente. A janela de 2015 a 2025 foi usada para desenvolver e escolher a regra, e portanto descreve a amostra e não prevê o futuro. A avaliação prospectiva começa a partir do registro congelado, cujo hash está versionado no repositório com data carimbada por terceiro. Um registro pré-especificado que exista apenas no disco de quem o escreveu não demonstra anterioridade nenhuma.
+### 6.3 Implantação e piloto comercial
 
----
+Uma implantação mínima pode ser dividida em três etapas. Na preparação, a instituição define fontes, políticas, perfis de acesso e responsáveis por aprovação. No piloto, o sistema acompanha uma política e um grupo pequeno de carteiras sem enviar ordens, enquanto o escritório confronta os dossiês com o processo que já utiliza. Na operação assistida, a conciliação de custos e posições passa a fechar o ciclo entre proposta e execução. Integração com corretora, custódia, identidade corporativa e arquivo documental pertence a essa última etapa e não precisa bloquear o teste inicial.
 
-## 7. Limitações
+A oferta a validar é uma licença institucional, combinada a um serviço de implantação. O preço ainda não foi testado. O piloto deve medir tempo para produzir o dossiê, proporção de decisões com evidência completa, número de revisões até a aprovação, diferença entre custo estimado e executado e disposição a pagar. A relevância para o Espírito Santo também precisa ser observada, e não presumida: entrevistas e pilotos devem verificar se a ferramenta ajuda escritórios locais a manter no estado uma parcela maior do trabalho analítico e do relacionamento com famílias e empresas.
 
-Declaradas sem atenuação, porque uma limitação omitida vira defeito descoberto pelo avaliador.
-
-1. A janela avaliada é a janela de desenvolvimento. Onze anos avaliados não são onze anos de validação prospectiva. O prêmio de retrospectiva de 0,65 p.p. limita o problema, mas não o elimina.
-2. O detector de eventos societários tem recall de 23,3%. Ele é conservador, e proventos, juros sobre capital próprio e eventos de papéis deslistados ainda exigem reconciliação contra registro primário da B3 ou da CVM antes de qualquer afirmação comercial de desempenho.
-3. Distribuições imputadas. Papéis sem cobertura de provedor recebem o rendimento mediano da seção transversal do ano. É uma aproximação, e os papéis afetados estão listados no relatório de cobertura.
-4. A queda máxima é grande. Quase 48% em base diária. Nenhuma suitability razoável coloca um cliente conservador nessa carteira.
-5. Onze observações anuais são poucas. A probabilidade do Sharpe deflacionado corrige o viés de busca, não o tamanho da amostra.
-6. Uso comercial exige estrutura regulatória própria. O sistema é apoio à decisão e trilha de auditoria. Não é recomendação individual, gestão discricionária, nem promessa de superar referências.
-7. O Benevente 2 é retrospectivo e posterior à Covid-19. A escolha em 2015--2018 e a leitura separada de 2019--2025 evitam usar o retorno futuro na conta diária, mas não removem o conhecimento humano de que uma crise sanitária ocorreu.
-8. O imposto intranual do Benevente 2 ainda não foi reconciliado. Custos de giro foram cobrados, mas vendas defensivas podem antecipar imposto e reduzir o resultado líquido.
-9. Não existe arquivo histórico de notícias com horário validado neste experimento. O controle usa apenas preço e volatilidade. A LLM não antecipou a Covid-19 e não tomou decisões no Benevente 2.
+O produto permanece em estágio de pesquisa reprodutível. A janela de 2015 a 2025 foi usada no desenvolvimento e descreve a amostra, não o futuro. A avaliação prospectiva começa no registro congelado, cujo hash foi versionado e recebeu data carimbada por terceiro. Essa separação entre evidência histórica e acompanhamento futuro é parte do produto, não apenas uma ressalva acadêmica.
 
 ---
 
-## 8. Agenda
+## 7. Limitações e recomendações
 
-- Acumular anos avaliados depois do registro congelado, que é a única evidência capaz de mudar o estatuto do artefato de pesquisa para validado.
-- Reconciliar eventos societários e proventos contra registro primário, elevando o recall do detector.
-- Repetir o experimento de contaminação em modelos com datas de corte de treinamento distintas, para separar contaminação de capacidade.
-- Pré-registrar um estudo trimestral ou orientado a eventos, com notícias arquivadas, horário de publicação e corte temporal verificável, sem reotimizar a regra anual depois de observar o resultado.
-- Pré-registrar o Benevente 2 antes de qualquer acompanhamento futuro, incorporar imposto por lote vendido e comparar seus estados discretos a um alvo contínuo de volatilidade escolhido somente na janela de treino.
-- Instrumentar o piloto em escritório capixaba, medindo tempo de produção do dossiê e taxa de divergência na conciliação de notas.
+### 7.1 Limitações
+
+A primeira limitação é temporal. Onze decisões anuais são poucas, e a janela avaliada também serviu ao desenvolvimento. O prêmio de retrospectiva de 0,65 ponto percentual reduz a preocupação com escolha posterior da regra, mas não equivale a validação prospectiva. A probabilidade do Sharpe deflacionado corrige múltiplas tentativas; ela não cria observações que a história não oferece.
+
+A segunda limitação está nos dados. O detector de eventos societários tem precisão de 88,1%, mas recall de 23,3%. Ele prefere deixar de ajustar a produzir um ajuste incorreto. Papéis sem cobertura integral recebem, em casos identificados no relatório, uma distribuição imputada a partir da mediana transversal do ano. Antes de qualquer uso comercial do desempenho, proventos, juros sobre capital próprio e eventos de papéis deslistados precisam ser reconciliados com registros primários da B3 ou da CVM.
+
+A terceira é econômica. A queda máxima diária do Benevente 1 chegou a 47,8%, nível incompatível com um perfil conservador. O Benevente 2 reduziu essa queda, mas foi concebido depois da Covid-19, ainda não teve imposto intranual conciliado e não demonstrou retorno adicional. Ele deve ser tratado como experimento de controle de risco, não como substituto validado da carteira publicada.
+
+Por fim, o produto não elimina responsabilidade profissional. Uso comercial exige enquadramento regulatório, política de suitability, segurança, contrato de fontes e aprovação humana. O modelo de linguagem não antecipou a Covid-19, não seleciona ativos e não define pesos. Notícias também não entram no protocolo atual porque não há, neste experimento, um arquivo histórico com horário de publicação e corte verificável.
+
+### 7.2 Recomendações de pesquisa e implantação
+
+O passo científico prioritário é acumular decisões depois do registro congelado. Em paralelo, a pesquisa deve reconciliar eventos e proventos, incorporar imposto por lote vendido ao Benevente 2 e repetir o teste de contaminação com modelos cujas datas de treinamento sejam conhecidas. Um estudo com notícias deve ser pré-registrado como braço separado, com frequência trimestral ou orientada a eventos, sem reotimizar a regra anual depois de observar o resultado. O passo de produto é um piloto silencioso em escritório capixaba, sem execução automática, capaz de medir tempo, completude documental, divergência de custos e aceitação do usuário.
+
+---
+
+## 8. Conclusão
+
+O Benevente Wealth System foi construído para resolver uma falha operacional específica: carteiras são propostas em um momento e justificadas em outro, mas os dados, a regra e a aprovação raramente permanecem unidos. O artefato mostrou que é possível produzir a alocação e a evidência da decisão no mesmo fluxo, com universo reconstruído da B3, fundamentos admitidos pela data de recebimento, regra quantitativa separada da explicação em linguagem natural, custos, imposto e comparadores independentes.
+
+Na amostra de 2015 a 2025, o Benevente 1 superou CDI, Ibovespa e MVO de referência em retorno anualizado, ainda que com queda máxima elevada. O Benevente 2 protegeu melhor o capital na crise observada, sem comprovar retorno adicional. Os testes negativos são igualmente informativos: a frequência anual não perdeu para reseleções mais rápidas, o modelo de linguagem não acrescentou retorno e a alocação direta por texto produziu carteiras aritmeticamente inconsistentes em parte dos anos. Esses resultados justificam um sistema em que a matemática decide a alocação, a linguagem ajuda a compreendê-la e uma pessoa conserva a responsabilidade final.
+
+A recomendação prática é testar o produto como infraestrutura de decisão e governança, não como promessa de rentabilidade. Seu mérito competitivo será confirmado se um piloto reduzir o esforço de documentação, aumentar a completude da evidência e permitir que o escritório defenda suas escolhas com clareza. Até que resultados prospectivos se acumulem, o desempenho histórico deve permanecer como evidência de pesquisa, acompanhado das limitações que o próprio sistema foi desenhado para registrar.
 
 ---
 
 ## 9. Disponibilidade
 
-A versão submetida inclui um pacote suplementar anônimo com o código de reprodução, os artefatos de avaliação e o manifesto criptográfico. Os endereços públicos do sistema e do repositório foram omitidos para preservar a avaliação cega. Após o aceite, a versão de câmera deverá restaurar esses endereços e indicar o arquivo permanente com DOI.
+A versão submetida inclui um pacote suplementar anônimo com o código de reprodução, os artefatos de avaliação e o manifesto criptográfico. Os endereços públicos do sistema e do repositório foram omitidos para preservar a avaliação cega. Após o aceite, a versão para publicação deverá restaurar esses endereços e indicar o arquivo permanente com DOI.
 
 ---
 
