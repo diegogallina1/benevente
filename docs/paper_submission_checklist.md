@@ -38,7 +38,7 @@ guarda-chuva IEEE SSCI 2027. No sistema, selecionar o simpósio CiFer, e não um
 
 - Arquivo de avaliação anônimo em inglês.
 - Classe `IEEEtran`, conferência, corpo em 10 pontos e duas colunas.
-- Meta editorial provisória: até 6 páginas de conteúdo mais 1 página de referências, sem alteração artificial de fonte ou espaçamento. O limite deve ser reconfirmado no edital do SSCI 2027 quando ele for publicado.
+- Meta editorial provisória para short paper: até 4 páginas de conteúdo mais 1 página de referências, sem alteração artificial de fonte ou espaçamento. O limite deve ser reconfirmado no edital do SSCI 2027 quando ele for publicado.
 - Ênfase tipográfica restrita à hierarquia produzida pelo IEEEtran; não há frases em negrito no corpo do artigo.
 - Quatro braços empíricos: nomeado, anonimizado, determinístico e monolítico.
 - Declaração de compartilhamento de dados/código na introdução.

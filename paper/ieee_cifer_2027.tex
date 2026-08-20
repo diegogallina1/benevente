@@ -3,6 +3,7 @@
 \documentclass[10pt,conference]{IEEEtran}
 \usepackage{booktabs}
 \usepackage{url}
+\usepackage[hidelinks]{hyperref}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{graphicx}
@@ -244,7 +245,7 @@ Seven defects were found and corrected. Every one inflated the result, which is 
 \begin{table}[t]
 \caption{Defects, all of which had inflated the result.}
 \centering
-\small
+\footnotesize
 \begin{tabular}{p{3.1cm}p{4.1cm}}
 \toprule
 Defect & Correction \\
@@ -265,13 +266,11 @@ After the final correction the published CAGR fell and the daily drawdown rose f
 
 \section{Limitations}
 
-The evaluation window is also the development window; eleven evaluated years are not eleven years of prospective validation, and the 0.65 pp hindsight premium bounds that problem without eliminating it. The corporate-action detector's 23.3\% recall means distributions and events on delisted names still require reconciliation against primary records before any commercial performance claim. Issuers without provider coverage receive the annual cross-sectional median distribution yield, an approximation whose affected names are listed with the panel. Eleven annual observations are few; the deflated-Sharpe probability corrects the search bias, not the sample size. The language-model experiment uses one model at one training cutoff, and separating contamination from capability requires repeating it across models with different cutoffs. The annual cadence fits the accounting signal and beat quarterly and monthly reselection in this sample, but it is not claimed to be universally optimal. The Benevente~2 extension is retrospective, was designed after Covid-19, and omits intrayear tax; it must be pre-registered and evaluated prospectively before promotion. A separate study should test timestamped news and event-driven or quarterly decisions without contaminating the annual protocol. The factor transformation, eligibility thresholds, configuration grid and annual choices are disclosed in the supplementary artefacts; the source code is not required to understand those transformations.
+The evaluation window is also the development window; the 0.65 pp hindsight premium bounds that problem without making the record prospective. The corporate-action detector's 23.3\% recall still requires primary-record reconciliation, while issuers without provider coverage receive an explicitly listed cross-sectional median distribution yield. Eleven annual observations remain few: the deflated-Sharpe probability corrects search bias, not sample size. The model experiment covers one model and one training cutoff. The annual cadence beat quarterly and monthly reselection here, but is not universally optimal. Benevente~2 was designed after Covid-19 and omits intrayear tax, so it requires pre-registration and prospective evaluation. Timestamped news and event-driven decisions belong in a separate protocol. Factor transformations, thresholds, the configuration grid and annual choices are disclosed in the supplementary artefacts.
 
 \section{Conclusion}
 
-We set out to measure what a language model contributes to portfolio construction when it is denied the ability to set weights. On thirteen years of Brazilian equities, under an architecture where its only output is a bounded score entering a convex program, the answer is: nothing detectable. It does not profit from recognising companies, it does not beat the deterministic factor it was given, and keeping it away from the weights costs nothing. What generates the return is the dated screen, not the ranking method layered on top of it.
-
-We consider this the useful result. An architecture that constrains a model to a bounded, typed output is cheap, gives up nothing measurable, and removes an entire class of failure that the monolithic arm demonstrated concretely by returning weight vectors that did not sum to one. The event-risk extension reinforces the separation: a deterministic, lagged control can materially reduce tail risk without asking the model to infer a crisis from prose. The burden of proof for handing a language model the pen should sit with those proposing it, and meeting that burden requires the deterministic control and the anonymised arm that this protocol makes routine.
+We measured what a language model contributes when it cannot set portfolio weights. Over thirteen years of Brazilian equities, nothing was detectable: names did not help, the model did not beat its deterministic factor, and keeping it away from the weights cost nothing. The dated screen generated the return. A bounded, typed interface therefore gives up nothing measurable while avoiding the malformed weights returned by the monolithic arm. The event-risk extension reaches the same architectural conclusion: a lagged deterministic control can reduce tail risk without asking a model to infer a crisis from prose. Claims for model discretion should be tested against both deterministic and anonymised controls.
 
 \section*{Statement on generative AI}
 A generative-AI assistant was used for language editing and code review. The authors independently verified every calculation, citation and claim and accept full responsibility for the manuscript. The empirical results were generated by deterministic project code, not by the assistant \cite{openai}.
@@ -288,12 +287,12 @@ A generative-AI assistant was used for language editing and code review. The aut
 \bibitem{fingpt} H. Yang, X.-Y. Liu, and C. D. Wang, ``FinGPT: Open-Source Financial Large Language Models,'' arXiv:2306.06031, 2023.
 \bibitem{lopezlira} A. Lopez-Lira and Y. Tang, ``Can ChatGPT Forecast Stock Price Movements? Return Predictability and Large Language Models,'' \emph{Journal of Financial Economics}, vol. 184, Art. no. 104335, 2026, doi: 10.1016/j.jfineco.2026.104335.
 \bibitem{pelsterval} M. Pelster and J. Val, ``Can ChatGPT Assist in Picking Stocks?'' \emph{Finance Research Letters}, vol. 59, Art. no. 104786, 2024, doi: 10.1016/j.frl.2023.104786.
-\bibitem{b3cotahist} B3 S.A. --- Brasil, Bolsa, Balc\~ao, ``Historical quotations,'' 2026. [Online]. Available: \url{https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/market-data/historico/mercado-a-vista/cotacoes-historicas/}
-\bibitem{b3ibov} B3 S.A. --- Brasil, Bolsa, Balc\~ao, ``Ibovespa B3,'' 2026. [Online]. Available: \url{https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-amplos/ibovespa.htm}
-\bibitem{blackrockbova} BlackRock, ``iShares Ibovespa Fundo de {\'I}ndice (BOVA11): Factsheet,'' 2026. [Online]. Available: \url{https://www.blackrock.com/br/literature/fact-sheet/bova11-ishares-ibovespa-fundo-de-ndice-fund-fact-sheet-pt-lm.pdf}
-\bibitem{cvmitr} Comiss\~ao de Valores Mobili\'arios, ``Formul\'ario de Informa\c{c}\~oes Trimestrais (ITR),'' CVM Open Data. [Online]. Available: \url{https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/}
-\bibitem{cvmdfp} Comiss\~ao de Valores Mobili\'arios, ``Demonstra\c{c}\~oes Financeiras Padronizadas (DFP),'' CVM Open Data. [Online]. Available: \url{https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp}
-\bibitem{bcb} Banco Central do Brasil, ``Sistema Gerenciador de S\'eries Temporais, s\'erie 12 (CDI).'' [Online]. Available: \url{https://www3.bcb.gov.br/sgspub/}
-\bibitem{openai} OpenAI, ``GPT-5 System Card,'' 2025. [Online]. Available: \url{https://openai.com/index/gpt-5-system-card/}
+\bibitem{b3cotahist} B3 S.A. --- Brasil, Bolsa, Balc\~ao, ``Historical quotations,'' 2026, \href{https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/market-data/historico/mercado-a-vista/cotacoes-historicas/}{online}.
+\bibitem{b3ibov} B3 S.A. --- Brasil, Bolsa, Balc\~ao, ``Ibovespa B3,'' 2026, \href{https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-amplos/ibovespa.htm}{online}.
+\bibitem{blackrockbova} BlackRock, ``iShares Ibovespa Fundo de {\'I}ndice (BOVA11): Factsheet,'' 2026, \href{https://www.blackrock.com/br/literature/fact-sheet/bova11-ishares-ibovespa-fundo-de-ndice-fund-fact-sheet-pt-lm.pdf}{online}.
+\bibitem{cvmitr} Comiss\~ao de Valores Mobili\'arios, ``Formul\'ario de Informa\c{c}\~oes Trimestrais (ITR),'' CVM Open Data, \href{https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/}{online}.
+\bibitem{cvmdfp} Comiss\~ao de Valores Mobili\'arios, ``Demonstra\c{c}\~oes Financeiras Padronizadas (DFP),'' CVM Open Data, \href{https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp}{online}.
+\bibitem{bcb} Banco Central do Brasil, ``Sistema Gerenciador de S\'eries Temporais, s\'erie 12 (CDI),'' \href{https://www3.bcb.gov.br/sgspub/}{online}.
+\bibitem{openai} OpenAI, ``GPT-5 System Card,'' 2025, \href{https://openai.com/index/gpt-5-system-card/}{online}.
 \end{thebibliography}
 \end{document}
