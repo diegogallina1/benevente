@@ -163,80 +163,11 @@ Keeping the model away from the weights did not cost performance. The monolithic
 
 Thirteen annual observations make these underpowered tests. The honest statement is that no effect was detected, not that none exists.
 
-\subsection{A robustness result: decision cadence}
+\subsection{Robustness and the separate product record}
 
-A reviewer will ask whether an annual decision is simply too slow. We test it by holding the rule, the limits, the universe and the panel fixed and varying only the decision dates. Annual reselection compounds at 18.58\% before costs, quarterly at 16.37\%, monthly at 13.92\%. Paired by calendar year and measured after tax, quarterly trails the annual decision by 1.55 pp/yr ($p=0.38$) and monthly by 3.27 pp/yr ($p=0.31$).
+Holding the rule and panel fixed, annual reselection compounded at 18.58\% before costs, versus 16.37\% quarterly and 13.92\% monthly. After tax, the paired gaps were 1.55 pp/yr ($p=0.38$) and 3.27 pp/yr ($p=0.31$); no faster cadence improved the selection. A retention buffer also raised carryover from 36\% to 42\% and reduced one-year holdings from 21 to 16, but its 0.33 pp/yr return difference was not significant ($p=0.14$). These are stability checks, not additional return claims.
 
-The mechanism is not the one usually assumed. The loss sits in the \emph{gross} return, which falls 4.66 points from annual to monthly before any deduction; execution cost rises by only 0.08 points a year, and modelled tax falls, because each monthly review realises a smaller slice of the book. More frequent reselection degrades the selection before it raises the bill. We note that our tax model understates the monthly arm's liability, since it charges tax on each period's own gain rather than on the accumulated gain of the position actually sold; the bias favours the arm that lost anyway.
-
-\subsection{A second robustness result: position persistence}
-
-The top-$N$ cut has a property worth measuring: an incumbent that remains excellent but slips one rank is sold in
-full. Over eleven years the book carried over 36\% of its names, and 21 of the 35 names it ever held lasted a single
-year. We therefore add a retention buffer $\beta$: an incumbent is kept while it remains eligible and ranks within
-$N + \beta$, and the remaining slots are filled from the top of the ranking. $\beta = 0$ is the published rule.
-
-\begin{table}[t]
-\caption{Retention buffer, nested selection, 2015--2025.}
-\centering
-\begin{tabular}{rrrrr}
-\toprule
-$\beta$ & CAGR & Excess Sharpe & Carryover & Names lasting 1 yr \\
-\midrule
-0 & 18.51\% & 0.597 & 36\% & 21 \\
-1 & 18.80\% & 0.606 & 42\% & 16 \\
-2 & 18.70\% & 0.610 & 42\% & 16 \\
-3 & 18.49\% & 0.593 & 44\% & 15 \\
-5 & 18.30\% & 0.579 & 44\% & 15 \\
-8 & 18.30\% & 0.568 & 50\% & 10 \\
-\bottomrule
-\end{tabular}
-\label{tab:persistence}
-\end{table}
-
-A small buffer helps and a large one hurts, which is the shape one would expect if the factor carries real but decaying
-information. Paired against the hard cut, $\beta=1$ gains 0.33 pp/yr ($p=0.14$) and $\beta=2$ gains 0.18 pp/yr
-($p=0.12$); neither clears conventional significance on eleven observations. The nested protocol, given $\beta$ as a
-further choice, converges on $\beta=1$ from 2017 and returns 18.61\%, a gain of 0.10 pp/yr over the published rule.
-
-We report this as a stability result rather than a return result. The return difference is not established; the change
-in the book is unambiguous, with carryover rising from 36\% to 42\% and single-year names falling from 21 to 16. Where
-that matters is outside the return series: fewer round trips, a longer deferral of realised gains, and a book an
-adviser can explain without justifying why last year's thesis was abandoned.
-
-\section{Published strategy}
-
-For completeness, the protocol's own eleven-year record, net of modelled costs.
-
-\begin{table}[t]
-\caption{Nested protocol, 2015--2025, net of costs.}
-\centering
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{lrrr}
-\toprule
-Series & CAGR & Win yrs & Max DD \\
-\midrule
-Benevente & 17.86\% & --- & $-47.8$\% \\
-Benevente, after tax & 16.03\% & --- & --- \\
-Ibovespa & 11.77\% & 7 of 11 & $-47.0$\% \\
-BOVA11 (investable ETF) & 11.72\% & 7 of 11 & $-47.2$\% \\
-Cash (CDI) & 9.61\% & 6 of 11 & 0\% \\
-Neutral MVO & 7.83\% & 10 of 11 & --- \\
-\bottomrule
-\end{tabular}
-\label{tab:published}
-\end{table}
-
-The two market references serve different purposes. Ibovespa is B3's total-return index, so it incorporates distributions reinvested in the theoretical portfolio \cite{b3ibov}. BOVA11 is a listed fund that seeks to track that index and therefore represents an investable passive implementation, subject to fees, trading costs and tracking difference \cite{blackrockbova}. The drawdown is not incidental. The nested protocol raised the equity budget to 95\% between 2018 and 2021, and the portfolio's 47.8\% drawdown was close to the 47.0\% drawdown of the index and the 47.2\% drawdown of the ETF. This is a concentrated book that recovered faster, not a smoothed version of the market. We refer to this canonical annual strategy as Benevente~1.
-
-\section{Experimental event-risk extension}
-
-Benevente~2 preserves Benevente~1's annual holdings and changes only the intrayear equity exposure. It observes the Ibovespa drawdown from a 126-session rolling peak and 20-session realised volatility, both lagged by one close. An alert state caps equity at 50\% when drawdown reaches 12\% or annualised volatility reaches 40\%; a severe state caps it at 35\% at 22\% and 60\%, respectively. Recovery requires ten sessions. The residual earns CDI and each transition pays 10 basis points per unit of turnover. No language model, news text, or future return enters this rule.
-
-The configuration was selected on 2015--2018 and read separately on 2019--2025. Over the full 2015--2025 sample, Benevente~2 produced an 18.45\% CAGR and a $-28.7$\% maximum daily drawdown, versus 17.86\% and $-47.8$\% for Benevente~1. In 2020, the alert and severe states began on 28 February and 10 March, the minimum equity exposure was 35\%, and the annual return was 4.35\% versus 1.78\% for Benevente~1 and 0.62\% for the Ibovespa.
-
-The return claim does not survive a stronger reading. In 2019--2025 the CAGRs are 18.03\% and 17.95\%, and the paired annual test gives $p=0.964$. Across 432 sensitivity configurations, every configuration reduces drawdown, but only 9.03\% improve both CAGR and drawdown in the evaluation slice. We therefore report robust tail-risk reduction, not added alpha. The experiment includes transition costs but not the tax consequences of intrayear sales. It was also conceived after the Covid-19 episode, so the chronological split cannot remove conceptual hindsight and is not prospective validation.
+The supplementary product record distinguishes the Ibovespa total-return index, which reinvests distributions in a theoretical portfolio \cite{b3ibov}, from BOVA11, an investable ETF subject to fees, trading costs and tracking difference \cite{blackrockbova}. A retrospective event-risk extension reduced maximum drawdown from 47.8\% to 28.7\%, but added no detectable return in 2019--2025 ($p=0.964$). It was designed after Covid-19 and omits intrayear tax, so it is not prospective validation and does not enter the language-model tests.
 
 \section{Defects found by auditing our own backtest}
 
@@ -275,6 +206,7 @@ We measured what a language model contributes when it cannot set portfolio weigh
 \section*{Statement on generative AI}
 A generative-AI assistant was used for language editing and code review. The authors independently verified every calculation, citation and claim and accept full responsibility for the manuscript. The empirical results were generated by deterministic project code, not by the assistant \cite{openai}.
 
+\clearpage
 \begin{thebibliography}{00}
 \bibitem{markowitz} H. Markowitz, ``Portfolio Selection,'' \emph{The Journal of Finance}, vol. 7, no. 1, pp. 77--91, 1952.
 \bibitem{blacklitterman} F. Black and R. Litterman, ``Global Portfolio Optimization,'' \emph{Financial Analysts Journal}, vol. 48, no. 5, pp. 28--43, 1992.
