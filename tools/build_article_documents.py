@@ -10,7 +10,7 @@ from docx.enum.table import WD_TABLE_ALIGNMENT, WD_CELL_VERTICAL_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Cm, Pt
+from docx.shared import Cm, Pt, RGBColor
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,12 +29,37 @@ def clear_body(document: Document) -> None:
             body.remove(child)
 
 
-def set_cell_shading(cell, fill: str) -> None:
+TABLE_TITLES = (
+    "Camadas do artefato e respectivas saídas auditáveis",
+    "Desempenho da carteira publicada e dos comparadores entre 2015 e 2025",
+    "Desempenho e risco do Benevente 1 e do Benevente 2",
+    "Estatísticas de correção por múltiplas tentativas",
+    "Desempenho por cadência de reseleção da carteira",
+    "Comparações do experimento com modelo de linguagem",
+    "Defeitos identificados na auditoria interna e respectivas correções",
+)
+
+
+def set_border(properties, edge: str, *, value: str = "single", size: str = "8") -> None:
+    borders = properties.find(qn("w:tblBorders"))
+    if borders is None:
+        borders = OxmlElement("w:tblBorders"); properties.append(borders)
+    border = borders.find(qn(f"w:{edge}"))
+    if border is None:
+        border = OxmlElement(f"w:{edge}"); borders.append(border)
+    border.set(qn("w:val"), value)
+    if value != "nil":
+        border.set(qn("w:sz"), size); border.set(qn("w:color"), "000000")
+
+
+def set_cell_bottom_border(cell) -> None:
     properties = cell._tc.get_or_add_tcPr()
-    shade = properties.find(qn("w:shd"))
-    if shade is None:
-        shade = OxmlElement("w:shd"); properties.append(shade)
-    shade.set(qn("w:fill"), fill)
+    borders = properties.find(qn("w:tcBorders"))
+    if borders is None:
+        borders = OxmlElement("w:tcBorders"); properties.append(borders)
+    bottom = OxmlElement("w:bottom")
+    bottom.set(qn("w:val"), "single"); bottom.set(qn("w:sz"), "8")
+    bottom.set(qn("w:color"), "000000"); borders.append(bottom)
 
 
 def add_inline(paragraph, text: str) -> None:
@@ -45,7 +70,9 @@ def add_inline(paragraph, text: str) -> None:
             paragraph.add_run(text[cursor:match.start()])
         token = match.group(0)
         if token.startswith("**"):
-            run = paragraph.add_run(token[2:-2]); run.bold = True
+            # Reserve bold for structural hierarchy such as headings and table
+            # headers. Inline emphasis is rendered as normal body text.
+            paragraph.add_run(token[2:-2])
         elif token.startswith("`"):
             run = paragraph.add_run(token[1:-1]); run.font.name = "Courier New"; run.font.size = Pt(9)
         else:
@@ -55,12 +82,25 @@ def add_inline(paragraph, text: str) -> None:
         paragraph.add_run(text[cursor:])
 
 
-def add_table(document: Document, lines: list[str]) -> None:
+def add_table(document: Document, lines: list[str], table_number: int) -> None:
     rows = [[cell.strip() for cell in line.strip().strip("|").split("|")] for line in lines]
     rows = [row for index, row in enumerate(rows) if index != 1]
+
+    number = document.add_paragraph()
+    number.paragraph_format.keep_with_next = True
+    number.paragraph_format.space_after = Pt(0)
+    run = number.add_run(f"Tabela {table_number}"); run.bold = True
+    title = document.add_paragraph()
+    title.paragraph_format.keep_with_next = True
+    title.paragraph_format.space_after = Pt(4)
+    run = title.add_run(TABLE_TITLES[table_number - 1]); run.italic = True
+
     table = document.add_table(rows=len(rows), cols=len(rows[0]))
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    if "Table Grid" in [style.name for style in document.styles]: table.style = "Table Grid"
+    table_properties = table._tbl.tblPr
+    for edge in ("left", "right", "insideH", "insideV"):
+        set_border(table_properties, edge, value="nil")
+    set_border(table_properties, "top"); set_border(table_properties, "bottom")
     for row_index, values in enumerate(rows):
         row_properties = table.rows[row_index]._tr.get_or_add_trPr()
         cannot_split = OxmlElement("w:cantSplit"); row_properties.append(cannot_split)
@@ -69,12 +109,17 @@ def add_table(document: Document, lines: list[str]) -> None:
         for cell, value in zip(table.rows[row_index].cells, values):
             cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
             paragraph = cell.paragraphs[0]; paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+            paragraph.paragraph_format.keep_with_next = row_index < len(rows) - 1
             add_inline(paragraph, value)
             for run in paragraph.runs:
                 run.font.name = "Times New Roman"; run.font.size = Pt(9)
                 if row_index == 0: run.bold = True
-            if row_index == 0: set_cell_shading(cell, "D9E7E5")
-    document.add_paragraph()
+            if row_index == 0: set_cell_bottom_border(cell)
+    note = document.add_paragraph()
+    note.paragraph_format.space_before = Pt(3); note.paragraph_format.space_after = Pt(8)
+    note.paragraph_format.line_spacing = 1.0
+    run = note.add_run("Nota. Elaboração própria com base nos artefatos reproduzíveis da pesquisa.")
+    run.font.name = "Times New Roman"; run.font.size = Pt(10)
 
 
 def markdown_blocks(text: str):
@@ -108,11 +153,13 @@ def configure_document(document: Document) -> None:
     section.bottom_margin = Cm(2); section.right_margin = Cm(2)
     normal = document.styles["normal"]
     normal.font.name = "Times New Roman"; normal.font.size = Pt(12)
+    normal.font.color.rgb = RGBColor(0, 0, 0)
     normal.paragraph_format.line_spacing = 1.5; normal.paragraph_format.space_after = Pt(6)
     normal.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     for name, size in (("Heading 1", 14), ("Heading 2", 13), ("Heading 3", 12)):
         style = document.styles[name]
         style.font.name = "Times New Roman"; style.font.size = Pt(size); style.font.bold = True
+        style.font.color.rgb = RGBColor(0, 0, 0)
         style.paragraph_format.space_before = Pt(12); style.paragraph_format.space_after = Pt(6)
         style.paragraph_format.keep_with_next = True
 
@@ -122,8 +169,12 @@ def build_btech() -> None:
     copy2(BTECH_TEMPLATE, BTECH_OUTPUT)
     document = Document(BTECH_OUTPUT); clear_body(document); configure_document(document)
     in_references = False
+    table_number = 0
     for kind, content in markdown_blocks(BTECH_SOURCE.read_text(encoding="utf-8")):
-        if kind == "table": add_table(document, content); continue
+        if kind == "table":
+            table_number += 1
+            add_table(document, content, table_number)
+            continue
         if kind == "h1":
             paragraph = document.add_paragraph(style="Heading 1"); paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
             paragraph.paragraph_format.space_before = Pt(0)
@@ -143,6 +194,8 @@ def build_btech() -> None:
                 paragraph.paragraph_format.left_indent = Cm(0.75)
                 paragraph.paragraph_format.first_line_indent = Cm(-0.75)
         add_inline(paragraph, content)
+    if table_number != len(TABLE_TITLES):
+        raise ValueError(f"Expected {len(TABLE_TITLES)} BTech tables, found {table_number}")
     document.core_properties.author = ""; document.core_properties.last_modified_by = ""
     document.core_properties.title = "Benevente Wealth System"; document.core_properties.subject = "Manuscrito tecnológico BTech 2026"
     temporary = BTECH_OUTPUT.with_suffix(".tmp.docx"); document.save(temporary); temporary.replace(BTECH_OUTPUT)

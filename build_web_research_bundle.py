@@ -100,6 +100,7 @@ def _profile_curves(profile_results: dict[str, dict]) -> dict[str, dict]:
             "MVO de referência": "mvo_eligible_net_return",
             "CDI": "cdi_net_return",
             "Ibovespa": "benchmark_IBOVESPA",
+            "BOVA11": "benchmark_BOVA11",
         }
         series: dict[str, list[float]] = {}
         for name, column in tracks.items():
@@ -113,17 +114,19 @@ def _profile_curves(profile_results: dict[str, dict]) -> dict[str, dict]:
     return payload
 
 
-# BOVA11 tracked the Ibovespa to within two hundredths of a point a year over
-# the published window, so plotting both spent a colour to say the same thing
-# twice. The Ibovespa stays because every Brazilian fund already reports against
-# it, which is what makes the chart comparable with a peer's factsheet. BOVA11
-# remains in the run artifacts for the investability argument in the paper.
+# The two market references answer different questions and must travel
+# together. Ibovespa is B3's total-return index and measures the theoretical
+# market portfolio with distributions reinvested. BOVA11 is a security that an
+# investor could actually buy, so its path also reflects implementation costs
+# and tracking difference. Hiding either one makes the website's benchmark
+# contract disagree with the papers.
 MONTHLY_SERIES_LABELS = {
     "strategy": "Benevente 1",
     "benevente2": "Benevente 2 · experimental",
     "mvo": "MVO de referência",
     "cdi": "CDI",
     "IBOVESPA": "Ibovespa",
+    "BOVA11": "BOVA11",
 }
 
 

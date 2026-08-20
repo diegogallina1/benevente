@@ -49,6 +49,9 @@
       </ol>
       <p>A carteira é comprada no primeiro pregão de janeiro e mantida. Isso precisa ser dito porque a forma natural de escrever um backtest vetorizado, compondo o produto interno de retornos e pesos, rebalanceia para pesos fixos todo dia e de graça, o que não é o protocolo avaliado nem algo que alguém consiga executar.</p>
 
+      <h3>2.1 Referências de desempenho</h3>
+      <p>As referências são calculadas nas mesmas datas da carteira e não exercem o mesmo papel. O CDI mede o custo de oportunidade do caixa. O MVO é uma otimização independente sobre o universo elegível de cada janeiro. O Ibovespa é o índice de retorno total da B3, portanto incorpora os proventos reinvestidos na carteira teórica. O BOVA11 é apresentado separadamente porque pode ser negociado e mostra uma implementação passiva sujeita a taxa, custos e diferença de aderência. Assim, o índice responde como o mercado teórico se comportou e o ETF responde quanto uma alternativa investível teria entregado.</p>
+
       <h2>3 · Custos e imposto</h2>
       <p>Custo é a taxa da B3 mais um termo de deslizamento que cresce com a participação da ordem no volume médio diário do papel, de modo que uma ação pouco líquida não é tratada como se fosse líquida. O imposto segue o regime brasileiro: 15% sobre ganho realizado em renda variável e a tabela regressiva na parcela em caixa, que é 17,5% na faixa de 361 a 720 dias em que a revisão anual cai. O imposto é cobrado no ano em que a revisão seguinte efetivamente realiza o ganho, e o último ano avaliado é cobrado como liquidação integral, hipótese terminal conservadora em vez de um diferimento indefinido que embelezaria a série.</p>
 

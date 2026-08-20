@@ -15,6 +15,8 @@ Este documento separa o que está fechado no repositório do que depende de aç�
 - Entre 6.000 e 8.000 palavras, incluindo referências.
 - Times New Roman 12, espaçamento 1,5, margens superior e esquerda de 3 cm, inferior e direita de 2 cm.
 - Referências em APA 7.
+- Negrito restrito aos títulos das seções e aos cabeçalhos das tabelas; o corpo do texto permanece uniforme.
+- Tabelas e demais ilustrações em preto e branco, com identificação, fonte e nota quando necessárias.
 - Objetivo, motivação, método, resultado e contribuição aparecem na introdução.
 - Produto tecnológico B2B, utilidade, inovação e hipótese de monetização são tratados de forma explícita.
 
@@ -29,14 +31,15 @@ Antes de enviar, os autores devem confirmar no sistema do congresso:
 
 ## IEEE CiFer 2027
 
-Destino de submissão: **IEEE Symposium on Computational Intelligence for
-Financial Engineering and Economics (IEEE CiFer)**, realizado dentro do evento
+Destino de submissão: IEEE Symposium on Computational Intelligence for
+Financial Engineering and Economics (IEEE CiFer), realizado dentro do evento
 guarda-chuva IEEE SSCI 2027. No sistema, selecionar o simpósio CiFer, e não uma
 área genérica do SSCI.
 
 - Arquivo de avaliação anônimo em inglês.
 - Classe `IEEEtran`, conferência, corpo em 10 pontos e duas colunas.
-- Meta editorial: até 6 páginas de conteúdo mais 1 página de referências, sem alteração artificial de fonte ou espaçamento.
+- Meta editorial provisória: até 6 páginas de conteúdo mais 1 página de referências, sem alteração artificial de fonte ou espaçamento. O limite deve ser reconfirmado no edital do SSCI 2027 quando ele for publicado.
+- Ênfase tipográfica restrita à hierarquia produzida pelo IEEEtran; não há frases em negrito no corpo do artigo.
 - Quatro braços empíricos: nomeado, anonimizado, determinístico e monolítico.
 - Declaração de compartilhamento de dados/código na introdução.
 - Declaração transparente de assistência generativa no manuscrito.

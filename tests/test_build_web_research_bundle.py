@@ -56,6 +56,29 @@ def test_bundle_aligns_ibovespa_to_annual_decision_dates_as_a_total_return_index
     assert "retorno total" in limitation and "bova11" in limitation
 
 
+def test_bundle_publishes_ibovespa_and_bova11_as_distinct_monthly_references(tmp_path: Path):
+    source = tmp_path / "run"; source.mkdir()
+    pd.DataFrame([{
+        "decision_year": 2024, "decision_date": "2024-01-02", "holding_end_exclusive": "2025-01-02",
+        "net_return": .10, "mvo_eligible_net_return": .08, "cdi_net_return": .06,
+        "benchmark_IBOVESPA": .20, "benchmark_BOVA11": .19,
+    }]).to_csv(source / "annual_results.csv", index=False)
+    pd.DataFrame([{"decision_year": 2024, "ticker": "AAAA3.SA", "decision_action": "entered"}]).to_csv(source / "annual_holdings.csv", index=False)
+    pd.DataFrame([{"decision_year": 2024, "ticker": "AAAA3.SA", "decision_action": "entered", "reason": "entered_after_point_in_time_screen"}]).to_csv(source / "annual_transitions.csv", index=False)
+    (source / "protocol.json").write_text('{"factor":"value_quality"}', encoding="utf-8")
+    pd.DataFrame([
+        {"date": "2024-01-02", "strategy": 100, "mvo": 100, "cdi": 100, "IBOVESPA": 100, "BOVA11": 100},
+        {"date": "2024-12-31", "strategy": 110, "mvo": 108, "cdi": 106, "IBOVESPA": 120, "BOVA11": 119},
+    ]).to_csv(source / "daily_curve.csv", index=False)
+
+    result = build_web_research_bundle(source, tmp_path / "research.json")
+
+    series = result["monthly_curve"]["series"]
+    assert series["Ibovespa"][-1] == 120.0
+    assert series["BOVA11"][-1] == 119.0
+    assert result["profile_curves"] == {}
+
+
 def test_bundle_includes_profile_specific_history_when_sources_are_provided(tmp_path: Path):
     source = tmp_path / "equilibrado"; source.mkdir()
     conservative = tmp_path / "conservador"; conservative.mkdir()

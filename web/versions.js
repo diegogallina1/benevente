@@ -18,6 +18,7 @@
     const b1 = experiment.full_period_metrics["Benevente 1"];
     const b2 = experiment.training_only_selection.full_period_metrics;
     const references = experiment.full_period_metrics;
+    const bovaReference = evidence.annual_scoreboard.find((item) => item.reference.startsWith("BOVA11"));
     const values = {
       "b1-cagr": pct(b1.cagr),
       "b1-cumulative": pct(b1.cumulative_return, 1, true),
@@ -31,6 +32,7 @@
       "cdi-cagr": pct(references.CDI.cagr),
       "mvo-cagr": pct(references.MVO.cagr),
       "ibov-cagr": pct(references.Ibovespa.cagr),
+      "bova-cagr": pct(bovaReference?.reference_cagr),
       "b2-holdout-cagr": pct(experiment.training_only_selection.holdout_2019_2025_metrics.cagr),
       "b1-holdout-cagr": pct(experiment.holdout_2019_2025_metrics["Benevente 1"].cagr),
       "b2-covid": pct(experiment.covid_2020_trace_for_training_selected_candidate.annual_returns["Benevente 2"]),

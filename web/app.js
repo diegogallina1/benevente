@@ -59,6 +59,7 @@ function annualCurve(period) {
     "MVO de referência": "mvo_eligible_net_return",
     "CDI": "cdi_net_return",
     "Ibovespa": "benchmark_IBOVESPA",
+    "BOVA11": "benchmark_BOVA11",
   };
   const series = {};
   Object.entries(tracks).forEach(([name, column]) => {
@@ -403,6 +404,7 @@ function renderWealthCards(period) {
     ["Benevente", "net_return", "Carteira publicada"],
     ["CDI", "cdi_net_return", "Rendimento do caixa"],
     ["Ibovespa", "benchmark_IBOVESPA", "Índice de retorno total da B3"],
+    ["BOVA11", "benchmark_BOVA11", "ETF investível que acompanha o Ibovespa"],
   ];
   const cards = tracks.map(([name, column, note]) => {
     const factor = growth(column);
@@ -576,30 +578,32 @@ function renderComparison(period) {
   const afterTax = statsFor("net_return_after_tax");
   const cdiAfterTax = statsFor("cdi_net_return_after_tax");
   const ibovespa = statsFor("benchmark_IBOVESPA");
-  // One market reference throughout, so the copy and the chart agree.
+  const bova11 = statsFor("benchmark_BOVA11");
   const winCdi = winsAgainst("cdi_net_return");
   const winMvo = winsAgainst("mvo_eligible_net_return");
   const winMarket = ibovespa ? winsAgainst("benchmark_IBOVESPA") : null;
+  const winBova = bova11 ? winsAgainst("benchmark_BOVA11") : null;
   const start = rows[0].decision_date, end = rows.at(-1).holding_end_exclusive;
   const versusCdi = benevente.cumulative - cdi.cumulative, versusMvo = benevente.cumulative - mvo.cumulative;
   document.querySelector("#period-description").textContent = `Janela avaliada: ${formatDateBr(start)} a ${formatDateBr(end)}, ${rows.length} ano(s), com custos modelados. O imposto aparece separado; o Benevente 2 ainda não possui modelo tributário intranual.`;
   const marketPhrase = winMarket === null ? "" : ` Contra o Ibovespa, venceu ${winMarket} de ${rows.length}.`;
+  const investablePhrase = winBova === null ? "" : ` Contra o BOVA11, venceu ${winBova} de ${rows.length}.`;
   // A percentage is easy to nod at and hard to feel. The same number said in
   // reais is what a reader actually compares against the fund they already own,
   // so it travels beside every series instead of only in the headline.
   document.querySelector("#comparison-summary").textContent = benevente2
     ? `Benevente 2 ${plainPct(benevente2.cumulative)} acumulado; Benevente 1 ${plainPct(benevente.cumulative)}. A melhoria principal foi reduzir risco, não provar retorno adicional.`
-    : `Benevente 1 ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
-  // Gross of tax, like every fund factsheet, so these rows can sit beside a peer
-  // without an adjustment nobody else applies. BOVA11 tracked the Ibovespa to
-  // within two hundredths of a point a year, so showing both spent a line to
-  // say the same thing twice.
+    : `Benevente 1 ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}${investablePhrase}`;
+  // Gross of tax, like a fund factsheet. Ibovespa and BOVA11 stay side by side:
+  // the first is the total-return market index and the second is the security
+  // an investor could have bought to obtain similar exposure.
   const baseRows = [
     ["Benevente 1", benevente, "Regra anual publicada"],
     benevente2 ? ["Benevente 2", benevente2, "Controle de risco experimental"] : null,
     ["MVO de referência", mvo, "Otimização neutra independente"],
     ["CDI", cdi, "Rendimento do caixa"],
     ibovespa ? ["Ibovespa", ibovespa, "Índice de retorno total da B3"] : null,
+    bova11 ? ["BOVA11", bova11, "ETF investível que acompanha o Ibovespa"] : null,
   ].filter(Boolean);
   const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => {
     const metrics = metricsForSeries(values, profileDataset(period).dates);
@@ -609,7 +613,8 @@ function renderComparison(period) {
   }).filter(Boolean);
   document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${escapeHtml(name)}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td>${escapeHtml(note)}</td></tr>`).join("");
   const marketNote = ibovespa ? ` Contra o Ibovespa, ${pct(benevente.cumulative - ibovespa.cumulative)}.` : "";
-  document.querySelector("#research-note").textContent = `Benevente 1: diferença para o CDI ${pct(versusCdi)} e para o MVO ${pct(versusMvo)}.${marketNote} O Benevente 2 preserva a seleção anual e altera somente a exposição. Foi concebido depois da Covid e não é validação prospectiva.`;
+  const investableNote = bova11 ? ` Contra o BOVA11, ${pct(benevente.cumulative - bova11.cumulative)}.` : "";
+  document.querySelector("#research-note").textContent = `Na janela escolhida, a diferença do Benevente 1 para o CDI é ${pct(versusCdi)} e para o MVO é ${pct(versusMvo)}.${marketNote}${investableNote} O Ibovespa mede o retorno total da carteira teórica, enquanto o BOVA11 representa uma forma negociável de acompanhar esse mercado. O Benevente 2 mantém a seleção anual e altera somente a exposição. Como foi concebido depois da Covid, continua classificado como experimento retrospectivo.`;
   renderCurveToggles(period); renderLineChart(period); renderWealthCards(period);
 }
 

@@ -38,11 +38,11 @@
       </ul>
 
       <h2>O diferencial que não dá para copiar rápido</h2>
-      <p>Auditamos o próprio backtest e publicamos o resultado. Sete defeitos foram encontrados e corrigidos: comparador que era cópia da estratégia, painel de preços que descartava 139 empresas deslistadas, imposto ausente, custo fixo que ignorava liquidez, entre outros. Depois disso, medimos quanto a escolha a posteriori de uma regra inflaria o resultado: <b>0,65 ponto percentual ao ano</b> na base atual, contra 4,98 pontos quando o protocolo tinha um ano a menos de treino.</p>
+      <p>Auditamos o próprio backtest e publicamos o resultado. Sete defeitos foram encontrados e corrigidos: comparador que era cópia da estratégia, painel de preços que descartava empresas deslistadas, imposto ausente e custo fixo que ignorava liquidez, entre outros. Depois disso, medimos quanto a escolha posterior de uma regra inflaria o resultado. O prêmio de retrospectiva ficou em 0,65 ponto percentual ao ano na base atual, contra 4,98 pontos quando o protocolo tinha um ano a menos de treino.</p>
       <div class="paper-callout warn"><b>Por que isso é argumento comercial</b>Qualquer concorrente mostra uma curva subindo. A pergunta que ninguém responde é quanto daquela curva vem de ter escolhido a regra depois de ver o resultado. Nós medimos, publicamos o número, e ainda assim o método permanece classificado como pesquisa até acumular anos avaliados depois do registro congelado.</div>
 
       <h2>Decidir mais vezes por ano compensa?</h2>
-      <p>Testamos, mantendo a regra, os limites e o painel idênticos e variando apenas as datas de decisão. A reseleção anual rendeu 18,58% ao ano antes de custos, a trimestral 16,37% e a mensal 13,92%. Pareando por ano-calendário e já após imposto, a trimestral fica 1,55 ponto percentual abaixo da anual ao ano, com p de 0,376, e a mensal 3,27 pontos abaixo, com p de 0,306. Com onze anos pareados não dá para afirmar que atrapalha; dá para afirmar que <b>não há evidência de que ajude</b>.</p>
+      <p>Testamos, mantendo a regra, os limites e o painel idênticos e variando apenas as datas de decisão. A reseleção anual rendeu 18,58% ao ano antes de custos, a trimestral 16,37% e a mensal 13,92%. Pareando por ano-calendário e já após imposto, a trimestral fica 1,55 ponto percentual abaixo da anual ao ano, com p de 0,376, e a mensal 3,27 pontos abaixo, com p de 0,306. Com onze anos pareados não dá para afirmar que decidir mais vezes atrapalha; também não existe evidência de que ajude.</p>
       <div class="paper-callout warn"><b>O motivo não é o que se imagina</b>A perda está no retorno bruto, que cai 4,66 pontos de anual para mensal antes de qualquer dedução. O custo de execução sobe só 0,08 ponto ao ano e o imposto modelado até diminui. Reordenar a cesta todo mês piora a escolha antes de encarecer a operação, porque qualidade, valor e momento se movem em horizonte anual e o giro mensal desfaz posições antes da tese se realizar.</div>
 
       <h2>Resultado da carteira publicada</h2>
@@ -50,12 +50,12 @@
         <thead><tr><th>Série</th><th>CAGR 2015–2025</th><th>Anos vencidos</th><th>Drawdown</th></tr></thead>
         <tbody>
           <tr class="highlight"><td>Benevente</td><td class="num">17,86%</td><td class="num">—</td><td class="num">−47,8%</td></tr>
-          <tr><td>Ibovespa</td><td class="num">11,77%</td><td class="num">7 de 11</td><td class="num">−38,4%</td></tr>
-          <tr><td>BOVA11</td><td class="num">11,72%</td><td class="num">7 de 11</td><td class="num">−39,3%</td></tr>
+          <tr><td>Ibovespa, índice de retorno total</td><td class="num">11,77%</td><td class="num">7 de 11</td><td class="num">−47,0%</td></tr>
+          <tr><td>BOVA11, ETF investível</td><td class="num">11,72%</td><td class="num">7 de 11</td><td class="num">−47,2%</td></tr>
           <tr><td>CDI</td><td class="num">9,61%</td><td class="num">6 de 11</td><td class="num">0%</td></tr>
         </tbody>
       </table>
-      <p>Dito sem maquiagem: a carteira supera o CDI com folga e <b>supera o mercado em sete anos de onze</b>, com cerca de seis pontos percentuais de margem anual. O preço disso é risco: o drawdown real chegou a 47,8%, porque o protocolo elevou a parcela de ações a 95% entre 2018 e 2021. O período que produziu esses números é o mesmo que escolheu a regra, então ele descreve a amostra e não prevê o futuro.</p>
+      <p>Na amostra, a carteira supera o CDI e vence tanto o Ibovespa quanto o BOVA11 em sete dos onze anos, com cerca de seis pontos percentuais de diferença anualizada. As duas referências de mercado têm papéis distintos. O Ibovespa é um índice de retorno total que incorpora proventos reinvestidos, mas representa uma carteira teórica. O BOVA11 é negociável e permite observar o resultado de uma implementação passiva, incluindo taxa, custos e diferença de aderência. O preço do retorno do Benevente foi o risco: a queda máxima chegou a 47,8%, próxima das quedas de 47,0% do índice e 47,2% do ETF, porque a parcela em ações alcançou 95% entre 2018 e 2021. Como o período que produziu esses números também participou da escolha da regra, o resultado descreve a amostra e não prevê o futuro.</p>
 
       <div id="live-portfolio"></div>
 

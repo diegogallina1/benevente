@@ -28,9 +28,9 @@ A language model asked for portfolio weights will produce them. Whether it shoul
 This paper takes the opposite route. We fix an architecture in which the model \emph{cannot} set a weight, then measure what that restriction costs. The measurement requires three comparisons that are usually conflated:
 
 \begin{enumerate}
-\item \textbf{Temporal contamination.} Does the model do better when it can see company names than when it sees only anonymised financial facts? A positive, significant gap means it is remembering, not reasoning.
-\item \textbf{Added value.} Does the model beat a deterministic control that ranks the same universe by the same pre-declared factor? Without this arm, any result merely restates the factor.
-\item \textbf{Value of decoupling.} Does routing a bounded score through a convex solver beat letting the model emit weights directly? This is what the architecture is for.
+\item Temporal contamination: does the model do better when it can see company names than when it sees only anonymised financial facts? A positive, significant gap means it is remembering, not reasoning.
+\item Added value: does the model beat a deterministic control that ranks the same universe by the same pre-declared factor? Without this arm, any result merely restates the factor.
+\item Value of decoupling: does routing a bounded score through a convex solver beat letting the model emit weights directly? This is what the architecture is for.
 \end{enumerate}
 
 Our contribution is threefold. First, the decoupled architecture and the protocol that makes these three questions separately answerable. Second, three null results on Brazilian equities over thirteen years, reported with the power caveats they deserve. Third, and inseparably, the evaluation infrastructure: a null result is only informative if the instrument would have detected an effect, so we document the panel construction, availability gating, the multiple-testing correction and the defects we found in our own work. Upon acceptance, we will deposit the evaluation artefacts and a versioned manifest in a permanent repository; during double-anonymous review, the same materials are available in an anonymised supplementary archive.
@@ -79,7 +79,7 @@ A null result is a claim about an instrument as much as about a treatment. This 
 
 \subsection{Survivorship}
 
-A public adjusted-price provider serves the companies that still exist, so a universe built from one silently deletes every company that was delisted, acquired or wound up. Rebuilding from the exchange archive over 2010--2025 yields 4{,}066 sessions and 514 issuers, of which \textbf{166 stop trading before December 2025}; 77 of those disappear before 2020, and 58 had already fallen more than 60\% from their own peak when they stopped trading. These are precisely the worst returns in the sample.
+A public adjusted-price provider serves the companies that still exist, so a universe built from one silently deletes every company that was delisted, acquired or wound up. Rebuilding from the exchange archive over 2010--2025 yields 4{,}066 sessions and 514 issuers, of which 166 stop trading before December 2025; 77 of those disappear before 2020, and 58 had already fallen more than 60\% from their own peak when they stopped trading. These are precisely the worst returns in the sample.
 
 Delisted tickers are not served by any provider, so corporate actions must be recovered from round, persistent price ratios in the archive itself. We validate the detector against an archived provider event feed on the subset where one exists and publish both sides: precision 88.1\% (340 of 386 applied adjustments coincide with a confirmed event) and recall 23.3\% (103 of 443 provider events detected). The low recall is a real limitation and is stated as one; the detector is deliberately conservative and prefers not to adjust over adjusting wrongly.
 
@@ -95,11 +95,11 @@ The book is bought in January and held. This is worth stating because the natura
 
 Our first protocol failed this test, and the failure is instructive. A grid of candidate rules was evaluated, the best was published, and its rank moved from 57th on the declared training criterion to 1st on the holdout, which is only possible if the holdout was read.
 
-The current protocol is nested. For decision year $t$, the 36 configurations are ranked using only years that closed before $t$, by Sharpe of the excess return over cash; year $t$ is then evaluated once. Changing configuration is charged a full-turnover rebalance. Ranking requires three closed years, so 2012--2014 is the selection window and \textbf{2015--2025 is the evaluation window}, giving eleven decisions.
+The current protocol is nested. For decision year $t$, the 36 configurations are ranked using only years that closed before $t$, by Sharpe of the excess return over cash; year $t$ is then evaluated once. Changing configuration is charged a full-turnover rebalance. Ranking requires three closed years, so 2012--2014 is the selection window and 2015--2025 is the evaluation window, giving eleven decisions.
 
-Three quantities are published with every result: the nested outcome, the full-sample winner, and the difference between them. That difference, the \emph{hindsight premium}, is what an author would gain by publishing the search winner as though it were attainable. On this panel it is \textbf{0.65 pp/yr}. On a panel with one year less of training it was 4.98 pp/yr, which is a useful calibration of how much the measure moves with sample length.
+Three quantities are published with every result: the nested outcome, the full-sample winner, and the difference between them. That difference, the \emph{hindsight premium}, is what an author would gain by publishing the search winner as though it were attainable. On this panel it is 0.65 pp/yr. On a panel with one year less of training it was 4.98 pp/yr, which is a useful calibration of how much the measure moves with sample length.
 
-With 36 trials, the winner's Sharpe is biased upward by the search itself. The observed excess-return Sharpe is 0.933 against an expected maximum under the null of 0.355, giving a \textbf{deflated-Sharpe probability of 0.986}, above the 95\% threshold.
+With 36 trials, the winner's Sharpe is biased upward by the search itself. The observed excess-return Sharpe is 0.933 against an expected maximum under the null of 0.355, giving a deflated-Sharpe probability of 0.986, above the 95\% threshold.
 
 \section{Experiment}
 
@@ -108,10 +108,10 @@ With 36 trials, the winner's Sharpe is biased upward by the search itself. The o
 Four arms over thirteen years, same eligible universe, same solver, same caps:
 
 \begin{itemize}
-\item \textbf{Named:} the model sees company names and returns a bounded score.
-\item \textbf{Anonymised:} identical, but issuers are identified only by integers.
-\item \textbf{Deterministic:} control with no model, ranking by the pre-declared factor score.
-\item \textbf{Monolithic:} the counterfactual in which the model returns weights directly, with no solver and no constraints.
+\item Named: the model sees company names and returns a bounded score.
+\item Anonymised: identical, but issuers are identified only by integers.
+\item Deterministic: control with no model, ranking by the pre-declared factor score.
+\item Monolithic: the counterfactual in which the model returns weights directly, with no solver and no constraints.
 \end{itemize}
 
 Comparisons are paired by year and tested with a paired $t$-test.
@@ -158,7 +158,7 @@ Table~\ref{tab:effects} reports three nulls, and each means something different.
 
 \emph{No detectable added value.} The model reproduces the deterministic ranking rather than adding judgement. The gap is five hundredths of a percentage point, with a negative sign. This is an uncomfortable finding for the prevailing narrative about language models in investment management, which is a reason to publish it rather than a reason not to.
 
-\emph{Decoupling is free.} Keeping the model away from the weights did not cost performance. More importantly, the monolithic arm \textbf{breached no ceiling in thirteen years}, a point in its favour that we report because the opposite would have been the convenient finding. What it did produce was arithmetically invalid: weights failing to sum to one in five of thirteen years, ranging from 0.92 to 1.017, and 65 and 83 eligible names silently omitted in 2021 and 2022. The argument for the solver is therefore not that it prevents a limit breach. It is that it returns an allocation requiring no repair, and that repair on a malformed weight vector is itself an unlogged decision.
+Keeping the model away from the weights did not cost performance. The monolithic arm breached no ceiling in thirteen years, a point in its favour that we report because the opposite would have been the convenient finding. What it did produce was arithmetically invalid: weights failing to sum to one in five of thirteen years, ranging from 0.92 to 1.017, and 65 and 83 eligible names silently omitted in 2021 and 2022. The argument for the solver is therefore not that it prevents a limit breach. It is that it returns an allocation requiring no repair, and that repair on a malformed weight vector is itself an unlogged decision.
 
 Thirteen annual observations make these underpowered tests. The honest statement is that no effect was detected, not that none exists.
 
@@ -219,7 +219,7 @@ Series & CAGR & Win yrs & Max DD \\
 Benevente & 17.86\% & --- & $-47.8$\% \\
 Benevente, after tax & 16.03\% & --- & --- \\
 Ibovespa & 11.77\% & 7 of 11 & $-47.0$\% \\
-BOVA11 (investable ETF) & 11.72\% & 7 of 11 & --- \\
+BOVA11 (investable ETF) & 11.72\% & 7 of 11 & $-47.2$\% \\
 Cash (CDI) & 9.61\% & 6 of 11 & 0\% \\
 Neutral MVO & 7.83\% & 10 of 11 & --- \\
 \bottomrule
@@ -227,7 +227,7 @@ Neutral MVO & 7.83\% & 10 of 11 & --- \\
 \label{tab:published}
 \end{table}
 
-The drawdown is not incidental. The nested protocol raised the equity budget to 95\% between 2018 and 2021, and the portfolio took essentially the same fall as the index. This is a concentrated book that recovered faster, not a smoothed version of the market. We refer to this canonical annual strategy as Benevente~1.
+The two market references serve different purposes. Ibovespa is B3's total-return index, so it incorporates distributions reinvested in the theoretical portfolio \cite{b3ibov}. BOVA11 is a listed fund that seeks to track that index and therefore represents an investable passive implementation, subject to fees, trading costs and tracking difference \cite{blackrockbova}. The drawdown is not incidental. The nested protocol raised the equity budget to 95\% between 2018 and 2021, and the portfolio's 47.8\% drawdown was close to the 47.0\% drawdown of the index and the 47.2\% drawdown of the ETF. This is a concentrated book that recovered faster, not a smoothed version of the market. We refer to this canonical annual strategy as Benevente~1.
 
 \section{Experimental event-risk extension}
 
@@ -289,6 +289,8 @@ A generative-AI assistant was used for language editing and code review. The aut
 \bibitem{lopezlira} A. Lopez-Lira and Y. Tang, ``Can ChatGPT Forecast Stock Price Movements? Return Predictability and Large Language Models,'' \emph{Journal of Financial Economics}, vol. 184, Art. no. 104335, 2026, doi: 10.1016/j.jfineco.2026.104335.
 \bibitem{pelsterval} M. Pelster and J. Val, ``Can ChatGPT Assist in Picking Stocks?'' \emph{Finance Research Letters}, vol. 59, Art. no. 104786, 2024, doi: 10.1016/j.frl.2023.104786.
 \bibitem{b3cotahist} B3 S.A. --- Brasil, Bolsa, Balc\~ao, ``Historical quotations,'' 2026. [Online]. Available: \url{https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/market-data/historico/mercado-a-vista/cotacoes-historicas/}
+\bibitem{b3ibov} B3 S.A. --- Brasil, Bolsa, Balc\~ao, ``Ibovespa B3,'' 2026. [Online]. Available: \url{https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-amplos/ibovespa.htm}
+\bibitem{blackrockbova} BlackRock, ``iShares Ibovespa Fundo de {\'I}ndice (BOVA11): Factsheet,'' 2026. [Online]. Available: \url{https://www.blackrock.com/br/literature/fact-sheet/bova11-ishares-ibovespa-fundo-de-ndice-fund-fact-sheet-pt-lm.pdf}
 \bibitem{cvmitr} Comiss\~ao de Valores Mobili\'arios, ``Formul\'ario de Informa\c{c}\~oes Trimestrais (ITR),'' CVM Open Data. [Online]. Available: \url{https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/}
 \bibitem{cvmdfp} Comiss\~ao de Valores Mobili\'arios, ``Demonstra\c{c}\~oes Financeiras Padronizadas (DFP),'' CVM Open Data. [Online]. Available: \url{https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp}
 \bibitem{bcb} Banco Central do Brasil, ``Sistema Gerenciador de S\'eries Temporais, s\'erie 12 (CDI).'' [Online]. Available: \url{https://www3.bcb.gov.br/sgspub/}
