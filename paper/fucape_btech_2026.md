@@ -14,7 +14,7 @@ Escritórios de investimento capixabas, entre multi-family offices, consultorias
 
 ## 1. Situação-problema
 
-O Espírito Santo concentra patrimônio relevante e quase nenhuma infraestrutura de decisão de investimento. Famílias e empresas capixabas mandam capital para gestoras do Rio de Janeiro e de São Paulo, e o escritório local fica com o relacionamento e sem o processo. A causa não é falta de competência analítica. É falta de ferramenta que produza, no ato da recomendação, o registro que a recomendação vai exigir depois.
+Este trabalho parte de uma hipótese de mercado a ser validada no piloto: escritórios do Espírito Santo que mantêm o relacionamento com famílias e empresas locais podem depender de infraestrutura de decisão produzida fora do estado. O problema proposto não é falta de competência analítica. É a ausência de uma ferramenta que produza, no ato da recomendação, o registro que a recomendação vai exigir depois. A pesquisa ainda não mede o tamanho desse mercado, a disposição a pagar ou a taxa de adoção. Portanto, retenção de capital e geração de negócios no estado são resultados esperados do produto, não resultados já comprovados.
 
 O problema é concreto e tem data. Quando um cliente pergunta em 2026 por que determinada ação entrou na carteira em janeiro de 2023, o escritório precisa demonstrar três coisas simultaneamente.
 
@@ -38,6 +38,16 @@ Três problemas metodológicos bem documentados na literatura de finanças quant
 
 **Múltiplas tentativas.** Quando se avaliam dezenas de configurações e se publica a melhor, o índice de Sharpe observado é enviesado para cima pela própria busca. Bailey e López de Prado formalizaram o problema com o Sharpe deflacionado, que corrige a estatística pelo número de tentativas e pelos momentos superiores da distribuição de retornos. Sem essa correção, qualquer busca suficientemente ampla produz um vencedor aparentemente significativo.
 
+Quatro referências clássicas orientam a construção financeira do artefato. Markowitz (1952) mostrou que uma carteira precisa ser analisada pela interação entre retornos e covariâncias, e não pela atratividade isolada de cada ativo. No Benevente, essa contribuição aparece de duas formas. A primeira é a exigência de uma cesta, em vez de uma aposta única no maior escore. A segunda é o comparador MVO, que pergunta quanto uma alocação baseada apenas em média, covariância e limites teria produzido sobre o mesmo universo. O comparador não serve para validar automaticamente a estratégia; serve para impedir que um ganho atribuído ao filtro fundamental seja apenas efeito de diversificação quantitativa.
+
+Black e Litterman (1992) tratam da combinação entre equilíbrio de mercado e visões. A arquitetura do Benevente adota a separação conceitual, mas não implementa o modelo Black–Litterman como carteira publicada. Fatos fundamentais e sinais de mercado geram um ranking determinístico. A linguagem natural pode explicar a visão, registrar riscos e formular perguntas, porém não altera a matemática da alocação. Essa fronteira permite testar a camada de linguagem sem conceder a ela poder para mudar restrições ou reconstruir retrospectivamente a tese.
+
+DeMiguel, Garlappi e Uppal (2009) demonstram como erro de estimação pode eliminar, fora da amostra, a vantagem aparente de métodos sofisticados sobre uma diversificação simples. A resposta do projeto não é presumir que um otimizador sempre melhora o resultado. É publicar uma referência independente, impor um número mínimo de posições, limitar a interpretação das métricas e comparar decisões em sequência temporal. O resultado de 7,83% ao ano do MVO de referência nesta execução não prova que MVO é inferior em geral. Mostra somente que aquela implementação, com aquele universo elegível e aquelas estimativas disponíveis em cada janeiro, produziu esse caminho. Em outra amostra ou especificação, a ordem pode se inverter.
+
+Novy-Marx e Velikov (2016) mostram que custos de negociação podem consumir anomalias documentadas. Por isso, o retorno usado na manchete já deduz taxas e deslizamento modelado, e a busca penaliza trocas de configuração. O sistema mede giro, participação no volume e realização tributável, em vez de tratar toda mudança de peso como gratuita. Ainda assim, uma estimativa não é uma nota de corretagem. O produto prevê conciliação posterior exatamente porque o custo observado depende do tamanho, do horário, da liquidez e da qualidade de execução de cada instituição.
+
+Essas escolhas definem o tipo de evidência que o trabalho pode produzir. O backtest é um experimento histórico sobre um protocolo e não uma simulação da experiência individual de todo cliente. Suitability, necessidade de liquidez, tributação específica, ativos já detidos e restrições contratuais podem mudar a carteira implementável. Por isso, o artefato separa três objetos que costumam aparecer misturados: a regra acadêmica usada para medir o sinal; a política institucional que limita o risco; e o texto explicativo que ajuda uma pessoa a revisar a decisão. Uma boa curva não substitui nenhum dos três.
+
 O posicionamento do artefato decorre desses três pontos. O Benevente não compete em promessa de retorno. Compete em verificabilidade. Qualquer concorrente exibe uma curva ascendente, e a pergunta que raramente é respondida é quanto daquela curva vem de ter escolhido a regra depois de ver o resultado. Este trabalho mede esse valor e o publica.
 
 ---
@@ -54,7 +64,7 @@ O sistema é composto por cinco camadas.
 |---|---|---|
 | Base de dados | Universo, preços e fundamentos com data | Manifesto com SHA-256 por arquivo |
 | Elegibilidade | Tela de aprovação por ativo | Motivo de cada reprovação |
-| Alocação | Otimização convexa com restrições | Pesos e restrições ativas |
+| Seleção e alocação | Escore multifatorial e regra quantitativa com limites | Ranking, pesos e restrições ativas |
 | Execução | Ordens com lote e participação no volume | Custo estimado por ordem |
 | Governança | Aprovação humana e conciliação | Quem aprovou e diferença contra a nota de corretagem |
 
@@ -66,15 +76,27 @@ Preços deslistados exigem tratamento de eventos societários sem a ajuda do pro
 
 Os fundamentos vêm dos formulários ITR e DFP da CVM, com a data de recebimento usada como porta: um documento só entra na decisão de janeiro do ano *t* se o regulador o recebeu antes daquela data. A ponte entre o ticker da B3 e o CNPJ da CVM é construída ano a ano, e sua cobertura é publicada em vez de suposta. Em 2012, primeiro ano da série, 266 de 314 ações tiveram ponte aceita e 171 tiveram fundamentos completos, porque a série do ITR começa em 2011 e 2012 é o primeiro ano em que a construção de doze meses tem os dois lados disponíveis.
 
-### 3.3 Elegibilidade e alocação
+### 3.3 Elegibilidade, seleção e alocação
 
 A tela de elegibilidade reprova ativos por liquidez insuficiente, ausência de fundamento na data, alavancagem ou cobertura de juros fora do aceitável. Cada reprovação é registrada com o motivo, o que permite ao escritório responder por que um papel conhecido não entrou, pergunta que aparece com a mesma frequência da inversa.
 
-A alocação é um problema de otimização convexa resolvido numericamente, com quatro restrições declaradas antes da seleção: teto de renda variável, teto por emissor, número mínimo de posições e penalização de giro. As restrições são parte da política versionada, não parâmetros ajustados depois de ver o resultado.
+O foco econômico é **análise fundamentalista multifatorial**. Qualidade procura empresas capazes de remunerar o capital e sustentar a operação; valor procura um preço coerente com lucros, patrimônio ou geração de caixa; momento de doze meses funciona como confirmação de mercado e reduz a compra mecânica de uma empresa barata que continua deteriorando. Liquidez determina se a tese é executável. Bancos e empresas operacionais recebem métricas diferentes porque dívida e margem operacional não significam a mesma coisa nos dois balanços. O retorno histórico entra como fator complementar, não substitui os demonstrativos.
+
+Depois da triagem, cada ativo recebe um escore comparável dentro do universo disponível naquele janeiro. A estratégia publicada faz um corte nos melhores emissores, mantém apenas uma classe por emissor e distribui o orçamento de renda variável proporcionalmente ao escore, sujeito ao número de posições e aos limites da configuração. O saldo fica no CDI. A configuração completa — família de fatores, número de posições e orçamento de ações — é escolhida anualmente pelo desempenho ajustado ao risco nos anos já encerrados. A otimização média-variância não define essa carteira. Ela é calculada de modo independente, sobre o mesmo universo elegível, para medir o que uma carteira puramente quantitativa de média e covariância teria produzido.
+
+Essa separação também resolve a ambiguidade entre os nomes. **Benevente Quant AI** designa a pesquisa acadêmica, inclusive o experimento que combina um modelo de linguagem com um solver convexo. **Benevente Wealth System** designa o produto B2B de governança que entrega proposta, explicação e registro. A carteira histórica publicada é a regra multifatorial determinística. O modelo de linguagem não seleciona ativo e não escreve peso; seu papel é transformar fatos aprovados em tese, riscos e perguntas para revisão humana.
 
 Os coeficientes do escore de seleção, os limiares da tela de elegibilidade, as constantes de aversão a risco e a grade de configurações não são publicados. Eles estão registrados de forma verificável, porque o registro congelado carrega o SHA-256 de cada arquivo de entrada e da própria configuração, de modo que a anterioridade é demonstrável sem que a implementação seja replicável por leitura. Essa é uma escolha comercial deliberada e está declarada aqui para que o leitor saiba exatamente o que está sendo e o que não está sendo divulgado.
 
-### 3.4 Custos, imposto e execução
+### 3.4 Por que a decisão é anual
+
+A cadência anual é uma hipótese coerente com a natureza do sinal e, neste estudo, uma escolha empiricamente testada. Qualidade, retorno sobre capital, alavancagem e geração de caixa são grandezas divulgadas em ciclos contábeis e cuja tese econômica precisa de tempo para aparecer no preço. Uma troca mensal baseada nelas pode vender uma empresa antes que a melhora operacional seja reconhecida e aumenta o número de decisões que precisam ser justificadas. A revisão em janeiro também cria uma fronteira operacional simples: tudo o que foi publicado até a data pode entrar; tudo o que veio depois pertence ao próximo ciclo.
+
+Anual não significa que o sistema ignora o risco durante doze meses. Preços, concentração, liquidez e eventos materiais podem ser monitorados continuamente, e uma política institucional pode prever um gatilho extraordinário. Significa apenas que a **reseleção sistemática** da cesta acontece uma vez por ano. No teste de robustez, mantendo regra e dados constantes, a reseleção anual superou as versões trimestral e mensal antes mesmo dos custos. Com apenas onze anos pareados, isso não prova que a frequência anual seja universalmente ótima; mostra que não houve evidência para substituir a regra mais simples nesta amostra.
+
+Notícias não entram no modelo atual. Esse limite é intencional: um estudo com notícias exige arquivo histórico licenciado, horário de publicação, deduplicação e uma data de corte verificável para o modelo de linguagem. Misturar notícias retrospectivamente ao protocolo anual criaria uma nova oportunidade de usar informação futura. O estudo futuro adequado é um braço separado, pré-registrado, com revisão trimestral ou por evento e notícias carimbadas no tempo, comparado à regra anual sem alterar esta última.
+
+### 3.5 Custos, imposto e execução
 
 Retorno bruto não é resultado. O sistema modela três parcelas.
 
@@ -84,7 +106,7 @@ Retorno bruto não é resultado. O sistema modela três parcelas.
 
 O sistema recusa, por regra, ordens que ultrapassem 5% do volume médio diário do papel. A ordem falha em vez de ser enviada.
 
-### 3.5 Governança: o sistema propõe, a pessoa decide
+### 3.6 Governança: o sistema propõe, a pessoa decide
 
 Quatro mecanismos delimitam o que o software pode fazer.
 
@@ -222,11 +244,15 @@ Depois da última correção, o CAGR publicado caiu, a queda máxima subiu de 30
 
 ## 6. Contribuição tecnológica e aderência ao mercado
 
+O fluxo de uso foi desenhado para que cada tela responda à pergunta criada pela anterior. Primeiro, a instituição escolhe a política e aceita os limites. Segundo, o sistema mostra quais arquivos e demonstrações estavam disponíveis e quais passaram na validação. Terceiro, a triagem informa ativos aprovados e reprovados com motivos. Quarto, a carteira candidata apresenta pesos, parcela em CDI, custo e comparação com as referências. Quinto, a pessoa revisa a tese em linguagem natural, aprova ou rejeita e registra a justificativa. Por fim, o dossiê reúne a decisão inteira, inclusive a versão da regra e os hashes dos arquivos. O usuário não precisa alternar entre um laboratório técnico e um documento separado; a experiência e a prova são duas visões do mesmo registro.
+
 **Para o escritório.** O sistema entrega, por decisão, um dossiê completo, com política aplicada, dados com data e hash, tela de elegibilidade com motivo de cada reprovação, pesos, ordens com lote e participação no volume, e custo estimado. O que antes era reconstruído a mão sob pressão passa a ser subproduto da própria operação.
 
 **Para o cliente final.** A pergunta "por que este papel?" passa a ter resposta datada e verificável, e a pergunta simétrica, "por que não aquele?", também.
 
-**Para o ecossistema capixaba.** O argumento comercial não é rendemos mais. É que o escritório local passa a ter um processo demonstrável, que é justamente o que hoje o obriga a terceirizar a gestão para fora do estado.
+**Para o ecossistema capixaba.** A hipótese comercial não é “rendemos mais”. É que um escritório local com processo demonstrável pode reter uma parcela maior do trabalho analítico e do relacionamento de longo prazo no estado. Essa hipótese precisa ser testada em entrevistas e pilotos; o backtest não a comprova.
+
+**Modelo de oferta a validar.** A primeira versão comercial pode ser licenciada por instituição, com cobrança por usuários e número de políticas acompanhadas, e um serviço de implantação para integrar fontes, identidade, aprovação e arquivo documental. Não há preço publicado nem receita comprovada. As métricas do piloto devem ser tempo para produzir um dossiê, percentual de decisões com evidência completa, divergência entre custo previsto e nota conciliada, número de revisões exigidas e disposição a pagar. Retorno da carteira permanece uma medida de pesquisa e acompanhamento, nunca base de remuneração ou garantia contratual.
 
 **Maturidade.** O artefato está em estágio de pesquisa reprodutível, não de produto validado institucionalmente. A janela de 2015 a 2025 foi usada para desenvolver e escolher a regra, e portanto descreve a amostra e não prevê o futuro. A avaliação prospectiva começa a partir do registro congelado, cujo hash está versionado no repositório com data carimbada por terceiro. Um registro pré-especificado que exista apenas no disco de quem o escreveu não demonstra anterioridade nenhuma.
 
@@ -250,6 +276,7 @@ Declaradas sem atenuação, porque uma limitação omitida vira defeito descober
 - Acumular anos avaliados depois do registro congelado, que é a única evidência capaz de mudar o estatuto do artefato de pesquisa para validado.
 - Reconciliar eventos societários e proventos contra registro primário, elevando o recall do detector.
 - Repetir o experimento de contaminação em modelos com datas de corte de treinamento distintas, para separar contaminação de capacidade.
+- Pré-registrar um estudo trimestral ou orientado a eventos, com notícias arquivadas, horário de publicação e corte temporal verificável, sem reotimizar a regra anual depois de observar o resultado.
 - Instrumentar o piloto em escritório capixaba, medindo tempo de produção do dossiê e taxa de divergência na conciliação de notas.
 
 ---
@@ -271,6 +298,10 @@ O sistema publicado, com o dossiê anual navegável, a comparação interativa c
 - BRASIL. Comissão de Valores Mobiliários. Formulários ITR e DFP.
 - BANCO CENTRAL DO BRASIL. Sistema Gerenciador de Séries Temporais, série 12 (CDI).
 - B3. Arquivo histórico de cotações (COTAHIST).
+- BLACK, F.; LITTERMAN, R. Global Portfolio Optimization. *Financial Analysts Journal*, v. 48, n. 5, p. 28–43, 1992.
+- DEMIGUEL, V.; GARLAPPI, L.; UPPAL, R. Optimal versus naive diversification: how inefficient is the 1/N portfolio strategy? *The Review of Financial Studies*, v. 22, n. 5, p. 1915–1953, 2009.
+- NOVY-MARX, R.; VELIKOV, M. A taxonomy of anomalies and their trading costs. *The Review of Financial Studies*, v. 29, n. 1, p. 104–147, 2016.
+- BENEVENTE WEALTH SYSTEM. **Documentação técnica, repositório de dados e validação de horizontes**. Repositório do projeto, 2026.
 
 ---
 

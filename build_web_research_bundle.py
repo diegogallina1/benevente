@@ -202,10 +202,10 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
     source_metadata = json.loads(Path(source_manifest).read_text(encoding="utf-8")) if source_manifest else {}
     holdout = json.loads(Path(holdout_validation).read_text(encoding="utf-8")) if holdout_validation else {}
     coverage = {
-        "fundamental_snapshots": int(source_metadata.get("fundamental_snapshots", len(holdings[holdings.ticker != "TITULO_CDI"]))),
+        "fundamental_snapshots": int(source_metadata.get("coverage", {}).get("fundamental_records", source_metadata.get("fundamental_snapshots", len(holdings[holdings.ticker != "TITULO_CDI"])))),
         "selected_issuers": int(holdings.loc[holdings.ticker != "TITULO_CDI", "ticker"].nunique()),
-        "price_tickers": int(source_metadata.get("price_tickers", 0)),
-        "scope": "painel CVM com os dados disponíveis na data de cada decisão e preços ajustados de pesquisa",
+        "price_tickers": int(source_metadata.get("coverage", {}).get("price_tickers", source_metadata.get("price_tickers", 0))),
+        "scope": "painel histórico B3/CVM com informação disponível até cada decisão",
     }
     b3_note = ""
     if b3_universe:
@@ -236,14 +236,21 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
     for profile, profile_source in (profile_sources or {}).items():
         profile_root = Path(profile_source)
         profile_results[str(profile)] = _localized_records(profile_root)
+    evidence = json.loads(Path(audit_evidence).read_text(encoding="utf-8")) if audit_evidence else None
+    if evidence and source_metadata.get("claims", {}).get("strategy_max_daily_drawdown") is not None:
+        evidence["worst_annual_return"] = evidence.get("max_drawdown")
+        evidence["max_drawdown"] = float(source_metadata["claims"]["strategy_max_daily_drawdown"])
+        evidence["max_drawdown_basis"] = "daily"
+        if isinstance(evidence.get("readiness"), dict):
+            evidence["readiness"]["max_drawdown"] = evidence["max_drawdown"]
     payload = {
         "meta": {
             "title": "Estratégia anual — decisão com os dados da data",
             "sample": f"{int(annual.decision_year.min())}\u2013{int(annual.decision_year.max())}",
             "currency": "BRL",
             "strategy": factor_label,
-            "sources": "CVM ITR/DFP, BCB SGS 12 (CDI) e Yahoo Finance ajustado via yfinance",
-            "source_tier": source_metadata.get("total_return_source_tier", "public_reproducible_research"),
+            "sources": source_metadata.get("sources", "B3 COTAHIST, CVM ITR/DFP e BCB SGS 12"),
+            "source_tier": source_metadata.get("source_tier", source_metadata.get("total_return_source_tier", "public_reproducible_research")),
             "institutional_performance_verified": bool(source_metadata.get("institutional_performance_verified", False)),
             "holdout_validation": holdout,
             "coverage": coverage,
@@ -252,7 +259,7 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
                 "promessa de superar benchmarks. A janela 2015\u20132025 foi usada para escolher regra, "
                 "fatores e restri\u00e7\u00f5es: \u00e9 amostra de desenvolvimento, n\u00e3o teste." + b3_note
             ),
-            "evidence": (json.loads(Path(audit_evidence).read_text(encoding="utf-8")) if audit_evidence else None),
+            "evidence": evidence,
             "protocol": protocol,
             "ibovespa": (
                 _ibovespa_on_decision_dates(annual, ibovespa_price_input)

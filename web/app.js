@@ -14,9 +14,9 @@ const comparisonWindows = { 1: 1, 2: 2, 3: 3, 5: 5, 11: 99 };
 
 const modelSteps = {
   policy: { number:"01 · POLÍTICA", title:"A política vem antes do ativo.", text:"O responsável define patrimônio, perfil, limite de ações, concentração por emissor, custos e revisão anual.", uses:"Perfil e limites explícitos", blocks:"Pesos acima da política", produces:"Uma política reproduzível", rule:"<strong>Regra:</strong> sem política, não há carteira." },
-  data: { number:"02 · DADOS", title:"A decisão usa somente o passado.", text:"Em janeiro, o motor usa os retornos disponíveis até aquela data e a taxa CDI do período histórico.", uses:"Preços ajustados e CDI", blocks:"Dados posteriores à decisão", produces:"Janela de cálculo registrada", rule:"<strong>Regra:</strong> o retorno do ano não participa da montagem da carteira." },
-  screen: { number:"03 · CINCO EMISSORES", title:"Diversificação mínima explícita.", text:"O motor escolhe cinco emissores distintos com retorno histórico disponível. Classes diferentes do mesmo emissor não contam duas vezes.", uses:"Retorno médio histórico e vínculo de emissor", blocks:"Menos de cinco emissores comparáveis", produces:"Universo MVO da revisão", rule:"<strong>Regra:</strong> se não houver cinco emissores, a carteira não é formada." },
-  optimizer: { number:"04 · OTIMIZADOR", title:"Pesos por retorno e risco históricos.", text:"O MVO distribui os pesos dos cinco emissores dentro do teto de ações e de concentração do perfil; CDI recebe o saldo.", uses:"Médias, covariâncias, custos e limites", blocks:"Concentração acima do teto", produces:"Pesos e custo de rebalanceamento", rule:"<strong>Regra:</strong> a seleção dos cinco emissores é o único grau de liberdade; o MVO de referência otimiza o universo elegível inteiro e serve de comparação independente." },
+  data: { number:"02 · DADOS", title:"A decisão usa somente o que já era público.", text:"Em janeiro, o motor combina demonstrações ITR/DFP já divulgadas, histórico de preços, liquidez e CDI. Cada arquivo tem origem, data e hash registrados.", uses:"B3, CVM e Banco Central", blocks:"Informação divulgada depois da decisão", produces:"Base anual verificável", rule:"<strong>Regra:</strong> o retorno do ano avaliado nunca participa da escolha." },
+  screen: { number:"03 · FILTRO FUNDAMENTAL", title:"Qualidade e segurança vêm antes do ranking.", text:"Empresas operacionais e bancos são avaliados por métricas compatíveis com seus demonstrativos. Liquidez, rentabilidade, geração de caixa, solvência e disponibilidade dos dados eliminam casos não comparáveis.", uses:"ROIC ou ROE, caixa, dívida, valuation e liquidez", blocks:"Dados ausentes, fragilidade financeira e baixa negociabilidade", produces:"Universo elegível da revisão", rule:"<strong>Regra:</strong> ausência de evidência não vira aprovação." },
+  optimizer: { number:"04 · SELEÇÃO E PESOS", title:"Valor, qualidade e momento formam a cesta.", text:"As configurações candidatas combinam fatores, número de posições e orçamento de ações. A configuração do ano é escolhida pelo Sharpe dos anos já encerrados; os ativos recebem pesos proporcionais ao score dentro das regras, e o CDI recebe o saldo.", uses:"Fatores fundamentais e de mercado, custos e limites", blocks:"Escolha baseada no retorno futuro", produces:"Carteira anual e custo de rebalanceamento", rule:"<strong>Comparação:</strong> o MVO é calculado separadamente sobre o mesmo universo elegível. Ele não escolhe a carteira Benevente." },
   review: { number:"05 · REVISÃO", title:"O resultado é uma proposta, não uma ordem.", text:"A instituição revisa tese, riscos, pesos e custos. Se decidir implementar, registra a operação e confere a nota de corretagem depois.", uses:"Proposta, evidências e custo estimado", blocks:"Execução automática", produces:"Carteira-sombra e registro de decisão", rule:"<strong>Regra:</strong> resultados prospectivos ficam separados do backtest histórico." }
 };
 
@@ -199,8 +199,6 @@ function activeProfileKey() {
 }
 
 function activeProfileLabel() {
-  // The three-profile ladder was withdrawn when the issuer cap was found to
-  // invert it. One published portfolio, one name.
   return "Carteira Benevente";
 }
 
@@ -252,7 +250,8 @@ function renderAssetWorkbench() {
   const equities = holdings.filter(item => item.ticker !== "TITULO_CDI");
   const equityWeight = equities.reduce((sum, item) => sum + item.weight, 0);
   const transitionByTicker = Object.fromEntries(transitions.map(item => [item.ticker, item]));
-  document.querySelector("#dossier-policy").textContent = `Benevente Wealth System · ${activeProfileLabel()}. Cinco ações no mínimo, até ${plainPct(decision.target_equity_weight)} em renda variável e ${plainPct(researchData.meta.protocol.maximum_asset_weight)} por emissor. O retorno foi apurado depois de ${formatDateBr(decision.decision_date)} e não influenciou a escolha.`;
+  const selected = String(decision.selected_configuration || "configuração anual").replaceAll("_", " ");
+  document.querySelector("#dossier-policy").textContent = `Benevente Wealth System · ${selected}. A decisão destinou ${plainPct(decision.target_equity_weight)} à renda variável. A configuração foi escolhida apenas com anos já encerrados; o retorno após ${formatDateBr(decision.decision_date)} não participou da escolha.`;
   const coverage = researchData.meta.coverage;
   const source = researchData.meta.source_tier === "public_reproducible_research" ? "fonte pública de pesquisa" : "fonte qualificada";
   const series = coverage.price_tickers ? `${coverage.price_tickers.toLocaleString("pt-BR")} séries ajustadas` : "séries ajustadas";

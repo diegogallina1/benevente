@@ -1,10 +1,15 @@
 # Benevente
 
 **Benevente Quant AI** é o framework acadêmico de pesquisa. **Benevente Wealth
-System** é a solução B2B de apoio à decisão. Ambos compartilham o mesmo núcleo:
-seleção determinística de valor e qualidade, alocação restrita, decisão tomada
-apenas com os dados disponíveis na data e uma trilha que permite revisar cada
-decisão.
+System** é a camada B2B de governança e explicação dessa pesquisa. O núcleo
+publicado é uma seleção multifatorial anual, orientada por fundamentos: qualidade,
+valor e momento ordenam o universo elegível; uma busca aninhada escolhe, usando
+somente anos já encerrados, a configuração de fatores, número de posições e
+parcela em ações; o CDI recebe o saldo.
+
+O MVO não é o Benevente. Ele é um comparador quantitativo independente e um
+alocador experimental. O modelo de linguagem também não escolhe ativos nem
+pesos: transforma fatos já aprovados em tese, riscos e perguntas para revisão.
 
 O sistema não promete superar CDI, Ibovespa ou qualquer benchmark; não emite
 recomendação autônoma e não transmite ordens. Seu objetivo é tornar uma tese de
@@ -13,11 +18,12 @@ pessoa responsável.
 
 ## Estado da evidência
 
-**Toda a série 2015–2025 é amostra de desenvolvimento, não teste.** A grade de
-sinais avaliou 73 candidatos, e a regra que foi publicada ficou em 57º pelo
-critério de treino declarado e em 1º no holdout — ou seja, foi escolhida depois
-de olhar o holdout. Nenhum recálculo do período histórico desfaz isso; só anos
-posteriores ao registro congelado testam a regra.
+**Toda a série 2015–2025 é amostra de desenvolvimento, não validação
+prospectiva.** A busca aninhada avaliou 36 configurações. Em cada janeiro, a
+configuração foi ranqueada pelo Sharpe do excesso sobre CDI nos anos anteriores;
+o ano seguinte só foi usado depois para avaliação. Mesmo assim, fatores, grade e
+restrições foram desenvolvidos com essa janela. Nenhum recálculo histórico desfaz
+isso; só anos posteriores ao registro congelado testam a regra prospectivamente.
 
 Números honestos do período, contra referências independentes, estão em
 `artifacts/audit_evidence/`. A verificação estatística das 73 tentativas está em
@@ -89,7 +95,9 @@ python build_market_benchmarks.py
 python build_full_b3_cvm_fundamentals.py --universe data/b3_historical_universes.csv --mapping data/b3_historical_cvm_ticker_map.csv --start-year 2013 --end-year 2025 --output data/fundamentals_b3_cvm_full_2013_2025_v2.csv --coverage-report artifacts/fundamentals_b3_cvm_full_coverage_v2.csv
 
 # 4. Walk-forward anual, um perfil por vez
-python annual_walk_forward.py --prices data/prices_b3_total_return_full_2013_2025.csv --total-return-manifest data/prices_b3_total_return_full_2013_2025_manifest.json --fundamentals data/fundamentals_b3_cvm_full_2013_2025_v2.csv --universe data/b3_historical_universes.csv --mapping data/b3_historical_cvm_ticker_map.csv --benchmarks data/benchmarks_market_2013_2025.csv --start-year 2015 --end-year 2026 --factor mvo_risk_adjusted --risk-profile moderado --top-assets 5 --output artifacts/v2_mvo_moderado
+python run_nested_configuration_search.py
+python build_release_manifest.py
+python build_release_manifest.py --verify
 
 # 5. Placar honesto e verificação estatística
 python build_audit_evidence.py --results artifacts/v2_mvo_moderado/annual_results.csv --output artifacts/audit_evidence
@@ -148,25 +156,24 @@ Para uma rota gratuita e reproduzível de pesquisa, use o
 Ele é classificado como pesquisa até a reconciliação dos eventos corporativos
 com registros B3/CVM ou um provedor licenciado.
 
-### Candidata multifatorial e perfil do investidor
+### Estratégia multifatorial publicada
 
-O candidato separado `triple_factor` corrige a subalocação acidental da linha
-de base: ele combina qualidade primária (ROIC ou ROE), *earnings yield* e
-momento de 12 meses, sempre com informação conhecida no janeiro da decisão.
-Ausência de uma métrica secundária de dívida não exclui, por si só, uma empresa;
-liquidez, lucro positivo e qualidade continuam obrigatórios. Os perfis não
-mudam o sinal: apenas definem os tetos de risco auditáveis.
+O núcleo combina qualidade primária (ROIC ou ROE), *earnings yield* e momento de
+12 meses, sempre com informação conhecida no janeiro da decisão. Ausência de
+uma métrica secundária de dívida não exclui, por si só, uma empresa; liquidez,
+lucro positivo e qualidade continuam obrigatórios. As 36 configurações variam
+a combinação fatorial, a quantidade de posições e a parcela em ações. Em cada
+ano, apenas o histórico anterior pode escolher a configuração.
 
 ```powershell
-python annual_walk_forward.py --prices data/prices_b3_2011_2026.csv --fundamentals data/fundamentals_cvm_january_panel.csv --start-year 2013 --end-year 2026 --factor triple_factor --risk-profile moderado --output artifacts/annual_triple_factor_moderado
+python run_nested_configuration_search.py
 ```
 
-Os perfis são `conservador` (35% em ações / 10% por emissor), `moderado`
-(55% / 12%), `crescimento` (70% / 15%) e `arrojado` (80% / 15%). Com quatro
-ativos, o teto por emissor pode reduzir a exposição efetiva: o moderado alcança,
-no máximo, 48%; crescimento e arrojado, 60%. Consulte o
-[protocolo da candidata multifatorial](docs/triple_factor_candidate_protocol.md)
-para resultados, custos e a limitação de status `research_only`.
+Os perfis conservador, equilibrado e arrojado pertencem à política de uso do
+Wealth System. Eles não geram três históricos publicados artificialmente. O
+histórico canônico é uma única regra de pesquisa; qualquer adaptação por perfil
+deve ser pré-registrada e avaliada separadamente antes de receber uma alegação de
+desempenho.
 
 Em especial, consulte `annual_holdings.csv` como a lâmina anual de decisão:
 para cada ativo mantido ela contém peso anterior/novo, ação (entrada, manutenção,
@@ -194,16 +201,16 @@ O que o período mostra, com referências independentes e após custos:
 
 | Referência | CAGR da carteira | CAGR da referência | Anos vencidos |
 | --- | --- | --- | --- |
-| CDI | 11,6% | 9,6% | 7 de 11 |
-| MVO de referência | 11,6% | 9,3% | 7 de 11 |
-| Ibovespa | 11,6% | 11,8% | 4 de 11 |
-| BOVA11 (investível) | 11,6% | 11,7% | 4 de 11 |
-| CDI após IR | 10,4% | 7,9% | 7 de 11 |
+| CDI | 17,86% | 9,61% | 6 de 11 |
+| MVO de referência | 17,86% | 7,83% | 10 de 11 |
+| Ibovespa | 17,86% | 11,77% | 7 de 11 |
+| BOVA11 (investível) | 17,86% | 11,72% | 7 de 11 |
+| CDI após IR | 16,03% | 7,94% | 6 de 11 |
 
-Ou seja: a carteira supera o CDI e a otimização neutra, mas **não supera o
-mercado de ações**. Com 55% em renda variável, ela entrega retorno próximo ao do
-Ibovespa com metade do risco direcional — essa é a afirmação sustentável, e não
-"bate o Ibovespa".
+Na amostra, a carteira supera as quatro referências no CAGR. Isso não autoriza
+uma promessa: a queda máxima diária foi de 47,8%, a janela foi usada no
+desenvolvimento e há somente onze observações anuais. O resultado após imposto
+é uma simulação tributária, não uma declaração individual.
 
 O portal aberto da CVM disponibiliza DFP desde 2010 e ITR desde 2011. Portanto,
 um estudo fundamentalista de 20 anos iniciado em 2006 exige uma fonte adicional
