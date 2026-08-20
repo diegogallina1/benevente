@@ -30,6 +30,21 @@ Números honestos do período, contra referências independentes, estão em
 `artifacts/inference_audit/`. O registro congelado está em
 `artifacts/preregistration/`.
 
+## Pacote final de artigos
+
+- BTech 2026: fonte em `paper/fucape_btech_2026.md` e versões finais em
+  `outputs/Benevente_Wealth_System_BTECH_Final.docx` e `.pdf`;
+- IEEE SSCI/CIFEr 2027: fonte em `paper/ieee_cifer_2027.tex` e versões finais em
+  `outputs/Benevente_Quant_AI_IEEE_Final.tex` e `.pdf`;
+- fonte única dos números em `artifacts/paper_release/paper_evidence.json`;
+- manifesto SHA-256 em `artifacts/paper_release/paper_release_manifest.json`;
+- conferência editorial e tarefas dos autores em
+  `docs/paper_submission_checklist.md`.
+
+Regenere o pacote numérico com `python tools/build_paper_release.py` e os
+arquivos editáveis com `python tools/build_article_documents.py`. Os dois textos
+separam a estratégia canônica Benevente 1 da extensão experimental Benevente 2.
+
 ## O que já é executável
 
 - Backtest reproduzível B3/CDI, com custos por liquidez e imposto de renda

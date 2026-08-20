@@ -16,9 +16,10 @@ from docx.shared import Cm, Pt
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUTS = ROOT / "outputs"
 BTECH_SOURCE = ROOT / "paper" / "fucape_btech_2026.md"
-BTECH_OUTPUT = OUTPUTS / "Benevente_Wealth_System_BTECH.docx"
+BTECH_TEMPLATE = OUTPUTS / "Benevente_Wealth_System_BTECH.docx"
+BTECH_OUTPUT = OUTPUTS / "Benevente_Wealth_System_BTECH_Final.docx"
 IEEE_SOURCE = ROOT / "paper" / "ieee_cifer_2027.tex"
-IEEE_OUTPUT = OUTPUTS / "Benevente_Quant_AI_IEEE.tex"
+IEEE_OUTPUT = OUTPUTS / "Benevente_Quant_AI_IEEE_Final.tex"
 
 
 def clear_body(document: Document) -> None:
@@ -117,20 +118,30 @@ def configure_document(document: Document) -> None:
 
 
 def build_btech() -> None:
-    if not BTECH_OUTPUT.exists(): raise FileNotFoundError("The retained BTech-formatted DOCX is missing.")
+    if not BTECH_TEMPLATE.exists(): raise FileNotFoundError("The retained BTech-formatted DOCX is missing.")
+    copy2(BTECH_TEMPLATE, BTECH_OUTPUT)
     document = Document(BTECH_OUTPUT); clear_body(document); configure_document(document)
+    in_references = False
     for kind, content in markdown_blocks(BTECH_SOURCE.read_text(encoding="utf-8")):
         if kind == "table": add_table(document, content); continue
         if kind == "h1":
             paragraph = document.add_paragraph(style="Heading 1"); paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
             paragraph.paragraph_format.space_before = Pt(0)
-        elif kind in {"h2", "h3"}: paragraph = document.add_paragraph(style="Heading 1" if kind == "h2" else "Heading 2")
+        elif kind in {"h2", "h3"}:
+            paragraph = document.add_paragraph(style="Heading 1" if kind == "h2" else "Heading 2")
+            if kind == "h2" and content == "Referências":
+                in_references = True
         elif kind in {"bullet", "number"}:
             paragraph = document.add_paragraph(style="normal")
             paragraph.paragraph_format.left_indent = Cm(0.65); paragraph.paragraph_format.first_line_indent = Cm(-0.4)
             paragraph.paragraph_format.line_spacing = 1.5
             content = ("• " + content) if kind == "bullet" else content
-        else: paragraph = document.add_paragraph(style="Normal")
+        else:
+            paragraph = document.add_paragraph(style="Normal")
+            if in_references:
+                paragraph.alignment = WD_ALIGN_PARAGRAPH.LEFT
+                paragraph.paragraph_format.left_indent = Cm(0.75)
+                paragraph.paragraph_format.first_line_indent = Cm(-0.75)
         add_inline(paragraph, content)
     document.core_properties.author = ""; document.core_properties.last_modified_by = ""
     document.core_properties.title = "Benevente Wealth System"; document.core_properties.subject = "Manuscrito tecnológico BTech 2026"

@@ -1,0 +1,418 @@
+{
+  "release_contract": {
+    "canonical_strategy": "Benevente 1",
+    "experimental_extension": "Benevente 2",
+    "evaluation_window": "2015-2025",
+    "decision_count": 11,
+    "claim_status": "retrospective development evidence; not prospective validation"
+  },
+  "published_protocol": {
+    "factor": "nested_configuration_selection",
+    "start_year": 2015,
+    "end_year": 2026,
+    "maximum_equity_weight": 0.55,
+    "top_assets": 5,
+    "maximum_asset_weight": 0.176,
+    "signal": "triple_factor",
+    "selection_rule": "For decision year t the configuration is ranked on years before t only, by Sharpe of the excess return over CDI. Switching configurations is charged a full-turnover rebalance.",
+    "configurations_by_year": {
+      "2015": "eq55_n8_low_volatility",
+      "2016": "eq75_n5_value_quality",
+      "2017": "eq75_n5_value_quality",
+      "2018": "eq95_n5_value_quality",
+      "2019": "eq95_n5_triple_factor",
+      "2020": "eq95_n5_triple_factor",
+      "2021": "eq95_n5_triple_factor",
+      "2022": "eq75_n5_triple_factor",
+      "2023": "eq55_n5_triple_factor",
+      "2024": "eq55_n5_triple_factor",
+      "2025": "eq55_n5_triple_factor"
+    },
+    "live_configuration": "eq55_n5_triple_factor",
+    "in_sample_status": "The window that ranked the configurations cannot also test them. Evaluation of this rule begins with years after the frozen registration."
+  },
+  "recomputed": {
+    "benevente_1_cagr": 0.1786442942659776,
+    "benevente_1_after_tax_cagr": 0.16027289798042,
+    "cdi_cagr": 0.09609571930908412,
+    "mvo_cagr": 0.07834134942607607,
+    "ibovespa_cagr": 0.11769711878033418,
+    "bova11_cagr": 0.11724118199980071,
+    "benevente_1_daily_max_drawdown": -0.47784912800289203
+  },
+  "published_strategy": {
+    "cumulative_return": 5.0983218269754405,
+    "cagr": 0.1786442942659776,
+    "after_tax_cagr": 0.16027289798042,
+    "daily_max_drawdown": -0.47784912800289203,
+    "years_beating_cdi": 6,
+    "years_beating_mvo": 10,
+    "years_beating_ibovespa": 7,
+    "hindsight_premium": 0.006477271847774357,
+    "deflated_sharpe_probability": 0.9856856039840576
+  },
+  "benchmarks": {
+    "cdi_cagr": 0.09609571930908412,
+    "mvo_cagr": 0.07834134942607607,
+    "ibovespa_cagr": 0.11769711878033418,
+    "bova11_cagr": 0.11724118199980071
+  },
+  "benevente_2": {
+    "status": "retrospective_experiment_not_published",
+    "cumulative_return": 5.4377397824180465,
+    "cagr": 0.18446223898599223,
+    "daily_max_drawdown": -0.28745686793003866,
+    "evaluation_slice_cagr": 0.18032880426354048,
+    "paired_p_value": 0.9642115838783171,
+    "sensitivity_configurations": 432,
+    "share_improving_both": 0.09027777777777778
+  },
+  "llm_experiment": {
+    "model": "gemini-3.1-flash-lite",
+    "years": 13,
+    "arms": {
+      "anonymised": {
+        "years": 13,
+        "cagr": 0.12619921234298515,
+        "cdi_cagr": 0.09592447813040694,
+        "years_beating_cdi": 10,
+        "average_equity_weight": 0.4467692275700878,
+        "worst_year": -0.12953211833210157
+      },
+      "deterministic": {
+        "years": 13,
+        "cagr": 0.12668245698371816,
+        "cdi_cagr": 0.09592447813040694,
+        "years_beating_cdi": 8,
+        "average_equity_weight": 0.522360705848863,
+        "worst_year": -0.10001972707054779
+      },
+      "monolithic": {
+        "years": 13,
+        "cagr": 0.11814747258718983,
+        "cdi_cagr": 0.09592447813040694,
+        "years_beating_cdi": 7,
+        "average_equity_weight": 0.5499999999999999,
+        "worst_year": -0.028193924537466795
+      },
+      "named": {
+        "years": 13,
+        "cagr": 0.13004392696188094,
+        "cdi_cagr": 0.09592447813040694,
+        "years_beating_cdi": 7,
+        "average_equity_weight": 0.4378400233078873,
+        "worst_year": -0.12953211831429048
+      }
+    },
+    "contamination_gap": 0.003844714618895795,
+    "contamination_p_value": 0.9051817707472174,
+    "added_value_gap": -0.000483244640733016,
+    "added_value_p_value": 0.988568943566898,
+    "decoupling_gap": 0.008051739755795317,
+    "decoupling_p_value": 0.7767939716197756,
+    "malformed_weight_years": 5,
+    "years_with_omitted_eligible_assets": 2
+  },
+  "robustness": {
+    "rebalance_frequency": {
+      "rule_held_fixed": {
+        "factor": "triple_factor",
+        "maximum_equity_weight": 0.55,
+        "maximum_asset_weight": 0.176,
+        "top_assets": 5
+      },
+      "evaluation_window": "2015-2025",
+      "cadences": {
+        "anual": {
+          "periods": 11,
+          "periods_per_year": 1.0,
+          "decisions_per_year": 1.0,
+          "cagr_gross": 0.18579619758913735,
+          "cagr_net_of_cost": 0.18512156611375197,
+          "cagr_after_tax": 0.17093516196211445,
+          "average_turnover_per_review": 0.6211512960355918,
+          "annual_turnover": 0.6211512960355918,
+          "annual_execution_cost": 0.0006696081277214231,
+          "annual_tax_drag": 0.015788978837967125,
+          "median_holding_days": 365.0,
+          "fixed_income_rate_applied": 0.175,
+          "average_realised_share": 0.391559615010539,
+          "years_beating_cdi": 7,
+          "years": 11
+        },
+        "trimestral": {
+          "periods": 44,
+          "periods_per_year": 4.0,
+          "decisions_per_year": 4.0,
+          "cagr_gross": 0.1637305602593333,
+          "cagr_net_of_cost": 0.16250800022290868,
+          "cagr_after_tax": 0.1560321490577503,
+          "average_turnover_per_review": 0.2900057262870168,
+          "annual_turnover": 1.1600229051480673,
+          "annual_execution_cost": 0.0010819501117293432,
+          "annual_tax_drag": 0.0060990588548581045,
+          "median_holding_days": 91.0,
+          "fixed_income_rate_applied": 0.225,
+          "average_realised_share": 0.1663604105278775,
+          "years_beating_cdi": 8,
+          "years": 11
+        },
+        "mensal": {
+          "periods": 132,
+          "periods_per_year": 12.0,
+          "decisions_per_year": 12.0,
+          "cagr_gross": 0.13917224955070173,
+          "cagr_net_of_cost": 0.1374746580193975,
+          "cagr_after_tax": 0.13318696058016433,
+          "average_turnover_per_review": 0.14798103682653435,
+          "annual_turnover": 1.7757724419184122,
+          "annual_execution_cost": 0.0015105937817641761,
+          "annual_tax_drag": 0.004036607782902243,
+          "median_holding_days": 30.0,
+          "fixed_income_rate_applied": 0.225,
+          "average_realised_share": 0.08150895119384668,
+          "years_beating_cdi": 8,
+          "years": 11
+        }
+      },
+      "paired_comparisons": [
+        {
+          "comparison": "trimestral vs anual, líquido de custo",
+          "usable": true,
+          "paired_years": 11,
+          "mean_annual_difference": -0.0244248577353217,
+          "years_faster_won": 3,
+          "t_statistic": -1.3460510279884448,
+          "p_value": 0.2080058741589692,
+          "reading": "A cadence only counts as better if its advantage over the annual decision survives a paired test across the whole window. A positive mean with a large p-value is noise, not evidence."
+        },
+        {
+          "comparison": "trimestral vs anual, após imposto",
+          "usable": true,
+          "paired_years": 11,
+          "mean_annual_difference": -0.015525509571076951,
+          "years_faster_won": 3,
+          "t_statistic": -0.925642749668862,
+          "p_value": 0.3764295457219219,
+          "reading": "A cadence only counts as better if its advantage over the annual decision survives a paired test across the whole window. A positive mean with a large p-value is noise, not evidence."
+        },
+        {
+          "comparison": "mensal vs anual, líquido de custo",
+          "usable": true,
+          "paired_years": 11,
+          "mean_annual_difference": -0.044009864285257105,
+          "years_faster_won": 5,
+          "t_statistic": -1.4231111486905614,
+          "p_value": 0.18514423824532408,
+          "reading": "A cadence only counts as better if its advantage over the annual decision survives a paired test across the whole window. A positive mean with a large p-value is noise, not evidence."
+        },
+        {
+          "comparison": "mensal vs anual, após imposto",
+          "usable": true,
+          "paired_years": 11,
+          "mean_annual_difference": -0.03273439035246595,
+          "years_faster_won": 7,
+          "t_statistic": -1.0791148464071132,
+          "p_value": 0.3058765735792819,
+          "reading": "A cadence only counts as better if its advantage over the annual decision survives a paired test across the whole window. A positive mean with a large p-value is noise, not evidence."
+        }
+      ],
+      "note": "Only the cadence varies. The rule, the universe, the limits and the panel are identical across arms, so any difference is attributable to how often the basket is reselected and to the cost, realisation and tax rate that frequency creates."
+    },
+    "position_persistence": {
+      "buffers_evaluated": [
+        0,
+        1,
+        2,
+        3,
+        5,
+        8
+      ],
+      "evaluation_window": "2015-2025",
+      "fixed_buffer_arms": {
+        "0": {
+          "cagr": 0.18512156611375197,
+          "excess_sharpe_vs_cdi": 0.5974124716310086,
+          "average_turnover": 0.6211512960355918,
+          "years_beating_cdi": 7,
+          "carryover_rate": 0.36,
+          "distinct_names": 35,
+          "names_lasting_one_year": 21,
+          "names_lasting_three_or_more": 3
+        },
+        "1": {
+          "cagr": 0.18800501610319365,
+          "excess_sharpe_vs_cdi": 0.6061591373699629,
+          "average_turnover": 0.605023577152412,
+          "years_beating_cdi": 7,
+          "carryover_rate": 0.42,
+          "distinct_names": 32,
+          "names_lasting_one_year": 16,
+          "names_lasting_three_or_more": 4
+        },
+        "2": {
+          "cagr": 0.18699438012722114,
+          "excess_sharpe_vs_cdi": 0.6096831639340098,
+          "average_turnover": 0.6060822069400086,
+          "years_beating_cdi": 7,
+          "carryover_rate": 0.42,
+          "distinct_names": 32,
+          "names_lasting_one_year": 16,
+          "names_lasting_three_or_more": 4
+        },
+        "3": {
+          "cagr": 0.18494688110269775,
+          "excess_sharpe_vs_cdi": 0.5926246051081999,
+          "average_turnover": 0.6066360122963058,
+          "years_beating_cdi": 7,
+          "carryover_rate": 0.44,
+          "distinct_names": 31,
+          "names_lasting_one_year": 15,
+          "names_lasting_three_or_more": 5
+        },
+        "5": {
+          "cagr": 0.18302389730647328,
+          "excess_sharpe_vs_cdi": 0.5788630443731998,
+          "average_turnover": 0.6080038022461115,
+          "years_beating_cdi": 7,
+          "carryover_rate": 0.44,
+          "distinct_names": 31,
+          "names_lasting_one_year": 15,
+          "names_lasting_three_or_more": 5
+        },
+        "8": {
+          "cagr": 0.18300056507829776,
+          "excess_sharpe_vs_cdi": 0.5684920588367288,
+          "average_turnover": 0.5861748303121174,
+          "years_beating_cdi": 7,
+          "carryover_rate": 0.5,
+          "distinct_names": 28,
+          "names_lasting_one_year": 10,
+          "names_lasting_three_or_more": 7
+        }
+      },
+      "nested_choice": {
+        "cagr": 0.18610703622963887,
+        "excess_sharpe_vs_cdi": 0.6031111858933149,
+        "buffer_by_year": {
+          "2015": 0,
+          "2016": 0,
+          "2017": 1,
+          "2018": 1,
+          "2019": 1,
+          "2020": 1,
+          "2021": 1,
+          "2022": 1,
+          "2023": 1,
+          "2024": 1,
+          "2025": 2
+        }
+      },
+      "paired_vs_published_hard_cut": [
+        {
+          "buffer": 1,
+          "mean_annual_difference": 0.003306947166069774,
+          "years_won": 4,
+          "paired_years": 11,
+          "t_statistic": 1.610340365507022,
+          "p_value": 0.1384011690653858
+        },
+        {
+          "buffer": 2,
+          "mean_annual_difference": 0.0018448264082234487,
+          "years_won": 5,
+          "paired_years": 11,
+          "t_statistic": 1.707916382410893,
+          "p_value": 0.11845319399345977
+        },
+        {
+          "buffer": 3,
+          "mean_annual_difference": 0.00020352924096203533,
+          "years_won": 9,
+          "paired_years": 11,
+          "t_statistic": 0.06959830042687923,
+          "p_value": 0.9458854894022993
+        },
+        {
+          "buffer": 5,
+          "mean_annual_difference": -0.0016893416196409946,
+          "years_won": 8,
+          "paired_years": 11,
+          "t_statistic": -0.5108847408335092,
+          "p_value": 0.6205203205599024
+        },
+        {
+          "buffer": 8,
+          "mean_annual_difference": -0.0010562243649979853,
+          "years_won": 5,
+          "paired_years": 11,
+          "t_statistic": -0.22728599685515155,
+          "p_value": 0.8247806801418974
+        }
+      ],
+      "deflated_sharpe": {
+        "observed_sharpe": 1.1864285330595672,
+        "expected_maximum_sharpe_under_null": 0.031219556212883474,
+        "trials": 6,
+        "observations": 11,
+        "skewness": 0.04752734532985903,
+        "kurtosis": 1.5016523192390294,
+        "deflated_sharpe_probability": 0.9997213874046532,
+        "significant_at_95": true
+      },
+      "note": "Only the persistence penalty varies; the factor, the limits, the universe and the panel are identical across arms. The published protocol is the kappa = 0 arm."
+    }
+  },
+  "inputs": {
+    "annual_results": {
+      "path": "artifacts/published_nested/annual_results.csv",
+      "sha256": "4433b1bf6205fb04be02ce237eba8d23023fae832f8d6cf6bff85e6abae72baf",
+      "bytes": 7953
+    },
+    "published_protocol": {
+      "path": "artifacts/published_nested/protocol.json",
+      "sha256": "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d",
+      "bytes": 1081
+    },
+    "daily_curve": {
+      "path": "artifacts/published_nested/daily_curve.csv",
+      "sha256": "4ebbac67f783e275385d392b61adf76eb745f8132b60a520a3c56290f29a7333",
+      "bytes": 478035
+    },
+    "audit": {
+      "path": "artifacts/audit_evidence/audit_evidence.json",
+      "sha256": "123b4dac353a26be36b72579378629af7127061443bb700a7cb63531d3ff2985",
+      "bytes": 6079
+    },
+    "configuration_search": {
+      "path": "artifacts/configuration_search_2012/summary.json",
+      "sha256": "e3330a04727f8a8d27f52633d7ab3cacfc1759aa0abc0da670361e6ef2f1bbfe",
+      "bytes": 1347
+    },
+    "benevente_2": {
+      "path": "artifacts/benevente2_event_risk/summary.json",
+      "sha256": "64aed4383e65e0da82dadcff113f3b699123be738213632a3c9dd99d3f621173",
+      "bytes": 6190
+    },
+    "llm_experiment": {
+      "path": "artifacts/llm_contamination/summary.json",
+      "sha256": "0ec0eef5d7a2cc2c74f482bca123a08c9df94b2d18e76c78882bdc2202ccc8c4",
+      "bytes": 3096
+    },
+    "llm_constraints": {
+      "path": "artifacts/llm_contamination/constraint_audit.csv",
+      "sha256": "19a7d00e407543080378ec6683782b62f1f52266a0ed8c0671d5b3250609c0f2",
+      "bytes": 779
+    },
+    "rebalance_frequency": {
+      "path": "artifacts/rebalance_frequency/summary.json",
+      "sha256": "9d0ff28e44e4a3562f5023cbb2cca2a5bbce18612362825826b9a921c00111ac",
+      "bytes": 4395
+    },
+    "persistence": {
+      "path": "artifacts/persistence/summary.json",
+      "sha256": "197b422801492309d6a53fbe1f0efbe96b72b72dc075f3416d72896b633080e5",
+      "bytes": 4085
+    }
+  }
+}

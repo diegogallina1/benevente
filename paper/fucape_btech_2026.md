@@ -1,18 +1,18 @@
 # Benevente Wealth System: um artefato de decisão e governança de carteira para escritórios de investimento do Espírito Santo
 
-**Produção técnica. Fucape Business School, BTech 2026.**
+**Artigo tecnológico submetido ao 6º Business Tech Congress, 2026.**
 
 ---
 
 ## Resumo
 
-Escritórios de investimento capixabas, entre multi-family offices, consultorias de valores mobiliários e assessorias, recomendam carteiras que precisam ser justificadas meses depois de montadas, diante do cliente, do compliance ou do regulador. Três perguntas voltam sempre: quais dados existiam na data da decisão, qual regra foi aplicada sobre eles, e quem aprovou. Planilha não responde nenhuma. Plataforma de terceiro responde a segunda de forma opaca. Este trabalho descreve o Benevente Wealth System, um artefato de software que produz a recomendação e a trilha de auditoria no mesmo ato. Cada decisão anual sai acompanhada da política vigente, dos fundamentos da CVM com data de recebimento, da tela de elegibilidade com o motivo de cada reprovação, dos pesos, das ordens propostas com lote e participação no volume, do custo estimado, e do SHA-256 de cada arquivo que gerou cada número. O artefato foi avaliado em uma janela de onze decisões anuais, de 2015 a 2025, sobre um painel da B3 construído a partir do arquivo histórico de cotações, que retém os 166 emissores deslistados no período. A carteira publicada, agora denominada Benevente 1, rendeu 17,86% ao ano após custos, ou 16,03% após imposto de renda, contra 11,77% do Ibovespa, 9,61% do CDI e 7,83% de uma otimização média-variância independente sobre o mesmo universo elegível. Venceu o mercado em sete dos onze anos e a otimização neutra em dez. Uma extensão experimental, Benevente 2, preserva a seleção anual e reduz temporariamente a exposição quando queda e volatilidade observadas no fechamento anterior ultrapassam limiares registrados. Na amostra completa ela reduziu a queda máxima de 47,8% para 28,7%, mas no recorte temporal de 2019 a 2025 não demonstrou retorno adicional (p = 0,964). Reportamos também o que não funcionou: previsão anual de regime, realocação mensal e semanal da proporção entre ações e caixa, reseleção mais frequente da própria cesta, e o uso de um modelo de linguagem como fonte de retorno. A contribuição tecnológica não é uma promessa de rentabilidade. É o conjunto de mecanismos que torna o resultado auditável, inclusive quando uma melhoria protege o capital sem comprovar alfa.
+Escritórios de investimento capixabas, entre multi-family offices, consultorias de valores mobiliários e assessorias, recomendam carteiras que precisam ser justificadas meses depois de montadas, diante do cliente, da área de conformidade ou do regulador. Três perguntas voltam sempre: quais dados existiam na data da decisão, qual regra foi aplicada sobre eles e quem aprovou. Planilha não responde nenhuma. Plataforma de terceiro costuma responder à segunda de forma opaca. Este trabalho tem como objetivo construir e avaliar o Benevente Wealth System, um artefato de software que produz a proposta de carteira e sua trilha de auditoria no mesmo ato. A avaliação combina design science, seleção anual aninhada e teste histórico sequencial. Cada decisão sai acompanhada da política vigente, dos fundamentos recebidos pela CVM até a data de corte, da elegibilidade com o motivo de cada reprovação, dos pesos, das ordens propostas com lote e participação no volume, do custo estimado e do SHA-256 dos arquivos que geraram os números. O artefato foi avaliado em onze decisões anuais, de 2015 a 2025, sobre um painel da B3 reconstruído do arquivo histórico de cotações e que conserva 166 emissores que deixam de negociar antes do fim da amostra. A carteira publicada, denominada Benevente 1, rendeu 17,86% ao ano após custos, ou 16,03% após imposto de renda, contra 11,77% do Ibovespa, 9,61% do CDI e 7,83% de uma otimização média-variância independente sobre o mesmo universo elegível. Venceu o mercado em sete dos onze anos e a otimização neutra em dez. Uma extensão experimental, Benevente 2, preserva a seleção anual e reduz temporariamente a exposição quando queda e volatilidade observadas no fechamento anterior ultrapassam limiares registrados. Na amostra completa ela reduziu a queda máxima de 47,8% para 28,7%, mas no recorte temporal de 2019 a 2025 não demonstrou retorno adicional (p = 0,964). Reportamos também o que não funcionou: previsão anual de regime, realocação mensal e semanal da proporção entre ações e caixa, reseleção mais frequente da própria cesta e o uso de um modelo de linguagem como fonte de retorno. A contribuição tecnológica não é uma promessa de rentabilidade. É um sistema verificável que separa dado, regra, alocação, explicação e aprovação, inclusive quando uma melhoria protege o capital sem comprovar alfa.
 
-**Palavras-chave:** governança de investimentos; trilha de auditoria; alocação de carteira; dados datados; viés de sobrevivência; pesquisa reprodutível.
+**Palavras-chave:** governança de investimentos; trilha de auditoria; alocação de carteira; informação disponível na data; viés de sobrevivência; pesquisa reprodutível.
 
 ---
 
-## 1. Situação-problema
+## 1. Introdução: problema, objetivo e contribuição
 
 Este trabalho parte de uma hipótese de mercado a ser validada no piloto: escritórios do Espírito Santo que mantêm o relacionamento com famílias e empresas locais podem depender de infraestrutura de decisão produzida fora do estado. O problema proposto não é falta de competência analítica. É a ausência de uma ferramenta que produza, no ato da recomendação, o registro que a recomendação vai exigir depois. A pesquisa ainda não mede o tamanho desse mercado, a disposição a pagar ou a taxa de adoção. Portanto, retenção de capital e geração de negócios no estado são resultados esperados do produto, não resultados já comprovados.
 
@@ -26,6 +26,8 @@ Planilhas falham nas três: sobrescrevem o estado anterior, misturam regra e dad
 
 A questão que orienta este trabalho é, portanto, de engenharia e de governança antes de ser de finanças: como construir um artefato que produza recomendação e prova ao mesmo tempo, e cuja própria evidência de desempenho resista a auditoria hostil?
 
+O objetivo é materializar e avaliar esse artefato para o contexto B2B de escritórios de investimento. O método segue a lógica de design science: identificar o problema, explicitar os requisitos, construir o artefato e avaliá-lo por utilidade, qualidade e capacidade de produzir evidência (Hevner et al., 2004; Peffers et al., 2007). A avaliação financeira não é uma demonstração comercial isolada. Ela executa, ano após ano, uma regra registrada antes do retorno seguinte, cobra custos, compara referências independentes e mede quanto a escolha retrospectiva teria melhorado o resultado. A contribuição é dupla: um protocolo quantitativo auditável e um fluxo de trabalho capaz de transformar cada recomendação em documento verificável para revisão humana.
+
 ---
 
 ## 2. Fundamentação e posicionamento
@@ -38,7 +40,7 @@ Três problemas metodológicos bem documentados na literatura de finanças quant
 
 **Múltiplas tentativas.** Quando se avaliam dezenas de configurações e se publica a melhor, o índice de Sharpe observado é enviesado para cima pela própria busca. Bailey e López de Prado formalizaram o problema com o Sharpe deflacionado, que corrige a estatística pelo número de tentativas e pelos momentos superiores da distribuição de retornos. Sem essa correção, qualquer busca suficientemente ampla produz um vencedor aparentemente significativo.
 
-Quatro referências clássicas orientam a construção financeira do artefato. Markowitz (1952) mostrou que uma carteira precisa ser analisada pela interação entre retornos e covariâncias, e não pela atratividade isolada de cada ativo. No Benevente, essa contribuição aparece de duas formas. A primeira é a exigência de uma cesta, em vez de uma aposta única no maior escore. A segunda é o comparador MVO, que pergunta quanto uma alocação baseada apenas em média, covariância e limites teria produzido sobre o mesmo universo. O comparador não serve para validar automaticamente a estratégia; serve para impedir que um ganho atribuído ao filtro fundamental seja apenas efeito de diversificação quantitativa.
+Quatro referências clássicas orientam a construção financeira do artefato. Markowitz (1952) mostrou que uma carteira precisa ser analisada pela interação entre retornos e covariâncias, e não pela atratividade isolada de cada ativo. No Benevente, essa contribuição aparece de duas formas. A primeira é a exigência de uma cesta, em vez de uma aposta única no maior escore. A segunda é o comparador MVO, que pergunta quanto uma alocação baseada apenas em média, covariância e limites teria produzido sobre o mesmo universo. O comparador não serve para validar automaticamente a estratégia; serve para impedir que um ganho atribuído ao filtro fundamental seja apenas efeito de diversificação quantitativa. A ênfase em qualidade também dialoga com Novy-Marx (2013), enquanto o uso conjunto de valor, qualidade e confirmação de mercado se aproxima da lógica multifatorial de Fama e French (2015), sem pretender reproduzir exatamente seus fatores.
 
 Black e Litterman (1992) tratam da combinação entre equilíbrio de mercado e visões. A arquitetura do Benevente adota a separação conceitual, mas não implementa o modelo Black–Litterman como carteira publicada. Fatos fundamentais e sinais de mercado geram um ranking determinístico. A linguagem natural pode explicar a visão, registrar riscos e formular perguntas, porém não altera a matemática da alocação. Essa fronteira permite testar a camada de linguagem sem conceder a ela poder para mudar restrições ou reconstruir retrospectivamente a tese.
 
@@ -86,7 +88,7 @@ Depois da triagem, cada ativo recebe um escore comparável dentro do universo di
 
 Essa separação também resolve a ambiguidade entre os nomes. **Benevente Quant AI** designa a pesquisa acadêmica, inclusive o experimento que combina um modelo de linguagem com um solver convexo. **Benevente Wealth System** designa o produto B2B de governança que entrega proposta, explicação e registro. A carteira histórica publicada é a regra multifatorial determinística. O modelo de linguagem não seleciona ativo e não escreve peso; seu papel é transformar fatos aprovados em tese, riscos e perguntas para revisão humana.
 
-Os coeficientes do escore de seleção, os limiares da tela de elegibilidade, as constantes de aversão a risco e a grade de configurações não são publicados. Eles estão registrados de forma verificável, porque o registro congelado carrega o SHA-256 de cada arquivo de entrada e da própria configuração, de modo que a anterioridade é demonstrável sem que a implementação seja replicável por leitura. Essa é uma escolha comercial deliberada e está declarada aqui para que o leitor saiba exatamente o que está sendo e o que não está sendo divulgado.
+O método é divulgado sem expor o código da aplicação comercial. No fator triplo, o escore é 0,40 vezes o escore padronizado da qualidade, 0,40 vezes o escore padronizado do inverso do preço/lucro e 0,20 vezes o escore padronizado do retorno dos 12 meses anteriores. Qualidade é ROIC para empresas operacionais e ROE para instituições financeiras. A triagem exige histórico de preço, liquidez média mínima, qualidade primária de pelo menos 8% e lucro positivo. Os candidatos alternativos são valor e qualidade por média de postos percentuais, momento de 12 meses e baixa volatilidade de 12 meses. A grade contém 36 combinações: orçamento de ações de 55%, 75% ou 95%; 5, 8 ou 12 emissores; e quatro famílias de sinal. O teto por emissor é o menor valor entre 25% e 1,6 vez a divisão uniforme do orçamento de ações pelo número de posições. Pesos do fator triplo são proporcionais ao escore deslocado para valores positivos e redistribuídos por preenchimento sucessivo quando um emissor atinge o teto. A configuração completa e a transformação de cada campo permanecem disponíveis nos artefatos legíveis por máquina, enquanto cada arquivo de entrada e saída recebe SHA-256. Assim, o estudo é replicável sem transformar a interface do produto em documentação de código.
 
 ### 3.4 Por que a decisão é anual
 
@@ -108,7 +110,7 @@ O sistema recusa, por regra, ordens que ultrapassem 5% do volume médio diário 
 
 ### 3.6 Governança: o sistema propõe, a pessoa decide
 
-Quatro mecanismos delimitam o que o software pode fazer.
+Quatro mecanismos delimitam o que o software pode fazer. Eles transformam a prestação de contas algorítmica em propriedade do desenho, e não em explicação produzida depois do fato (Kroll et al., 2017). A aprovação humana e o enquadramento ao perfil também são coerentes com a Resolução CVM nº 30, enquanto qualquer uso como consultoria individualizada depende da estrutura autorizada prevista na Resolução CVM nº 19 (Comissão de Valores Mobiliários, 2021a, 2021b).
 
 1. **Aprovação humana obrigatória.** Nenhuma ordem é transmitida, nem pode ser, porque a arquitetura não tem esse caminho.
 2. **Papel delimitado do modelo de linguagem.** O modelo organiza tese e riscos a partir de fatos já aprovados. Ele não define peso, não altera limite e não aprova ativo. Isso é uma restrição de arquitetura verificável, não uma promessa de conduta, e a Seção 5.5 mostra o experimento que testou o que aconteceria se ela fosse relaxada.
@@ -121,7 +123,7 @@ Quatro mecanismos delimitam o que o software pode fazer.
 
 ### 4.1 Seleção aninhada: a janela que escolhe não é a janela que testa
 
-O artefato admite múltiplas configurações de política, combinando teto de renda variável, número de posições e família de fatores. Publicar a melhor delas medida sobre toda a amostra seria exatamente o erro que a Seção 2 descreve. O protocolo adotado é uma seleção aninhada: para decidir a configuração do ano *t*, o sistema ordena as 36 configurações usando somente os anos já encerrados antes de *t*, e adota a primeira colocada. Trocar de configuração é uma operação real, e é cobrada como rebalanceamento integral.
+O artefato admite múltiplas configurações de política, combinando orçamento de renda variável, número de posições e família de fatores. Publicar a melhor delas medida sobre toda a amostra seria exatamente o erro que a Seção 2 descreve. O protocolo adotado é uma seleção aninhada: para decidir a configuração do ano *t*, o sistema ordena as 36 configurações usando somente os anos já encerrados antes de *t*, pelo índice de Sharpe do excesso sobre o CDI, e adota a primeira colocada. Trocar de configuração é uma operação real, e é cobrada como rebalanceamento integral.
 
 O ranqueamento exige no mínimo três anos encerrados. Com o painel começando em 2012, isso torna 2012 a 2014 a janela de seleção e 2015 a 2025 a janela de avaliação, com onze decisões anuais, uma por ano. Os três anos de seleção aparecem nos gráficos, marcados como tal, e não entram em nenhuma métrica de manchete.
 
@@ -158,7 +160,7 @@ Onze decisões anuais, de 2015 a 2025, líquidas de custos de execução.
 
 | Série | CAGR | R$ 100 mil viram | Anos vencidos | Queda máxima diária |
 |---|---:|---:|:---:|---:|
-| **Benevente** | **17,86%** | **R$ 609.832** | | −47,8% |
+| **Benevente 1** | **17,86%** | **R$ 609.832** | | −47,8% |
 | Benevente, após IR | 16,03% | R$ 513.052 | | |
 | Ibovespa | 11,77% | R$ 340.068 | 7 de 11 | −47,0% |
 | BOVA11 (ETF investível) | 11,72% | R$ 338.545 | 7 de 11 | |
@@ -188,11 +190,11 @@ O resultado de retorno exige contenção. No recorte 2019--2025 a diferença de 
 |---|---:|
 | Sharpe observado do excesso sobre o CDI | 0,933 |
 | Sharpe máximo esperado sob a hipótese nula, com 36 tentativas | 0,355 |
-| **Sharpe deflacionado** | **0,986** |
+| **Probabilidade do Sharpe deflacionado** | **0,986** |
 | Significante a 95% | sim |
 | **Prêmio de retrospectiva** | **0,65 p.p. ao ano** |
 
-O prêmio de retrospectiva merece leitura cuidadosa, porque é a medida mais informativa do conjunto. Ele diz que escolher a configuração vencedora sabendo o desfecho teria rendido apenas 0,65 ponto percentual a mais por ano do que a escolha aninhada, que não sabia. Em uma versão anterior deste mesmo sistema, com um ano a menos de treino, esse prêmio era de 4,98 pontos, ou seja, a busca estava fazendo boa parte do trabalho. Estender a base de dados para permitir decisões desde 2012 reduziu o prêmio por um fator de sete e elevou o Sharpe deflacionado de 0,957 para 0,986. O ganho relevante da última iteração do artefato não foi retorno. Foi a redução da parcela do retorno atribuível à própria busca.
+O prêmio de retrospectiva merece leitura cuidadosa, porque é a medida mais informativa do conjunto. Ele diz que escolher a configuração vencedora sabendo o desfecho teria rendido apenas 0,65 ponto percentual a mais por ano do que a escolha aninhada, que não sabia. Em uma versão anterior deste mesmo sistema, com um ano a menos de treino, esse prêmio era de 4,98 pontos, ou seja, a busca estava fazendo boa parte do trabalho. Estender a base de dados para permitir decisões desde 2012 reduziu o prêmio por um fator de sete e elevou a probabilidade do Sharpe deflacionado de 0,957 para 0,986. O ganho relevante da última iteração do artefato não foi retorno. Foi a redução da parcela do retorno atribuível à própria busca.
 
 ### 5.4 O que não funcionou
 
@@ -283,7 +285,7 @@ Declaradas sem atenuação, porque uma limitação omitida vira defeito descober
 2. **O detector de eventos societários tem recall de 23,3%.** Ele é conservador, e proventos, juros sobre capital próprio e eventos de papéis deslistados ainda exigem reconciliação contra registro primário da B3 ou da CVM antes de qualquer afirmação comercial de desempenho.
 3. **Distribuições imputadas.** Papéis sem cobertura de provedor recebem o rendimento mediano da seção transversal do ano. É uma aproximação, e os papéis afetados estão listados no relatório de cobertura.
 4. **A queda máxima é grande.** Quase 48% em base diária. Nenhuma suitability razoável coloca um cliente conservador nessa carteira.
-5. **Onze observações anuais são poucas.** O Sharpe deflacionado corrige o viés de busca, não o tamanho da amostra.
+5. **Onze observações anuais são poucas.** A probabilidade do Sharpe deflacionado corrige o viés de busca, não o tamanho da amostra.
 6. **Uso comercial exige estrutura regulatória própria.** O sistema é apoio à decisão e trilha de auditoria. Não é recomendação individual, gestão discricionária, nem promessa de superar referências.
 7. **O Benevente 2 é retrospectivo e posterior à Covid-19.** A escolha em 2015--2018 e a leitura separada de 2019--2025 evitam usar o retorno futuro na conta diária, mas não removem o conhecimento humano de que uma crise sanitária ocorreu.
 8. **O imposto intranual do Benevente 2 ainda não foi reconciliado.** Custos de giro foram cobrados, mas vendas defensivas podem antecipar imposto e reduzir o resultado líquido.
@@ -304,28 +306,48 @@ Declaradas sem atenuação, porque uma limitação omitida vira defeito descober
 
 ## 9. Disponibilidade
 
-O sistema publicado, com o dossiê anual navegável, a comparação interativa contra referências e ativos escolhidos pelo leitor, e as páginas de método, está em https://benevente-wealth-system.vercel.app.
+A versão submetida inclui um pacote suplementar anônimo com o código de reprodução, os artefatos de avaliação e o manifesto criptográfico. Os endereços públicos do sistema e do repositório foram omitidos para preservar a avaliação cega. Após o aceite, a versão de câmera deverá restaurar esses endereços e indicar o arquivo permanente com DOI.
 
 ---
 
 ## Referências
 
-*A completar conforme as normas do periódico.* Núcleo mínimo:
+BAILEY, D. H., Borwein, J. M., López de Prado, M., & Zhu, Q. J. (2017). The probability of backtest overfitting. *Journal of Computational Finance, 20*(4), 39–69. https://doi.org/10.21314/JCF.2016.322
 
-- BAILEY, D. H.; LÓPEZ DE PRADO, M. The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting, and Non-Normality. *Journal of Portfolio Management*, 2014.
-- BAILEY, D. H. et al. The Probability of Backtest Overfitting. *Journal of Computational Finance*, 2016.
-- LÓPEZ DE PRADO, M. *Advances in Financial Machine Learning*. Wiley, 2018.
-- HARVEY, C. R.; LIU, Y.; ZHU, H. …and the Cross-Section of Expected Returns. *Review of Financial Studies*, 2016.
-- BRASIL. Comissão de Valores Mobiliários. Formulários ITR e DFP.
-- BANCO CENTRAL DO BRASIL. Sistema Gerenciador de Séries Temporais, série 12 (CDI).
-- B3. Arquivo histórico de cotações (COTAHIST).
-- BLACK, F.; LITTERMAN, R. Global Portfolio Optimization. *Financial Analysts Journal*, v. 48, n. 5, p. 28–43, 1992.
-- DEMIGUEL, V.; GARLAPPI, L.; UPPAL, R. Optimal versus naive diversification: how inefficient is the 1/N portfolio strategy? *The Review of Financial Studies*, v. 22, n. 5, p. 1915–1953, 2009.
-- NOVY-MARX, R.; VELIKOV, M. A taxonomy of anomalies and their trading costs. *The Review of Financial Studies*, v. 29, n. 1, p. 104–147, 2016.
-- BENEVENTE WEALTH SYSTEM. **Documentação técnica, repositório de dados e validação de horizontes**. Repositório do projeto, 2026.
+BAILEY, D. H., & López de Prado, M. (2014). The deflated Sharpe ratio: Correcting for selection bias, backtest overfitting, and non-normality. *Journal of Portfolio Management, 40*(5), 94–107. https://doi.org/10.3905/jpm.2014.40.5.094
 
----
+BANCO CENTRAL DO BRASIL. (2026). *Sistema Gerenciador de Séries Temporais: série 12, taxa de juros CDI*. https://www3.bcb.gov.br/sgspub/
 
-### Nota sobre a origem dos números
+B3 S.A. – BRASIL, BOLSA, BALCÃO. (2026). *Cotações históricas: série histórica de preços dos títulos negociados na Bolsa*. https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/market-data/historico/mercado-a-vista/cotacoes-historicas/
 
-Todos os valores deste texto foram extraídos dos artefatos de execução do sistema, não transcritos de versões anteriores do material. As fontes primárias são `artifacts/published_nested/annual_results.csv` para a série anual publicada, `artifacts/audit_evidence/audit_evidence.json` para o placar anual e as janelas móveis, `artifacts/configuration_search_2012/summary.json` para a busca de configuração, o Sharpe deflacionado e o prêmio de retrospectiva, `artifacts/benevente2_event_risk/` para a candidata, a série diária e as 432 sensibilidades do Benevente 2, `artifacts/alloc_monthly/` e `artifacts/alloc_weekly/` para a realocação, `artifacts/allocation_regime/` para o regime anual, `artifacts/llm_contamination/summary.json` para o experimento com modelo de linguagem, e o manifesto do painel de preços, que carrega o SHA-256 do arquivo que gerou cada série.
+BENEVENTE WEALTH SYSTEM. (2026). *Documentação técnica, repositório de dados e validação de horizontes*. Repositório anônimo de avaliação.
+
+BLACK, F., & Litterman, R. (1992). Global portfolio optimization. *Financial Analysts Journal, 48*(5), 28–43. https://doi.org/10.2469/faj.v48.n5.28
+
+COMISSÃO DE VALORES MOBILIÁRIOS. (2021a). *Resolução CVM nº 19, de 25 de fevereiro de 2021: atividade de consultoria de valores mobiliários* (texto consolidado). https://conteudo.cvm.gov.br/legislacao/resolucoes/resol019.html
+
+COMISSÃO DE VALORES MOBILIÁRIOS. (2021b). *Resolução CVM nº 30, de 11 de maio de 2021: adequação dos produtos, serviços e operações ao perfil do cliente* (texto consolidado). https://conteudo.cvm.gov.br/legislacao/resolucoes/resol030.html
+
+COMISSÃO DE VALORES MOBILIÁRIOS. (2026a). *Demonstrações Financeiras Padronizadas (DFP): dados abertos*. https://dados.cvm.gov.br/dataset/cia_aberta-doc-dfp
+
+COMISSÃO DE VALORES MOBILIÁRIOS. (2026b). *Formulário de Informações Trimestrais (ITR): dados abertos*. https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/ITR/DADOS/
+
+DEMIGUEL, V., Garlappi, L., & Uppal, R. (2009). Optimal versus naive diversification: How inefficient is the 1/N portfolio strategy? *Review of Financial Studies, 22*(5), 1915–1953. https://doi.org/10.1093/rfs/hhm075
+
+FAMA, E. F., & French, K. R. (2015). A five-factor asset pricing model. *Journal of Financial Economics, 116*(1), 1–22. https://doi.org/10.1016/j.jfineco.2014.10.010
+
+HARVEY, C. R., Liu, Y., & Zhu, H. (2016). … and the cross-section of expected returns. *Review of Financial Studies, 29*(1), 5–68. https://doi.org/10.1093/rfs/hhv059
+
+HEVNER, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105. https://doi.org/10.2307/25148625
+
+KROLL, J. A., Huey, J., Barocas, S., Felten, E. W., Reidenberg, J. R., Robinson, D. G., & Yu, H. (2017). Accountable algorithms. *University of Pennsylvania Law Review, 165*(3), 633–705.
+
+LÓPEZ DE PRADO, M. (2018). *Advances in financial machine learning*. Wiley.
+
+MARKOWITZ, H. (1952). Portfolio selection. *Journal of Finance, 7*(1), 77–91. https://doi.org/10.2307/2975974
+
+NOVY-MARX, R. (2013). The other side of value: The gross profitability premium. *Journal of Financial Economics, 108*(1), 1–28. https://doi.org/10.1016/j.jfineco.2013.01.003
+
+NOVY-MARX, R., & Velikov, M. (2016). A taxonomy of anomalies and their trading costs. *Review of Financial Studies, 29*(1), 104–147. https://doi.org/10.1093/rfs/hhv063
+
+PEFFERS, K., Tuunanen, T., Rothenberger, M. A., & Chatterjee, S. (2007). A design science research methodology for information systems research. *Journal of Management Information Systems, 24*(3), 45–77. https://doi.org/10.2753/MIS0742-1222240302
