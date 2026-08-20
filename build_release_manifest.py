@@ -28,6 +28,10 @@ CANONICAL_FILES = [
     "artifacts/configuration_search_2012/summary.json",
     "artifacts/llm_contamination/summary.json",
     "artifacts/llm_contamination/constraint_audit.csv",
+    "artifacts/benevente2_event_risk/summary.json",
+    "artifacts/benevente2_event_risk/candidate_annual_comparison.csv",
+    "artifacts/benevente2_event_risk/candidate_daily_comparison.csv",
+    "artifacts/benevente2_event_risk/sensitivity_grid.csv",
     "data/prices_b3_total_return_full_2011_2025.csv",
     "data/prices_b3_total_return_full_2011_2025_manifest.json",
     "data/fundamentals_b3_cvm_full_2012_2025.csv",
@@ -65,6 +69,7 @@ def build() -> dict:
     audit = json.loads((ROOT / "artifacts/audit_evidence/audit_evidence.json").read_text(encoding="utf-8"))
     search = json.loads((ROOT / "artifacts/configuration_search_2012/summary.json").read_text(encoding="utf-8"))
     llm = json.loads((ROOT / "artifacts/llm_contamination/summary.json").read_text(encoding="utf-8"))
+    benevente2 = json.loads((ROOT / "artifacts/benevente2_event_risk/summary.json").read_text(encoding="utf-8"))
     daily = pd.read_csv(ROOT / "artifacts/published_nested/daily_curve.csv")
 
     raw_cvm = sorted((ROOT / "work/cvm_cache").glob("*")) if (ROOT / "work/cvm_cache").exists() else []
@@ -86,6 +91,7 @@ def build() -> dict:
             "allocation": "Regra quantitativa anual, com configuração escolhida apenas pelos anos já encerrados.",
             "llm": "Explica teses, riscos e perguntas de revisão; não seleciona ativos nem define pesos.",
             "mvo": "Comparador quantitativo independente e alocador apenas nos braços experimentais.",
+            "benevente2": "Extensão experimental: preserva a cesta anual e reduz exposição após estresse observável no fechamento anterior.",
         },
         "evaluation": {
             "decision_years": [int(annual.decision_year.min()), int(annual.decision_year.max())],
@@ -109,6 +115,10 @@ def build() -> dict:
             "llm_anonymised_cagr": float(llm["arms"]["anonymised"]["cagr"]),
             "deterministic_cagr": float(llm["arms"]["deterministic"]["cagr"]),
             "llm_added_value_p_value": float(llm["model_added_value_vs_deterministic"]["p_value"]),
+            "benevente2_candidate_cagr": float(benevente2["training_only_selection"]["full_period_metrics"]["cagr"]),
+            "benevente2_candidate_max_drawdown": float(benevente2["training_only_selection"]["full_period_metrics"]["max_drawdown"]),
+            "benevente2_holdout_cagr": float(benevente2["training_only_selection"]["holdout_2019_2025_metrics"]["cagr"]),
+            "benevente2_paired_p_value": float(benevente2["training_only_selection"]["paired_annual_test_2019_2025"]["p_value"]),
         },
         "coverage": {
             "price_tickers": int(price_manifest.get("ticker_count", 0)),

@@ -6,7 +6,7 @@
 
 ## Resumo
 
-Escritórios de investimento capixabas, entre multi-family offices, consultorias de valores mobiliários e assessorias, recomendam carteiras que precisam ser justificadas meses depois de montadas, diante do cliente, do compliance ou do regulador. Três perguntas voltam sempre: quais dados existiam na data da decisão, qual regra foi aplicada sobre eles, e quem aprovou. Planilha não responde nenhuma. Plataforma de terceiro responde a segunda de forma opaca. Este trabalho descreve o Benevente Wealth System, um artefato de software que produz a recomendação e a trilha de auditoria no mesmo ato. Cada decisão anual sai acompanhada da política vigente, dos fundamentos da CVM com data de recebimento, da tela de elegibilidade com o motivo de cada reprovação, dos pesos, das ordens propostas com lote e participação no volume, do custo estimado, e do SHA-256 de cada arquivo que gerou cada número. O artefato foi avaliado em uma janela de onze decisões anuais, de 2015 a 2025, sobre um painel da B3 construído a partir do arquivo histórico de cotações, que retém os 166 emissores deslistados no período. A carteira publicada rendeu 17,86% ao ano após custos, ou 16,03% após imposto de renda, contra 11,77% do Ibovespa, 9,61% do CDI e 7,83% de uma otimização média-variância independente sobre o mesmo universo elegível. Venceu o mercado em sete dos onze anos e a otimização neutra em dez. Reportamos também o que não funcionou: previsão anual de regime, realocação mensal e semanal da proporção entre ações e caixa, reseleção mais frequente da própria cesta, e o uso de um modelo de linguagem como fonte de retorno. Nenhuma das quatro hipóteses se sustentou, e os resultados negativos são publicados junto com o positivo. A contribuição tecnológica não é a rentabilidade. É o conjunto de mecanismos que torna essa rentabilidade auditável, incluindo a medição explícita de quanto do resultado viria de escolher a regra depois de conhecer o desfecho: 0,65 ponto percentual ao ano.
+Escritórios de investimento capixabas, entre multi-family offices, consultorias de valores mobiliários e assessorias, recomendam carteiras que precisam ser justificadas meses depois de montadas, diante do cliente, do compliance ou do regulador. Três perguntas voltam sempre: quais dados existiam na data da decisão, qual regra foi aplicada sobre eles, e quem aprovou. Planilha não responde nenhuma. Plataforma de terceiro responde a segunda de forma opaca. Este trabalho descreve o Benevente Wealth System, um artefato de software que produz a recomendação e a trilha de auditoria no mesmo ato. Cada decisão anual sai acompanhada da política vigente, dos fundamentos da CVM com data de recebimento, da tela de elegibilidade com o motivo de cada reprovação, dos pesos, das ordens propostas com lote e participação no volume, do custo estimado, e do SHA-256 de cada arquivo que gerou cada número. O artefato foi avaliado em uma janela de onze decisões anuais, de 2015 a 2025, sobre um painel da B3 construído a partir do arquivo histórico de cotações, que retém os 166 emissores deslistados no período. A carteira publicada, agora denominada Benevente 1, rendeu 17,86% ao ano após custos, ou 16,03% após imposto de renda, contra 11,77% do Ibovespa, 9,61% do CDI e 7,83% de uma otimização média-variância independente sobre o mesmo universo elegível. Venceu o mercado em sete dos onze anos e a otimização neutra em dez. Uma extensão experimental, Benevente 2, preserva a seleção anual e reduz temporariamente a exposição quando queda e volatilidade observadas no fechamento anterior ultrapassam limiares registrados. Na amostra completa ela reduziu a queda máxima de 47,8% para 28,7%, mas no recorte temporal de 2019 a 2025 não demonstrou retorno adicional (p = 0,964). Reportamos também o que não funcionou: previsão anual de regime, realocação mensal e semanal da proporção entre ações e caixa, reseleção mais frequente da própria cesta, e o uso de um modelo de linguagem como fonte de retorno. A contribuição tecnológica não é uma promessa de rentabilidade. É o conjunto de mecanismos que torna o resultado auditável, inclusive quando uma melhoria protege o capital sem comprovar alfa.
 
 **Palavras-chave:** governança de investimentos; trilha de auditoria; alocação de carteira; dados datados; viés de sobrevivência; pesquisa reprodutível.
 
@@ -111,7 +111,7 @@ O sistema recusa, por regra, ordens que ultrapassem 5% do volume médio diário 
 Quatro mecanismos delimitam o que o software pode fazer.
 
 1. **Aprovação humana obrigatória.** Nenhuma ordem é transmitida, nem pode ser, porque a arquitetura não tem esse caminho.
-2. **Papel delimitado do modelo de linguagem.** O modelo organiza tese e riscos a partir de fatos já aprovados. Ele não define peso, não altera limite e não aprova ativo. Isso é uma restrição de arquitetura verificável, não uma promessa de conduta, e a Seção 5.4 mostra o experimento que testou o que aconteceria se ela fosse relaxada.
+2. **Papel delimitado do modelo de linguagem.** O modelo organiza tese e riscos a partir de fatos já aprovados. Ele não define peso, não altera limite e não aprova ativo. Isso é uma restrição de arquitetura verificável, não uma promessa de conduta, e a Seção 5.5 mostra o experimento que testou o que aconteceria se ela fosse relaxada.
 3. **Conciliação pós-operação.** A nota de corretagem é confrontada linha a linha com a ordem proposta.
 4. **Limites explícitos e versionados.** Teto de renda variável, teto por emissor e reserva em caixa ficam na política, registrados antes da seleção.
 
@@ -142,6 +142,12 @@ Com 36 configurações avaliadas, o Sharpe da vencedora precisa ser deflacionado
 
 Medimos também o prêmio de retrospectiva, que é a diferença entre o CAGR da configuração que teria vencido a amostra inteira, escolha impossível na prática porque usa os anos sobre os quais é medida, e o CAGR da escolha aninhada. Esse número quantifica exatamente o que um concorrente ganharia publicando o vencedor da busca como se fosse resultado obtenível.
 
+### 4.4 Benevente 2: proteção intranual sem trocar a tese anual
+
+O Benevente 1 continua sendo a estratégia publicada: a cesta e o orçamento de risco são definidos na revisão anual e os ativos são mantidos até a revisão seguinte. O Benevente 2 é uma extensão experimental que não escolhe ações novas e não usa notícias. Ele observa somente a queda do Ibovespa em relação ao pico móvel de 126 sessões e a volatilidade realizada em 20 sessões, sempre deslocadas em um pregão. Assim, a decisão de hoje usa apenas o fechamento de ontem.
+
+A configuração candidata foi escolhida somente em 2015--2018. Um alerta é acionado com queda de 12% ou volatilidade anualizada de 40%, limitando a exposição a ações a 50%. O estado severo usa 22% e 60%, respectivamente, e limita a exposição a 35%. A saída exige dez sessões de recuperação, para reduzir idas e vindas. O saldo migra para CDI e cada mudança paga 0,10% por unidade de giro. O período de 2019--2025 é lido separadamente como avaliação retrospectiva. A extensão foi concebida depois da Covid-19, portanto essa separação temporal não elimina o viés conceitual e não equivale a validação prospectiva.
+
 ---
 
 ## 5. Resultados
@@ -165,7 +171,18 @@ Em janelas móveis, contra o CDI a carteira vence 8 de 9 janelas de três anos, 
 
 **O que esse resultado custa.** A queda máxima diária chegou a 47,8%, praticamente a mesma do Ibovespa no período, que foi de 47,0%, porque o protocolo aninhado elevou a parcela de renda variável a 95% entre 2018 e 2021. A carteira não é uma versão suavizada do mercado com retorno maior. É uma carteira concentrada que passou pelo mesmo tombo e se recuperou mais. Houve cinco trocas de configuração no período, e o orçamento de renda variável percorreu 55%, 75%, 95%, 75% e 55%.
 
-### 5.2 O resultado sobrevive à correção por múltiplas tentativas?
+### 5.2 Benevente 2: o que melhorou e o que não foi provado
+
+| Série | CAGR 2015--2025 | Queda máxima diária | CAGR 2019--2025 |
+|---|---:|---:|---:|
+| Benevente 1 | 17,86% | −47,8% | 17,95% |
+| **Benevente 2, experimental** | **18,45%** | **−28,7%** | **18,03%** |
+
+Na crise de 2020, o primeiro alerta ocorreu em 28/02/2020 e o estado severo em 10/03/2020. A exposição mínima ficou em 35%. O Benevente 1 terminou o ano com 1,78%, o Benevente 2 com 4,35% e o Ibovespa com 0,62%. A queda máxima caiu de 47,8% para 28,7%, enquanto a do índice foi de 46,8%.
+
+O resultado de retorno exige contenção. No recorte 2019--2025 a diferença de CAGR entre as versões foi de apenas 0,09 ponto percentual e o teste pareado anual produziu p = 0,964. Portanto, não há evidência de alfa adicional. Numa grade de sensibilidade com 432 configurações, todas reduziram a queda máxima, mas apenas 9,03% melhoraram simultaneamente CAGR e queda no recorte de avaliação. A conclusão sustentada é **redução robusta de risco de cauda**, não aumento comprovado de rentabilidade. Os números do Benevente 2 incluem custo de giro do controle intranual, mas ainda não o imposto gerado por vendas dentro do ano. Por isso ele permanece experimental e não substitui a série canônica.
+
+### 5.3 O resultado sobrevive à correção por múltiplas tentativas?
 
 | Estatística | Valor |
 |---|---:|
@@ -177,7 +194,7 @@ Em janelas móveis, contra o CDI a carteira vence 8 de 9 janelas de três anos, 
 
 O prêmio de retrospectiva merece leitura cuidadosa, porque é a medida mais informativa do conjunto. Ele diz que escolher a configuração vencedora sabendo o desfecho teria rendido apenas 0,65 ponto percentual a mais por ano do que a escolha aninhada, que não sabia. Em uma versão anterior deste mesmo sistema, com um ano a menos de treino, esse prêmio era de 4,98 pontos, ou seja, a busca estava fazendo boa parte do trabalho. Estender a base de dados para permitir decisões desde 2012 reduziu o prêmio por um fator de sete e elevou o Sharpe deflacionado de 0,957 para 0,986. O ganho relevante da última iteração do artefato não foi retorno. Foi a redução da parcela do retorno atribuível à própria busca.
 
-### 5.3 O que não funcionou
+### 5.4 O que não funcionou
 
 Quatro hipóteses foram testadas e nenhuma se sustentou. São publicadas com o mesmo destaque do resultado positivo, porque um artefato que só reporta o que deu certo não é auditável.
 
@@ -201,7 +218,7 @@ Registramos uma fraqueza do modelo tributário nessa comparação: ele cobra imp
 
 **Modelo de linguagem como fonte de retorno.** Este é o teste que mais interessa à governança do produto, e está detalhado a seguir.
 
-### 5.4 O experimento com modelo de linguagem: três nulos
+### 5.5 O experimento com modelo de linguagem: três nulos
 
 O sistema usa um modelo de linguagem em papel deliberadamente restrito. Para verificar se essa restrição custa desempenho, e se o modelo agrega algo, montamos quatro braços sobre 13 anos, com o mesmo universo elegível.
 
@@ -224,7 +241,7 @@ Três nulos, e cada um significa algo diferente.
 
 A conclusão de produto é direta. O modelo de linguagem justifica-se no Benevente por organizar e explicar decisões, não por gerá-las. Vender IA como fonte de alfa, com base nestes dados, seria vender algo que medimos e não encontramos.
 
-### 5.5 Defeitos encontrados na própria auditoria
+### 5.6 Defeitos encontrados na própria auditoria
 
 O artefato passou por auditoria interna adversarial. Sete defeitos foram encontrados e corrigidos, e todos inflavam o resultado.
 
@@ -268,6 +285,9 @@ Declaradas sem atenuação, porque uma limitação omitida vira defeito descober
 4. **A queda máxima é grande.** Quase 48% em base diária. Nenhuma suitability razoável coloca um cliente conservador nessa carteira.
 5. **Onze observações anuais são poucas.** O Sharpe deflacionado corrige o viés de busca, não o tamanho da amostra.
 6. **Uso comercial exige estrutura regulatória própria.** O sistema é apoio à decisão e trilha de auditoria. Não é recomendação individual, gestão discricionária, nem promessa de superar referências.
+7. **O Benevente 2 é retrospectivo e posterior à Covid-19.** A escolha em 2015--2018 e a leitura separada de 2019--2025 evitam usar o retorno futuro na conta diária, mas não removem o conhecimento humano de que uma crise sanitária ocorreu.
+8. **O imposto intranual do Benevente 2 ainda não foi reconciliado.** Custos de giro foram cobrados, mas vendas defensivas podem antecipar imposto e reduzir o resultado líquido.
+9. **Não existe arquivo histórico de notícias com horário validado neste experimento.** O controle usa apenas preço e volatilidade. A LLM não antecipou a Covid-19 e não tomou decisões no Benevente 2.
 
 ---
 
@@ -277,6 +297,7 @@ Declaradas sem atenuação, porque uma limitação omitida vira defeito descober
 - Reconciliar eventos societários e proventos contra registro primário, elevando o recall do detector.
 - Repetir o experimento de contaminação em modelos com datas de corte de treinamento distintas, para separar contaminação de capacidade.
 - Pré-registrar um estudo trimestral ou orientado a eventos, com notícias arquivadas, horário de publicação e corte temporal verificável, sem reotimizar a regra anual depois de observar o resultado.
+- Pré-registrar o Benevente 2 antes de qualquer acompanhamento futuro, incorporar imposto por lote vendido e comparar seus estados discretos a um alvo contínuo de volatilidade escolhido somente na janela de treino.
 - Instrumentar o piloto em escritório capixaba, medindo tempo de produção do dossiê e taxa de divergência na conciliação de notas.
 
 ---
@@ -307,4 +328,4 @@ O sistema publicado, com o dossiê anual navegável, a comparação interativa c
 
 ### Nota sobre a origem dos números
 
-Todos os valores deste texto foram extraídos dos artefatos de execução do sistema, não transcritos de versões anteriores do material. As fontes primárias são `artifacts/published_nested/annual_results.csv` para a série anual publicada, `artifacts/audit_evidence/audit_evidence.json` para o placar anual e as janelas móveis, `artifacts/configuration_search_2012/summary.json` para a busca de configuração, o Sharpe deflacionado e o prêmio de retrospectiva, `artifacts/alloc_monthly/` e `artifacts/alloc_weekly/` para a realocação, `artifacts/allocation_regime/` para o regime anual, `artifacts/llm_contamination/summary.json` para o experimento com modelo de linguagem, e o manifesto do painel de preços, que carrega o SHA-256 do arquivo que gerou cada série.
+Todos os valores deste texto foram extraídos dos artefatos de execução do sistema, não transcritos de versões anteriores do material. As fontes primárias são `artifacts/published_nested/annual_results.csv` para a série anual publicada, `artifacts/audit_evidence/audit_evidence.json` para o placar anual e as janelas móveis, `artifacts/configuration_search_2012/summary.json` para a busca de configuração, o Sharpe deflacionado e o prêmio de retrospectiva, `artifacts/benevente2_event_risk/` para a candidata, a série diária e as 432 sensibilidades do Benevente 2, `artifacts/alloc_monthly/` e `artifacts/alloc_weekly/` para a realocação, `artifacts/allocation_regime/` para o regime anual, `artifacts/llm_contamination/summary.json` para o experimento com modelo de linguagem, e o manifesto do painel de preços, que carrega o SHA-256 do arquivo que gerou cada série.

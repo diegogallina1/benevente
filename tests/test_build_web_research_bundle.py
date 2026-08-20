@@ -67,3 +67,27 @@ def test_bundle_includes_profile_specific_history_when_sources_are_provided(tmp_
     result = build_web_research_bundle(source, tmp_path / "research.json", profile_sources={"conservador": conservative})
     assert result["profiles"]["conservador"]["annual"][0]["net_return"] == .07
     assert result["profile_curves"]["conservador"]["series"]["Benevente Wealth System"] == [100.0, 107.0]
+
+
+def test_bundle_adds_benevente2_without_replacing_published_strategy(tmp_path: Path):
+    source = tmp_path / "source"; source.mkdir()
+    pd.DataFrame([{"decision_year": 2025, "decision_date": "2025-01-02", "holding_end_exclusive": "2025-12-31", "net_return": .10}]).to_csv(source / "annual_results.csv", index=False)
+    pd.DataFrame([{"decision_year": 2025, "ticker": "AAAA3.SA", "decision_action": "entered"}]).to_csv(source / "annual_holdings.csv", index=False)
+    pd.DataFrame([{"decision_year": 2025, "ticker": "AAAA3.SA", "decision_action": "entered", "reason": "entered_after_point_in_time_screen"}]).to_csv(source / "annual_transitions.csv", index=False)
+    (source / "protocol.json").write_text('{"factor":"nested_configuration_selection"}', encoding="utf-8")
+    pd.DataFrame([
+        {"date": "2025-01-02", "strategy": 100, "cdi": 100, "phase": "evaluated"},
+        {"date": "2025-12-31", "strategy": 110, "cdi": 106, "phase": "evaluated"},
+    ]).to_csv(source / "daily_curve.csv", index=False)
+    b2 = tmp_path / "b2"; b2.mkdir()
+    pd.DataFrame([{"year": 2025, "Benevente 2": .12}]).to_csv(b2 / "candidate_annual_comparison.csv", index=False)
+    pd.DataFrame([
+        {"date": "2025-01-02", "benevente2": 1.0},
+        {"date": "2025-12-31", "benevente2": 1.12},
+    ]).to_csv(b2 / "candidate_daily_comparison.csv", index=False)
+    (b2 / "summary.json").write_text('{"status":"retrospective_experiment_not_published"}', encoding="utf-8")
+    result = build_web_research_bundle(source, tmp_path / "out.json", benevente2_source=b2)
+    assert result["annual"][0]["net_return"] == .10
+    assert result["annual"][0]["benevente2_return"] == .12
+    assert result["meta"]["benevente2"]["status"] == "retrospective_experiment_not_published"
+    assert "Benevente 2 · experimental" in result["monthly_curve"]["series"]

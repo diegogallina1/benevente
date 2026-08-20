@@ -101,14 +101,15 @@ def _profile_curves(profile_results: dict[str, dict]) -> dict[str, dict]:
 # it, which is what makes the chart comparable with a peer's factsheet. BOVA11
 # remains in the run artifacts for the investability argument in the paper.
 MONTHLY_SERIES_LABELS = {
-    "strategy": "Benevente",
+    "strategy": "Benevente 1",
+    "benevente2": "Benevente 2 · experimental",
     "mvo": "MVO de referência",
     "cdi": "CDI",
     "IBOVESPA": "Ibovespa",
 }
 
 
-def _monthly_curve(root: Path) -> dict | None:
+def _monthly_curve(root: Path, benevente2_source: str | Path | None = None) -> dict | None:
     """Resample the exact daily book value to month ends.
 
     Eleven January points cannot show a drawdown or when a year turned, and the
@@ -120,6 +121,10 @@ def _monthly_curve(root: Path) -> dict | None:
     if not path.exists():
         return None
     daily = pd.read_csv(path, parse_dates=["date"]).set_index("date").sort_index()
+    if benevente2_source:
+        candidate_path = Path(benevente2_source) / "candidate_daily_comparison.csv"
+        candidate = pd.read_csv(candidate_path, parse_dates=["date"]).set_index("date").sort_index()
+        daily["benevente2"] = candidate["benevente2"].reindex(daily.index)
     columns = [column for column in MONTHLY_SERIES_LABELS if column in daily.columns]
     if not columns:
         return None
@@ -177,10 +182,20 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
                               ibovespa_price_input: str | Path | None = None,
                               existing_bundle: str | Path | None = None,
                               profile_sources: dict[str, str | Path] | None = None,
-                              audit_evidence: str | Path | None = None) -> dict:
+                              audit_evidence: str | Path | None = None,
+                              benevente2_source: str | Path | None = None) -> dict:
     """Write annual results, holdings and transitions from exactly one run."""
     root = Path(source)
     annual = pd.read_csv(root / "annual_results.csv")
+    benevente2_summary = None
+    if benevente2_source:
+        b2_root = Path(benevente2_source)
+        b2_annual = pd.read_csv(b2_root / "candidate_annual_comparison.csv")
+        annual = annual.merge(
+            b2_annual[["year", "Benevente 2"]].rename(columns={"year": "decision_year", "Benevente 2": "benevente2_return"}),
+            on="decision_year", how="left", validate="one_to_one",
+        )
+        benevente2_summary = json.loads((b2_root / "summary.json").read_text(encoding="utf-8"))
     holdings = pd.read_csv(root / "annual_holdings.csv")
     transitions = pd.read_csv(root / "annual_transitions.csv")
     protocol = json.loads((root / "protocol.json").read_text(encoding="utf-8"))
@@ -260,6 +275,7 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
                 "fatores e restri\u00e7\u00f5es: \u00e9 amostra de desenvolvimento, n\u00e3o teste." + b3_note
             ),
             "evidence": evidence,
+            "benevente2": benevente2_summary,
             "protocol": protocol,
             "ibovespa": (
                 _ibovespa_on_decision_dates(annual, ibovespa_price_input)
@@ -269,7 +285,7 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
             ),
         },
         "annual": _records(annual),
-        "monthly_curve": _monthly_curve(root),
+        "monthly_curve": _monthly_curve(root, benevente2_source),
         "profiles": profile_results,
         "profile_curves": _profile_curves(profile_results),
         "holdings": _records(holdings),
@@ -289,6 +305,7 @@ def main() -> None:
     parser.add_argument("--ibovespa-price-input", help="Dated Ibovespa price-index CSV (Date,IBOVESPA).")
     parser.add_argument("--existing-bundle", help="Existing web bundle whose aligned Ibovespa curve should be retained.")
     parser.add_argument("--audit-evidence", help="audit_evidence.json produced by build_audit_evidence.py.")
+    parser.add_argument("--benevente2-source", help="Folder produced by benevente2_event_risk.py.")
     parser.add_argument("--profile-source", action="append", default=[], metavar="NOME=PASTA",
                         help="Optional audited profile run, e.g. conservador=artifacts/profile_conservador_2025")
     args = parser.parse_args()
@@ -300,7 +317,7 @@ def main() -> None:
         profile_sources[name] = folder
     result = build_web_research_bundle(args.source, args.output, args.b3_universe,
                                        args.source_manifest, args.holdout_validation, args.ibovespa_price_input,
-                                       args.existing_bundle, profile_sources, args.audit_evidence)
+                                       args.existing_bundle, profile_sources, args.audit_evidence, args.benevente2_source)
     print(f"Wrote {len(result['annual'])} annual decisions from {result['meta']['strategy']} to {args.output}")
 
 

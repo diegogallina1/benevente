@@ -17,7 +17,8 @@ const modelSteps = {
   data: { number:"02 · DADOS", title:"A decisão usa somente o que já era público.", text:"Em janeiro, o motor combina demonstrações ITR/DFP já divulgadas, histórico de preços, liquidez e CDI. Cada arquivo tem origem, data e hash registrados.", uses:"B3, CVM e Banco Central", blocks:"Informação divulgada depois da decisão", produces:"Base anual verificável", rule:"<strong>Regra:</strong> o retorno do ano avaliado nunca participa da escolha." },
   screen: { number:"03 · FILTRO FUNDAMENTAL", title:"Qualidade e segurança vêm antes do ranking.", text:"Empresas operacionais e bancos são avaliados por métricas compatíveis com seus demonstrativos. Liquidez, rentabilidade, geração de caixa, solvência e disponibilidade dos dados eliminam casos não comparáveis.", uses:"ROIC ou ROE, caixa, dívida, valuation e liquidez", blocks:"Dados ausentes, fragilidade financeira e baixa negociabilidade", produces:"Universo elegível da revisão", rule:"<strong>Regra:</strong> ausência de evidência não vira aprovação." },
   optimizer: { number:"04 · SELEÇÃO E PESOS", title:"Valor, qualidade e momento formam a cesta.", text:"As configurações candidatas combinam fatores, número de posições e orçamento de ações. A configuração do ano é escolhida pelo Sharpe dos anos já encerrados; os ativos recebem pesos proporcionais ao score dentro das regras, e o CDI recebe o saldo.", uses:"Fatores fundamentais e de mercado, custos e limites", blocks:"Escolha baseada no retorno futuro", produces:"Carteira anual e custo de rebalanceamento", rule:"<strong>Comparação:</strong> o MVO é calculado separadamente sobre o mesmo universo elegível. Ele não escolhe a carteira Benevente." },
-  review: { number:"05 · REVISÃO", title:"O resultado é uma proposta, não uma ordem.", text:"A instituição revisa tese, riscos, pesos e custos. Se decidir implementar, registra a operação e confere a nota de corretagem depois.", uses:"Proposta, evidências e custo estimado", blocks:"Execução automática", produces:"Carteira-sombra e registro de decisão", rule:"<strong>Regra:</strong> resultados prospectivos ficam separados do backtest histórico." }
+  risk: { number:"05 · CONTROLE DE RISCO", title:"O Benevente 2 pode reduzir exposição durante o ano.", text:"A cesta fundamentalista não muda. Se drawdown ou volatilidade do Ibovespa cruzarem níveis predefinidos, parte da carteira migra temporariamente para CDI no pregão seguinte.", uses:"Ibovespa até o fechamento anterior", blocks:"Reação com informação futura", produces:"Exposição entre 35% e o peso anual", rule:"<strong>Status:</strong> extensão retrospectiva experimental; não é resultado prospectivo nem ação da LLM." },
+  review: { number:"06 · REVISÃO", title:"O resultado é uma proposta, não uma ordem.", text:"A instituição revisa tese, riscos, pesos e custos. Se decidir implementar, registra a operação e confere a nota de corretagem depois.", uses:"Proposta, evidências e custo estimado", blocks:"Execução automática", produces:"Carteira-sombra e registro de decisão", rule:"<strong>Regra:</strong> resultados prospectivos ficam separados do backtest histórico." }
 };
 
 let currentProfile = "moderado";
@@ -29,7 +30,7 @@ let chartZoom = 1;
 let chartFocus = null;
 let chartScale = "linear";
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
-const colors = { "Benevente":"#0f766e","Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490", "BOVA11":"#4a5560" };
+const colors = { "Benevente":"#0f766e", "Benevente 1":"#0f766e", "Benevente 2 · experimental":"#20a486", "Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490", "BOVA11":"#4a5560" };
 // Any string that reaches innerHTML has to be escaped, including strings the
 // user typed into the compare box and the name of a file they imported. Nothing
 // here is persisted or shared, so the exposure is to the person's own browser
@@ -53,7 +54,8 @@ function annualCurve(period) {
   // now an independent optimisation over the eligible universe, and the market
   // references come from the run itself instead of a separately aligned blob.
   const tracks = {
-    "Benevente Quant AI": "net_return",
+    "Benevente 1": "net_return",
+    "Benevente 2 · experimental": "benevente2_return",
     "MVO de referência": "mvo_eligible_net_return",
     "CDI": "cdi_net_return",
     "Ibovespa": "benchmark_IBOVESPA",
@@ -566,6 +568,7 @@ function renderComparison(period) {
   const winsAgainst = (column, strategyColumn = "net_return") =>
     rows.filter(item => Number(item[strategyColumn]) > Number(item[column])).length;
   const benevente = statsFor("net_return");
+  const benevente2 = statsFor("benevente2_return");
   const mvo = statsFor("mvo_eligible_net_return");
   const cdi = statsFor("cdi_net_return");
   const afterTax = statsFor("net_return_after_tax");
@@ -577,18 +580,21 @@ function renderComparison(period) {
   const winMarket = ibovespa ? winsAgainst("benchmark_IBOVESPA") : null;
   const start = rows[0].decision_date, end = rows.at(-1).holding_end_exclusive;
   const versusCdi = benevente.cumulative - cdi.cumulative, versusMvo = benevente.cumulative - mvo.cumulative;
-  document.querySelector("#period-description").textContent = `Janela avaliada: ${formatDateBr(start)} a ${formatDateBr(end)}, ${rows.length} ano(s), uma decisão por ano, com custos e imposto deduzidos. O gráfico desenha também os anos anteriores, que escolheram a configuração e não entram em nenhuma métrica.`;
+  document.querySelector("#period-description").textContent = `Janela avaliada: ${formatDateBr(start)} a ${formatDateBr(end)}, ${rows.length} ano(s), com custos modelados. O imposto aparece separado; o Benevente 2 ainda não possui modelo tributário intranual.`;
   const marketPhrase = winMarket === null ? "" : ` Contra o Ibovespa, venceu ${winMarket} de ${rows.length}.`;
   // A percentage is easy to nod at and hard to feel. The same number said in
   // reais is what a reader actually compares against the fund they already own,
   // so it travels beside every series instead of only in the headline.
-  document.querySelector("#comparison-summary").textContent = `Benevente ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
+  document.querySelector("#comparison-summary").textContent = benevente2
+    ? `Benevente 2 ${plainPct(benevente2.cumulative)} acumulado; Benevente 1 ${plainPct(benevente.cumulative)}. A melhoria principal foi reduzir risco, não provar retorno adicional.`
+    : `Benevente 1 ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
   // Gross of tax, like every fund factsheet, so these rows can sit beside a peer
   // without an adjustment nobody else applies. BOVA11 tracked the Ibovespa to
   // within two hundredths of a point a year, so showing both spent a line to
   // say the same thing twice.
   const baseRows = [
-    ["Benevente", benevente, "Carteira publicada"],
+    ["Benevente 1", benevente, "Regra anual publicada"],
+    benevente2 ? ["Benevente 2", benevente2, "Controle de risco experimental"] : null,
     ["MVO de referência", mvo, "Otimização neutra independente"],
     ["CDI", cdi, "Rendimento do caixa"],
     ibovespa ? ["Ibovespa", ibovespa, "Índice de retorno total da B3"] : null,
@@ -601,8 +607,25 @@ function renderComparison(period) {
   }).filter(Boolean);
   document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${escapeHtml(name)}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td>${escapeHtml(note)}</td></tr>`).join("");
   const marketNote = ibovespa ? ` Contra o Ibovespa, ${pct(benevente.cumulative - ibovespa.cumulative)}.` : "";
-  document.querySelector("#research-note").textContent = `Janela de ${rows.length} ano(s): diferença para o CDI ${pct(versusCdi)} e para o MVO de referência ${pct(versusMvo)}.${marketNote} O MVO de referência é uma otimização independente sobre o mesmo universo elegível, não uma cópia da carteira. Período usado para desenvolver a regra: não é teste fora da amostra.`;
+  document.querySelector("#research-note").textContent = `Benevente 1: diferença para o CDI ${pct(versusCdi)} e para o MVO ${pct(versusMvo)}.${marketNote} O Benevente 2 preserva a seleção anual e altera somente a exposição. Foi concebido depois da Covid e não é validação prospectiva.`;
   renderCurveToggles(period); renderLineChart(period); renderWealthCards(period);
+}
+
+function renderBenevente2Panel() {
+  const experiment = researchData?.meta?.benevente2;
+  const panel = document.querySelector("#benevente2-panel");
+  if (!experiment || !panel) return;
+  const b1 = experiment.full_period_metrics?.["Benevente 1"];
+  const b2 = experiment.training_only_selection?.full_period_metrics;
+  const covid = experiment.covid_2020_trace_for_training_selected_candidate;
+  if (!b1 || !b2 || !covid) return;
+  panel.querySelector("[data-b2='cagr']").textContent = plainPct(b2.cagr);
+  panel.querySelector("[data-b2='drawdown']").textContent = plainPct(b2.max_drawdown);
+  panel.querySelector("[data-b2='volatility']").textContent = plainPct(b2.annual_volatility);
+  panel.querySelector("[data-b2='covid']").textContent = plainPct(covid.annual_returns["Benevente 2"]);
+  panel.querySelector("[data-b1='cagr']").textContent = plainPct(b1.cagr);
+  panel.querySelector("[data-b1='drawdown']").textContent = plainPct(b1.max_drawdown);
+  panel.classList.remove("hidden");
 }
 let currentPeriod = "11";
 document.querySelectorAll(".period:not(.unavailable)").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".period").forEach(item=>item.classList.remove("active"));button.classList.add("active");selectedCurves=new Set();chartZoom=1;chartFocus=null;currentPeriod=button.dataset.period;renderComparison(currentPeriod)}));
@@ -715,5 +738,5 @@ Promise.all([fetch("./annual_research.json"), fetch("./fund_presets.json")]).the
   if (!research.ok || !fundPresets.ok) throw new Error("research unavailable");
   researchData = await research.json(); fundPresetsData = await fundPresets.json();
   extraSeries[1] = {}; extraSeries[2] = {}; extraSeries[3] = {}; extraSeries[5] = {}; extraSeries[11] = {};
-  refreshDecisionStudio();
+  refreshDecisionStudio(); renderBenevente2Panel();
 }).catch(() => { document.querySelector("#line-chart-caption").textContent = "Arquivos de pesquisa indisponíveis nesta cópia. Consulte o ambiente local para reproduzir a análise."; document.querySelector("#research-status").textContent = "Dados de pesquisa indisponíveis."; });

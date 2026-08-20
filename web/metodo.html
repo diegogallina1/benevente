@@ -58,18 +58,30 @@
       <p>Três quantidades são publicadas junto de qualquer resultado: o desfecho aninhado, o vencedor da amostra inteira, e a diferença entre os dois. Essa diferença é o <b>prêmio de retrospectiva</b>, hoje em <b>0,65 ponto percentual ao ano</b>. Ela mede exatamente o que um concorrente ganharia publicando o vencedor da busca como se fosse resultado obtenível. Com um ano a menos de treino esse prêmio era de 4,98 pontos.</p>
       <p>Com 36 tentativas, o Sharpe da vencedora é enviesado para cima pela própria busca, e por isso é deflacionado: Sharpe observado de 0,933 contra um máximo esperado sob a hipótese nula de 0,355, resultando em <b>Sharpe deflacionado de 0,986</b>, significante a 95%.</p>
 
-      <h2>5 · O que foi tentado e não funcionou</h2>
+      <h2>5 · Benevente 1 e Benevente 2</h2>
+      <p><b>Benevente 1</b> é a estratégia anual publicada. Ela seleciona a cesta com fundamentos, preço e liquidez disponíveis na revisão e mantém os ativos até o ciclo seguinte. <b>Benevente 2</b> é uma extensão experimental: conserva a mesma cesta, mas reduz temporariamente a exposição a ações quando a queda e a volatilidade do Ibovespa, medidas até o fechamento anterior, atingem estados de alerta.</p>
+      <table class="paper-table">
+        <thead><tr><th>Versão</th><th>CAGR 2015–2025</th><th>Queda máxima</th><th>CAGR 2019–2025</th></tr></thead>
+        <tbody>
+          <tr><td>Benevente 1</td><td class="num">17,86%</td><td class="num">−47,8%</td><td class="num">17,95%</td></tr>
+          <tr class="highlight"><td>Benevente 2 · experimental</td><td class="num">18,45%</td><td class="num">−28,7%</td><td class="num">18,03%</td></tr>
+        </tbody>
+      </table>
+      <p>Os parâmetros do Benevente 2 foram escolhidos em 2015–2018. Em 2019–2025, a diferença anual de retorno entre as versões não foi significativa (p = 0,964). Numa grade de 432 configurações, todas reduziram a queda máxima e apenas 9,03% melhoraram ao mesmo tempo retorno e queda. A evidência é de <b>proteção contra perdas extremas</b>, não de alfa adicional.</p>
+      <div class="paper-callout warn"><b>O que o teste não afirma</b>A LLM não leu notícias, não previu a Covid-19 e não mudou os ativos. O controle usa apenas preço e volatilidade já observados, com atraso de um pregão. O experimento foi concebido depois da pandemia e ainda não inclui o efeito tributário das vendas intranuais. Por isso é retrospectivo e experimental.</div>
+
+      <h2>6 · O que foi tentado e não funcionou</h2>
       <p>Cinco hipóteses foram testadas. Quatro não se sustentaram e a quinta produziu um ganho pequeno demais para ser afirmado. Aparecem aqui com o mesmo detalhe do resultado positivo.</p>
 
-      <h3>5.1 Prever o regime do ano</h3>
+      <h3>6.1 Prever o regime do ano</h3>
       <p><b>Como foi testado:</b> cinco indicadores disponíveis em janeiro, entre prêmio de lucro sobre o CDI, nível do CDI, retorno e volatilidade do mercado nos doze meses anteriores e distância do topo, foram usados para decidir se o ano seria de ações ou de caixa, ajustados em janela expansível.</p>
       <p><b>Resultado:</b> sobre 8 anos, o melhor preditor acertou 3 de 4 chamadas efetivas, com p de 0,31 contra cara-ou-coroa. O prêmio para quem acertasse todas era de 6,5 pontos percentuais ao ano. <b>Sem sinal, e sem poder estatístico para afirmar o contrário.</b></p>
 
-      <h3>5.2 Mudar a proporção entre ações e caixa com mais frequência</h3>
+      <h3>6.2 Mudar a proporção entre ações e caixa com mais frequência</h3>
       <p><b>Como foi testado:</b> para responder à objeção de poder, a mesma pergunta foi levada a 118 períodos mensais e 521 períodos semanais, com sete regras de alocação contínua em cada frequência, todas pré-declaradas e ajustadas walk-forward. Cada regra paga custo sobre o peso que move e, na variante após imposto, o imposto que o giro força a realizar.</p>
       <p><b>Resultado:</b> nenhuma das sete superou o peso estático de forma significante em nenhuma das duas frequências, e a de média-variância foi significativamente pior. O oráculo, que conhece o futuro, teria feito 72,8% ao ano no mensal e 137,1% no semanal contra 21,1% do estático. <b>O prêmio por acertar o tempo é enorme e nada que testamos o captura.</b></p>
 
-      <h3>5.3 Reselecionar a cesta com mais frequência</h3>
+      <h3>6.3 Reselecionar a cesta com mais frequência</h3>
       <p><b>Como foi testado:</b> pergunta diferente da anterior. Não a proporção, mas a própria cesta, retriada, reordenada e reotimizada. A regra, os limites, o universo e o painel foram mantidos idênticos; só as datas de decisão mudaram. Para isso o motor ganhou cadência configurável, e a porta de evidência passou a ler o universo datado mais recente até a data da decisão em vez de exigir coincidência exata, que descartava silenciosamente toda decisão fora de janeiro. O caminho anual publicado foi conferido contra o artefato existente e reproduz com diferença zero.</p>
       <table class="paper-table">
         <thead><tr><th>Cadência</th><th>Decisões</th><th>CAGR bruto</th><th>Após IR</th><th>Giro no ano</th></tr></thead>
@@ -82,7 +94,7 @@
       <p><b>Resultado:</b> pareando por ano-calendário e já após imposto, a trimestral fica 1,55 ponto abaixo da anual ao ano, com p de 0,376, e a mensal 3,27 pontos abaixo, com p de 0,306. Com onze anos pareados não dá para afirmar que atrapalha; dá para afirmar que <b>não há evidência de que ajude</b>.</p>
       <div class="paper-callout warn"><b>O motivo não é o que se imagina</b>A perda está no retorno bruto, que cai 4,66 pontos de anual para mensal antes de qualquer dedução. O custo de execução sobe só 0,08 ponto ao ano e o imposto modelado até diminui, porque cada revisão mensal realiza uma fatia menor do livro. Reordenar a cesta todo mês piora a escolha antes de encarecer a operação, porque qualidade, valor e momento se movem em horizonte anual e o giro desfaz posições antes da tese se realizar. Registramos que o modelo tributário subestima a conta do braço mensal, já que cobra imposto sobre o ganho do próprio período e não sobre o ganho acumulado da posição vendida. O viés favorece quem perdeu.</div>
 
-      <h3>5.4 Manter o que continua bom, em vez de refazer a cesta</h3>
+      <h3>6.4 Manter o que continua bom, em vez de refazer a cesta</h3>
       <p><b>Como foi testado:</b> a regra publicada faz um corte duro no topo do ranking, então um papel que continua excelente mas escorrega uma posição é vendido inteiro. Isso explica o giro: ao longo de onze anos a carteira reteve apenas 36% dos nomes de um ano para o outro, e 21 dos 35 papéis que passaram por ela ficaram um único ano. Introduzimos uma folga de permanência: o incumbente é mantido enquanto seguir elegível e dentro do topo N mais a folga, e as vagas restantes são preenchidas pelo topo do ranking. Folga zero é a regra publicada. A folga entrou no mesmo protocolo aninhado que escolhe todo o resto, então ela não é um parâmetro ajustado sobre a janela avaliada.</p>
       <table class="paper-table">
         <thead><tr><th>Folga</th><th>CAGR</th><th>Sharpe do excesso</th><th>Retenção</th><th>Papéis de 1 ano</th></tr></thead>
@@ -98,7 +110,7 @@
       <p><b>Resultado:</b> uma folga pequena ajuda e uma folga grande atrapalha, que é o formato esperado se o fator carrega informação real porém decrescente. Contra o corte duro, a folga de 1 ganha 0,33 ponto percentual ao ano com p de 0,138, e a de 2 ganha 0,18 ponto com p de 0,118. Nenhuma das duas passa no teste. O protocolo aninhado, recebendo a folga como mais uma escolha, converge para 1 a partir de 2017 e rende 18,61%, ganho de 0,10 ponto ao ano sobre a regra publicada.</p>
       <div class="paper-callout"><b>É resultado de estabilidade, não de retorno</b>A diferença de retorno não está estabelecida. A mudança na carteira está: a retenção sobe de 36% para 42% e os papéis de um único ano caem de 21 para 16. O valor disso aparece fora da série de retorno, em menos idas e vindas, em diferimento maior do ganho realizado, e numa carteira que o assessor consegue explicar sem justificar por que a tese do ano passado foi abandonada. Adotar a folga se justifica por esses motivos, não pelos 0,33 ponto.</div>
 
-      <h3>5.4 Usar um modelo de linguagem como fonte de retorno</h3>
+      <h3>6.5 Usar um modelo de linguagem como fonte de retorno</h3>
       <p><b>Como foi testado:</b> quatro braços sobre 13 anos, mesmo universo elegível. <i>Nomeado</i>, em que o modelo vê os nomes das empresas e devolve um escore limitado que inclina o retorno esperado dentro do otimizador. <i>Anonimizado</i>, idêntico mas com as empresas identificadas apenas por números. <i>Determinístico</i>, controle sem modelo, ordenando pelo escore de fator pré-declarado. <i>Monolítico</i>, o contrafactual em que o modelo devolve pesos direto, sem otimizador e sem restrições.</p>
       <table class="paper-table">
         <thead><tr><th>Comparação</th><th>Diferença anual</th><th>p</th></tr></thead>
@@ -110,7 +122,7 @@
       </table>
       <p><b>Resultado:</b> três nulos. Não há evidência de contaminação temporal, que era a objeção mais séria a qualquer uso de modelo de linguagem em backtest histórico. O modelo não agrega retorno: reproduz o ranqueamento determinístico em vez de acrescentar julgamento. E manter o modelo longe dos pesos não custa desempenho. O braço monolítico, que recebeu a caneta, não estourou nenhum teto, mas devolveu carteiras que não somavam um em 5 dos 13 anos, variando de 0,92 a 1,017, e omitiu 65 e 83 ativos elegíveis em 2021 e 2022. O otimizador não é cerimônia porque impede violação de limite; é porque garante uma alocação aritmeticamente válida sem precisar de conserto. <b>O modelo se justifica por organizar e explicar decisões, não por gerá-las.</b></p>
 
-      <h2>6 · Defeitos encontrados na própria auditoria</h2>
+      <h2>7 · Defeitos encontrados na própria auditoria</h2>
       <p>Sete defeitos foram encontrados e corrigidos. Todos inflavam o resultado.</p>
       <table class="paper-table">
         <thead><tr><th>Defeito</th><th>Efeito</th><th>Correção</th></tr></thead>
@@ -126,13 +138,13 @@
       </table>
       <p>Depois da última correção o CAGR publicado caiu e a queda máxima subiu de 30,4% para 47,8%. O número foi publicado assim mesmo.</p>
 
-      <h2>7 · Como é rodado</h2>
+      <h2>8 · Como é rodado</h2>
       <p>Cada etapa é um programa próprio, com entradas e saídas em arquivo, e cada saída carrega o SHA-256 do arquivo que a gerou. A ordem é: construir o universo datado da B3, construir a ponte B3/CVM, extrair os fundamentos com data de recebimento, montar o painel de retorno total com detecção de eventos societários, montar as referências de mercado, rodar a busca aninhada sobre as 36 configurações, costurar a série publicada a partir da configuração que cada ano escolheu, e gerar a evidência de auditoria e o pacote do site.</p>
       <p><a class="text-link" href="./research_manifest.json">Baixar o manifesto de reprodução com hashes SHA-256 →</a></p>
       <p>O registro pré-especificado é emitido no fim, carrega o hash de cada entrada e da própria configuração, e é versionado no repositório para que a data fique carimbada por terceiro. Um registro que exista só no disco de quem o escreveu não demonstra anterioridade nenhuma. Um portão de segurança estático e ao vivo roda antes e depois de cada publicação, e sai com código diferente de zero quando algo regride.</p>
       <p>Os coeficientes do escore, os limiares da tela, as constantes de aversão a risco e a grade de configurações não são publicados. Estão registrados de forma verificável pelo hash, de modo que a anterioridade é demonstrável sem que a implementação seja replicável por leitura. É uma escolha deliberada e está declarada aqui para que se saiba exatamente o que está e o que não está divulgado.</p>
 
-      <h2>8 · Limitações</h2>
+      <h2>9 · Limitações</h2>
       <ul>
         <li>A janela avaliada é a mesma que serviu para desenvolver a regra. Onze anos avaliados não são onze anos de validação prospectiva.</li>
         <li>O detector de eventos societários tem recall de 23,3%. Proventos, JCP e eventos de papéis deslistados ainda exigem reconciliação contra registro primário da B3 ou da CVM.</li>
@@ -140,6 +152,7 @@
         <li>A queda máxima chegou a 47,8% em base diária. Nenhuma suitability razoável coloca um cliente conservador nessa carteira.</li>
         <li>Onze observações anuais são poucas. O Sharpe deflacionado corrige o viés de busca, não o tamanho da amostra.</li>
         <li>Uso comercial exige licença de dados, enquadramento regulatório, suitability e aprovação formal. Nada disso existe hoje.</li>
+        <li>O Benevente 2 foi concebido depois da Covid-19, ainda não tem validação prospectiva e não modela o imposto das vendas intranuais.</li>
       </ul>
 
       <p><a class="text-link" href="./#estagio">Em que estágio o projeto está →</a></p>

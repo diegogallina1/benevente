@@ -38,7 +38,7 @@
           <p class="lede">Quem recomenda carteira precisa responder, meses depois: quais dados existiam na data, qual regra foi aplicada e quem aprovou. O Benevente é uma tentativa de responder as três antes da pergunta ser feita. Onze decisões anuais foram tomadas em janeiro, congeladas, e só depois tiveram o resultado apurado.</p>
           <ul class="hero-answers">
             <li><b>O que é</b> O Benevente Quant AI pesquisa a regra de carteira. O Benevente Wealth System registra, explica e governa cada decisão.</li>
-            <li><b>O que mostra</b> O resultado de 2015 a 2025 contra CDI, Ibovespa e uma otimização neutra, com custos e imposto descontados.</li>
+            <li><b>O que mostra</b> O Benevente 1 anual e o Benevente 2 com controle de risco, comparados com CDI, Ibovespa e uma otimização neutra.</li>
             <li><b>Em que estágio está</b> Pesquisa. Não é produto, não é oferta e não transmite ordem. O que existe hoje é o método, a evidência e o registro.</li>
           </ul>
           <div class="hero-actions">
@@ -65,7 +65,8 @@
               <button class="model-step" type="button" data-step="data"><span>02</span><b>Dados</b><small>Data e fonte importam</small></button>
               <button class="model-step" type="button" data-step="screen"><span>03</span><b>Filtro</b><small>Reprova antes de selecionar</small></button>
               <button class="model-step" type="button" data-step="optimizer"><span>04</span><b>Seleção e pesos</b><small>Aplica fatores e configuração anual</small></button>
-              <button class="model-step" type="button" data-step="review"><span>05</span><b>Revisão humana</b><small>Não há ordem automática</small></button>
+              <button class="model-step" type="button" data-step="risk"><span>05</span><b>Controle de risco</b><small>Extensão experimental</small></button>
+              <button class="model-step" type="button" data-step="review"><span>06</span><b>Revisão humana</b><small>Não há ordem automática</small></button>
             </div>
             <article class="model-detail" id="model-detail" aria-live="polite"></article>
           </div>
@@ -84,7 +85,7 @@
       <section class="comparison shell" id="resultado">
         <div class="comparison-head">
           <div><p class="eyebrow"><span></span> Resultado auditado</p><h2>O que a regra rendeu,<br /><em>e o que isso custou.</em></h2></div>
-          <p>A mesma regra anual, com custos e imposto descontados. Escolha a janela e compare com o que quiser: uma ação, um ETF ou um fundo.</p>
+          <p>Compare a regra anual com a extensão de risco, sempre na mesma janela e antes do imposto. Adicione uma ação, ETF ou fundo se quiser.</p>
         </div>
         <div class="comparison-card">
           <div class="comparison-controls">
@@ -107,6 +108,10 @@
           <div id="wealth-cards" aria-live="polite"></div>
         </div>
         <p class="research-note" id="research-note">Leitura correta: esta é uma hipótese de pesquisa. A página calcula janelas com o arquivo anual auditado e não declara superioridade consistente se ela não estiver presente.</p>
+        <section class="version-panel hidden" id="benevente2-panel" aria-label="Comparação entre Benevente 1 e Benevente 2">
+          <div class="version-copy"><span class="control-label">EXTENSÃO EXPERIMENTAL</span><h3>Mesmos ativos. Menos exposição quando o mercado entra em estresse.</h3><p>O Benevente 2 mantém a cesta fundamentalista do Benevente 1. Drawdown e volatilidade observados no fechamento anterior podem deslocar parte da carteira para CDI no pregão seguinte. A configuração foi escolhida com 2015–2018; 2019–2025 foi lido sem recalibrar a Covid.</p><small>Não há modelo tributário intranual nem validação prospectiva. A LLM não produziu os sinais.</small></div>
+          <div class="version-metrics"><div><span>Benevente 2</span><strong data-b2="cagr">—</strong><small>CAGR · Benevente 1: <b data-b1="cagr">—</b></small></div><div><span>Queda máxima</span><strong data-b2="drawdown">—</strong><small>Benevente 1: <b data-b1="drawdown">—</b></small></div><div><span>Volatilidade</span><strong data-b2="volatility">—</strong><small>anualizada</small></div><div><span>Retorno em 2020</span><strong data-b2="covid">—</strong><small>alerta em 28/02/2020</small></div></div>
+        </section>
         <div class="benchmark-panel candidate-disclosure"><div><span class="control-label">COMO LER</span><h3>CDI é o rendimento do caixa, a referência que qualquer carteira precisa superar para valer a pena. MVO de referência é uma carteira quantitativa neutra, montada sobre os mesmos ativos elegíveis sem nenhum palpite nosso. Ela mostra quanto da diferença vem da seleção e quanto viria de qualquer otimizador.</h3><p>Compare apenas a mesma janela. A base auditada cobre 2015–2025; 2026 ainda não é retorno anual fechado.</p></div><div class="benchmark-actions"><a class="button button-secondary" href="./quant-ai.html">Ver a evidência completa <span>→</span></a></div></div>
       </section>
 

@@ -212,6 +212,31 @@ uma promessa: a queda máxima diária foi de 47,8%, a janela foi usada no
 desenvolvimento e há somente onze observações anuais. O resultado após imposto
 é uma simulação tributária, não uma declaração individual.
 
+### Benevente 1 e Benevente 2
+
+**Benevente 1** é a série canônica publicada: escolhe a cesta uma vez por ano e
+mantém os ativos até a revisão seguinte. **Benevente 2** é uma extensão
+experimental que preserva a mesma cesta, mas reduz temporariamente a exposição
+a ações quando a queda e a volatilidade do Ibovespa, observadas até o fechamento
+anterior, entram em estado de alerta ou severo. A LLM não participa desse teste.
+
+Em 2015--2025, o Benevente 2 elevou o CAGR de 17,86% para 18,45% e reduziu a
+queda máxima diária de 47,8% para 28,7%. No recorte temporal de 2019--2025, a
+diferença de retorno foi pequena, 18,03% contra 17,95%, e não significativa
+(p = 0,964). Portanto, a evidência é de redução de risco de cauda, não de alfa
+adicional. O experimento cobra custo de giro, ainda não cobra o imposto gerado
+pelas vendas dentro do ano e foi concebido depois da Covid-19. Ele permanece
+retrospectivo e não substitui a série publicada.
+
+```powershell
+python benevente2_event_risk.py
+```
+
+Os parâmetros, a divisão temporal, a grade de 432 sensibilidades e os arquivos
+de saída estão documentados em
+[Benevente 1 versus Benevente 2](docs/benevente_1_vs_2_protocol.md) e
+[resultados do experimento](docs/benevente_2_experiment_results.md).
+
 O portal aberto da CVM disponibiliza DFP desde 2010 e ITR desde 2011. Portanto,
 um estudo fundamentalista de 20 anos iniciado em 2006 exige uma fonte adicional
 de fundamentos históricos e um universo de constituintes datado; o sistema não

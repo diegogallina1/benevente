@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-08-20T12:27:02+00:00",
+  "generated_at_utc": "2026-08-20T13:48:30+00:00",
   "status": "research_only",
   "names": {
     "academic": "Benevente Quant AI",
@@ -11,7 +11,8 @@
     "selection": "Fundamentalista multifatorial: qualidade, valor e momento, com liquidez e disponibilidade documental.",
     "allocation": "Regra quantitativa anual, com configuração escolhida apenas pelos anos já encerrados.",
     "llm": "Explica teses, riscos e perguntas de revisão; não seleciona ativos nem define pesos.",
-    "mvo": "Comparador quantitativo independente e alocador apenas nos braços experimentais."
+    "mvo": "Comparador quantitativo independente e alocador apenas nos braços experimentais.",
+    "benevente2": "Extensão experimental: preserva a cesta anual e reduz exposição após estresse observável no fechamento anterior."
   },
   "evaluation": {
     "decision_years": [
@@ -40,7 +41,11 @@
     "llm_named_cagr": 0.13004392696188094,
     "llm_anonymised_cagr": 0.12619921234298515,
     "deterministic_cagr": 0.12668245698371816,
-    "llm_added_value_p_value": 0.988568943566898
+    "llm_added_value_p_value": 0.988568943566898,
+    "benevente2_candidate_cagr": 0.18446223898599223,
+    "benevente2_candidate_max_drawdown": -0.28745686793003866,
+    "benevente2_holdout_cagr": 0.18032880426354048,
+    "benevente2_paired_p_value": 0.9642115838783171
   },
   "coverage": {
     "price_tickers": 497,
@@ -110,6 +115,26 @@
       "path": "artifacts/llm_contamination/constraint_audit.csv",
       "bytes": 779,
       "sha256": "19a7d00e407543080378ec6683782b62f1f52266a0ed8c0671d5b3250609c0f2"
+    },
+    {
+      "path": "artifacts/benevente2_event_risk/summary.json",
+      "bytes": 6190,
+      "sha256": "64aed4383e65e0da82dadcff113f3b699123be738213632a3c9dd99d3f621173"
+    },
+    {
+      "path": "artifacts/benevente2_event_risk/candidate_annual_comparison.csv",
+      "bytes": 1503,
+      "sha256": "5c6e4558bf7534400f01d95876096b0e3aae0bfc706f75ad66fe8580f06831f9"
+    },
+    {
+      "path": "artifacts/benevente2_event_risk/candidate_daily_comparison.csv",
+      "bytes": 1148254,
+      "sha256": "eb8c9d6e5354b1a940ec389675205827cb1566d9922b81eea010b769b3e7d759"
+    },
+    {
+      "path": "artifacts/benevente2_event_risk/sensitivity_grid.csv",
+      "bytes": 95826,
+      "sha256": "507a6eebfd6e4f909f19c4495ad5b3dc223c19bce19747f1041a496ad29280a1"
     },
     {
       "path": "data/prices_b3_total_return_full_2011_2025.csv",

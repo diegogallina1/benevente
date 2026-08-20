@@ -1,0 +1,169 @@
+{
+  "status": "retrospective_experiment_not_published",
+  "version_contract": {
+    "Benevente 1": "Seleção multifatorial anual publicada, sem camada intranual.",
+    "Benevente 2": "Mesma seleção anual, com redução de risco baseada em Ibovespa observável no fechamento anterior."
+  },
+  "central_configuration_fixed_before_run": {
+    "alert_drawdown": 0.1,
+    "severe_drawdown": 0.2,
+    "alert_volatility": 0.3,
+    "severe_volatility": 0.5,
+    "alert_equity_cap": 0.55,
+    "severe_equity_cap": 0.25,
+    "recovery_days": 10,
+    "cost_bps": 10.0,
+    "volatility_window": 20,
+    "peak_window": 126
+  },
+  "period": [
+    "2015-01-05",
+    "2025-12-30"
+  ],
+  "holdout_label": "2019–2025 é apenas uma separação temporal retrospectiva; não é validação prospectiva.",
+  "full_period_metrics": {
+    "Benevente 1": {
+      "cumulative_return": 5.098321826975435,
+      "cagr": 0.1786442942659776,
+      "annual_volatility": 0.22931773685902287,
+      "sharpe_excess_cdi": 0.43833162552133936,
+      "max_drawdown": -0.47784912800289203
+    },
+    "Benevente 2": {
+      "cumulative_return": 4.198913608562416,
+      "cagr": 0.16167050770714342,
+      "annual_volatility": 0.1763695429151316,
+      "sharpe_excess_cdi": 0.42354387714664304,
+      "max_drawdown": -0.2749618635436276,
+      "overlay_turnover": 15.59999999630476,
+      "overlay_cost_rate_sum": 0.01559999999630476
+    },
+    "CDI": {
+      "cumulative_return": 1.7436789940148718,
+      "cagr": 0.09609571930908367,
+      "annual_volatility": 0.0024683268214287374,
+      "sharpe_excess_cdi": 0.0,
+      "max_drawdown": 0.0
+    },
+    "MVO": {
+      "cumulative_return": 1.2925501564588853,
+      "cagr": 0.07834134942607629,
+      "annual_volatility": 0.26263846356573584,
+      "sharpe_excess_cdi": 0.06972611169122028,
+      "max_drawdown": -0.6114657297043742
+    },
+    "Ibovespa": {
+      "cumulative_return": 2.400677479819304,
+      "cagr": 0.11769711878033418,
+      "annual_volatility": 0.23331455561775208,
+      "sharpe_excess_cdi": 0.20257053180387358,
+      "max_drawdown": -0.4695421726010862
+    }
+  },
+  "holdout_2019_2025_metrics": {
+    "Benevente 1": {
+      "cumulative_return": 2.175460983201671,
+      "cagr": 0.17946941331712196,
+      "annual_volatility": 0.24493667476813671,
+      "sharpe_excess_cdi": 0.4541308815922278,
+      "max_drawdown": -0.47784912800289203
+    },
+    "Benevente 2": {
+      "cumulative_return": 1.7295385299662103,
+      "cagr": 0.15424622089793205,
+      "annual_volatility": 0.17737934401377717,
+      "sharpe_excess_cdi": 0.4198654408487222,
+      "max_drawdown": -0.2629906258128696
+    }
+  },
+  "training_only_selection": {
+    "training_window": "2015–2018",
+    "selection_score": "CAGR + 0,25 × drawdown máximo (drawdown é negativo)",
+    "configuration": {
+      "alert_drawdown": 0.12,
+      "severe_drawdown": 0.22,
+      "alert_volatility": 0.4,
+      "severe_volatility": 0.6000000000000001,
+      "alert_equity_cap": 0.5,
+      "severe_equity_cap": 0.35,
+      "recovery_days": 10,
+      "cost_bps": 10.0,
+      "volatility_window": 20,
+      "peak_window": 126
+    },
+    "full_period_metrics": {
+      "cumulative_return": 5.4377397824180465,
+      "cagr": 0.18446223898599223,
+      "annual_volatility": 0.18576464173158075,
+      "sharpe_excess_cdi": 0.5176564293458881,
+      "max_drawdown": -0.28745686793003866
+    },
+    "holdout_2019_2025_metrics": {
+      "cumulative_return": 2.1916924714144823,
+      "cagr": 0.18032880426354048,
+      "annual_volatility": 0.1865393957230186,
+      "sharpe_excess_cdi": 0.5299611701845935,
+      "max_drawdown": -0.28745686793003866
+    },
+    "paired_annual_test_2019_2025": {
+      "years": 7,
+      "mean_difference": -0.0005987916050609808,
+      "t_statistic": -0.04677367882429692,
+      "p_value": 0.9642115838783171
+    },
+    "warning": "Quatro anos de treino são insuficientes para uma escolha estável."
+  },
+  "covid_2020_trace_for_training_selected_candidate": {
+    "first_alert_session": "2020-02-28",
+    "first_severe_session": "2020-03-10",
+    "minimum_equity_weight": 0.35,
+    "annual_returns": {
+      "Benevente 1": 0.01784200395303115,
+      "Benevente 2": 0.04350058756361097,
+      "Ibovespa": 0.006181845782765594
+    },
+    "maximum_drawdowns": {
+      "Benevente 1": -0.47784912800289225,
+      "Benevente 2": -0.28745686793003855,
+      "Ibovespa": -0.46815808784597224
+    },
+    "interpretation": "A camada não antecipou a pandemia; reagiu ao estresse de mercado conhecido no fechamento anterior."
+  },
+  "paired_annual_test_2019_2025": {
+    "years": 7,
+    "mean_difference": -0.02548434655945683,
+    "t_statistic": -2.170529541340708,
+    "p_value": 0.0730086041745045
+  },
+  "sensitivity_grid": {
+    "configurations": 432,
+    "share_improving_cagr_vs_benevente1_holdout": 0.09027777777777778,
+    "share_improving_drawdown_vs_benevente1_holdout": 1.0,
+    "share_improving_both": 0.09027777777777778,
+    "median_cagr": 0.16861985899398135,
+    "median_max_drawdown": -0.2679988796612103,
+    "hindsight_best_cagr": {
+      "configuration": {
+        "alert_drawdown": 0.15,
+        "severe_drawdown": 0.25,
+        "alert_volatility": 0.35,
+        "severe_volatility": 0.55,
+        "alert_equity_cap": 0.5,
+        "severe_equity_cap": 0.35,
+        "recovery_days": 20,
+        "cost_bps": 10.0,
+        "volatility_window": 20,
+        "peak_window": 126
+      },
+      "cagr": 0.18779154027117606,
+      "max_drawdown": -0.2993295755084745,
+      "warning": "Diagnóstico retrospectivo; não é a configuração candidata."
+    }
+  },
+  "limitations": [
+    "A família de proteção foi concebida depois da Covid e carrega viés retrospectivo conceitual.",
+    "Não há arquivo histórico de notícias com horário de publicação; a LLM não participa deste teste.",
+    "Custos da camada são aproximação em pontos-base; imposto intranual ainda não foi modelado.",
+    "Somente sete anos entram na separação 2019–2025; o teste pareado tem baixa potência."
+  ]
+}
