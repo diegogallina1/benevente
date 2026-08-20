@@ -34,7 +34,7 @@ Números honestos do período, contra referências independentes, estão em
 
 - BTech 2026: fonte em `paper/fucape_btech_2026.md` e versões finais em
   `outputs/Benevente_Wealth_System_BTECH_Final.docx` e `.pdf`;
-- IEEE SSCI/CIFEr 2027: fonte em `paper/ieee_cifer_2027.tex` e versões finais em
+- IEEE CiFer 2027: fonte em `paper/ieee_cifer_2027.tex` e versões finais em
   `outputs/Benevente_Quant_AI_IEEE_Final.tex` e `.pdf`;
 - fonte única dos números em `artifacts/paper_release/paper_evidence.json`;
 - manifesto SHA-256 em `artifacts/paper_release/paper_release_manifest.json`;

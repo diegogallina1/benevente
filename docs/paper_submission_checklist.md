@@ -27,7 +27,12 @@ Antes de enviar, os autores devem confirmar no sistema do congresso:
 5. arquivo editável solicitado pela plataforma.
 6. restauração dos endereços públicos do sistema e do repositório somente na versão pós-aceite.
 
-## IEEE SSCI/CIFEr 2027
+## IEEE CiFer 2027
+
+Destino de submissão: **IEEE Symposium on Computational Intelligence for
+Financial Engineering and Economics (IEEE CiFer)**, realizado dentro do evento
+guarda-chuva IEEE SSCI 2027. No sistema, selecionar o simpósio CiFer, e não uma
+área genérica do SSCI.
 
 - Arquivo de avaliação anônimo em inglês.
 - Classe `IEEEtran`, conferência, corpo em 10 pontos e duas colunas.
@@ -40,7 +45,8 @@ Antes de enviar, os autores devem confirmar no sistema da IEEE:
 
 1. nomes, afiliações, correios e ORCID definitivos;
 2. conflitos de interesse;
-3. área CIFEr dentro do SSCI;
+3. simpósio IEEE CiFer — Computational Intelligence for Financial Engineering
+   and Economics — dentro do SSCI;
 4. arquivo suplementar anônimo;
 5. conformidade do PDF no IEEE PDF eXpress, quando o código da conferência estiver disponível;
 6. substituição do arquivo anônimo por versão de câmera com autoria apenas após o aceite.
