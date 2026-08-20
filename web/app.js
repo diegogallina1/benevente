@@ -78,7 +78,9 @@ function monthlyDataset(period) {
   const last = new Date(`${curve.dates.at(-1)}T12:00:00`);
   const cutoff = new Date(last);
   cutoff.setFullYear(cutoff.getFullYear() - years);
-  let start = curve.dates.findIndex(date => new Date(`${date}T12:00:00`) >= cutoff);
+  const evaluationStart = curve.evaluation_starts ? new Date(`${curve.evaluation_starts}T12:00:00`) : null;
+  const effectiveCutoff = evaluationStart && evaluationStart > cutoff ? evaluationStart : cutoff;
+  let start = curve.dates.findIndex(date => new Date(`${date}T12:00:00`) >= effectiveCutoff);
   if (start < 0) start = 0;
   if (curve.dates.length - start < 3) start = Math.max(0, curve.dates.length - 3);
   const dates = curve.dates.slice(start);

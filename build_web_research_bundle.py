@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 import pandas as pd
@@ -23,6 +24,23 @@ REASON_PT = {
 
 def _records(frame: pd.DataFrame) -> list[dict]:
     return json.loads(frame.to_json(orient="records", date_format="iso"))
+
+
+def _json_safe(value):
+    """Replace non-finite numbers before writing browser-facing JSON.
+
+    Python's JSON encoder emits ``NaN`` by default, although it is not valid
+    JSON and browsers reject the complete document.  Keeping this conversion
+    at the publication boundary prevents one sparse series from taking down
+    the chart, performance table and annual dossier together.
+    """
+    if isinstance(value, dict):
+        return {key: _json_safe(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_json_safe(item) for item in value]
+    if isinstance(value, float) and not math.isfinite(value):
+        return None
+    return value
 
 
 def _ibovespa_on_decision_dates(annual: pd.DataFrame, price_input: str | Path | None) -> dict | None:
@@ -124,7 +142,16 @@ def _monthly_curve(root: Path, benevente2_source: str | Path | None = None) -> d
     if benevente2_source:
         candidate_path = Path(benevente2_source) / "candidate_daily_comparison.csv"
         candidate = pd.read_csv(candidate_path, parse_dates=["date"]).set_index("date").sort_index()
-        daily["benevente2"] = candidate["benevente2"].reindex(daily.index)
+        # The candidate file reconciles its endpoints to the canonical annual
+        # returns. Use those reconciled paths for the three overlapping tracks
+        # so chart labels and the audited annual table close to the same value.
+        for source_column, target_column in {
+            "benevente1": "strategy",
+            "benevente2": "benevente2",
+            "cdi_rebased": "cdi",
+        }.items():
+            if source_column in candidate.columns:
+                daily[target_column] = candidate[source_column].reindex(daily.index).multiply(100)
     columns = [column for column in MONTHLY_SERIES_LABELS if column in daily.columns]
     if not columns:
         return None
@@ -132,9 +159,19 @@ def _monthly_curve(root: Path, benevente2_source: str | Path | None = None) -> d
     # Carry the true first observation so the curve starts at the decision date
     # rather than at the end of the first month.
     opening = daily[columns].iloc[[0]]
-    monthly = pd.concat([opening, monthly])
-    monthly = monthly[~monthly.index.duplicated(keep="first")]
-    base = monthly.iloc[0]
+    annual = pd.read_csv(root / "annual_results.csv")
+    evaluation_start = pd.to_datetime(annual.sort_values("decision_year").iloc[0].decision_date)
+    # A synthetic 100 baseline at the audited decision date is necessary: the
+    # first trading observation already contains a daily return. Rebasing on it
+    # silently drops that return and makes the chart disagree with the annual
+    # performance table.
+    evaluation_opening = pd.DataFrame([{column: 100.0 for column in columns}], index=[evaluation_start])
+    monthly = pd.concat([opening, monthly, evaluation_opening]).sort_index()
+    monthly = monthly[~monthly.index.duplicated(keep="last")]
+    # A newly added series may begin after the canonical daily book. Rebase
+    # each track on its own first valid observation instead of poisoning the
+    # whole track when the first row is missing.
+    base = monthly.apply(lambda series: series.dropna().iloc[0] if series.notna().any() else float("nan"))
     rebased = monthly.divide(base).multiply(100).round(4)
     payload = {
         "dates": [date.date().isoformat() for date in rebased.index],
@@ -146,12 +183,13 @@ def _monthly_curve(root: Path, benevente2_source: str | Path | None = None) -> d
         # The chart needs to know where the selection window ends, because the
         # curve before that date is the rule applied to the years that chose it.
         phases = daily.phase.reindex(monthly.index, method="ffill")
+        phases.loc[phases.index >= evaluation_start] = "evaluated"
         payload["phases"] = phases.fillna("evaluated").tolist()
         evaluated = daily.index[daily.phase.eq("evaluated")]
         if len(evaluated):
-            payload["evaluation_starts"] = evaluated.min().date().isoformat()
+            payload["evaluation_starts"] = evaluation_start.date().isoformat()
             payload["selection_note"] = (
-                "O trecho anterior a " + evaluated.min().date().isoformat() + " é a janela que escolheu a "
+                "O trecho anterior a " + evaluation_start.date().isoformat() + " é a janela que escolheu a "
                 "configuração. Ele aparece para dar contexto e não entra em nenhuma métrica publicada.")
     return payload
 
@@ -291,8 +329,12 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
         "holdings": _records(holdings),
         "transitions": _records(transitions),
     }
-    Path(destination).write_text(json.dumps(payload, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
-    return payload
+    safe_payload = _json_safe(payload)
+    Path(destination).write_text(
+        json.dumps(safe_payload, ensure_ascii=False, separators=(",", ":"), allow_nan=False),
+        encoding="utf-8",
+    )
+    return safe_payload
 
 
 def main() -> None:

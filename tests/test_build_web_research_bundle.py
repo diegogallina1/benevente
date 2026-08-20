@@ -91,3 +91,35 @@ def test_bundle_adds_benevente2_without_replacing_published_strategy(tmp_path: P
     assert result["annual"][0]["benevente2_return"] == .12
     assert result["meta"]["benevente2"]["status"] == "retrospective_experiment_not_published"
     assert "Benevente 2 · experimental" in result["monthly_curve"]["series"]
+
+
+def test_bundle_writes_strict_json_when_benevente2_starts_after_daily_book(tmp_path: Path):
+    source = tmp_path / "source"; source.mkdir()
+    pd.DataFrame([{"decision_year": 2025, "decision_date": "2025-01-02", "holding_end_exclusive": "2025-12-31", "net_return": .10}]).to_csv(source / "annual_results.csv", index=False)
+    pd.DataFrame([{"decision_year": 2025, "ticker": "AAAA3.SA", "decision_action": "entered"}]).to_csv(source / "annual_holdings.csv", index=False)
+    pd.DataFrame([{"decision_year": 2025, "ticker": "AAAA3.SA", "decision_action": "entered", "reason": "entered_after_point_in_time_screen"}]).to_csv(source / "annual_transitions.csv", index=False)
+    (source / "protocol.json").write_text('{"factor":"nested_configuration_selection"}', encoding="utf-8")
+    pd.DataFrame([
+        {"date": "2025-01-02", "strategy": 100, "cdi": 100, "phase": "evaluated"},
+        {"date": "2025-01-03", "strategy": 100.2, "cdi": 100.1, "phase": "evaluated"},
+        {"date": "2025-01-31", "strategy": 101, "cdi": 101, "phase": "evaluated"},
+        {"date": "2025-12-31", "strategy": 110, "cdi": 106, "phase": "evaluated"},
+    ]).to_csv(source / "daily_curve.csv", index=False)
+    b2 = tmp_path / "b2"; b2.mkdir()
+    pd.DataFrame([{"year": 2025, "Benevente 2": .12}]).to_csv(b2 / "candidate_annual_comparison.csv", index=False)
+    pd.DataFrame([
+        {"date": "2025-01-03", "benevente2": 1.0},
+        {"date": "2025-12-31", "benevente2": 1.12},
+    ]).to_csv(b2 / "candidate_daily_comparison.csv", index=False)
+    (b2 / "summary.json").write_text('{"status":"retrospective_experiment_not_published"}', encoding="utf-8")
+
+    destination = tmp_path / "out.json"
+    result = build_web_research_bundle(source, destination, benevente2_source=b2)
+    parsed = json.loads(destination.read_text(encoding="utf-8"))
+
+    values = parsed["monthly_curve"]["series"]["Benevente 2 · experimental"]
+    assert parsed["monthly_curve"]["evaluation_starts"] == "2025-01-02"
+    assert values[0] == 100.0
+    assert values[-1] == 112.0
+    assert "NaN" not in destination.read_text(encoding="utf-8")
+    assert result == parsed
