@@ -1,0 +1,20 @@
+{
+  "status": "retrospective_sensitivity_not_prospective_validation",
+  "bootstrap": {
+    "method": "paired non-parametric resampling of complete calendar-year return vectors",
+    "samples": 100000,
+    "seed": 20260820,
+    "years": 11,
+    "warning": "Resampling measures internal stability only; it does not create new regimes, repair source data, or constitute an out-of-sample test."
+  },
+  "data_quality": {
+    "selected_equity_weight_with_imputed_distribution_share": 0.13944746254528478,
+    "maximum_total_portfolio_weight_on_imputed_series": 0.5,
+    "maximum_year": 2020,
+    "interpretation": "The headline historical return must remain diagnostic until primary corporate-action and distribution records are reconciled."
+  },
+  "inputs": {
+    "artifacts\\configuration_search_2012\\nested_selection_annual.csv": "1b5468d710c3774cde72ee3a22c9b292ee7e599c8084f3cfd3205d827030327a",
+    "artifacts\\b3_total_return_full_coverage_2011.csv": "b4947c8cc2c43a8c30a799465f835657a4cf4571987d25c05963c5167e6264a2"
+  }
+}

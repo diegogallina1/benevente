@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUTS = ROOT / "outputs"
 BTECH_SOURCE = ROOT / "paper" / "fucape_btech_2026.md"
 BTECH_TEMPLATE = ROOT / "paper" / "templates" / "BTECH_2026_official.docx"
+BTECH_ARCHITECTURE = ROOT / "paper" / "assets" / "btech_architecture.png"
 BTECH_OUTPUT = OUTPUTS / "Benevente_Wealth_System_BTECH_Final.docx"
 IEEE_SOURCE = ROOT / "paper" / "ieee_cifer_2027.tex"
 IEEE_OUTPUT = OUTPUTS / "Benevente_Quant_AI_IEEE_Final.tex"
@@ -75,12 +76,14 @@ def sanitize_core_properties(path: Path) -> None:
 
 TABLE_TITLES = (
     "Camadas do artefato e respectivas saídas auditáveis",
-    "Desempenho da carteira publicada e dos comparadores entre 2015 e 2025",
-    "Desempenho e risco do Benevente 1 e do Benevente 2",
+    "Diagnóstico retrospectivo da carteira e dos comparadores entre 2015 e 2025",
+    "Exposição anual a séries com proventos imputados",
+    "Incerteza do excesso de retorno em reamostragem pareada",
     "Estatísticas de correção por múltiplas tentativas",
     "Desempenho por cadência de reseleção da carteira",
     "Comparações do experimento com modelo de linguagem",
     "Defeitos identificados na auditoria interna e respectivas correções",
+    "Matriz de afirmações, evidências e situação",
 )
 
 
@@ -251,11 +254,48 @@ def add_table(document: Document, lines: list[str], table_number: int) -> None:
         item.font.name = "Times New Roman"; item.font.size = Pt(8)
 
 
+def add_figure(document: Document, figure_number: int) -> None:
+    if not BTECH_ARCHITECTURE.exists():
+        raise FileNotFoundError(f"Missing architecture figure: {BTECH_ARCHITECTURE}")
+    paragraph = document.add_paragraph()
+    paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    paragraph.paragraph_format.first_line_indent = Cm(0)
+    paragraph.paragraph_format.keep_with_next = True
+    paragraph.paragraph_format.space_before = Pt(6)
+    paragraph.paragraph_format.space_after = Pt(3)
+    shape = paragraph.add_run().add_picture(str(BTECH_ARCHITECTURE), width=Cm(15.5))
+    description = "Fluxo do Benevente: dados B3 e CVM passam por validação, seleção quantitativa, alocação e revisão humana; o modelo de linguagem apenas explica fatos aprovados; o dossiê reúne todo o registro."
+    shape._inline.docPr.set("descr", description)
+    shape._inline.docPr.set("title", "Arquitetura auditável do Benevente Wealth System")
+
+    number = document.add_paragraph()
+    number.paragraph_format.first_line_indent = Cm(0)
+    number.paragraph_format.keep_with_next = True
+    number.paragraph_format.space_after = Pt(0)
+    run = number.add_run(f"Figura {figure_number}"); run.bold = True
+    title = document.add_paragraph()
+    title.paragraph_format.first_line_indent = Cm(0)
+    title.paragraph_format.keep_with_next = True
+    title.paragraph_format.space_after = Pt(3)
+    run = title.add_run("Arquitetura e separação de responsabilidades do artefato"); run.italic = True
+    note = document.add_paragraph()
+    note.paragraph_format.first_line_indent = Cm(0)
+    note.paragraph_format.line_spacing = 1.0
+    note.paragraph_format.space_after = Pt(8)
+    label = note.add_run("Nota. "); label.italic = True
+    note.add_run("As setas indicam o fluxo de dados. Não existe caminho do modelo de linguagem para alterar pesos ou aprovar ordens.")
+    for item in (number, title, note):
+        for item_run in item.runs:
+            item_run.font.name = "Times New Roman"
+            item_run.font.size = Pt(8)
+
+
 def markdown_blocks(text: str):
     lines = text.splitlines(); index = 0
     while index < len(lines):
         line = lines[index].rstrip()
         if not line or line.strip() == "---": index += 1; continue
+        if line == "[[FIGURE:architecture]]": yield "figure", "architecture"; index += 1; continue
         if line.startswith("|") and index + 1 < len(lines) and re.match(r"^\|?\s*:?-+", lines[index + 1]):
             table = [line, lines[index + 1]]; index += 2
             while index < len(lines) and lines[index].startswith("|"):
@@ -304,10 +344,16 @@ def build_btech() -> None:
     decimal_number_id: int | None = None
     previous_kind: str | None = None
     table_number = 0
+    figure_number = 0
     for kind, content in markdown_blocks(BTECH_SOURCE.read_text(encoding="utf-8")):
         if kind == "table":
             table_number += 1
             add_table(document, content, table_number)
+            previous_kind = kind
+            continue
+        if kind == "figure":
+            figure_number += 1
+            add_figure(document, figure_number)
             previous_kind = kind
             continue
         if kind == "h1":
@@ -358,6 +404,8 @@ def build_btech() -> None:
         previous_kind = kind
     if table_number != len(TABLE_TITLES):
         raise ValueError(f"Expected {len(TABLE_TITLES)} BTech tables, found {table_number}")
+    if figure_number != 1:
+        raise ValueError(f"Expected 1 BTech figure, found {figure_number}")
     temporary = BTECH_OUTPUT.with_suffix(".tmp.docx")
     document.save(temporary); sanitize_core_properties(temporary); temporary.replace(BTECH_OUTPUT)
 
