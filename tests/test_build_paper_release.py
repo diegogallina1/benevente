@@ -30,8 +30,10 @@ def test_final_manuscripts_obey_release_contract() -> None:
 
     # The official BTech range includes references.
     assert 6_000 <= len(re.findall(r"\w+", btech, flags=re.UNICODE)) <= 8_000
-    assert "https://github.com/diegogallina1" not in btech
-    assert "benevente-wealth-system.vercel.app" not in btech
+    assert "https://github.com/diegogallina1/benevente" in btech
+    assert "benevente-wealth-system.vercel.app" in btech
+    assert "pacote suplementar anônimo" not in btech.lower()
+    assert "arquivo permanente com DOI" not in btech
     assert "ponto-no-tempo" not in btech.lower()
     assert "A completar" not in btech
 

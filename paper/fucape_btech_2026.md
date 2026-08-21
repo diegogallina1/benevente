@@ -357,7 +357,7 @@ A conclusão comprovada é mais estreita e mais defensável que a versão anteri
 
 ## 9. Disponibilidade
 
-A versão submetida inclui um pacote suplementar anônimo com o código de reprodução, os artefatos de avaliação e o manifesto criptográfico. Os endereços públicos do sistema e do repositório foram omitidos para preservar a avaliação cega. Após o aceite, a versão para publicação deverá restaurar esses endereços e indicar o arquivo permanente com DOI.
+O código de reprodução, os testes, os manifestos criptográficos e os arquivos que sustentam os resultados estão disponíveis no repositório público do projeto, em https://github.com/diegogallina1/benevente. A demonstração web do artefato está disponível em https://benevente-wealth-system.vercel.app/. O repositório identifica as fontes, as limitações de cobertura e os comandos necessários para reproduzir as avaliações.
 
 ---
 
@@ -373,7 +373,7 @@ B3 S.A. – Brasil, Bolsa, Balcão. (2026a). *Cotações históricas: série his
 
 B3 S.A. – Brasil, Bolsa, Balcão. (2026b). *Ibovespa B3*. https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-amplos/ibovespa.htm
 
-Benevente Wealth System. (2026). *Documentação técnica, repositório de dados e validação de horizontes*. Repositório anônimo de avaliação.
+Benevente Wealth System. (2026). *Documentação técnica, repositório de dados e validação de horizontes*. https://github.com/diegogallina1/benevente
 
 Black, F., & Litterman, R. (1992). Global portfolio optimization. *Financial Analysts Journal, 48*(5), 28–43. https://doi.org/10.2469/faj.v48.n5.28
 

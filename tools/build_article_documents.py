@@ -24,6 +24,8 @@ BTECH_ARCHITECTURE = ROOT / "paper" / "assets" / "btech_architecture.png"
 BTECH_OUTPUT = OUTPUTS / "Benevente_Wealth_System_BTECH_Final.docx"
 IEEE_SOURCE = ROOT / "paper" / "ieee_cifer_2027.tex"
 IEEE_OUTPUT = OUTPUTS / "Benevente_Quant_AI_IEEE_Final.tex"
+BTECH_AUTHOR = "Diego Gallina"
+BTECH_AFFILIATION = "Fucape Business School, Vitória, ES, Brasil"
 
 
 def clear_body(document: Document) -> None:
@@ -47,10 +49,11 @@ def sanitize_core_properties(path: Path) -> None:
             if item.filename == "docProps/core.xml":
                 root = ET.fromstring(data)
                 values = {
-                    f"{{{dc_namespace}}}creator": "",
-                    f"{{{core_namespace}}}lastModifiedBy": "",
+                    f"{{{dc_namespace}}}creator": BTECH_AUTHOR,
+                    f"{{{core_namespace}}}lastModifiedBy": BTECH_AUTHOR,
                     f"{{{dc_namespace}}}title": "Benevente Wealth System",
                     f"{{{dc_namespace}}}subject": "Manuscrito tecnológico BTech 2026",
+                    f"{{{dc_namespace}}}language": "pt-BR",
                 }
                 for tag, value in values.items():
                     element = root.find(tag)
@@ -58,18 +61,33 @@ def sanitize_core_properties(path: Path) -> None:
                         element = ET.SubElement(root, tag)
                     element.text = value
                 data = ET.tostring(root, encoding="utf-8", xml_declaration=True)
+            elif item.filename == "_rels/.rels":
+                # The supplied template labels its core-properties relation
+                # with the Office Document namespace. Word readers expect the
+                # package namespace, otherwise they silently expose default
+                # metadata instead of the identified author information.
+                data = data.replace(
+                    b"http://schemas.openxmlformats.org/officedocument/2006/relationships/metadata/core-properties",
+                    b"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties",
+                )
             elif item.filename in {"word/header1.xml", "word/footer1.xml"}:
-                root = ET.fromstring(data)
                 description = (
                     "Identidade visual do Business Tech Congress 2026"
                     if item.filename == "word/header1.xml"
                     else "Logotipo da Fucape Business School"
                 )
-                for element in root.iter():
-                    if element.tag.endswith("}docPr"):
-                        element.set("descr", description)
-                        element.set("title", description)
-                data = ET.tostring(root, encoding="utf-8", xml_declaration=True)
+                # Preserve the official template XML byte-for-byte except for
+                # the two accessibility attributes. Re-serializing these
+                # anchored drawings with ElementTree changes namespace
+                # prefixes and makes LibreOffice drop the visual letterhead.
+                encoded = description.encode("utf-8")
+                for attribute in (b"descr", b"title"):
+                    pattern = rb'(<wp:docPr\b[^>]*\b' + attribute + rb'=")[^"]*(")'
+                    data = re.sub(
+                        pattern,
+                        lambda match: match.group(1) + encoded + match.group(2),
+                        data,
+                    )
             target.writestr(item, data)
     clean_path.replace(path)
 
@@ -399,6 +417,18 @@ def build_btech() -> None:
         add_inline(paragraph, content)
         if kind == "h1":
             for run in paragraph.runs: run.bold = True
+            author = document.add_paragraph(style="Author names")
+            author.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            author.paragraph_format.first_line_indent = Cm(0)
+            author.paragraph_format.space_before = Pt(0)
+            author.paragraph_format.space_after = Pt(0)
+            author.add_run(BTECH_AUTHOR)
+            affiliation = document.add_paragraph(style="Affiliation")
+            affiliation.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            affiliation.paragraph_format.first_line_indent = Cm(0)
+            affiliation.paragraph_format.space_before = Pt(0)
+            affiliation.paragraph_format.space_after = Pt(12)
+            affiliation.add_run(BTECH_AFFILIATION)
         elif kind == "h2" and content == "Resumo":
             for run in paragraph.runs: run.bold = True
         previous_kind = kind

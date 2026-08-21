@@ -11,7 +11,7 @@ Este documento separa o que está fechado no repositório do que depende de aç�
 
 ## BTech 2026
 
-- Arquivo de avaliação anônimo em português.
+- Manuscrito identificado em português, conforme o template oficial.
 - Entre 6.000 e 8.000 palavras, incluindo referências.
 - Times New Roman 12, espaçamento 1,5, margens superior e esquerda de 3 cm, inferior e direita de 2 cm.
 - Referências em APA 7.
@@ -25,9 +25,9 @@ Antes de enviar, os autores devem confirmar no sistema do congresso:
 1. nomes, afiliações e ordem definitiva dos autores;
 2. eixo temático escolhido;
 3. declaração exigida sobre uso de inteligência artificial, se houver campo próprio;
-4. PDF anônimo sem metadados pessoais;
+4. nomes, afiliações e metadados do PDF consistentes com a autoria informada;
 5. arquivo editável solicitado pela plataforma.
-6. restauração dos endereços públicos do sistema e do repositório somente na versão pós-aceite.
+6. endereços públicos do sistema e do repositório presentes no manuscrito.
 
 ## IEEE CiFer 2027
 
