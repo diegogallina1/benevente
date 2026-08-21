@@ -33,7 +33,29 @@ def institutional_performance_verified(manifest: dict) -> bool:
     not enough on its own for commercial validation of dividends, JCP and
     delisting proceeds.
     """
-    return str(manifest.get("source_tier", "")) in INSTITUTIONAL_SOURCE_TIERS
+    tier = str(manifest.get("source_tier", ""))
+    if tier not in INSTITUTIONAL_SOURCE_TIERS:
+        return False
+    # A label in a JSON file is not evidence.  Primary reconciliation must
+    # carry a complete, machine-checkable audit block; a licensed/official
+    # total-return export must name the entitlement or official publication
+    # and its quality-control result.
+    if tier == "reconciled_primary_records":
+        audit = manifest.get("reconciliation") or {}
+        return bool(
+            audit.get("status") == "passed"
+            and float(audit.get("coverage_rate", 0.0)) == 1.0
+            and int(audit.get("price_ticker_count", 0)) > 0
+            and int(audit.get("verified_ticker_count", -1)) == int(audit.get("price_ticker_count", 0))
+            and int(audit.get("unresolved_events", -1)) == 0
+            and int(audit.get("invalid_events", -1)) == 0
+            and bool(audit.get("primary_sources_official"))
+            and all(len(str(audit.get(field, ""))) == 64 for field in (
+                "events_input_sha256", "coverage_input_sha256", "applied_events_sha256"
+            ))
+        )
+    quality = manifest.get("quality_control") or {}
+    return bool(manifest.get("license_or_official_reference") and quality.get("status") == "passed")
 
 
 def load_total_return_export(prices_path: str | Path, manifest_path: str | Path) -> tuple[pd.DataFrame, dict]:

@@ -25,15 +25,18 @@ from annual_decision_evidence import DecisionEvidence
 from annual_input_contract import validate_annual_inputs
 from optimizer import MeanVarianceOptimizer
 from portfolio_recommendation import PortfolioProposal, ValuePortfolioPlanner
+from portfolio_risk import PROFILE_SPECS, apply_annual_risk_policy, risk_profile_spec
 
 
 # These are allocation guardrails, not return forecasts. Keeping them here
 # makes a research run reproducible from a human risk-profile label, while the
 # protocol JSON still contains the exact numerical limits used.
 RISK_PROFILE_LIMITS: dict[str, dict[str, float | str]] = {
-    "conservador": {"maximum_equity_weight": .35, "maximum_asset_weight": .10, "review_frequency": "trimestral"},
-    "moderado": {"maximum_equity_weight": .55, "maximum_asset_weight": .12, "review_frequency": "trimestral"},
-    "arrojado": {"maximum_equity_weight": .75, "maximum_asset_weight": .15, "review_frequency": "semestral"},
+    "conservador": {"maximum_equity_weight": .35, "maximum_asset_weight": .10, "review_frequency": "anual"},
+    "equilibrado": {"maximum_equity_weight": .55, "maximum_asset_weight": .12, "review_frequency": "anual"},
+    # Backwards-compatible input alias. Browser-facing output uses equilibrado.
+    "moderado": {"maximum_equity_weight": .55, "maximum_asset_weight": .12, "review_frequency": "anual"},
+    "arrojado": {"maximum_equity_weight": .75, "maximum_asset_weight": .15, "review_frequency": "anual"},
 }
 
 
@@ -211,6 +214,12 @@ class AnnualWalkForwardConfig:
     # Folga de permanência no corte do ranking. Zero reproduz o corte duro no
     # topo N, em que escorregar uma posição custa a posição inteira.
     retention_buffer: int = 0
+    # When a named profile is supplied, selection and risk sizing are separate:
+    # the factor chooses names and this layer scales the resulting equity sleeve
+    # from trailing volatility and stress observed before the decision.
+    apply_profile_risk_layer: bool = False
+    target_volatility: float | None = None
+    minimum_equity_positions: int = 0
 
     def __post_init__(self) -> None:
         if self.end_year <= self.start_year:
@@ -223,6 +232,8 @@ class AnnualWalkForwardConfig:
             raise ValueError("top_assets must be at least 1.")
         if self.risk_profile is not None and self.risk_profile not in RISK_PROFILE_LIMITS:
             raise ValueError(f"Unsupported risk profile '{self.risk_profile}'.")
+        if self.minimum_equity_positions < 0:
+            raise ValueError("minimum_equity_positions cannot be negative.")
 
 
 def protocol_for_risk_profile(protocol: AnnualWalkForwardConfig, risk_profile: str | None) -> AnnualWalkForwardConfig:
@@ -230,9 +241,14 @@ def protocol_for_risk_profile(protocol: AnnualWalkForwardConfig, risk_profile: s
     if risk_profile is None:
         return protocol
     limits = RISK_PROFILE_LIMITS[risk_profile]
+    spec = risk_profile_spec(risk_profile)
     return replace(protocol, risk_profile=risk_profile,
                    maximum_equity_weight=float(limits["maximum_equity_weight"]),
-                   maximum_asset_weight=float(limits["maximum_asset_weight"]))
+                   maximum_asset_weight=float(limits["maximum_asset_weight"]),
+                   top_assets=max(protocol.top_assets, spec.minimum_equity_positions),
+                   apply_profile_risk_layer=True,
+                   target_volatility=spec.target_volatility,
+                   minimum_equity_positions=spec.minimum_equity_positions)
 
 
 def _decision_action(old: float, new: float, tolerance: float = 1e-6) -> str:
@@ -773,6 +789,26 @@ class AnnualWalkForwardEngine:
                     minimum_selected_weight=.02,
                 ).reindex(active_columns, fill_value=0.0)
                 proposal = replace(proposal, weights=target)
+            risk_report: dict[str, object] = {
+                "risk_state": "não aplicado", "base_equity_weight": float(target.drop(labels="TITULO_CDI").sum()),
+                "effective_equity_weight": float(target.drop(labels="TITULO_CDI").sum()),
+                "estimated_volatility_before": None, "estimated_volatility_after": None,
+                "trailing_drawdown": None, "recent_volatility": None,
+            }
+            if protocol.apply_profile_risk_layer and protocol.risk_profile is not None:
+                ranked_screen = proposal.screen.loc[proposal.screen.eligible].copy()
+                rank_column = "selection_rank" if "selection_rank" in ranked_screen and ranked_screen.selection_rank.notna().any() else "value_quality_score"
+                ranked_screen = ranked_screen.sort_values(
+                    [rank_column, "ticker"], ascending=[rank_column != "value_quality_score", True]
+                )
+                target, risk_report = apply_annual_risk_policy(
+                    target,
+                    history.tail(protocol.minimum_history_days),
+                    ranked_screen.ticker.astype(str).tolist(),
+                    protocol.risk_profile,
+                    decision_date=decision,
+                )
+                proposal = replace(proposal, weights=target)
             # The neutral comparator is built from the eligible universe by an
             # unconstrained long-only mean-variance optimisation. It shares no
             # step with the candidate rule, so an ``mvo_`` candidate can no
@@ -841,6 +877,13 @@ class AnnualWalkForwardEngine:
                 "cdi_net_return": cdi_net_return,
                 "eligible_universe_size": len(eligible),
                 "priced_universe_size": len(complete_tickers),
+                "risk_profile": protocol.risk_profile,
+                "risk_state_at_decision": risk_report["risk_state"],
+                "equity_weight_before_risk": risk_report["base_equity_weight"],
+                "estimated_volatility_before_risk": risk_report["estimated_volatility_before"],
+                "estimated_volatility_after_risk": risk_report["estimated_volatility_after"],
+                "trailing_drawdown_at_decision": risk_report["trailing_drawdown"],
+                "recent_volatility_at_decision": risk_report["recent_volatility"],
                 **{f"benchmark_{name}": value for name, value in benchmark_returns.items()},
             })
             for ticker in active_columns:

@@ -39,6 +39,15 @@ CANONICAL_FILES = [
     "data/b3_historical_cvm_ticker_map_2012_2025.csv",
     "data/benchmarks_market_2011_2025.csv",
     "data/benchmarks_market_2011_2025_manifest.json",
+    "data/b3_primary_corporate_events_2011_2025.csv",
+    "data/b3_primary_event_coverage_2011_2025.csv",
+    "data/b3_primary_events_2011_2025_manifest.json",
+    "data/benevente_profile_risk_v1_registration.json",
+    "artifacts/risk_system_validation_20260820/summary.json",
+    "artifacts/risk_system_validation_20260820/annual_profile_comparison.csv",
+    "artifacts/risk_profiles_v1/conservador_intrayear/summary.json",
+    "artifacts/risk_profiles_v1/equilibrado_intrayear/summary.json",
+    "artifacts/risk_profiles_v1/arrojado_intrayear/summary.json",
 ]
 
 
@@ -70,6 +79,8 @@ def build() -> dict:
     search = json.loads((ROOT / "artifacts/configuration_search_2012/summary.json").read_text(encoding="utf-8"))
     llm = json.loads((ROOT / "artifacts/llm_contamination/summary.json").read_text(encoding="utf-8"))
     benevente2 = json.loads((ROOT / "artifacts/benevente2_event_risk/summary.json").read_text(encoding="utf-8"))
+    primary_events = json.loads((ROOT / "data/b3_primary_events_2011_2025_manifest.json").read_text(encoding="utf-8"))
+    risk_validation = json.loads((ROOT / "artifacts/risk_system_validation_20260820/summary.json").read_text(encoding="utf-8"))
     daily = pd.read_csv(ROOT / "artifacts/published_nested/daily_curve.csv")
 
     raw_cvm = sorted((ROOT / "work/cvm_cache").glob("*")) if (ROOT / "work/cvm_cache").exists() else []
@@ -119,6 +130,15 @@ def build() -> dict:
             "benevente2_candidate_max_drawdown": float(benevente2["training_only_selection"]["full_period_metrics"]["max_drawdown"]),
             "benevente2_holdout_cagr": float(benevente2["training_only_selection"]["holdout_2019_2025_metrics"]["cagr"]),
             "benevente2_paired_p_value": float(benevente2["training_only_selection"]["paired_annual_test_2019_2025"]["p_value"]),
+            "profile_risk_experiment": {
+                profile["profile"]: {
+                    "base_cagr": profile["fixed_intrayear_overlay"]["full_period"]["base"]["cagr"],
+                    "protected_cagr": profile["fixed_intrayear_overlay"]["full_period"]["protected"]["cagr"],
+                    "base_max_drawdown": profile["fixed_intrayear_overlay"]["full_period"]["base"]["max_drawdown"],
+                    "protected_max_drawdown": profile["fixed_intrayear_overlay"]["full_period"]["protected"]["max_drawdown"],
+                }
+                for profile in risk_validation["profiles"]
+            },
         },
         "coverage": {
             "price_tickers": int(price_manifest.get("ticker_count", 0)),
@@ -127,15 +147,31 @@ def build() -> dict:
             "historical_issuers": int(universe.issuer_name.nunique()),
             "historical_asset_classes": sorted(universe.asset_class.dropna().astype(str).unique().tolist()),
             "cvm_source_archives": len(raw_cvm_records),
+            "primary_event_records": int(primary_events["event_count"]),
+            "primary_event_tickers_complete": int(primary_events["ticker_count_complete"]),
+            "primary_event_tickers_requested": int(primary_events["ticker_count_requested"]),
+            "unresolved_subscriptions": int(primary_events["unresolved_subscription_count"]),
+            "unresolved_manual_events": int(primary_events.get("unresolved_manual_event_count", primary_events["unresolved_subscription_count"])),
         },
         "sources": "B3 COTAHIST, CVM ITR/DFP e BCB SGS 12; complemento de retorno total público documentado no manifesto do painel.",
         "source_tier": price_manifest.get("source_tier", "public_reproducible_research"),
         "institutional_performance_verified": False,
         "limitations": [
             "A janela 2015–2025 também participou do desenvolvimento; não é validação prospectiva.",
-            "O detector de eventos societários tem recall documentado de 23,3%.",
+            (
+                "O arquivo primário B3 cobre "
+                f"{int(primary_events['ticker_count_complete'])} de "
+                f"{int(primary_events['ticker_count_requested'])} ativos consultados; "
+                "a série publicada ainda não foi reconstruída com esse arquivo."
+            ),
+            (
+                f"Há {int(primary_events.get('unresolved_manual_event_count', primary_events['unresolved_subscription_count']))} "
+                f"eventos manuais, incluindo {int(primary_events['unresolved_subscription_count'])} subscrições, "
+                "que exigem resolução explícita antes de uma reconciliação institucional."
+            ),
             "Parte das distribuições é imputada quando a fonte pública não cobre o papel.",
             "Custos e tributos são modelados, não conciliados com notas reais de corretagem.",
+            "A camada de risco por perfil é retrospectiva e ainda não modela o imposto intranual.",
         ],
         "canonical_files": [file_record(path) for path in CANONICAL_FILES],
         "cvm_source_archives": raw_cvm_records,

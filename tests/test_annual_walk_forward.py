@@ -158,14 +158,16 @@ def test_triple_factor_never_exceeds_equity_or_issuer_policy_cap():
     assert equity_holdings.weight.le(.15 + 1e-8).all()
 
 
-def test_named_risk_profile_sets_guardrails_without_changing_factor_or_asset_count():
+def test_named_risk_profile_sets_guardrails_and_minimum_diversification():
     base = AnnualWalkForwardConfig(2020, 2023, factor="triple_factor", top_assets=4)
     protocol = protocol_for_risk_profile(base, "conservador")
     assert protocol.risk_profile == "conservador"
     assert protocol.maximum_equity_weight == RISK_PROFILE_LIMITS["conservador"]["maximum_equity_weight"]
     assert protocol.maximum_asset_weight == RISK_PROFILE_LIMITS["conservador"]["maximum_asset_weight"]
     assert protocol.factor == "triple_factor"
-    assert protocol.top_assets == 4
+    assert protocol.top_assets == 5
+    assert protocol.minimum_equity_positions == 5
+    assert protocol.apply_profile_risk_layer
 
 
 def test_cli_requires_a_hashed_manifest_for_total_return_inputs(monkeypatch):

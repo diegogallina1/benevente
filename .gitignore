@@ -2,8 +2,12 @@
 .venv-benevente/
 work/
 workpytest_*/
+tmp/
 __pycache__/
 *.py[cod]
+outputs/*.aux
+outputs/*.log
+outputs/*.out
 .env
 .env.local
 .vercel/

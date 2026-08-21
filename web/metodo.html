@@ -32,8 +32,9 @@
       <p>O painel de preços é construído a partir do arquivo histórico de cotações da própria B3, não de um provedor. A razão é mensurável: um provedor público de preço ajustado serve as empresas que ainda existem, então montar o universo a partir dele apaga toda companhia deslistada, adquirida ou liquidada. No painel atual isso seriam <b>166 de 514 emissores</b>, dos quais 77 desaparecem antes de 2020 e 58 já haviam perdido mais de 60% do próprio topo quando pararam de negociar. São exatamente os piores retornos da amostra.</p>
       <p>O painel cobre <b>4.066 pregões</b>, de 04/01/2010 a 30/12/2025. A data inicial não é arbitrária: cada decisão anual exige 253 sessões anteriores de retorno, e 2011 teve apenas 249 pregões. Sem baixar 2010, a primeira decisão possível ficaria presa em 2015 em vez de 2012.</p>
 
-      <h3>1.2 Eventos societários sem a ajuda do provedor</h3>
-      <p>Papéis deslistados não são servidos por nenhum provedor, então desdobramentos, grupamentos e bonificações grandes precisam ser detectados a partir de razões de preço redondas e persistentes no próprio arquivo da bolsa. O detector foi validado contra o arquivo de eventos de um provedor, no subconjunto de papéis em que esse arquivo existe, e <b>os dois lados são publicados</b>: precisão de 88,1%, com 340 de 386 ajustes coincidindo com evento confirmado, e recall de 23,3%, com 103 de 443 eventos detectados. O recall baixo é limitação real: o detector é conservador e prefere não ajustar a ajustar errado.</p>
+      <h3>1.2 Eventos societários: o que já foi recuperado e o que falta</h3>
+      <p>O arquivo primário da B3 recuperado em 20/08/2026 contém 18.190 registros de dividendos, JCP, desdobramentos, grupamentos, bonificações e subscrições. A consulta encontrou cobertura para 475 de 497 ativos do painel de preços. Vinte e dois códigos, em sua maioria antigos ou deslistados, não foram devolvidos pela página atual. Há ainda 218 subscrições e 53 cisões, incorporações ou restituições em ações que não podem ser tratadas como ajuste mecânico sem resolver preço, direito e conversão.</p>
+      <p>Isso melhora a rastreabilidade, mas não rebatiza a série publicada como institucional. O backtest atual ainda combina o COTAHIST com preços ajustados públicos e um detector de razões redondas cujo recall medido foi de 23,3%. O próximo painel só receberá o selo de reconciliação quando for reconstruído desde o preço bruto, os 22 códigos faltantes tiverem fonte primária e cada subscrição estiver resolvida. Até lá, os números continuam classificados como pesquisa reproduzível.</p>
 
       <h3>1.3 Fundamentos com data de recebimento</h3>
       <p>Vêm dos formulários ITR e DFP da CVM. A data de recebimento pelo regulador é usada como porta: um documento só entra na decisão de janeiro do ano <i>t</i> se foi recebido antes daquela data. A série de doze meses é montada como anual mais o acumulado do ano corrente menos o acumulado comparativo, usando apenas a coluna acumulada. O ITR também publica o trimestre isolado, e misturar as duas corrompe todo indicador a partir do segundo trimestre.</p>
@@ -72,6 +73,18 @@
       </table>
       <p>Os parâmetros do Benevente 2 foram escolhidos em 2015–2018. Em 2019–2025, a diferença anual de retorno entre as versões não foi significativa (p = 0,964). Numa grade de 432 configurações, todas reduziram a queda máxima e apenas 9,03% melhoraram ao mesmo tempo retorno e queda. A evidência é de <b>proteção contra perdas extremas</b>, não de alfa adicional.</p>
       <div class="paper-callout warn"><b>O que o teste não afirma</b>A LLM não leu notícias, não previu a Covid-19 e não mudou os ativos. O controle usa apenas preço e volatilidade já observados, com atraso de um pregão. O experimento foi concebido depois da pandemia e ainda não inclui o efeito tributário das vendas intranuais. Por isso é retrospectivo e experimental.</div>
+
+      <h3>5.1 Perfis de risco</h3>
+      <p>Uma segunda experiência separou a seleção dos ativos do tamanho do risco. Conservador, equilibrado e arrojado mantêm pelo menos cinco emissores, têm metas distintas de volatilidade e reduzem somente a exposição, nunca a cesta, quando o estresse aparece no fechamento anterior.</p>
+      <table class="paper-table">
+        <thead><tr><th>Perfil</th><th>CAGR protegido</th><th>CDI</th><th>Queda antes</th><th>Queda protegida</th></tr></thead>
+        <tbody>
+          <tr><td>Conservador</td><td class="num">11,20%</td><td class="num">9,61%</td><td class="num">−18,89%</td><td class="num">−9,86%</td></tr>
+          <tr><td>Equilibrado</td><td class="num">12,31%</td><td class="num">9,61%</td><td class="num">−28,11%</td><td class="num">−17,89%</td></tr>
+          <tr><td>Arrojado</td><td class="num">13,63%</td><td class="num">9,61%</td><td class="num">−37,60%</td><td class="num">−29,29%</td></tr>
+        </tbody>
+      </table>
+      <p>Os valores são retrospectivos, antes do imposto intranual e líquidos do custo da mudança de exposição. A melhora observada é de queda máxima. O CAGR caiu em relação ao mesmo perfil sem proteção. A política foi congelada por hash em 20/08/2026; a amostra confirmatória começa no primeiro pregão de 2027. O restante de 2026 é apenas piloto.</p>
 
       <h2>6 · O que foi tentado e não funcionou</h2>
       <p>Cinco hipóteses foram testadas. Quatro não se sustentaram e a quinta produziu um ganho pequeno demais para ser afirmado. Aparecem aqui com o mesmo detalhe do resultado positivo.</p>
@@ -150,12 +163,12 @@
       <h2>9 · Limitações</h2>
       <ul>
         <li>A janela avaliada é a mesma que serviu para desenvolver a regra. Onze anos avaliados não são onze anos de validação prospectiva.</li>
-        <li>O detector de eventos societários tem recall de 23,3%. Proventos, JCP e eventos de papéis deslistados ainda exigem reconciliação contra registro primário da B3 ou da CVM.</li>
+        <li>Foram arquivados 18.190 eventos primários da B3, mas 22 ativos seguem sem cobertura completa e 218 subscrições precisam de resolução. O painel publicado ainda não foi reconstruído com esse arquivo.</li>
         <li>Papéis sem cobertura de provedor recebem o rendimento mediano da seção transversal do ano. É aproximação, e os afetados estão no relatório de cobertura.</li>
         <li>A queda máxima chegou a 47,8% em base diária. Nenhuma suitability razoável coloca um cliente conservador nessa carteira.</li>
         <li>Onze observações anuais são poucas. O Sharpe deflacionado corrige o viés de busca, não o tamanho da amostra.</li>
         <li>Uso comercial exige licença de dados, enquadramento regulatório, suitability e aprovação formal. Nada disso existe hoje.</li>
-        <li>O Benevente 2 foi concebido depois da Covid-19, ainda não tem validação prospectiva e não modela o imposto das vendas intranuais.</li>
+        <li>O Benevente 2 e os perfis de risco foram concebidos depois da Covid-19, ainda não têm validação prospectiva e não modelam o imposto das vendas intranuais.</li>
       </ul>
 
       <p><a class="text-link" href="./#estagio">Em que estágio o projeto está →</a></p>

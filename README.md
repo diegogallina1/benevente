@@ -252,6 +252,39 @@ de saída estão documentados em
 [Benevente 1 versus Benevente 2](docs/benevente_1_vs_2_protocol.md) e
 [resultados do experimento](docs/benevente_2_experiment_results.md).
 
+### Política de risco por perfil
+
+O motor também possui uma política separada para os perfis conservador,
+equilibrado e arrojado. Cada perfil mantém no mínimo cinco emissores e define
+meta de volatilidade, teto em ações e redução de exposição em estado de
+estresse. O teste de 2015–2025 reduziu a queda máxima nos três perfis, mas
+também reduziu o CAGR. Ele é retrospectivo, não inclui ainda o imposto das
+vendas intranuais e não superou o MVO independente dessa experiência.
+
+```powershell
+.\.venv-benevente\Scripts\python.exe profile_intrayear_risk.py
+.\.venv-benevente\Scripts\python.exe validate_risk_system.py
+.\.venv-benevente\Scripts\python.exe register_risk_policy.py
+```
+
+Os números, as limitações e o início confirmatório em 2027 estão em
+[validação da política de risco](docs/profile_risk_validation_20260820.md).
+
+### Eventos societários primários
+
+`b3_primary_events.py` arquiva o histórico público oficial de proventos em
+dinheiro e o cadastro suplementar da companhia na B3. A primeira execução
+recuperou 18.190 eventos e cobriu 475 de 497 ativos consultados. O arquivo é
+uma melhoria de evidência, mas não certifica o painel ajustado existente: 22
+ativos e 218 subscrições ainda bloqueiam a reconciliação integral.
+
+```powershell
+.\.venv-benevente\Scripts\python.exe b3_primary_events.py
+.\.venv-benevente\Scripts\python.exe b3_primary_events.py --resume
+```
+
+Veja [o protocolo de reconciliação](docs/primary_event_reconciliation.md).
+
 O portal aberto da CVM disponibiliza DFP desde 2010 e ITR desde 2011. Portanto,
 um estudo fundamentalista de 20 anos iniciado em 2006 exige uma fonte adicional
 de fundamentos históricos e um universo de constituintes datado; o sistema não

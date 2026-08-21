@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-08-20T13:48:30+00:00",
+  "generated_at_utc": "2026-08-21T01:46:47+00:00",
   "status": "research_only",
   "names": {
     "academic": "Benevente Quant AI",
@@ -45,7 +45,27 @@
     "benevente2_candidate_cagr": 0.18446223898599223,
     "benevente2_candidate_max_drawdown": -0.28745686793003866,
     "benevente2_holdout_cagr": 0.18032880426354048,
-    "benevente2_paired_p_value": 0.9642115838783171
+    "benevente2_paired_p_value": 0.9642115838783171,
+    "profile_risk_experiment": {
+      "conservador": {
+        "base_cagr": 0.11731176418323974,
+        "protected_cagr": 0.11196187478284592,
+        "base_max_drawdown": -0.18886010499008576,
+        "protected_max_drawdown": -0.09859658492162293
+      },
+      "equilibrado": {
+        "base_cagr": 0.12985730160222286,
+        "protected_cagr": 0.12305996254432028,
+        "base_max_drawdown": -0.28107474196226556,
+        "protected_max_drawdown": -0.17893741799893392
+      },
+      "arrojado": {
+        "base_cagr": 0.14143181226726576,
+        "protected_cagr": 0.13633088599537713,
+        "base_max_drawdown": -0.3759931513822473,
+        "protected_max_drawdown": -0.29289181754085913
+      }
+    }
   },
   "coverage": {
     "price_tickers": 497,
@@ -59,16 +79,23 @@
       "fii",
       "other"
     ],
-    "cvm_source_archives": 48
+    "cvm_source_archives": 48,
+    "primary_event_records": 18190,
+    "primary_event_tickers_complete": 475,
+    "primary_event_tickers_requested": 497,
+    "unresolved_subscriptions": 218,
+    "unresolved_manual_events": 271
   },
   "sources": "B3 COTAHIST, CVM ITR/DFP e BCB SGS 12; complemento de retorno total público documentado no manifesto do painel.",
   "source_tier": "public_reproducible_research",
   "institutional_performance_verified": false,
   "limitations": [
     "A janela 2015–2025 também participou do desenvolvimento; não é validação prospectiva.",
-    "O detector de eventos societários tem recall documentado de 23,3%.",
+    "O arquivo primário B3 cobre 475 de 497 ativos consultados; a série publicada ainda não foi reconstruída com esse arquivo.",
+    "Há 271 eventos manuais, incluindo 218 subscrições, que exigem resolução explícita antes de uma reconciliação institucional.",
     "Parte das distribuições é imputada quando a fonte pública não cobre o papel.",
-    "Custos e tributos são modelados, não conciliados com notas reais de corretagem."
+    "Custos e tributos são modelados, não conciliados com notas reais de corretagem.",
+    "A camada de risco por perfil é retrospectiva e ainda não modela o imposto intranual."
   ],
   "canonical_files": [
     {
@@ -170,6 +197,51 @@
       "path": "data/benchmarks_market_2011_2025_manifest.json",
       "bytes": 1155,
       "sha256": "76d4348035f91818aa59ff76f57f9c456ba35769260fa90127a3121089a57338"
+    },
+    {
+      "path": "data/b3_primary_corporate_events_2011_2025.csv",
+      "bytes": 5949794,
+      "sha256": "ee60afb0d322f280118b32de22260751f659385c27999574cfa980442599b088"
+    },
+    {
+      "path": "data/b3_primary_event_coverage_2011_2025.csv",
+      "bytes": 142190,
+      "sha256": "7764911e9eb0857629c55f3967b607fff57720663b76e756a2a135483066b2d8"
+    },
+    {
+      "path": "data/b3_primary_events_2011_2025_manifest.json",
+      "bytes": 3652,
+      "sha256": "3938fe2aa6ce01a9a0d7b5abb0d3d51c141bcf3040761b2c97f2d75de2607ffd"
+    },
+    {
+      "path": "data/benevente_profile_risk_v1_registration.json",
+      "bytes": 3778,
+      "sha256": "38369d8e00cf0227a1f49b1e90915488bc906202665c694001d0ee4b1c596c8e"
+    },
+    {
+      "path": "artifacts/risk_system_validation_20260820/summary.json",
+      "bytes": 22208,
+      "sha256": "3c4ba77e3c84e17490eed7acac0dbe57f78db6f9e1425d7a161f194fd29d0f50"
+    },
+    {
+      "path": "artifacts/risk_system_validation_20260820/annual_profile_comparison.csv",
+      "bytes": 7026,
+      "sha256": "e831a09de053dfc54fe3cd6068f00a91775d11c170345ef261cf1dc3252b8889"
+    },
+    {
+      "path": "artifacts/risk_profiles_v1/conservador_intrayear/summary.json",
+      "bytes": 2087,
+      "sha256": "4e400ab22610abc1114afe05fac15ea083418ebe17ac3537405a09b0c622fa48"
+    },
+    {
+      "path": "artifacts/risk_profiles_v1/equilibrado_intrayear/summary.json",
+      "bytes": 2084,
+      "sha256": "601b4fc68c06ccd69e7fdec150bd51f5149651c15973a98cb6cc3a4c684b17e5"
+    },
+    {
+      "path": "artifacts/risk_profiles_v1/arrojado_intrayear/summary.json",
+      "bytes": 2080,
+      "sha256": "fd9d76d253333fa27ef61caca9450124457bd8b8880417222d6482a02419a8a4"
     }
   ],
   "cvm_source_archives": [

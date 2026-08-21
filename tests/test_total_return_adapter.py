@@ -24,4 +24,23 @@ def test_total_return_export_requires_a_matching_attribution_manifest(tmp_path):
 
 def test_public_adjusted_close_source_is_research_only_until_reconciled():
     assert not institutional_performance_verified({"source_tier": "public_reproducible_research"})
-    assert institutional_performance_verified({"source_tier": "reconciled_primary_records"})
+    assert not institutional_performance_verified({"source_tier": "reconciled_primary_records"})
+    digest = "a" * 64
+    assert institutional_performance_verified({
+        "source_tier": "reconciled_primary_records",
+        "reconciliation": {
+            "status": "passed", "coverage_rate": 1.0, "price_ticker_count": 2,
+            "verified_ticker_count": 2, "unresolved_events": 0, "invalid_events": 0,
+            "primary_sources_official": True, "events_input_sha256": digest,
+            "coverage_input_sha256": digest, "applied_events_sha256": digest,
+        },
+    })
+
+
+def test_licensed_source_requires_reference_and_quality_control():
+    assert not institutional_performance_verified({"source_tier": "official_or_licensed_verified"})
+    assert institutional_performance_verified({
+        "source_tier": "official_or_licensed_verified",
+        "license_or_official_reference": "contract-or-official-publication-id",
+        "quality_control": {"status": "passed"},
+    })

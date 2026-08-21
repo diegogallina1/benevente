@@ -1,0 +1,89 @@
+{
+  "policy": "benevente_profile_risk_v1",
+  "status": "registered_not_prospectively_validated",
+  "registered_at": "2026-08-20T22:34:15.476935-03:00",
+  "confirmatory_sample_starts": "first B3 trading session of 2027",
+  "2026_remainder_status": "operational pilot only; excluded from confirmatory evidence",
+  "annual_selection": {
+    "signal_family": "triple_factor",
+    "minimum_equity_positions": 5,
+    "review_frequency": "annual",
+    "selection_and_risk_are_separate": true
+  },
+  "profiles": {
+    "conservador": {
+      "name": "conservador",
+      "target_volatility": 0.08,
+      "maximum_equity_weight": 0.35,
+      "maximum_asset_weight": 0.1,
+      "minimum_equity_positions": 5,
+      "minimum_position_weight": 0.02,
+      "alert_multiplier": 0.55,
+      "severe_multiplier": 0.25,
+      "maximum_drawdown_tolerance": 0.15
+    },
+    "equilibrado": {
+      "name": "equilibrado",
+      "target_volatility": 0.12,
+      "maximum_equity_weight": 0.55,
+      "maximum_asset_weight": 0.12,
+      "minimum_equity_positions": 5,
+      "minimum_position_weight": 0.02,
+      "alert_multiplier": 0.7,
+      "severe_multiplier": 0.4,
+      "maximum_drawdown_tolerance": 0.25
+    },
+    "arrojado": {
+      "name": "arrojado",
+      "target_volatility": 0.18,
+      "maximum_equity_weight": 0.75,
+      "maximum_asset_weight": 0.15,
+      "minimum_equity_positions": 5,
+      "minimum_position_weight": 0.02,
+      "alert_multiplier": 0.85,
+      "severe_multiplier": 0.6,
+      "maximum_drawdown_tolerance": 0.4
+    }
+  },
+  "intrayear_overlay": {
+    "observable_market": "Ibovespa total-return series",
+    "signal_lag_sessions": 1,
+    "alert_drawdown": 0.1,
+    "severe_drawdown": 0.2,
+    "alert_volatility": 0.3,
+    "severe_volatility": 0.5,
+    "recovery_days": 10,
+    "volatility_window": 20,
+    "peak_window": 126,
+    "cost_bps_per_exposure_change": 10.0,
+    "changes_assets_intrayear": false
+  },
+  "confirmatory_reporting": [
+    "return after execution costs and Brazilian taxes",
+    "maximum drawdown and annualized volatility",
+    "turnover and time below the profile target exposure",
+    "CDI, Ibovespa total return, BOVA11 and independent MVO comparators",
+    "every deviation, missing datum and human override"
+  ],
+  "non_negotiable_gates": {
+    "complete_primary_event_reconciliation": true,
+    "minimum_positions_respected": true,
+    "no_parameter_change_after_sample_start": true,
+    "tax_model_completed_before_confirmatory_scoring": true,
+    "at_least_three_complete_annual_decisions_before_performance_claim": true
+  },
+  "code_sha256": {
+    "annual_walk_forward.py": "0758547a697cb18f14d2eb1744712ab8efd6eb01c9177993e80a717738d1f0b2",
+    "portfolio_risk.py": "5a2e9f81efc5a73c55261d97482467c316fb51ff570a86126bc21f2d36ac43f5",
+    "profile_intrayear_risk.py": "ef3e844317850cc9445f1b0a8502b105d0b0fa2a3ab9242799f5473a9bde8340",
+    "benevente2_event_risk.py": "d1497b84dc1230b5bab9c7f4b4272ceb3d9ef47c438932301d6cea7c4d0178a3"
+  },
+  "input_sha256": {
+    "fundamentals_b3_cvm_full_2012_2025.csv": "2df683244a39134e245398cf785aa8817e380343266d7f871527493428c22abe",
+    "b3_historical_universes_2012_2025.csv": "8e0b2e87ed78b86531d924b75d2de709f9589e9151d44aba74d7427841bbf5e6",
+    "b3_historical_cvm_ticker_map_2012_2025.csv": "c89c39072ceb68da2bd269c4b8902416f91415405777dba1a07489d54e47a9ad",
+    "prices_b3_total_return_full_2011_2025_manifest.json": "d41d364b757b8df207930dfc7b6ff25544bfdd2c6f7230c059fb6d3453350ca8",
+    "b3_primary_events_2011_2025_manifest.json": "3938fe2aa6ce01a9a0d7b5abb0d3d51c141bcf3040761b2c97f2d75de2607ffd"
+  },
+  "registration_sha256": "e80acd0787e0f72279036b82ca9dc445353c46f9aedac321972bda614cfee90b"
+}
