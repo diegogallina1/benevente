@@ -270,11 +270,12 @@ function renderAssetWorkbench() {
     const volatility = item.trailing_12m_volatility_at_decision == null ? "Não aplicável" : plainPct(item.trailing_12m_volatility_at_decision);
     const currentReason = transition?.reason_pt || "Mantido segundo a política e a revisão anual.";
     const actionClass = ({ Entrada: "entered", Aumento: "increased", Redução: "reduced", Saída: "exited" })[status] || (isCdi ? "defensive" : "maintained");
-    return `<article class="asset-card ${isCdi ? "defensive" : ""}"><div class="asset-card-top"><div><small>${isCdi ? "PARCELA DEFENSIVA" : "ATIVO ELEGÍVEL"}</small><h3>${isCdi ? "CDI" : item.ticker.replace(".SA", "")}</h3></div><span class="asset-status ${actionClass}">${status}</span></div><div class="asset-metrics"><div><small>PESO</small><b>${plainPct(item.weight)}</b></div><div><small>12M ANTERIOR</small><b>${signal}</b></div><div><small>VOL. 12M</small><b>${volatility}</b></div></div><p><b>Critério:</b> ${item.decision_rationale_pt || item.decision_rationale}</p><p><b>Revisão:</b> ${currentReason}</p><div class="asset-return"><b>Resultado observado depois da decisão</b>${pct(item.realised_next_year_return)} no período anual. Mostrado para avaliar a regra, não para justificar a entrada.</div><div class="asset-weight"><span>Score na decisão: ${item.value_quality_score == null ? "—" : item.value_quality_score.toLocaleString("pt-BR", {minimumFractionDigits:2,maximumFractionDigits:2})}</span><strong>${item.decision_action_pt || ""}</strong></div></article>`;
+    return `<article class="asset-card ${isCdi ? "defensive" : ""}"><div class="asset-card-top"><div><small>${isCdi ? "PARCELA DEFENSIVA" : "ATIVO ELEGÍVEL"}</small><h3>${isCdi ? "CDI" : item.ticker.replace(".SA", "")}</h3></div><span class="asset-status ${actionClass}">${status}</span></div><div class="asset-metrics"><div><small>PESO</small><b>${plainPct(item.weight)}</b></div><div><small>12M ANTERIOR</small><b>${signal}</b></div><div><small>VOL. 12M</small><b>${volatility}</b></div></div><p><b>Critério:</b> ${item.decision_rationale_pt || item.decision_rationale}</p><p><b>Revisão:</b> ${currentReason}</p><div class="asset-return"><b>Resultado observado depois da decisão</b>${pct(item.realised_next_year_return)} no período anual. Mostrado para avaliar a regra, não para justificar a entrada.</div><div class="asset-weight"><span>Score na decisão: ${item.value_quality_score == null ? "não calculado" : item.value_quality_score.toLocaleString("pt-BR", {minimumFractionDigits:2,maximumFractionDigits:2})}</span><strong>${item.decision_action_pt || ""}</strong></div></article>`;
   }).join("");
   const panel = document.querySelector("#asset-action-panel");
   panel.classList.add("active");
-  panel.innerHTML = `<div><span class="action-label">COMO LER</span><b>Escolha antes, resultado depois.</b><p>O dossiê separa o que estava disponível em janeiro da rentabilidade observada no ano.</p></div><div><span class="action-label">PRÓXIMA REVISÃO</span><b>${formatDateBr(decision.holding_end_exclusive)}</b><p>Reavaliar elegibilidade, dados CVM, liquidez, custos e pesos. Não é instrução de compra ou venda.</p></div>`;
+  const evidenceHash = String(decision.decision_evidence_sha256 || "hash indisponível nesta cópia");
+  panel.innerHTML = `<div><span class="action-label">COMO LER</span><b>Escolha antes, resultado depois.</b><p>O dossiê separa o que estava disponível em janeiro da rentabilidade observada no ano.</p></div><div><span class="action-label">EVIDÊNCIA DA DECISÃO</span><b><code>${escapeHtml(evidenceHash.slice(0, 16))}${evidenceHash.length > 16 ? "…" : ""}</code></b><p>SHA-256 da linha anual, cesta e transições. ${escapeHtml(decision.approval_status || "Registro técnico; aprovação humana real não coletada.")}</p></div><div><span class="action-label">PRÓXIMA REVISÃO</span><b>${formatDateBr(decision.holding_end_exclusive)}</b><p>Reavaliar elegibilidade, dados CVM, liquidez, custos e pesos. Não é instrução de compra ou venda.</p></div>`;
 }
 
 function refreshDecisionStudio() {
@@ -285,8 +286,8 @@ function refreshDecisionStudio() {
   renderComparison(currentPeriod);
 }
 
-function pctPlain(value) { return Number.isFinite(value) ? `${(value * 100).toLocaleString("pt-BR", {maximumFractionDigits: 1})}%` : "—"; }
-function signedScenario(value) { return Number.isFinite(value) ? `${value >= 0 ? "+" : ""}${pctPlain(value)}` : "—"; }
+function pctPlain(value) { return Number.isFinite(value) ? `${(value * 100).toLocaleString("pt-BR", {maximumFractionDigits: 1})}%` : "não calculado"; }
+function signedScenario(value) { return Number.isFinite(value) ? `${value >= 0 ? "+" : ""}${pctPlain(value)}` : "não calculado"; }
 
 function renderForecast() {
   if (!forecastData || !researchData) return;
@@ -746,4 +747,7 @@ Promise.all([fetch("./annual_research.json"), fetch("./fund_presets.json")]).the
   researchData = await research.json(); fundPresetsData = await fundPresets.json();
   extraSeries[1] = {}; extraSeries[2] = {}; extraSeries[3] = {}; extraSeries[5] = {}; extraSeries[11] = {};
   refreshDecisionStudio(); renderBenevente2Panel();
-}).catch(() => { document.querySelector("#line-chart-caption").textContent = "Arquivos de pesquisa indisponíveis nesta cópia. Consulte o ambiente local para reproduzir a análise."; document.querySelector("#research-status").textContent = "Dados de pesquisa indisponíveis."; });
+}).catch(() => {
+  document.querySelector("#line-chart-caption").textContent = "A tabela fixa preserva os números do artigo. O gráfico interativo exige o arquivo anual desta publicação.";
+  document.querySelector("#research-status").innerHTML = "<b>Resumo estático ativo.</b><span>Os números principais permanecem visíveis; para o dossiê completo, abra a versão publicada ou reproduza o repositório.</span>";
+});

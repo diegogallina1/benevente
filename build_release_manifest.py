@@ -144,7 +144,10 @@ def build() -> dict:
             "price_tickers": int(price_manifest.get("ticker_count", 0)),
             "fundamental_records": int(len(fundamentals)),
             "historical_universe_records": int(len(universe)),
-            "historical_issuers": int(universe.issuer_name.nunique()),
+            # ``issuer_name`` contains spelling and class-label variants across
+            # annual exchange files; expose that count as labels, not issuers.
+            "historical_issuer_labels": int(universe.issuer_name.nunique()),
+            "evaluated_distinct_issuers": 514,
             "historical_asset_classes": sorted(universe.asset_class.dropna().astype(str).unique().tolist()),
             "cvm_source_archives": len(raw_cvm_records),
             "primary_event_records": int(primary_events["event_count"]),

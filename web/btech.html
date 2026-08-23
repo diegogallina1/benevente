@@ -20,9 +20,9 @@
       <a href="./metodo">Método</a>
     </nav>
     <main class="shell paper-page">
-      <p class="eyebrow"><span></span> Benevente Wealth System · solução B2B</p>
+      <p class="eyebrow"><span></span> Benevente Wealth System · protótipo B2B em pesquisa</p>
       <h1>Decisão de carteira com trilha, para quem responde por ela.</h1>
-      <p class="paper-lede">Famílias e empresas capixabas mandam capital para gestoras do Rio e de São Paulo porque falta ferramenta local com método verificável. O Benevente é um espaço de pesquisa e governança para multi-family offices, consultores e assessorias do Espírito Santo: propõe carteira, registra por que propôs, e obriga uma pessoa a aprovar antes de qualquer ordem.</p>
+      <p class="paper-lede">O Benevente é um protótipo de pesquisa e governança para escritórios de investimento, consultorias de valores mobiliários e estruturas de gestão patrimonial. Ele propõe uma carteira por regra determinística, registra os motivos e exige revisão humana. Um piloto no Espírito Santo poderá medir utilidade, demanda e disposição a pagar; nenhum efeito regional é presumido.</p>
 
       <h2>O problema operacional</h2>
       <p>Um escritório que recomenda carteira precisa responder três perguntas quando questionado, meses depois: quais dados existiam na data, qual regra foi aplicada, e quem aprovou. Planilha não responde nenhuma das três. Plataforma de terceiro responde a segunda de forma opaca.</p>
@@ -39,7 +39,7 @@
 
       <h2>O diferencial que não dá para copiar rápido</h2>
       <p>Auditamos o próprio backtest e publicamos o resultado. Sete defeitos foram encontrados e corrigidos: comparador que era cópia da estratégia, painel de preços que descartava empresas deslistadas, imposto ausente e custo fixo que ignorava liquidez, entre outros. Depois disso, medimos quanto a escolha posterior de uma regra inflaria o resultado. O prêmio de retrospectiva ficou em 0,65 ponto percentual ao ano na base atual, contra 4,98 pontos quando o protocolo tinha um ano a menos de treino.</p>
-      <div class="paper-callout warn"><b>Por que isso é argumento comercial</b>Qualquer concorrente mostra uma curva subindo. A pergunta que ninguém responde é quanto daquela curva vem de ter escolhido a regra depois de ver o resultado. Nós medimos, publicamos o número, e ainda assim o método permanece classificado como pesquisa até acumular anos avaliados depois do registro congelado.</div>
+      <div class="paper-callout warn"><b>Valor que o piloto precisa testar</b>O diferencial proposto é revelar quanto da curva depende de escolhas retrospectivas e preservar o caminho completo da decisão. Isso permanece uma hipótese comercial até que usuários reais meçam tempo, completude, compreensão e disposição a pagar.</div>
 
       <h2>Decidir mais vezes por ano compensa?</h2>
       <p>Testamos, mantendo a regra, os limites e o painel idênticos e variando apenas as datas de decisão. A reseleção anual rendeu 18,58% ao ano antes de custos, a trimestral 16,37% e a mensal 13,92%. Pareando por ano-calendário e já após imposto, a trimestral fica 1,55 ponto percentual abaixo da anual ao ano, com p de 0,376, e a mensal 3,27 pontos abaixo, com p de 0,306. Com onze anos pareados não dá para afirmar que decidir mais vezes atrapalha; também não existe evidência de que ajude.</p>
@@ -49,7 +49,7 @@
       <table class="paper-table">
         <thead><tr><th>Série</th><th>CAGR 2015–2025</th><th>Anos vencidos</th><th>Drawdown</th></tr></thead>
         <tbody>
-          <tr class="highlight"><td>Benevente</td><td class="num">17,86%</td><td class="num">—</td><td class="num">−47,8%</td></tr>
+          <tr class="highlight"><td>Benevente</td><td class="num">17,86%</td><td class="num">não se aplica</td><td class="num">−47,8%</td></tr>
           <tr><td>Ibovespa, índice de retorno total</td><td class="num">11,77%</td><td class="num">7 de 11</td><td class="num">−47,0%</td></tr>
           <tr><td>BOVA11, ETF investível</td><td class="num">11,72%</td><td class="num">7 de 11</td><td class="num">−47,2%</td></tr>
           <tr><td>CDI</td><td class="num">9,61%</td><td class="num">6 de 11</td><td class="num">0%</td></tr>
@@ -71,7 +71,7 @@
         </tbody>
       </table>
       <p>Duas dessas são reportadas como "sem evidência de benefício", não como "provadamente pior", e a diferença não é cosmética: onze anos pareados não rejeitam a hipótese de nenhuma diferença, então a afirmação honesta é a mais fraca, mesmo com todos os pontos estimados apontando para o mesmo lado.</p>
-      <div class="paper-callout"><b>Por que isso vende</b>Um comprador que já ouviu promessa de alfa reconhece a diferença entre um fornecedor que mostra o que funcionou e um que mostra também o que não funcionou, com o teste que usou e o p-valor que obteve. O segundo pode ser conferido. Ver o <a href="./metodo.html">método completo</a>.</div>
+      <div class="paper-callout"><b>O que pode ser conferido</b>O protótipo mostra o que funcionou, o que falhou, o teste aplicado e o p-valor observado. Essa transparência sustenta a governança auditável, mas não substitui o piloto nem comprova adoção. Ver o <a href="./metodo.html">método completo</a>.</div>
 
       <h2>Onde isso está e o que falta</h2>
       <p>O que existe hoje é o método, a evidência de onze anos avaliados e o registro congelado com o hash de cada arquivo de entrada, versionado para que a data fique carimbada por terceiro. O que não existe: licença de dados para uso comercial, enquadramento regulatório, suitability, integração com custódia e validação prospectiva. A janela avaliada é a mesma que serviu para desenvolver a regra, então descreve a amostra e não prevê o futuro. Transformar isso em serviço é a etapa seguinte e ainda não foi cumprida.</p>

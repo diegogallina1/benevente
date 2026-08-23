@@ -8,14 +8,14 @@
 \usepackage{amssymb}
 \usepackage{graphicx}
 
-\title{Decoupling Language-Model Judgement from Constrained Portfolio Optimisation:\\A Measurement Protocol and Three Null Results}
+\title{Separating Language-Model Explanation from Portfolio Allocation:\\A Prospective Protocol and Three Retrospective Null Results}
 \author{Author information withheld for double-blind review}
 
 \begin{document}
 \maketitle
 
 \begin{abstract}
-Language models are increasingly proposed as portfolio allocators. We argue that the interesting question is not whether such a model can produce weights, but whether it should, and we give an architecture and a measurement protocol that make the question answerable. The model's only output is a bounded confidence score that tilts expected returns inside a convex program; the solver, which alone sees the covariance structure, the caps and the turnover penalty, produces every weight. To test what that separation is worth, we run four arms over thirteen years on the same eligible universe: the model with company names, the model with names removed, a deterministic factor control with no model, and a monolithic arm in which the model returns weights directly. All three effects are indistinguishable from zero: temporal contamination $+0.38$ pp/yr ($p=0.91$), value added over the deterministic control $-0.05$ pp/yr ($p=0.99$), and the value of decoupling $+0.81$ pp/yr ($p=0.78$). The monolithic arm breached no ceiling, but returned weights that failed to sum to one in five of thirteen years and silently omitted eligible names in two. Because null results are only informative when the measuring instrument is sound, we describe the evaluation infrastructure in equal detail: a survivorship-free panel rebuilt from the exchange's own quotation archive (514 issuers, 166 of which stop trading), receipt-date gating of regulatory filings, a nested selection protocol whose hindsight premium is measured at 0.65 pp/yr, and a deflated-Sharpe probability of 0.986 over 36 trials. We report seven defects found by auditing our own backtest, all of which had inflated the result.
+Language models are increasingly proposed as portfolio allocators, although historical prompts may reveal outcomes already embedded in model training. We present an auditable architecture in which a dated deterministic rule selects and weights assets, a language model only explains approved facts, and a human records approval. A separate retrospective stress test relaxes that boundary in four arms over thirteen years: named issuers, anonymised issuers, a deterministic factor control, and direct model-generated weights. The measured differences are indistinguishable from zero: named versus anonymised $+0.38$ pp/yr ($p=0.91$), anonymised versus deterministic $-0.05$ pp/yr ($p=0.99$), and solver-routed versus direct weights $+0.81$ pp/yr ($p=0.78$). Anonymisation cannot prove temporal purity because financial attributes may still identify firms and pretrained memory is unobservable. The direct-weight arm also failed to sum to one in five of thirteen years and omitted eligible names in two. The evaluation infrastructure contains 514 issuers, including 166 that stop trading, receipt-date gating of regulatory filings, a nested selection protocol with a 0.65 pp/yr hindsight premium, and a deflated-Sharpe probability of 0.986 over 36 trials. Seven audited defects had inflated earlier results. Accordingly, the historical evidence diagnoses the measurement system rather than validating language-model alpha; scientific evaluation of the language component begins with a frozen prospective protocol.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -24,17 +24,17 @@ portfolio optimisation, large language models, backtest overfitting, deflated Sh
 
 \section{Introduction}
 
-A language model asked for portfolio weights will produce them. Whether it should be asked is a separate question, and the literature has largely skipped it: papers that report a model beating a benchmark rarely include the control that would distinguish the model's judgement from the ranking signal it was given, and rarely test whether the model profited from recognising companies whose subsequent fate is in its training corpus.
+A language model asked for portfolio weights will produce them. Whether an accessible model is useful to an investment decision, and which responsibility it should receive, are separate questions. Historical evaluation is especially fragile: company names, accounting patterns or salient events may connect a prompt to outcomes embedded in training, even when the input table itself is dated correctly.
 
-This paper takes the opposite route. We fix an architecture in which the model \emph{cannot} set a weight, then measure what that restriction costs. The measurement requires three comparisons that are usually conflated:
+We therefore fix a production architecture in which the model cannot select an asset or set a weight. It receives a completed decision record and produces only explanation, risks and questions for human review. A separate retrospective diagnostic temporarily relaxes this contract to measure three comparisons that are usually conflated:
 
 \begin{enumerate}
-\item Temporal contamination: does the model do better when it can see company names than when it sees only anonymised financial facts? A positive, significant gap means it is remembering, not reasoning.
+\item Contamination sensitivity: does the model do better when it can see company names than when it sees anonymised financial facts? The gap can reveal contamination but cannot establish its absence.
 \item Added value: does the model beat a deterministic control that ranks the same universe by the same pre-declared factor? Without this arm, any result merely restates the factor.
 \item Value of decoupling: does routing a bounded score through a convex solver beat letting the model emit weights directly? This is what the architecture is for.
 \end{enumerate}
 
-Our contribution is threefold. First, the decoupled architecture and the protocol that makes these three questions separately answerable. Second, three null results on Brazilian equities over thirteen years, reported with the power caveats they deserve. Third, and inseparably, the evaluation infrastructure: a null result is only informative if the instrument would have detected an effect, so we document the panel construction, availability gating, the multiple-testing correction and the defects we found in our own work. Upon acceptance, we will deposit the evaluation artefacts and a versioned manifest in a permanent repository; during double-anonymous review, the same materials are available in an anonymised supplementary archive.
+Our contribution is threefold. First, a typed responsibility boundary linking dated data, deterministic calculation, explanation and human approval. Second, three retrospective null results on Brazilian equities, explicitly denied the status of prospective language-model validation. Third, the evaluation infrastructure: panel construction, availability gating, multiple-testing correction and seven defects found in our own work. The production protocol was frozen on 16 August 2026; any predictive role for a model would require a new prospective arm. Upon acceptance, we will release the evaluation artefacts and versioned manifest in a permanent repository; during double-anonymous review, the same materials are supplied in an anonymised archive.
 
 \section{Related work}
 
@@ -42,35 +42,27 @@ Markowitz's mean--variance formulation \cite{markowitz} remains the allocation s
 
 On inference, Bailey and L\'opez de Prado \cite{deflated} give the deflated Sharpe ratio, which corrects the observed statistic for the number of trials and the higher moments of the return distribution; Bailey et al. \cite{pbo} give the probability of backtest overfitting. Harvey et al. \cite{harvey} document how weak the standard significance bar is once the size of the search is acknowledged. These are not optional refinements for a paper that evaluates 36 configurations.
 
-Financial language models have been studied as domain models, research assistants and direct stock selectors. BloombergGPT demonstrates the value of finance-specific corpora for general financial tasks \cite{bloomberggpt}, while FinGPT argues for an open, data-centric pipeline \cite{fingpt}. Direct market applications report that news-conditioned language-model scores can predict returns \cite{lopezlira} and that live ChatGPT ratings co-move with subsequent earnings and returns \cite{pelsterval}. Those results motivate our experiment but do not answer its architectural question. A model may appear predictive because it was handed an effective structured signal, because names reveal outcomes embedded in its training data, or because invalid allocations are repaired off-record. Named, anonymised, deterministic and monolithic arms are required to distinguish these mechanisms.
+Recent evidence argues against treating backtested language-model performance as a single construct. Perlin et al. run 30,000 anonymised simulations over 1,522 firms and find no consistent advantage over 1/N or the S\&P 500 \cite{perlin}. FINSABER reports deterioration over broad universes, long horizons and changing regimes \cite{finsaber}. Pelster and Val use a live earnings experiment, illustrating why prospective observation is the stronger contamination control \cite{pelsterval}. Kim et al. find useful narrative analysis of anonymised statements \cite{kim}, a role that does not imply trading alpha. FINCON's hierarchy motivates explicit responsibility boundaries, not autonomous trading here \cite{fincon}. These results motivate both our deterministic control and the narrower production role assigned to language.
 
 \section{Architecture}
 
-\subsection{The interface}
+\subsection{Production interface}
 
-Let $\mu \in \mathbb{R}^{n}$ be the expected-return vector estimated from information available at the decision date, $\Sigma$ the covariance estimate, and $w_{\text{prev}}$ the incumbent book. The model returns a confidence vector $c \in [-1,+1]^{n}$, and the only channel through which it reaches the portfolio is
-
-\begin{equation}
-\mu_i \leftarrow \mu_i \cdot (1 + \lambda c_i), \qquad c_i \in [-1,+1].
-\end{equation}
-
-The allocation is then the solution of
+Let $x_t$ contain only observations admitted by decision date $t$. A deterministic selector $S$ produces eligibility, factor scores and rejection reasons; an allocator $A$ produces weights under the policy $P$:
 
 \begin{equation}
-\max_{w} \; \mu^{\top}w - \frac{\gamma}{2} w^{\top}\Sigma w - \kappa \lVert w - w_{\text{prev}} \rVert_1
+ d_t=S(x_t),\qquad w_t=A(d_t,P),\qquad \sum_i w_{i,t}=1.
 \end{equation}
 
-subject to $\sum_i w_i = 1$, $w \ge 0$, an asset-class ceiling, and a per-issuer ceiling. The constants $\lambda$, $\gamma$ and $\kappa$ are fixed before the run and are not tuned per period.
+Only after $w_t$ is sealed does the language model receive approved fields $(d_t,w_t)$ and return prose $e_t$. There is no edge from $e_t$ to $S$, $A$ or $P$. A human reviewer records acceptance or rejection, identity and rationale. This interface makes the central claim testable through the stored inputs, outputs and hashes, independent of prose quality.
 
-One clarification matters for reproducibility, because the two are easy to conflate. The solver above is the allocator for every arm in the language-model experiment. The eleven-year published strategy uses a simpler allocator on the same screen: a hard top-$N$ cut on the factor score, one share class per issuer, with weights assigned in proportion to score inside the same ceilings. We report both because the paper's claims about the model concern the first and the claims about realised returns concern the second, and a reader entitled to check either should not have to guess which is which.
-
-Two properties follow, and they are properties of the type system rather than of the prompt. The model's output is a scalar in a closed interval, so there is no syntactic route by which it can express a weight, relax a ceiling, or admit an ineligible asset. And the solver is the only component that sees $\Sigma$, the caps and the turnover penalty, so the trade-off between expected return and risk is made where those quantities exist.
+The eleven-year strategy uses a hard top-$N$ cut on the factor score, one share class per issuer and score-proportional weights inside fixed ceilings. MVO remains an independently implemented comparator. The convex solver described below belongs only to the four-arm diagnostic and is not the published allocation rule.
 
 \subsection{Pipeline}
 
-Each January the system executes five stages in a fixed order. Stages one to three are deterministic, the model enters only at stage four, and stage five is human.
+Each January the system executes five stages in a fixed order. Stages one to four are deterministic, language is generated only after the portfolio is sealed, and the last stage is human.
 
-\emph{(i) Dated universe.} The universe of record is the exchange's own historical quotation archive \cite{b3cotahist}, not a vendor feed. \emph{(ii) Available-at-decision fundamentals.} Regulatory filings \cite{cvmitr,cvmdfp} carry both a reference date and a receipt date; only filings received on or before the decision date may enter. \emph{(iii) Screen.} Assets must clear liquidity, profitability, return on capital and solvency, with operating companies and financial institutions screened on different quantities because their standardised statements are not comparable. \emph{(iv) Ranking and allocation.} Survivors are ranked and the ranking becomes the confidence vector; allocation is by the solver in the experimental arms and by the score-proportional top-$N$ rule in the published strategy, in both cases within the ceilings and with the residual held in the domestic overnight rate \cite{bcb}. \emph{(v) Human review.} The output is a proposal carrying the applied policy, the screen with its rejection reasons, the weights, order sizes with lot rounding and participation in average traded volume, and the estimated cost. No order is transmitted.
+\emph{(i) Dated universe.} The universe of record is the exchange's historical quotation archive \cite{b3cotahist}. \emph{(ii) Available-at-decision fundamentals.} Only regulatory filings received by the decision date may enter \cite{cvmitr,cvmdfp}. \emph{(iii) Screen.} Assets must clear liquidity, profitability, return on capital and solvency, with distinct quantities for banks. \emph{(iv) Ranking and allocation.} Survivors are ranked by declared factors, allocated within ceilings, and residual capital is held at the domestic overnight rate \cite{bcb}. \emph{(v) Explanation and review.} The sealed proposal, rejection reasons, weights, order sizes and estimated costs are explained, then accepted or rejected by a named person. No order is transmitted.
 
 The economic hypothesis is fundamental-led rather than language-model-led. Quality and value are the primary accounting dimensions, twelve-month momentum is a market confirmation signal, and liquidity is an execution gate. Banks and operating companies use different accounting quantities. The model does not create this signal: in production architecture it converts approved facts into thesis, risk and review questions. MVO is an independent benchmark in the published record and an allocator only inside the four-arm experiment.
 
@@ -106,7 +98,13 @@ With 36 trials, the winner's Sharpe is biased upward by the search itself. The o
 
 \subsection{Design}
 
-Four arms over thirteen years, same eligible universe, same solver, same caps:
+Four retrospective arms use the same thirteen annual universes. The first three use the same constrained solver,
+
+\begin{equation}
+\max_w\;\mu(c)^\top w-\frac{\gamma}{2}w^\top\Sigma w-\kappa\lVert w-w_{\mathrm{prev}}\rVert_1,
+\end{equation}
+
+with $\sum_iw_i=1$, $w\ge0$ and fixed ceilings. The model score $c_i\in[-1,1]$ can only tilt $\mu_i$ inside this diagnostic. The production artifact never uses this channel.
 
 \begin{itemize}
 \item Named: the model sees company names and returns a bounded score.
@@ -155,7 +153,7 @@ Decoupling (anonymised $-$ monolithic) & $+0.81$ pp & 0.78 \\
 
 Table~\ref{tab:effects} reports three nulls, and each means something different.
 
-\emph{No detectable contamination.} The named arm did not profit from recognising companies whose fate the model could plausibly know from training. This was the most serious objection to any use of a language model on historical data, and it did not materialise in this configuration. We do not claim contamination is absent in general; we claim it was not detected here, at this model's training cutoff.
+\emph{No detectable named--anonymised gap.} This is not evidence of temporal purity. The model may infer identity from financial attributes, both arms may contain pretrained memory, and the training corpus is not observable. The comparison is a sensitivity test with low power, not a retrospective certificate against contamination.
 
 \emph{No detectable added value.} The model reproduces the deterministic ranking rather than adding judgement. The gap is five hundredths of a percentage point, with a negative sign. This is an uncomfortable finding for the prevailing narrative about language models in investment management, which is a reason to publish it rather than a reason not to.
 
@@ -201,10 +199,10 @@ The evaluation window is also the development window; the 0.65 pp hindsight prem
 
 \section{Conclusion}
 
-We measured what a language model contributes when it cannot set portfolio weights. Over thirteen years of Brazilian equities, nothing was detectable: names did not help, the model did not beat its deterministic factor, and keeping it away from the weights cost nothing. The dated screen generated the return. A bounded, typed interface therefore gives up nothing measurable while avoiding the malformed weights returned by the monolithic arm. The event-risk extension reaches the same architectural conclusion: a lagged deterministic control can reduce tail risk without asking a model to infer a crisis from prose. Claims for model discretion should be tested against both deterministic and anonymised controls.
+We measured a retrospective counterfactual for language-model discretion and detected no advantage: names did not help, the model did not beat its deterministic factor, and direct weights were malformed in five years. These nulls do not validate the model or prove contamination absent. They support the narrower architecture: dated data and deterministic code create the portfolio, language explains a sealed record, and a person remains responsible. Predictive claims require a prospective arm beginning after the frozen registration, with deterministic and anonymised controls retained.
 
-\section*{Statement on generative AI}
-A generative-AI assistant was used for language editing and code review. The authors independently verified every calculation, citation and claim and accept full responsibility for the manuscript. The empirical results were generated by deterministic project code, not by the assistant \cite{openai}.
+\section*{Acknowledgment and generative-AI disclosure}
+A generative-AI assistant was used for language editing and code review. The authors independently verified every calculation, citation and claim and accept full responsibility. Empirical results were generated by deterministic project code, not by the assistant \cite{openai}.
 
 \clearpage
 \begin{thebibliography}{00}
@@ -215,10 +213,11 @@ A generative-AI assistant was used for language editing and code review. The aut
 \bibitem{deflated} D. H. Bailey and M. L\'opez de Prado, ``The Deflated Sharpe Ratio: Correcting for Selection Bias, Backtest Overfitting, and Non-Normality,'' \emph{The Journal of Portfolio Management}, vol. 40, no. 5, pp. 94--107, 2014.
 \bibitem{pbo} D. H. Bailey, J. Borwein, M. L\'opez de Prado, and Q. J. Zhu, ``The Probability of Backtest Overfitting,'' \emph{Journal of Computational Finance}, vol. 20, no. 4, pp. 39--69, 2016.
 \bibitem{harvey} C. R. Harvey, Y. Liu, and H. Zhu, ``\ldots and the Cross-Section of Expected Returns,'' \emph{The Review of Financial Studies}, vol. 29, no. 1, pp. 5--68, 2016.
-\bibitem{bloomberggpt} S. Wu et al., ``BloombergGPT: A Large Language Model for Finance,'' arXiv:2303.17564, 2023.
-\bibitem{fingpt} H. Yang, X.-Y. Liu, and C. D. Wang, ``FinGPT: Open-Source Financial Large Language Models,'' arXiv:2306.06031, 2023.
-\bibitem{lopezlira} A. Lopez-Lira and Y. Tang, ``Can ChatGPT Forecast Stock Price Movements? Return Predictability and Large Language Models,'' \emph{Journal of Financial Economics}, vol. 184, Art. no. 104335, 2026, doi: 10.1016/j.jfineco.2026.104335.
+\bibitem{perlin} M. S. Perlin, C. R. Foguesatto, F. M. M\"uller, and M. B. Righi, ``Can AI Beat a Naive Portfolio? An Experiment with Anonymized Data,'' \emph{Finance Research Letters}, Art. no. 107126, 2025, doi: 10.1016/j.frl.2025.107126.
+\bibitem{finsaber} Y. Li, K. Kim, M. Cucuringu, and S. Ma, ``Can LLM-Based Financial Investing Strategies Outperform the Market in Long Run?'' in \emph{Proc. 32nd ACM SIGKDD Conf.}, pp. 2711--2722, 2026, doi: 10.1145/3770854.3785702.
 \bibitem{pelsterval} M. Pelster and J. Val, ``Can ChatGPT Assist in Picking Stocks?'' \emph{Finance Research Letters}, vol. 59, Art. no. 104786, 2024, doi: 10.1016/j.frl.2023.104786.
+\bibitem{kim} A. G. H. Kim, M. Muhn, and V. V. Nikolaev, ``Financial Statement Analysis with Large Language Models,'' arXiv:2407.17866, 2024.
+\bibitem{fincon} Y. Yu et al., ``FinCon: A Synthesized LLM Multi-Agent System with Conceptual Verbal Reinforcement for Enhanced Financial Decision Making,'' in \emph{Advances in Neural Information Processing Systems 37}, 2024, doi: 10.52202/079017-4354.
 \bibitem{b3cotahist} B3 S.A. --- Brasil, Bolsa, Balc\~ao, ``Historical quotations,'' 2026, \href{https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/market-data/historico/mercado-a-vista/cotacoes-historicas/}{online}.
 \bibitem{b3ibov} B3 S.A. --- Brasil, Bolsa, Balc\~ao, ``Ibovespa B3,'' 2026, \href{https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-amplos/ibovespa.htm}{online}.
 \bibitem{blackrockbova} BlackRock, ``iShares Ibovespa Fundo de {\'I}ndice (BOVA11): Factsheet,'' 2026, \href{https://www.blackrock.com/br/literature/fact-sheet/bova11-ishares-ibovespa-fundo-de-ndice-fund-fact-sheet-pt-lm.pdf}{online}.

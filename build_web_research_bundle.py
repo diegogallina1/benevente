@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -24,6 +25,27 @@ REASON_PT = {
 
 def _records(frame: pd.DataFrame) -> list[dict]:
     return json.loads(frame.to_json(orient="records", date_format="iso"))
+
+
+def _decision_evidence(annual: pd.DataFrame, holdings: pd.DataFrame,
+                       transitions: pd.DataFrame) -> pd.DataFrame:
+    """Attach a deterministic evidence hash and an honest approval state per year."""
+    annual = annual.copy()
+    hashes: list[str] = []
+    for year in annual.decision_year.astype(int):
+        payload = {
+            "annual": _records(annual[annual.decision_year.astype(int).eq(year)]),
+            "holdings": _records(holdings[holdings.decision_year.astype(int).eq(year)]),
+            "transitions": _records(transitions[transitions.decision_year.astype(int).eq(year)]),
+        }
+        encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True,
+                             separators=(",", ":"), allow_nan=False).encode("utf-8")
+        hashes.append(hashlib.sha256(encoded).hexdigest())
+    annual["decision_evidence_sha256"] = hashes
+    annual["approval_status"] = (
+        "Registro técnico reproduzido; não houve aprovação humana para execução real."
+    )
+    return annual
 
 
 def _json_safe(value):
@@ -254,6 +276,7 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
         ), axis=1)
     transitions["decision_action_pt"] = transitions.decision_action.map(ACTION_PT).fillna("Sem altera\u00e7\u00e3o")
     transitions["reason_pt"] = transitions.reason.map(REASON_PT).fillna("Revis\u00e3o anual documentada.")
+    annual = _decision_evidence(annual, holdings, transitions)
 
     source_metadata = json.loads(Path(source_manifest).read_text(encoding="utf-8")) if source_manifest else {}
     holdout = json.loads(Path(holdout_validation).read_text(encoding="utf-8")) if holdout_validation else {}

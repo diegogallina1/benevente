@@ -39,18 +39,18 @@ O candidato escolhido no treino só avança se, no período de 2021 a 2025:
 Se nenhum candidato passar, a hipótese é rejeitada. O site não recebe uma
 estratégia "vencedora" por seleção retrospectiva.
 
-## Resultado da primeira valida??o
+## Resultado da primeira validação
 
-A sele??o no treino foi D10: 10 emissores, 10% m?ximo por emissor e 100%
-em a??es. Entre 2015 e 2020, D10 teve CAGR l?quido de 20,27%, acima do MVO
-compar?vel de 16,89% e do CDI de 8,51%.
+A seleção no treino foi D10: 10 emissores, 10% máximo por emissor e 100%
+em ações. Entre 2015 e 2020, D10 teve CAGR líquido de 20,27%, acima do MVO
+comparável de 16,89% e do CDI de 8,51%.
 
-No per?odo n?o visto de 2021 a 2025, D10 teve CAGR de 8,34%, contra 4,02%
+No período não visto de 2021 a 2025, D10 teve CAGR de 8,34%, contra 4,02%
 do MVO e 10,35% do CDI. O resultado permaneceu acima do MVO sob custos de
-0, 10, 20 e 40 bps, mas ficou abaixo do CDI. Portanto a hip?tese de superar
-os dois referenciais de forma consistente foi rejeitada. A regra n?o deve
-ser promovida para o site como estrat?gia recomendada.
+0, 10, 20 e 40 bps, mas ficou abaixo do CDI. Portanto a hipótese de superar
+os dois referenciais de forma consistente foi rejeitada. A regra não deve
+ser promovida para o site como estratégia recomendada.
 
-A pr?xima rodada deve testar uma aloca??o entre a??es e ativos defensivos,
-com a exposi??o a a??es decidida antes de cada ano por sinais de regime e
+A próxima rodada deve testar uma alocação entre ações e ativos defensivos,
+com a exposição a ações decidida antes de cada ano por sinais de regime e
 sem usar resultados futuros.

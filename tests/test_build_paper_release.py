@@ -38,6 +38,8 @@ def test_final_manuscripts_obey_release_contract() -> None:
     assert "A completar" not in btech
 
     assert r"\documentclass[10pt,conference]{IEEEtran}" in ieee
-    assert "anonymised supplementary archive" in ieee
-    assert r"\section*{Statement on generative AI}" in ieee
+    assert "an anonymised archive" in ieee
+    assert r"\section*{Acknowledgment and generative-AI disclosure}" in ieee
+    assert "The production artifact never uses this channel" in ieee
+    assert "anonymisation cannot prove" in ieee.lower()
     assert "A completar" not in ieee

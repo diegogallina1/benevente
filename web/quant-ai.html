@@ -21,8 +21,8 @@
     </nav>
     <main class="shell paper-page">
       <p class="eyebrow"><span></span> Benevente Quant AI · computational finance research</p>
-      <h1>Separating what the model judges from what the optimiser decides.</h1>
-      <p class="paper-lede">A language model reads dated accounting facts and returns a bounded confidence score. A convex solver, which is the only component that sees costs and constraints, turns those scores into weights. This page documents how the system is built, how it is used, and what happened when the architecture was tested against the controls this literature usually omits.</p>
+      <h1>Separating what the system calculates from what language explains.</h1>
+      <p class="paper-lede">The production artifact uses dated data and deterministic code to select and weight assets. Only after the proposal is sealed does a language model explain approved facts, risks and review questions. A separate retrospective experiment relaxed that boundary to test what model discretion would add; it found no detectable return benefit and cannot certify temporal purity.</p>
 
       <div class="paper-callout"><b>One term, defined once</b>CDI is the Brazilian interbank overnight rate, the
       benchmark a domestic investor earns on cash with negligible credit risk. It is the local equivalent of a
@@ -31,13 +31,11 @@
       appears as a benchmark throughout and why the defensive sleeve is held in it rather than in bills.</div>
 
       <h2>1 · Why the separation exists</h2>
-      <p>Asking a language model for portfolio weights fails for reasons that have nothing to do with its financial reasoning. Weights must sum to one, respect a per-issuer ceiling, respect an asset-class ceiling, and trade off expected return against a covariance structure and against the cost of moving away from the book you already hold. That is a constrained optimisation, and free text is the wrong medium for its answer.</p>
-      <p>The separation is therefore structural rather than advisory. The model's output type is a scalar in a closed interval. It has no channel through which a weight, a limit or an eligibility decision can reach the portfolio.</p>
-      <div class="paper-callout"><b>Coupling</b>μ<sub>i</sub> ← μ<sub>i</sub> · (1 + λ·c<sub>i</sub>), with c<sub>i</sub> ∈ [−1, +1].<br />
-      The solver maximises μᵀw − (γ/2)·wᵀΣw − κ‖w − w<sub>prev</sub>‖₁ subject to Σw = 1, w ≥ 0, an equity ceiling and a per-issuer ceiling. λ, γ and κ are fixed before the run and are not tuned per period.</div>
+      <p>Portfolio weights must sum to one, respect policy limits and remain traceable to the data admitted at the decision date. Free text cannot guarantee those properties. The separation is structural: deterministic code creates eligibility, ranking and weights; language receives a read-only decision record; a named human accepts or rejects the proposal.</p>
+      <div class="paper-callout"><b>Production contract</b>Dated data → deterministic rule → valid weights → explanation → human review. There is no path from generated prose back to selection, limits or weights.</div>
 
       <h2>2 · Pipeline</h2>
-      <p>Each January the system executes five stages in a fixed order. Stages one to three are deterministic; the model only enters at stage four, and stage five is human.</p>
+      <p>Each January the system executes five stages in a fixed order. Universe, filings, screen and allocation are deterministic. Language enters only after the proposal is sealed, and the last stage is human.</p>
       <h3>2.1 Dated universe</h3>
       <p>The universe of record is the exchange's own historical quotation archive, not a vendor feed. This matters more than it sounds: a public adjusted-price provider serves the companies that still exist, so building a universe from one silently deletes every company that was delisted, acquired or wound up. In this panel that is 166 of 514 issuers, 77 of which disappear before 2020, and 58 of which had already fallen more than 60% from their own peak when they stopped trading. Rebuilding from the exchange archive restores them.</p>
       <p>Corporate actions are recovered in two ways: confirmed against an archived provider event feed where one exists, and otherwise detected from round, persistent price ratios. The detector's precision and recall against the provider's own records are published with the panel rather than assumed, because for the delisted tail it is the only evidence available.</p>
@@ -46,9 +44,9 @@
       <h3>2.3 Screen</h3>
       <p>Assets must clear liquidity, profitability, returns on capital and solvency. Operating companies and financial institutions are screened on different quantities because their standardised statements are not comparable; solvency for operating companies is derived from the standardised accounts rather than left undefined, which is what previously caused an accidental sector concentration.</p>
       <h3>2.4 Ranking and allocation</h3>
-      <p>Survivors are ranked by a composite of quality, valuation yield and medium-term momentum, all computed from information available on the decision date. The ranking becomes the confidence vector, whether it is produced by the deterministic factor or by the model. The solver then allocates within the ceilings, and the residual is held in the domestic overnight rate.</p>
-      <h3>2.5 Human review</h3>
-      <p>The output is a proposal with the applied policy, the screen and its rejection reasons, the weights, the order sizes with lot rounding and participation in average traded volume, and the estimated cost. No order is transmitted. Execution is reconciled against the broker note afterwards.</p>
+      <p>Survivors are ranked by a declared composite of quality, valuation yield and twelve-month momentum. The annual configuration is chosen only with years already closed. Deterministic code allocates inside the ceilings and holds the residual at the domestic overnight rate. MVO is an independent comparator, not the Benevente selector.</p>
+      <h3>2.5 Explanation and human review</h3>
+      <p>The sealed proposal carries the policy, rejection reasons, weights, order sizes and estimated cost. The language model turns those approved facts into a readable note but cannot modify them. A person records acceptance or rejection. No order is transmitted.</p>
 
       <h2>3 · Holding, cost and tax</h2>
       <p>The book is bought in January and held. This is worth stating because the natural vectorised expression of a backtest — compounding the inner product of returns and weights — silently rebalances to fixed weights every session at no cost, which is neither the protocol being evaluated nor something an investor can execute.</p>
@@ -106,10 +104,10 @@
           <tr><td>deterministic</td><td>Pre-declared factor replaces the model</td><td class="num">12.67%</td><td class="num">8 of 13</td></tr>
           <tr class="highlight"><td>anonymised</td><td>Dated figures only, assets unidentifiable</td><td class="num">12.62%</td><td class="num">10 of 13</td></tr>
           <tr><td>monolithic</td><td>Model returns weights directly</td><td class="num">11.81%</td><td class="num">7 of 13</td></tr>
-          <tr><td>Cash (CDI)</td><td>—</td><td class="num">9.59%</td><td class="num">—</td></tr>
+          <tr><td>Cash (CDI)</td><td>Not applicable</td><td class="num">9.59%</td><td class="num">Not applicable</td></tr>
         </tbody>
       </table>
-      <p>The anonymised arm controls for temporal contamination. A model trained on text written after 2019 may remember what happened to an identifiable company; removing the identity tests whether that memory changes the return. The deterministic arm controls for added value. Without it, a result showing the model beating cash demonstrates only that the structured screen works.</p>
+      <p>The anonymised arm is a contamination sensitivity test, not a guarantee. A model may infer a company from its financial attributes, and both named and anonymised prompts can activate memory acquired after the historical date. Only prospective observation after a frozen registration can validate a predictive language component. The deterministic arm separately tests whether the model adds anything beyond the structured screen.</p>
       <table class="paper-table">
         <thead><tr><th>Hypothesis</th><th>Annualised gap</th><th>p</th><th>Reading</th></tr></thead>
         <tbody>
@@ -118,17 +116,17 @@
           <tr><td>Recognising the company helps</td><td class="num">+0.38 pp</td><td class="num">0.91</td><td>Indistinguishable from zero</td></tr>
         </tbody>
       </table>
-      <div class="paper-callout warn"><b>The result is null, and that is the finding</b>None of the three effects survives testing. The model reproduces the deterministic ranking; it does not profit from recognising the company; and when handed the weights it breached no ceiling in thirteen years, which is a point in its favour. What it did produce was arithmetically invalid: weights failing to sum to one in five of thirteen years, ranging from 0.92 to 1.017, and 65 and 83 eligible names silently omitted in 2021 and 2022. The case for the solver is not that it prevents a limit breach; it is that it returns an allocation that needs no repair. What generates the return is the dated screen, not the ranking method layered on top of it. With thirteen annual observations these are underpowered tests, and the honest statement is that no effect was detected, not that none exists.</div>
+      <div class="paper-callout warn"><b>The retrospective result is null</b>None of the three effects survives testing. The model reproduces the deterministic ranking. Direct model-generated weights failed to sum to one in five of thirteen years and silently omitted eligible names in two. This supports keeping language away from allocation, but it does not prove contamination absent or validate the model. The production system therefore restricts language to explanation; any future predictive role requires a new prospective arm.</div>
 
       <h2>8 · Published strategy</h2>
       <table class="paper-table">
         <thead><tr><th>Series</th><th>CAGR 2015–2025</th><th>Years won</th><th>Max drawdown</th></tr></thead>
         <tbody>
-          <tr class="highlight"><td>Benevente</td><td class="num">17.86%</td><td class="num">—</td><td class="num">−47.8%</td></tr>
-          <tr><td>Benevente, after tax</td><td class="num">16.03%</td><td class="num">—</td><td class="num">—</td></tr>
+          <tr class="highlight"><td>Benevente</td><td class="num">17.86%</td><td class="num">Not applicable</td><td class="num">−47.8%</td></tr>
+          <tr><td>Benevente, after tax</td><td class="num">16.03%</td><td class="num">Not applicable</td><td class="num">Not calculated</td></tr>
           <tr><td>Ibovespa (total-return index)</td><td class="num">11.77%</td><td class="num">7 of 11</td><td class="num">−47.0%</td></tr>
           <tr><td>BOVA11 (investable ETF)</td><td class="num">11.72%</td><td class="num">7 of 11</td><td class="num">−47.2%</td></tr>
-          <tr><td>Neutral MVO, same universe</td><td class="num">7.83%</td><td class="num">10 of 11</td><td class="num">—</td></tr>
+          <tr><td>Neutral MVO, same universe</td><td class="num">7.83%</td><td class="num">10 of 11</td><td class="num">−61.15%</td></tr>
           <tr><td>Cash (CDI)</td><td class="num">9.61%</td><td class="num">6 of 11</td><td class="num">0%</td></tr>
         </tbody>
       </table>
@@ -137,15 +135,14 @@
 
       <div id="live-portfolio"></div>
 
-      <h2>9 · What is disclosed, and what is not</h2>
-      <p>Everything above describes the mechanism: the stages, the data construction, the estimators, the validation protocol and the measured results, including the ones that came out null. That is enough to evaluate the work and to reproduce the <i>methodology</i>.</p>
-      <p>Not disclosed here: the coefficients that weight the composite ranking, the numeric thresholds of the screen, the risk-aversion and signal-influence constants, and the exact configuration grid. Those are the operating parameters of a commercial system. They are held in the frozen registration, hashed, so that an independent reviewer can verify no parameter changed between the registration and any result claimed afterwards — without the parameters themselves being published.</p>
+      <h2>9 · Reproduction contract</h2>
+      <p>The repository publishes code, configuration grid, dated inputs where licensing permits, tests, raw experiment outputs and SHA-256 manifests. The website explains the method without exposing source code in the interface; the paper and supplementary package remain the scientific record. The frozen protocol cannot be changed after an outcome without creating a new version and a new prospective count.</p>
 
       <h2>10 · Limitations</h2>
       <ul>
-        <li>Ten annual evaluations for the strategy and thirteen for the model experiment. Every test here is underpowered; effect sizes are reported with their p-values rather than as findings.</li>
+        <li>Eleven annual evaluations for the strategy and thirteen for the model experiment. Every test is underpowered; effect sizes are reported with p-values rather than as findings.</li>
         <li>Corporate actions for the delisted tail rest on a detector whose precision and recall are published but imperfect; distributions for issuers no provider still serves are imputed from the cross-section and flagged per ticker.</li>
-        <li>Contamination was measured for one model at one training cutoff. It should be expected to vary across models and to grow with recency.</li>
+        <li>The named--anonymised gap cannot certify temporal purity. Identity may be inferred from fundamentals and pretrained memory is unobservable.</li>
         <li>Coverage is Brazil only. Partial-year monitoring uses exchange closing prices and excludes distributions until corporate events are reconciled against primary records.</li>
       </ul>
 

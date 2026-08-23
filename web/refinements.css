@@ -135,3 +135,39 @@ body{font-size:15px}.hero{grid-template-columns:minmax(0,42rem);min-height:auto}
 
 /* Escolha explícita entre a estratégia oficial e a extensão experimental. */
 .version-gateway{padding:82px 0 96px}.version-gateway-head{display:grid;grid-template-columns:1.05fr .8fr;gap:18px 70px;align-items:end;margin-bottom:28px}.version-gateway-head .eyebrow{grid-column:1/-1;margin-bottom:0}.version-gateway-head h2{margin:0;color:#102a43;font-size:clamp(30px,4vw,48px);line-height:1.05;letter-spacing:-.055em}.version-gateway-head>p{margin:0;color:#617482;font-size:13px}.version-gateway-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.version-gateway-card{position:relative;min-height:240px;padding:27px;border:1px solid #d9e5e1;border-radius:14px;background:#fff;color:#1d2d3c;text-decoration:none;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}.version-gateway-card:hover{transform:translateY(-3px);border-color:#9ccfc5;box-shadow:0 13px 32px rgba(16,42,67,.08)}.version-gateway-card.experimental{background:#102a43;border-color:#102a43;color:#fff}.version-tag{display:block;color:#0c8076;font:700 9px "DM Mono",monospace;letter-spacing:.1em}.experimental .version-tag{color:#80daca}.version-gateway-card>strong{display:block;margin:42px 0 8px;font-size:25px;letter-spacing:-.045em}.version-gateway-card>p{max-width:430px;margin:0;color:#627482;font-size:12px;line-height:1.65}.experimental>p{color:#b2c3cb}.version-gateway-card>b{position:absolute;left:27px;bottom:25px;color:#155f59;font-size:11px}.experimental>b{color:#c6f2e8}.version-gateway-card i{margin-left:5px;font-style:normal}@media(max-width:780px){.version-gateway{padding:62px 0}.version-gateway-head,.version-gateway-grid{grid-template-columns:1fr}.version-gateway-head .eyebrow{grid-column:auto}.version-gateway-card{min-height:225px}}
+/* Evidence-first release: compact rhythm, explicit research stage and mobile-safe cards. */
+.stage-ribbon{display:flex;align-items:center;justify-content:center;gap:.8rem;padding:.55rem 1rem;background:#0d2b3a;color:#eef8f5;font-size:.78rem;line-height:1.35;position:relative;z-index:20}
+.stage-ribbon span{font:600 .68rem "DM Mono",monospace;letter-spacing:.08em;color:#8fe1d3;white-space:nowrap}
+.stage-ribbon p{margin:0}
+.hero{padding-top:clamp(3.5rem,7vw,6rem);padding-bottom:clamp(2.5rem,5vw,4.5rem)}
+.hero h1{font-size:clamp(2.6rem,5vw,4.35rem);line-height:.98;max-width:43rem}
+.lede{max-width:58rem;font-size:clamp(1rem,1.6vw,1.22rem);line-height:1.65}
+.hero-actions{display:flex;align-items:center;flex-wrap:wrap;gap:.8rem}
+.model-section,.comparison,.lab-section,.evidence-board,.research-disclosure{padding-top:clamp(3.5rem,6vw,6rem);padding-bottom:clamp(3.5rem,6vw,6rem)}
+.comparison-card{padding:clamp(1rem,2.2vw,1.75rem)}
+.evidence-board{border-top:1px solid #d9e4e1}
+.evidence-board-head{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(16rem,.75fr);gap:2rem;align-items:end;margin-bottom:1.6rem}
+.evidence-board-head h2{margin:.35rem 0 0;font-size:clamp(2rem,4vw,3.5rem);line-height:1.04}
+.evidence-board-head>p{margin:0;color:#5e716e;line-height:1.65}
+.evidence-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem}
+.evidence-card{min-height:10.2rem;padding:1.05rem;border:1px solid #d7e3e0;border-radius:14px;background:#fff}
+.evidence-card span,.protocol-card>span{font:600 .64rem "DM Mono",monospace;letter-spacing:.08em;color:#667976}
+.evidence-card h3,.protocol-card h3{margin:.6rem 0 .35rem;font-size:1.02rem;line-height:1.25}
+.evidence-card p,.protocol-card p{margin:0;color:#627370;font-size:.88rem;line-height:1.5}
+.evidence-card.proven{border-top:3px solid #168577}.evidence-card.observed{border-top:3px solid #397aa1}.evidence-card.pending{border-top:3px solid #b7815f}.evidence-card.tracking{border-top:3px solid #765b9d}
+.audit-protocol-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:.8rem;margin-top:.8rem}
+.audit-block,.protocol-card{padding:1.1rem 1.2rem;border:1px solid #d7e3e0;border-radius:14px;background:#f7faf9}
+.audit-block summary{cursor:pointer;font-weight:700;color:#17324a}.audit-block ol{margin:1rem 0 .25rem;padding-left:1.25rem;columns:2;column-gap:2rem}.audit-block li{break-inside:avoid;margin:0 0 .55rem;color:#526764;font-size:.88rem;line-height:1.45}
+.protocol-card code{display:block;margin:.7rem 0;padding:.65rem;border-radius:8px;background:#eaf2f0;color:#174a44;font-size:.68rem;line-height:1.45;overflow-wrap:anywhere}
+.protocol-card a{display:inline-block;margin-top:.8rem;color:#0b7167;font-weight:700;text-decoration:none}
+.comparison-table-wrap td small{display:block;margin-top:.18rem}
+.fixed-comparators{margin:1rem 0;border:1px solid #d7e3e0;border-radius:12px;background:#fff}
+.fixed-comparators summary{cursor:pointer;padding:1rem 1.15rem;font-weight:700;color:#17324a}
+.fixed-comparators-wrap{overflow-x:auto;border-top:1px solid #e0e8e6}
+.fixed-comparators table{width:100%;border-collapse:collapse;font-size:.84rem}
+.fixed-comparators th,.fixed-comparators td{padding:.7rem 1rem;text-align:left;border-bottom:1px solid #edf1f0;white-space:nowrap}
+.fixed-comparators th{font-size:.67rem;letter-spacing:.05em;color:#647773}
+.fixed-comparators>p{margin:.75rem 1rem 1rem;color:#657571;font-size:.78rem}
+.line-chart{min-height:360px}
+@media(max-width:900px){.evidence-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.evidence-board-head,.audit-protocol-grid{grid-template-columns:1fr}.stage-ribbon{align-items:flex-start;justify-content:flex-start}.audit-block ol{columns:1}}
+@media(max-width:600px){.stage-ribbon{display:block}.stage-ribbon span{display:block;margin-bottom:.2rem}.evidence-grid{grid-template-columns:1fr}.evidence-card{min-height:0}.hero h1 br{display:none}.hero-actions .button,.hero-actions .text-link{width:100%;justify-content:center}.line-chart{min-height:290px}}

@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-08-21T01:46:47+00:00",
+  "generated_at_utc": "2026-08-23T23:29:13+00:00",
   "status": "research_only",
   "names": {
     "academic": "Benevente Quant AI",
@@ -71,7 +71,8 @@
     "price_tickers": 497,
     "fundamental_records": 2868,
     "historical_universe_records": 10286,
-    "historical_issuers": 2051,
+    "historical_issuer_labels": 2051,
+    "evaluated_distinct_issuers": 514,
     "historical_asset_classes": [
       "bdr",
       "equity",

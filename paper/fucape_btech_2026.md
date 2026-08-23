@@ -12,7 +12,7 @@ Palavras-chave: governança de investimentos; alocação de carteira; trilha de 
 
 ## 1. Introdução: problema, objetivo e contribuição
 
-Este trabalho parte de um problema operacional delimitado: a recomendação é produzida hoje, mas pode precisar ser defendida meses ou anos depois. Se a instituição não preserva o dado admitido, a versão da regra e a aprovação, a justificativa posterior pode incorporar informações que não existiam quando a decisão foi tomada. O Benevente foi construído para produzir a proposta e o registro que permitirá revisá-la. A existência desse problema no público-alvo, sua intensidade e a disposição a pagar pela solução ainda precisam ser medidas em piloto. O artigo não atribui ao artefato impacto regional, demanda comercial ou retenção de capital que não tenham sido observados.
+Este trabalho parte de um problema operacional: a recomendação é produzida hoje, mas pode precisar ser defendida anos depois. Sem preservar o dado admitido, a versão da regra e a aprovação, a justificativa posterior pode incorporar informações inexistentes na decisão. O Benevente produz a proposta e seu registro verificável. A intensidade do problema e a disposição a pagar ainda precisam ser medidas em piloto. O artigo não atribui ao artefato impacto regional ou demanda comercial não observados.
 
 O problema é concreto e tem data. Quando um cliente pergunta em 2026 por que determinada ação entrou na carteira em janeiro de 2023, o escritório precisa demonstrar três coisas simultaneamente.
 
@@ -20,11 +20,11 @@ O problema é concreto e tem data. Quando um cliente pergunta em 2026 por que de
 2. Qual regra foi aplicada. Não a regra que o escritório usa hoje, mas a que estava vigente naquele janeiro, com os limites que estavam vigentes.
 3. Quem aprovou. Uma decisão de alocação sem responsável identificado não é auditável, e a automação sem aprovação humana desloca a responsabilidade para um sistema que não pode respondê-la.
 
-Planilhas podem falhar nas três quando são usadas sem controle de versão: sobrescrevem o estado anterior, misturam regra e dado e não preservam autoria. Sistemas fechados podem entregar uma carteira sem evidenciar o critério aplicado. O requisito do artefato é permitir que uma pessoa independente refaça o caminho da decisão sem depender da memória de quem a produziu.
+Planilhas sem controle de versão podem sobrescrever estados, misturar regra e dado e perder autoria. Sistemas fechados podem entregar uma carteira sem evidenciar o critério. O artefato deve permitir que uma pessoa independente refaça a decisão sem depender da memória de quem a produziu.
 
-A questão que orienta este trabalho é, portanto, de engenharia e de governança antes de ser de finanças: como construir um artefato que produza recomendação e prova ao mesmo tempo, e cuja própria evidência de desempenho resista a auditoria hostil?
+A pergunta prioritária é: como usar modelos de linguagem acessíveis à comunidade para apoiar decisões de investimento, e quão úteis são essas ferramentas para a tomada de decisão? No Benevente, ela se torna uma questão de engenharia e governança: como produzir proposta e prova no mesmo fluxo, sem transferir ao texto gerado a seleção, os pesos ou a responsabilidade?
 
-O objetivo é construir e avaliar um artefato B2B que transforme cada recomendação em um documento verificável. O método segue ciência do projeto, ou design science: identificar o problema, explicitar requisitos, construir o artefato e avaliá-lo por utilidade, qualidade e capacidade de produzir evidência (Hevner et al., 2004; Peffers et al., 2007). A avaliação combina testes de funcionamento, inspeção das fontes, tentativas deliberadas de encontrar erros e um diagnóstico financeiro histórico. A contribuição é dupla: um protocolo quantitativo que pode ser reexecutado e um fluxo de trabalho que preserva quem decidiu, com qual informação e sob qual política. O retorno passado é uma medida secundária de comportamento do protótipo, não a prova principal de utilidade nem uma promessa de desempenho futuro.
+O objetivo é construir e avaliar um artefato B2B que transforme cada recomendação em documento verificável. O método segue design science: identificar o problema, explicitar requisitos, construir e avaliar o artefato por utilidade, qualidade e evidência (Hevner et al., 2004; Peffers et al., 2007). A avaliação combina testes, inspeção das fontes, busca deliberada de erros e diagnóstico financeiro histórico. A contribuição reúne um protocolo quantitativo reexecutável e um fluxo que preserva quem decidiu, com qual informação e política. O retorno passado mede o comportamento do protótipo, não sua utilidade principal nem o desempenho futuro.
 
 ---
 
@@ -32,21 +32,11 @@ O objetivo é construir e avaliar um artefato B2B que transforme cada recomenda�
 
 O público inicial do Benevente são escritórios de investimento, consultorias de valores mobiliários e estruturas de gestão patrimonial que precisam recomendar, revisar e defender carteiras. Nesse ambiente, a dificuldade não termina quando o peso de cada ativo é calculado. A instituição precisa preservar o contexto da decisão, demonstrar por que um ativo foi aceito ou recusado e comparar o resultado com alternativas reconhecíveis pelo cliente. O piloto comercial proposto poderá ser realizado no Espírito Santo por conveniência e aderência ao congresso, mas sua função será medir o problema e a utilidade do artefato, não confirmar antecipadamente um efeito sobre a economia local.
 
-Três problemas metodológicos bem documentados na literatura de finanças quantitativas foram tratados como requisitos de projeto, não como ressalvas de rodapé.
+Três vieses clássicos de backtesting foram tratados como requisitos de projeto. O viés de sobrevivência é mitigado ao reconstruir o universo pelo arquivo histórico da B3 e manter os deslistados; ainda resta reconciliar integralmente seus eventos societários. O viés de antecipação, ou *look-ahead*, é mitigado pela data de recebimento de ITR e DFP e pelo corte anual; republicações e fontes auxiliares continuam sujeitas a inspeção. O viés de mineração de dados, ou *data-snooping*, é limitado pela seleção aninhada, pelo prêmio de retrospectiva e pelo Sharpe deflacionado (Bailey & López de Prado, 2014), mas onze decisões não substituem uma amostra prospectiva.
 
-Viés de sobrevivência. Painéis montados a partir de provedores públicos de preço ajustado servem as empresas que ainda existem. Reconstruir o universo a partir de um provedor desses apaga silenciosamente toda empresa deslistada, adquirida ou liquidada, justamente as que produziram os piores retornos. O efeito é sistemático e sempre favorável ao backtest.
+Markowitz (1952) fundamenta a comparação média-variância, ou MVO, calculada de modo independente sobre o mesmo conjunto elegível. Black e Litterman (1992) inspiram apenas a separação entre visões e alocação, não um modelo implementado. DeMiguel, Garlappi e Uppal (2009) justificam diversificação e cautela diante do erro de estimação; o MVO de 7,83% ao ano nesta execução descreve um comparador específico, não inferioridade geral. Qualidade, valor e confirmação de mercado dialogam com Novy-Marx (2013) e Fama e French (2015). Custos, giro e deslizamento entram no protocolo porque atritos podem consumir anomalias (Novy-Marx & Velikov, 2016).
 
-Informação disponível na data. Fundamentos precisam ser lidos como estavam no momento da decisão, com data de recebimento pelo regulador, não com a versão consolidada e eventualmente republicada. Chamar isso de detalhe é subestimar o problema: a diferença aparece com sinal previsível, sempre a favor de quem testa.
-
-Múltiplas tentativas. Quando se avaliam dezenas de configurações e se publica a melhor, o índice de Sharpe observado é enviesado para cima pela própria busca. Bailey e López de Prado formalizaram o problema com o Sharpe deflacionado, que corrige a estatística pelo número de tentativas e pelos momentos superiores da distribuição de retornos. Sem essa correção, qualquer busca suficientemente ampla produz um vencedor aparentemente significativo.
-
-Quatro referências clássicas orientam a construção financeira do artefato. Markowitz (1952) mostrou que uma carteira precisa ser analisada pela interação entre retornos e covariâncias, e não pela atratividade isolada de cada ativo. A otimização média-variância, chamada neste artigo de MVO, estima a relação entre retorno esperado e risco conjunto e escolhe pesos sob restrições. No Benevente, ela funciona como comparação independente. A pergunta é simples: o que uma carteira guiada apenas por médias, covariâncias e limites teria produzido sobre o mesmo conjunto elegível? Isso evita atribuir ao filtro fundamental um ganho que possa vir apenas da diversificação. A ênfase em qualidade dialoga com Novy-Marx (2013), enquanto o uso conjunto de valor, qualidade e confirmação de mercado se aproxima da lógica multifatorial de Fama e French (2015), sem pretender reproduzir exatamente seus fatores.
-
-Black e Litterman (1992) combinam equilíbrio de mercado e visões. O Benevente adota somente a separação conceitual: fatos e sinais geram o ranking, enquanto a linguagem explica a visão sem alterar a alocação. O modelo Black–Litterman não é implementado na carteira publicada.
-
-DeMiguel, Garlappi e Uppal (2009) demonstram como erro de estimação pode eliminar, fora da amostra, a vantagem aparente de métodos sofisticados sobre uma diversificação simples. A resposta do projeto não é presumir que um otimizador sempre melhora o resultado. É publicar uma referência independente, impor um número mínimo de posições, limitar a interpretação das métricas e comparar decisões em sequência temporal. O resultado de 7,83% ao ano do MVO de referência nesta execução não prova que MVO é inferior em geral. Mostra somente que aquela implementação, com aquele universo elegível e aquelas estimativas disponíveis em cada janeiro, produziu esse caminho. Em outra amostra ou especificação, a ordem pode se inverter.
-
-Novy-Marx e Velikov (2016) mostram que custos de negociação podem consumir anomalias documentadas. O diagnóstico deduz taxas e deslizamento estimado, mede giro e penaliza trocas. Como estimativa não é nota de corretagem, o produto prevê conciliação posterior com o custo observado.
+Os estudos recentes também recomendam separar utilidade narrativa de capacidade preditiva. Perlin et al. (2025) executaram 30 mil simulações com 1.522 empresas anonimizadas e não encontraram superioridade consistente do Gemini sobre 1/N ou S&P 500, sobretudo em horizontes longos. Pelster e Val (2024) adotaram um experimento ao vivo, desenho mais adequado para evitar conhecimento posterior. Kim, Muhn e Nikolaev (2024) reportam que modelos podem extrair informações narrativas úteis de demonstrativos anonimizados, sem que isso implique alfa de negociação. Li et al. (2026), no FINSABER, mostram que vantagens aparentes se deterioram em universos amplos, horizontes longos e regimes distintos. FINCON (Yu et al., 2024) inspira a divisão de responsabilidades, não autonomia de negociação. Esse conjunto sustenta a escolha do Benevente: a regra determinística calcula, o modelo apenas explica fatos aprovados e sua utilidade será avaliada prospectivamente.
 
 Essas escolhas definem o tipo de evidência que o trabalho pode produzir. O backtest é um experimento histórico sobre um protocolo e não uma simulação da experiência individual de todo cliente. Suitability, necessidade de liquidez, tributação específica, ativos já detidos e restrições contratuais podem mudar a carteira implementável. Por isso, o artefato separa três objetos que costumam aparecer misturados: a regra acadêmica usada para medir o sinal; a política institucional que limita o risco; e o texto explicativo que ajuda uma pessoa a revisar a decisão. Uma boa curva não substitui nenhum dos três.
 
@@ -92,9 +82,7 @@ Depois da triagem, cada ativo recebe um escore comparável dentro do universo di
 
 Essa separação também resolve a ambiguidade entre os nomes. Benevente Quant AI designa a pesquisa acadêmica, inclusive o experimento que combina um modelo de linguagem com um otimizador convexo. Benevente Wealth System designa o produto B2B de governança que entrega proposta, explicação e registro. A carteira histórica publicada é a regra multifatorial determinística. O modelo de linguagem não seleciona ativo e não escreve peso; seu papel é transformar fatos aprovados em tese, riscos e perguntas para revisão humana.
 
-O método precisa ser compreensível sem reproduzir o código da aplicação. Primeiro, o sistema elimina ativos sem dados suficientes, sem liquidez compatível ou com lucro negativo. Depois, ordena os remanescentes por uma de quatro leituras: valor combinado a qualidade, valor combinado a qualidade e momento, somente momento ou baixa volatilidade. A versão multifatorial atribui 40% à qualidade, medida por retorno sobre o capital ou sobre o patrimônio, 40% ao lucro em relação ao preço e 20% ao comportamento do preço nos doze meses anteriores. Em seguida, escolhe uma cesta e distribui o orçamento de ações entre os melhores colocados. O saldo permanece no CDI.
-
-Há três escolhas de orçamento de ações, 55%, 75% ou 95%, três tamanhos de cesta, 5, 8 ou 12 emissores, e quatro leituras de sinal. A combinação produz 36 políticas candidatas. O efeito de cada escolha é intuitivo: mais ações aumentam a exposição ao mercado; mais emissores reduzem a dependência de um papel; sinais distintos favorecem características diferentes. Em cada janeiro, somente os anos já encerrados podem ordenar essas políticas. O teto por emissor impede que a carteira pareça diversificada apenas no número de nomes. A configuração completa, a transformação de cada campo e os arquivos de entrada e saída recebem SHA-256 e permanecem disponíveis no pacote de reprodução.
+Sem expor o código da aplicação, a lógica é verificável. O sistema elimina ativos sem dados, liquidez ou lucro compatíveis, testa quatro leituras pré-declaradas e, na versão multifatorial, combina 40% de qualidade, 40% de lucro em relação ao preço e 20% de momento em doze meses. As 36 políticas candidatas cruzam orçamentos de ações de 55%, 75% e 95%, cestas de 5, 8 ou 12 emissores e quatro sinais. Somente anos encerrados podem ordenar as alternativas de cada janeiro. Pesos, limites, transformações e arquivos recebem SHA-256.
 
 ### 3.4 Por que a decisão é anual
 
@@ -252,7 +240,7 @@ Proteção intranual concebida depois da Covid-19. O Benevente 2 reduz a exposi�
 
 ### 5.6 O experimento com modelo de linguagem: três resultados nulos
 
-O sistema usa um modelo de linguagem em papel deliberadamente restrito. Para verificar se essa restrição custa desempenho e se o modelo agrega algo, foram comparadas quatro versões sobre 13 anos, com o mesmo universo elegível.
+O produto restringe o modelo de linguagem à explicação. Um experimento retrospectivo separado permitiu que ele produzisse escore ou pesos apenas para medir o custo dessa restrição. Como o treinamento do modelo pode conter notícias e desfechos posteriores, os quatro braços são diagnóstico de sensibilidade, não validação temporal da LLM.
 
 - Nomeado: o modelo vê os nomes das empresas e devolve um escore limitado, que inclina o retorno esperado dentro do otimizador convexo.
 - Anonimizado: idêntico, mas as empresas são identificadas apenas por números, de modo que o modelo vê os fundamentos e não as marcas.
@@ -267,11 +255,11 @@ O sistema usa um modelo de linguagem em papel deliberadamente restrito. Para ver
 
 Os três resultados estatísticos não permitem rejeitar a hipótese de ausência de diferença, e cada um responde a uma pergunta diferente.
 
-1. Não houve diferença detectável entre identificar as empresas pelo nome e ocultar sua identidade. A amostra pequena, porém, não prova ausência de contaminação.
+1. Não houve diferença detectável entre identificar as empresas pelo nome e ocultar sua identidade. Isso não prova ausência de contaminação: o modelo pode inferir a empresa pelos fundamentos ou reconhecer padrões aprendidos depois do período avaliado.
 2. O modelo não agregou retorno. O braço anonimizado ficou 0,05 ponto percentual abaixo do controle determinístico, com p = 0,989.
 3. Manter o modelo longe dos pesos não penalizou o resultado. Quando recebeu essa função, ele produziu vetores que não somavam 100% em 5 dos 13 anos e omitiu dezenas de ativos elegíveis sem sinalizar. O otimizador garante uma alocação válida antes da explicação.
 
-A conclusão de produto é direta. O modelo de linguagem justifica-se no Benevente por organizar e explicar decisões, não por gerá-las. Vender IA como fonte de alfa, com base nestes dados, seria vender algo que medimos e não encontramos.
+A conclusão de produto é direta. O modelo organiza e explica decisões, mas não as gera. Qualquer futuro uso em sinal, ranking ou peso terá de começar depois do protocolo congelado em 16 de agosto de 2026 e ser comparado prospectivamente ao controle determinístico.
 
 ### 5.7 Defeitos encontrados na própria auditoria
 
@@ -305,9 +293,9 @@ O uso começa pela política da instituição. Depois de escolher o perfil e ace
 
 ### 6.3 Implantação e piloto comercial
 
-Uma implantação mínima pode ser dividida em três etapas. Na preparação, a instituição define fontes, políticas, perfis de acesso e responsáveis por aprovação. No piloto, o sistema acompanha uma política e um grupo pequeno de carteiras sem enviar ordens, enquanto o escritório confronta os dossiês com o processo que já utiliza. Na operação assistida, a conciliação de custos e posições passa a fechar o ciclo entre proposta e execução. Integração com corretora, custódia, identidade corporativa e arquivo documental pertence a essa última etapa e não precisa bloquear o teste inicial.
+A implantação começa pela definição de fontes, políticas, acessos e aprovadores. No piloto, o sistema acompanha poucas carteiras sem enviar ordens e os dossiês são confrontados com o processo vigente. Na operação assistida, a conciliação de custos e posições fecha o ciclo entre proposta e execução. Integrações com corretora, custódia, identidade e arquivo pertencem a essa etapa e não bloqueiam o teste inicial.
 
-A oferta a validar combina licença institucional e implantação. O piloto deve medir tempo de produção, completude da evidência, revisões, diferença entre custo estimado e executado e disposição a pagar. Um teste no Espírito Santo atende ao recorte do congresso, mas não permite presumir retenção de capital ou geração de negócios no estado. Esse efeito exigiria pesquisa econômica própria.
+A oferta a validar combina licença institucional e implantação. O piloto medirá tempo, completude da evidência, revisões, diferença entre custo estimado e executado e disposição a pagar. Um teste no Espírito Santo atende ao recorte do congresso, mas não permite presumir retenção de capital ou negócios no estado. Esse efeito exigiria pesquisa própria.
 
 O produto permanece em estágio de protótipo reprodutível. A janela de 2015 a 2025 foi usada no desenvolvimento e descreve a amostra, não o futuro. A avaliação prospectiva começa no registro congelado, cujo hash foi versionado e recebeu data carimbada por terceiro. Essa separação entre diagnóstico e acompanhamento futuro é parte do produto, não apenas uma ressalva acadêmica.
 
@@ -324,6 +312,8 @@ A Tabela 9 delimita o que pode ser afirmado na data da submissão. Ela também s
 | O modelo de linguagem gera retorno adicional | Diferença de −0,05 p.p. e p = 0,989 | Não demonstrada |
 | Há demanda e disposição a pagar | Piloto ainda não executado | Não demonstrada |
 | A regra funciona em dados futuros | Registro de 16/08/2026, mínimo de três anos | Em acompanhamento |
+
+A matriz converge com a literatura externa. A ausência de alfa atribuído ao modelo é compatível com Perlin et al. (2025) e com o desgaste de vantagens em testes longos descrito por Li et al. (2026). O valor narrativo ainda plausível acompanha Kim et al. (2024), mas não autoriza pesos. A linha prospectiva adota a exigência empírica ilustrada por Pelster e Val (2024). Assim, cada achado externo reforça uma fronteira do artefato: cálculo determinístico, explicação limitada e responsabilidade humana.
 
 ---
 
@@ -395,7 +385,11 @@ Harvey, C. R., Liu, Y., & Zhu, H. (2016). … and the cross-section of expected 
 
 Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105. https://doi.org/10.2307/25148625
 
+Kim, A. G. H., Muhn, M., & Nikolaev, V. V. (2024). *Financial statement analysis with large language models* [Working paper]. arXiv. https://arxiv.org/abs/2407.17866
+
 Kroll, J. A., Huey, J., Barocas, S., Felten, E. W., Reidenberg, J. R., Robinson, D. G., & Yu, H. (2017). Accountable algorithms. *University of Pennsylvania Law Review, 165*(3), 633–705.
+
+Li, Y., Kim, K., Cucuringu, M., & Ma, S. (2026). Can LLM-based financial investing strategies outperform the market in long run? In *Proceedings of the 32nd ACM SIGKDD Conference on Knowledge Discovery and Data Mining* (pp. 2711–2722). https://doi.org/10.1145/3770854.3785702
 
 López de Prado, M. (2018). *Advances in financial machine learning*. Wiley.
 
@@ -406,3 +400,9 @@ Novy-Marx, R. (2013). The other side of value: The gross profitability premium. 
 Novy-Marx, R., & Velikov, M. (2016). A taxonomy of anomalies and their trading costs. *Review of Financial Studies, 29*(1), 104–147. https://doi.org/10.1093/rfs/hhv063
 
 Peffers, K., Tuunanen, T., Rothenberger, M. A., & Chatterjee, S. (2007). A design science research methodology for information systems research. *Journal of Management Information Systems, 24*(3), 45–77. https://doi.org/10.2753/MIS0742-1222240302
+
+Pelster, M., & Val, J. (2024). Can ChatGPT assist in picking stocks? *Finance Research Letters, 59*, 104786. https://doi.org/10.1016/j.frl.2023.104786
+
+Perlin, M. S., Foguesatto, C. R., Müller, F. M., & Righi, M. B. (2025). Can AI beat a naive portfolio? An experiment with anonymized data. *Finance Research Letters*, 107126. https://doi.org/10.1016/j.frl.2025.107126
+
+Yu, Y., Yao, H., Jiang, H., Lu, Y., Cao, Y., Yan, D., & Zhuang, F. (2024). FinCon: A synthesized LLM multi-agent system with conceptual verbal reinforcement for enhanced financial decision making. In *Advances in Neural Information Processing Systems 37*. https://doi.org/10.52202/079017-4354
