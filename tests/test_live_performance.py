@@ -165,3 +165,5 @@ def test_strategy_pages_share_the_same_live_structure() -> None:
         assert "paper.js?v=20260824" in source
         assert f'data-strategy-decisions="{mode}"' in source
         assert "COMO REPLICAR" in source
+    assert "data-event-radar" in second
+    assert "event-radar.js?v=20260824" in second
