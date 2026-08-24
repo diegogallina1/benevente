@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "generated_at": "2026-08-23T22:51:29-03:00",
+  "generated_at": "2026-08-23T22:53:17-03:00",
   "timezone": "America/Sao_Paulo",
   "schedule": [
     "00:10",
@@ -664,6 +664,48 @@
   ],
   "consolidations": [
     {
+      "run_at": "2026-08-23T22:53:17-03:00",
+      "window_hours": 12,
+      "new_items": 0,
+      "items_by_state": {
+        "critico": 0,
+        "alerta": 0,
+        "atencao": 0,
+        "normal": 0
+      },
+      "source_status": [
+        {
+          "source": "CVM IPE",
+          "status": "indisponivel",
+          "items": 0,
+          "detail": "HTTPError: HTTP Error 404: Not Found"
+        },
+        {
+          "source": "Google Notícias · mercado financeiro Brasil B3 ações",
+          "status": "ok",
+          "items": 0
+        },
+        {
+          "source": "Google Notícias · Banco Central Brasil Copom juros inflação câmbio",
+          "status": "ok",
+          "items": 0
+        },
+        {
+          "source": "Google Notícias · CVM fato relevante companhia aberta",
+          "status": "ok",
+          "items": 0
+        },
+        {
+          "source": "Google Notícias · VIVA3 OR CURY3 OR CMIN3 OR BBSE3 OR LEVE3",
+          "status": "ok",
+          "items": 0
+        }
+      ],
+      "classifier_status": "gemini_disponivel_sem_itens_novos",
+      "classifier_error": null,
+      "state": "normal"
+    },
+    {
       "run_at": "2026-08-23T22:51:29-03:00",
       "window_hours": 12,
       "new_items": 0,
@@ -874,5 +916,5 @@
       "state": "normal"
     }
   ],
-  "record_sha256": "bc0475f2722023a76b9ee8064703358b8a142ecf22f2fad91ea12b070c25f692"
+  "record_sha256": "441bac16cf643b7ebceb2fee28b7568feaaedbe133b5472f31391f9f825739e5"
 }
