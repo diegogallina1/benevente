@@ -15,7 +15,7 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     assert "PROTÓTIPO DE PESQUISA" in home
     assert "O Benevente 1 é a regra anual publicada" in home
     assert "diagnóstico retrospectivo, não validação prospectiva" in home
-    assert "Reproduzir no GitHub" in home
+    assert "Reproduzir no GitHub" not in home
     assert "O Benevente separa o que calcula, o que explica e o que decide" in home
     for core_class in ("hero shell", "version-gateway shell", "model-shell", "comparison shell", "lab-section"):
         assert core_class in home

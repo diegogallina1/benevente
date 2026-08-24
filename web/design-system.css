@@ -117,8 +117,6 @@ h1, h2, h3, h4,
 .hero-performance-foot { display: flex; align-items: center; gap: .8rem; margin-top: 1.1rem; color: #52736b; font-size: .62rem; }
 .hero-performance-foot span { padding: .32rem .48rem; border-radius: 999px; background: rgba(255,255,255,.68); }
 .hero-performance-foot a { margin-left: auto; color: #0a6259; font-weight: 800; text-decoration: none; }
-.hero-github { display: inline-flex; align-items: center; gap: .35rem; color: #315b55; font-size: .72rem; font-weight: 800; text-decoration: none; }
-.hero-github:hover { color: var(--brand-green); }
 .stage-ribbon p { max-width: 70rem; line-height: 1.4; }
 
 /* Dense comparison: controls on the left and all outcomes on the right. */
