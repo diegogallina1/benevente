@@ -36,5 +36,21 @@
 .paper-holding .bar i{display:block;height:100%;border-radius:20px;background:#0f766e}
 .paper-holding .bar.cash i{background:#3b779a}
 .paper-holding span{font:.78rem "DM Mono",monospace;color:#52706a;text-align:right}
+.live-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.live-card-head h3{margin:.25rem 0}.live-card-head p{margin:.25rem 0;color:#60746d;font-size:.82rem}
+.live-status{display:inline-block;color:#0f766e;font:700 .58rem "DM Mono",monospace;letter-spacing:.08em;text-transform:uppercase}
+.live-version-tab{flex:none;padding:.55rem .75rem;border:1px solid #bdd8cf;border-radius:999px;color:#0f766e;text-decoration:none;font-size:.72rem;font-weight:750}
+.live-chart{position:relative;margin:1.2rem 0;padding:1rem;border:1px solid #dce8e3;border-radius:11px;background:#fff}
+.live-chart-legend{display:flex;flex-wrap:wrap;gap:.5rem 1rem;margin-bottom:.8rem;color:#526a63;font-size:.7rem}
+.live-chart-legend span{display:flex;align-items:center;gap:.35rem}.live-chart-legend i{width:8px;height:8px;border-radius:50%}.live-chart-legend b{color:#203d37}
+.live-chart-readout{min-height:1.3rem;margin-bottom:.3rem;color:#3f5e56;font:600 .66rem "DM Mono",monospace}
+.live-chart-svg{display:block;width:100%;height:auto;overflow:visible;touch-action:none}
+.live-chart-svg path{fill:none;stroke-width:2;vector-effect:non-scaling-stroke}.live-grid line{stroke:#e5ece9;stroke-width:1}.live-grid text{fill:#83958f;font:10px "DM Mono",monospace}
+.live-hit{fill:transparent}.live-cursor{stroke:#1c4f48;stroke-width:1;stroke-dasharray:3 4;pointer-events:none}
+.live-chart-axis{display:flex;justify-content:space-between;gap:1rem;color:#83958f;font:9px "DM Mono",monospace}.live-chart-axis span:nth-child(2){text-align:center}
+.live-holdings{margin-top:1rem}.live-holdings summary{cursor:pointer;color:#174e49;font-size:.78rem;font-weight:750}
+.live-quality{margin:.9rem 0 0!important;color:#71857d!important;font-size:.67rem!important;line-height:1.6!important}
+.live-error{padding:1rem;border:1px solid #dfc9c2;border-radius:10px;color:#8c4738;background:#fff8f5}
 .paper-foot{margin-top:3.5rem;padding-top:1.4rem;border-top:1px solid #dce4df;color:#7c8f88;font-size:.78rem;line-height:1.7}
-@media(max-width:640px){.paper-page{padding:3rem 0 4rem}.paper-table{font-size:.79rem}.paper-holding{grid-template-columns:4.4rem 1fr 3.6rem}}
+@media(max-width:800px){.version-nav nav a.strategy-tab{display:block!important}}
+@media(max-width:640px){.paper-page{padding:3rem 0 4rem}.paper-table{font-size:.79rem}.paper-holding{grid-template-columns:4.4rem 1fr 7rem}.live-card-head{display:block}.live-version-tab{display:inline-block;margin-top:.6rem}.live-chart-axis span:nth-child(2){display:none}}

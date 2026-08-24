@@ -10,7 +10,15 @@
   "prospective_protocol": {
     "frozen_at": "2026-08-16",
     "sha256": "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d",
-    "first_evaluable_decisions": "decisões posteriores a 16/08/2026"
+    "applies_to": "Benevente 1; versões posteriores possuem registro próprio",
+    "first_evaluable_decisions": "decisões anuais tomadas integralmente após o registro da versão avaliada"
+  },
+  "version_registry": {
+    "source": "protocol_versions.json",
+    "benevente_1_registered_at": "2026-08-16",
+    "benevente_2_registered_at": "2026-08-20",
+    "daily_monitoring_registered_at": "2026-08-23",
+    "current_2026_classification": "carteira-sombra e acompanhamento corrente; não validação prospectiva"
   },
   "historical_panel": {
     "evaluated_distinct_issuers": 514,
@@ -43,6 +51,6 @@
     "historical_panel": "painel histórico avaliado",
     "current_catalog": "catálogo atual da B3",
     "dated_record": "registro datado",
-    "prospective_validation": "avaliação de decisões posteriores ao protocolo congelado"
+    "prospective_validation": "avaliação de uma decisão tomada depois do registro, sem alterar a versão após observar o resultado"
   }
 }

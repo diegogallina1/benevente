@@ -15,7 +15,8 @@ def test_home_has_static_evidence_and_research_stage() -> None:
     assert "PROTÓTIPO DE PESQUISA" in home
     assert "Matriz de Evidências" in home
     assert "Ver os 7 defeitos corrigidos" in home
-    assert "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d" in home
+    assert "Uma fronteira para cada método" in home
+    assert "2026 permanece carteira-sombra" in home
     assert "Reproduzir no GitHub" in home
     assert "O Benevente separa o que calcula, o que explica e o que decide" in home
     assert "sensibilidade, não prova de descontaminação" in home
@@ -38,6 +39,10 @@ def test_site_data_contract_matches_canonical_sources() -> None:
     assert contract["corporate_events"]["primary_records"] == manifest["coverage"]["primary_event_records"]
     assert contract["corporate_events"]["covered_price_series"] == manifest["coverage"]["primary_event_tickers_complete"]
     assert contract["prospective_protocol"]["sha256"] == __import__("hashlib").sha256(protocol_path.read_bytes()).hexdigest()
+    versions = json.loads((ROOT / "web" / "protocol_versions.json").read_text(encoding="utf-8"))
+    assert [item["name"] for item in versions["versions"]] == [
+        "Benevente 1", "Benevente 2", "Acompanhamento diário 1.0.0"
+    ]
 
 
 def test_site_uses_honest_language_model_and_cadence_claims() -> None:

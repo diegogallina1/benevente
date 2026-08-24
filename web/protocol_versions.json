@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0.0",
+  "updated_at": "2026-08-23",
+  "versions": [
+    {
+      "name": "Benevente 1",
+      "role": "seleção anual e controle sem proteção intranual",
+      "registered_at": "2026-08-16",
+      "source": "artifacts/published_nested/protocol.json",
+      "sha256": "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d",
+      "2026_status": "carteira-sombra; a decisão ocorreu antes do registro"
+    },
+    {
+      "name": "Benevente 2",
+      "role": "mesma seleção anual com controle intranual de risco",
+      "registered_at": "2026-08-20",
+      "source": "docs/benevente_1_vs_2_protocol.md",
+      "sha256": "d1f37a440f24421e0df32f304ee0683c6de04ed9417d0cb014a0bfc7309e80e4",
+      "2026_status": "trajetória anterior ao registro reconstruída retrospectivamente"
+    },
+    {
+      "name": "Acompanhamento diário 1.0.0",
+      "role": "marcação a mercado automática, sem seleção ou ordens",
+      "registered_at": "2026-08-23",
+      "source": "docs/live_monitoring_protocol.md",
+      "sha256": "15d6f7957c35baaf551f866e1f76998006d3443b908f8d2f6795846e0493f8cd",
+      "2026_status": "acompanhamento corrente versionado"
+    }
+  ],
+  "first_fully_post_registration_annual_decision": "próxima decisão anual tomada sem alteração posterior do método",
+  "interpretation": "Cada mudança material cria nova versão e nova fronteira temporal. Uma versão posterior não herda retrospectivamente a data de uma versão anterior."
+}

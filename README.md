@@ -453,6 +453,26 @@ Antes de acompanhar uma proposta real ou em simulador, ative a
 manifesto guarda hashes da política e das ordens, responsável, valor inicial e,
 se aplicável, CNPJ do fundo ativo de comparação. A ativação não envia ordens.
 
+## Acompanhamento automático de 2026
+
+A carteira-sombra é marcada a mercado de segunda a sexta-feira às 23h10 no
+fuso de São Paulo pelo workflow `update-live-performance.yml`. A rotina mantém
+os ativos e pesos de janeiro, calcula Benevente 1, Benevente 2, CDI, BOVA11 e
+Ibovespa e atualiza `web/live_performance.json` somente quando há uma nova
+observação íntegra. Cada registro contém hashes das respostas e aponta para o
+registro anterior; o histórico do Git preserva as revisões.
+
+```powershell
+.\.venv-benevente\Scripts\python.exe tools\update_live_performance.py
+```
+
+O Yahoo Finance fornece fechamentos ajustados como fonte pública secundária e
+o BCB fornece o CDI oficial. A publicação é provisória até a conciliação
+integral com eventos B3/CVM. O Benevente 2 anterior a 20/08/2026 é reconstrução
+retrospectiva. Consulte o
+[protocolo de acompanhamento diário](docs/live_monitoring_protocol.md) e o
+[registro público de versões](web/protocol_versions.json).
+
 ## Limites importantes
 
 - O LLM é opcional e só estrutura teses/riscos a partir de fatos aprovados;

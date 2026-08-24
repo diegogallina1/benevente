@@ -1,91 +1,174 @@
-// Both paper pages read the same published decision file the product uses, so
-// a number shown to a reviewer is the number the engine wrote. Nothing here is
-// hardcoded from a screenshot. The two pages address different audiences in
-// different languages, so the copy is keyed off the document language.
-const PAPER_STRINGS = {
+const LIVE_COPY = {
   "pt-BR": {
     locale: "pt-BR",
-    title: "Carteira recomendada para 2026",
-    frozen: (date, eligible, universe, status) =>
-      `Congelada em ${date} com os dados disponíveis naquela data, a partir de ${eligible} ativos aprovados na ` +
-      `triagem entre ${universe} ações do universo B3. Status: <b>${status}</b>.`,
+    title: { b1: "Benevente 1 em 2026", b2: "Benevente 2 em 2026" },
+    subtitle: {
+      b1: "Controle anual sem alteração intranual de exposição.",
+      b2: "Referência principal com proteção por risco; mesmos cinco ativos do Benevente 1.",
+    },
+    failed: "O último registro íntegro do acompanhamento não pôde ser carregado.",
+    current: "Acompanhamento corrente",
+    reconstructed: "Reconstrução retrospectiva até 20/08/2026",
+    value: "Patrimônio-sombra",
+    return: "Retorno no ciclo",
+    drawdown: "Maior queda no ciclo",
+    exposure: "Exposição atual em ações",
+    b1: "Benevente 1",
+    b2: "Benevente 2",
+    cdi: "CDI",
+    bova: "BOVA11",
+    ibov: "Ibovespa (preço)",
     cash: "CDI",
-    portfolio: "Carteira no ano",
-    equity: "Parcela de ações",
-    reserve: "Parcela CDI",
-    through: date => `até ${date}`,
-    share: value => `${value} do capital`,
-    failed: "Não foi possível carregar a decisão de 2026.",
   },
   en: {
     locale: "en-GB",
-    title: "Live portfolio for 2026",
-    frozen: (date, eligible, universe, status) =>
-      `Frozen on ${date} using only information available on that date, selected from ${eligible} assets that ` +
-      `cleared the screen out of ${universe} listed equities. Status: <b>${status}</b>.`,
-    cash: "Cash (CDI)",
-    portfolio: "Portfolio, year to date",
-    equity: "Equity sleeve",
-    reserve: "Cash sleeve",
-    through: date => `through ${date}`,
-    share: value => `${value} of capital`,
-    failed: "The 2026 decision could not be loaded.",
+    title: { b1: "Benevente 1 in 2026", b2: "Benevente 2 in 2026" },
+    subtitle: {
+      b1: "Annual control with no intrayear exposure changes.",
+      b2: "Primary risk-overlay reference; the same five assets selected by Benevente 1.",
+    },
+    failed: "The latest valid monitoring record could not be loaded.",
+    current: "Current monitoring",
+    reconstructed: "Retrospective reconstruction through 20 Aug 2026",
+    value: "Shadow value",
+    return: "Cycle return",
+    drawdown: "Maximum cycle drawdown",
+    exposure: "Current equity exposure",
+    b1: "Benevente 1",
+    b2: "Benevente 2",
+    cdi: "CDI",
+    bova: "BOVA11",
+    ibov: "Ibovespa (price)",
+    cash: "CDI",
   },
 };
 
-function paperStrings() {
-  const lang = (document.documentElement.lang || "pt-BR").toLowerCase();
-  return lang.startsWith("en") ? PAPER_STRINGS.en : PAPER_STRINGS["pt-BR"];
+function liveCopy() {
+  return (document.documentElement.lang || "pt-BR").toLowerCase().startsWith("en")
+    ? LIVE_COPY.en : LIVE_COPY["pt-BR"];
 }
 
-async function renderLivePortfolio() {
-  const host = document.querySelector("#live-portfolio");
-  if (!host) return;
-  const text = paperStrings();
-  const pct = value => `${value >= 0 ? "+" : ""}${(value * 100).toLocaleString(text.locale, { maximumFractionDigits: 2 })}%`;
-  const plain = value => `${(value * 100).toLocaleString(text.locale, { maximumFractionDigits: 2 })}%`;
-  const formatDate = value => {
-    const date = new Date(`${String(value).slice(0, 10)}T12:00:00`);
-    return Number.isNaN(date.valueOf()) ? String(value) : date.toLocaleDateString(text.locale);
+function linePath(values, width, height, minimum, maximum) {
+  const span = maximum - minimum || 1;
+  return values.map((value, index) => {
+    const x = values.length === 1 ? 0 : index / (values.length - 1) * width;
+    const y = height - (value - minimum) / span * height;
+    return `${index ? "L" : "M"}${x.toFixed(2)},${y.toFixed(2)}`;
+  }).join(" ");
+}
+
+function liveChart(rows, primary, copy) {
+  const width = 820;
+  const height = 220;
+  const keys = [
+    [primary, primary === "benevente2" ? copy.b2 : copy.b1, "#0c8076"],
+    [primary === "benevente2" ? "portfolio" : "benevente2", primary === "benevente2" ? copy.b1 : copy.b2, "#65a99e"],
+    ["cdi", copy.cdi, "#3b779a"],
+    ["bova11", copy.bova, "#9b6b48"],
+    ["ibovespa_price", copy.ibov, "#7a8490"],
+  ];
+  const all = keys.flatMap(([key]) => rows.map(row => Number(row[key])).filter(Number.isFinite));
+  const rawMin = Math.min(...all);
+  const rawMax = Math.max(...all);
+  const padding = Math.max((rawMax - rawMin) * 0.10, 1);
+  const minimum = rawMin - padding;
+  const maximum = rawMax + padding;
+  const grid = [0, 0.5, 1].map(fraction => {
+    const y = height * fraction;
+    const value = maximum - (maximum - minimum) * fraction;
+    return `<line x1="0" y1="${y}" x2="${width}" y2="${y}"/><text x="4" y="${Math.max(12, y - 5)}">${(value - 100).toLocaleString(copy.locale, { maximumFractionDigits: 1 })}%</text>`;
+  }).join("");
+  const paths = keys.map(([key, label, colour]) =>
+    `<path data-chart-key="${key}" d="${linePath(rows.map(row => Number(row[key])), width, height, minimum, maximum)}" stroke="${colour}"><title>${label}</title></path>`
+  ).join("");
+  const legend = keys.map(([key, label, colour]) => {
+    const result = Number(rows.at(-1)[key]) - 100;
+    return `<span><i style="background:${colour}"></i>${label} <b>${result >= 0 ? "+" : ""}${result.toLocaleString(copy.locale, { maximumFractionDigits: 2 })}%</b></span>`;
+  }).join("");
+  const firstDate = new Date(`${rows[0].date}T12:00:00`).toLocaleDateString(copy.locale);
+  const lastDate = new Date(`${rows.at(-1).date}T12:00:00`).toLocaleDateString(copy.locale);
+  return `<div class="live-chart" data-live-chart>
+    <div class="live-chart-legend">${legend}</div>
+    <div class="live-chart-readout" aria-live="polite">${lastDate}</div>
+    <svg class="live-chart-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Desempenho em 2026, base 100">
+      <g class="live-grid">${grid}</g>${paths}
+      <line class="live-cursor" x1="${width}" x2="${width}" y1="0" y2="${height}"/>
+      <rect class="live-hit" x="0" y="0" width="${width}" height="${height}"/>
+    </svg>
+    <div class="live-chart-axis"><span>${firstDate}</span><span>Retorno acumulado desde 02/01/2026</span><span>${lastDate}</span></div>
+  </div>`;
+}
+
+function attachLiveChart(host, rows, primary, copy) {
+  const svg = host.querySelector(".live-chart-svg");
+  const cursor = host.querySelector(".live-cursor");
+  const readout = host.querySelector(".live-chart-readout");
+  if (!svg || !cursor || !readout) return;
+  const names = {
+    benevente2: copy.b2, portfolio: copy.b1, cdi: copy.cdi,
+    bova11: copy.bova, ibovespa_price: copy.ibov,
   };
-  let data;
-  try {
-    data = await (await fetch("./current_decision_2026.json")).json();
-  } catch (_) {
-    host.innerHTML = `<p>${text.failed}</p>`;
-    return;
-  }
-  const monitor = data.monitoring?.profiles?.benevente || Object.values(data.monitoring?.profiles || {})[0];
-  const holdings = [...(data.holdings || [])].sort((a, b) => b.weight - a.weight);
-  const maxWeight = Math.max(data.cdi_weight || 0, ...holdings.map(item => item.weight), 0.01);
-  const bar = (weight, cash) =>
-    `<div class="bar${cash ? " cash" : ""}"><i style="width:${Math.max(2, (weight / maxWeight) * 100)}%"></i></div>`;
-  const rows = holdings.map(item =>
-    `<div class="paper-holding"><b>${item.ticker}</b>${bar(item.weight, false)}<span>${plain(item.weight)}</span></div>`).join("");
-  const cash = `<div class="paper-holding"><b>${text.cash}</b>${bar(data.cdi_weight, true)}<span>${plain(data.cdi_weight)}</span></div>`;
-  const partial = monitor ? `
-    <div class="paper-metrics">
-      <div class="paper-metric${monitor.portfolio_partial_return < 0 ? " negative" : ""}">
-        <span>${text.portfolio}</span><b>${pct(monitor.portfolio_partial_return)}</b>
-        <small>${text.through(formatDate(data.monitoring.through))}</small></div>
-      <div class="paper-metric${monitor.equity_price_return < 0 ? " negative" : ""}">
-        <span>${text.equity}</span><b>${pct(monitor.equity_price_return)}</b>
-        <small>${text.share(plain(monitor.equity_weight))}</small></div>
-      <div class="paper-metric"><span>${text.reserve}</span><b>${pct(monitor.cdi_return)}</b>
-        <small>${text.share(plain(monitor.cdi_weight))}</small></div>
-    </div>` : "";
-  const note = document.documentElement.lang.toLowerCase().startsWith("en")
-    ? "Partial-year equity figures use official B3 closing prices and exclude cash distributions; the cash sleeve uses the official daily CDI series."
-    : (data.monitoring?.label || "");
-  host.innerHTML = `
-    <div class="paper-portfolio">
-      <h3>${text.title}</h3>
-      <p>${text.frozen(formatDate(data.decision_date), data.universe.eligible_after_screen,
-                       data.universe.equities_at_decision, data.status.replace(/_/g, " "))}</p>
-      <div class="paper-holdings">${rows}${cash}</div>
-      ${partial}
-      <p><small>${note}</small></p>
-    </div>`;
+  svg.addEventListener("pointermove", event => {
+    const bounds = svg.getBoundingClientRect();
+    const fraction = Math.max(0, Math.min(1, (event.clientX - bounds.left) / bounds.width));
+    const index = Math.round(fraction * (rows.length - 1));
+    const row = rows[index];
+    const x = fraction * 820;
+    cursor.setAttribute("x1", x.toFixed(2));
+    cursor.setAttribute("x2", x.toFixed(2));
+    const order = [primary, primary === "benevente2" ? "portfolio" : "benevente2", "cdi", "bova11", "ibovespa_price"];
+    const values = order.map(key => `${names[key]} ${(Number(row[key]) - 100).toLocaleString(copy.locale, { signDisplay: "always", maximumFractionDigits: 2 })}%`);
+    readout.textContent = `${new Date(`${row.date}T12:00:00`).toLocaleDateString(copy.locale)} · ${values.join(" · ")}`;
+  });
 }
 
-renderLivePortfolio();
+async function renderLivePortfolio(host, data, decision) {
+  const copy = liveCopy();
+  const mode = host.dataset.liveStrategy === "b1" ? "b1" : "b2";
+  const primaryKey = mode === "b2" ? "benevente2" : "portfolio";
+  const summaryKey = mode === "b2" ? "benevente2_reconstructed_return" : "portfolio_return";
+  const drawdownKey = mode === "b2" ? "benevente2_maximum_drawdown" : "maximum_drawdown";
+  const pct = value => `${Number(value) >= 0 ? "+" : ""}${(Number(value) * 100).toLocaleString(copy.locale, { maximumFractionDigits: 2 })}%`;
+  const plain = value => `${(Number(value) * 100).toLocaleString(copy.locale, { maximumFractionDigits: 2 })}%`;
+  const money = value => Number(value).toLocaleString(copy.locale, { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+  const date = value => new Date(`${value}T12:00:00`).toLocaleDateString(copy.locale);
+  const holdings = [...decision.holdings].sort((a, b) => b.weight - a.weight);
+  const equity = holdings.reduce((total, item) => total + Number(item.weight), 0);
+  const currentEquity = mode === "b2" ? data.benevente2_overlay.current_equity_weight : equity;
+  const status = mode === "b2" ? copy.reconstructed : copy.current;
+  const maxWeight = Math.max(decision.cdi_weight, ...holdings.map(item => item.weight));
+  const holdingRows = holdings.map(item => {
+    const live = data.holdings.find(row => row.ticker === item.ticker);
+    return `<div class="paper-holding"><b>${item.ticker}</b><div class="bar"><i style="width:${item.weight / maxWeight * 100}%"></i></div><span>${plain(item.weight)} · ${pct(live?.total_return || 0)}</span></div>`;
+  }).join("");
+  host.innerHTML = `<div class="paper-portfolio live-portfolio-card">
+    <div class="live-card-head"><div><span class="live-status">${status}</span><h3>${copy.title[mode]}</h3><p>${copy.subtitle[mode]} Decisão de ${date(data.decision_date)}, dados até ${date(data.through)}.</p></div><a class="live-version-tab" href="./benevente-${mode === "b2" ? "1" : "2"}.html">Ver ${mode === "b2" ? copy.b1 : copy.b2} →</a></div>
+    <div class="paper-metrics live-metrics">
+      <div class="paper-metric${data.summary[summaryKey] < 0 ? " negative" : ""}"><span>${copy.return}</span><b>${pct(data.summary[summaryKey])}</b><small>${mode === "b2" ? status : copy.current}</small></div>
+      <div class="paper-metric"><span>${copy.value}</span><b>${money(100000 * (1 + data.summary[summaryKey]))}</b><small>capital inicial ${money(data.initial_capital_brl)}</small></div>
+      <div class="paper-metric${data.summary[drawdownKey] < 0 ? " negative" : ""}"><span>${copy.drawdown}</span><b>${pct(data.summary[drawdownKey])}</b><small>do pico ao vale diário</small></div>
+      <div class="paper-metric"><span>${copy.exposure}</span><b>${plain(currentEquity)}</b><small>${mode === "b2" ? `estado ${data.benevente2_overlay.current_risk_state}` : "peso anual constante"}</small></div>
+    </div>
+    ${liveChart(data.series, primaryKey, copy)}
+    <details class="live-holdings"><summary>Ver os cinco ativos e pesos de janeiro</summary><div class="paper-holdings">${holdingRows}<div class="paper-holding"><b>${copy.cash}</b><div class="bar cash"><i style="width:${decision.cdi_weight / maxWeight * 100}%"></i></div><span>${plain(decision.cdi_weight)} · ${pct(data.summary.cdi_return)}</span></div></div></details>
+    <p class="live-quality">Fechamentos ajustados de fonte pública secundária e CDI oficial do BCB. Números provisórios até a conciliação integral B3/CVM. A rotina não troca ativos, não altera a seleção anual e não usa LLM para calcular retornos.</p>
+  </div>`;
+  attachLiveChart(host, data.series, primaryKey, copy);
+}
+
+(async function initialiseLivePortfolio() {
+  const hosts = [...document.querySelectorAll("#live-portfolio, [data-live-portfolio]")];
+  if (!hosts.length) return;
+  const copy = liveCopy();
+  try {
+    const [liveResponse, decisionResponse] = await Promise.all([
+      fetch("./live_performance.json", { cache: "no-store" }),
+      fetch("./current_decision_2026.json", { cache: "no-store" }),
+    ]);
+    if (!liveResponse.ok || !decisionResponse.ok) throw new Error(copy.failed);
+    const [data, decision] = await Promise.all([liveResponse.json(), decisionResponse.json()]);
+    hosts.forEach(host => renderLivePortfolio(host, data, decision));
+  } catch (_) {
+    hosts.forEach(host => { host.innerHTML = `<p class="live-error">${copy.failed}</p>`; });
+  }
+}());

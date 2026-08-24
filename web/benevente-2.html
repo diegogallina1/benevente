@@ -4,27 +4,31 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Benevente 2: extensão experimental de controle de risco, diferenças para o Benevente 1, sinais, resultados e limitações." />
-    <title>Benevente 2 · Controle de risco experimental</title>
+    <title>Benevente 2 · Referência com controle de risco</title>
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./versions.css" />
+    <link rel="stylesheet" href="./paper.css?v=20260823" />
     <link rel="stylesheet" href="./site-polish.css" />
   </head>
   <body class="version-page">
     <header class="version-nav shell">
       <a class="brand" href="./"><span class="brand-mark">B</span><span>Benevente</span></a>
-      <nav aria-label="Navegação das versões"><a href="./benevente-1.html">Benevente 1</a><a aria-current="page" href="./benevente-2.html">Benevente 2</a><a href="./#resultado">Comparar</a><a class="version-back" href="./">Página inicial</a></nav>
+      <nav aria-label="Navegação das versões"><a class="strategy-tab" href="./benevente-1.html">Benevente 1</a><a class="strategy-tab" aria-current="page" href="./benevente-2.html">Benevente 2</a><a href="./#resultado">Comparar</a><a class="version-back" href="./">Página inicial</a></nav>
     </header>
 
     <main>
-      <section class="version-hero"><div class="shell version-hero-grid"><div><p class="version-kicker">BENEVENTE 2 · EXTENSÃO EXPERIMENTAL</p><h1>Os mesmos ativos, com uma camada de <em>proteção.</em></h1><p class="version-lede">O Benevente 2 não refaz a seleção anual. Ele observa a queda e a volatilidade do Ibovespa e reduz temporariamente a exposição em ações quando o estresse já apareceu nos dados.</p></div><aside class="version-status"><span>STATUS</span><strong>Experimento retrospectivo</strong><p>Melhorou retorno e queda máxima na amostra, mas foi concebido depois da Covid. Ainda não substitui o Benevente 1 nem comprova capacidade preditiva.</p></aside></div></section>
+      <section class="version-hero"><div class="shell version-hero-grid"><div><p class="version-kicker">BENEVENTE 2 · REFERÊNCIA DE RISCO</p><h1>Os mesmos ativos, com uma camada de <em>proteção.</em></h1><p class="version-lede">O Benevente 2 não refaz a seleção anual. Ele observa a queda e a volatilidade do Ibovespa e reduz temporariamente a exposição em ações quando o estresse já apareceu nos dados.</p></div><aside class="version-status"><span>STATUS</span><strong>Referência principal em observação</strong><p>É a estratégia acompanhada diariamente. Sua evidência anterior a 20/08/2026 permanece retrospectiva e não comprova capacidade preditiva.</p></aside></div></section>
 
       <section class="version-scoreboard shell" aria-label="Resultados do Benevente 2"><div class="version-metric"><span>Retorno acumulado</span><strong data-version-metric="b2-cumulative">+543,8%</strong><small>2015–2025 · antes do IR</small></div><div class="version-metric"><span>Retorno anual</span><strong data-version-metric="b2-cagr">18,45%</strong><small>CAGR experimental</small></div><div class="version-metric"><span>Maior queda diária</span><strong data-version-metric="b2-drawdown">−28,75%</strong><small>Benevente 1: <b data-version-metric="b1-drawdown">−47,78%</b></small></div><div class="version-metric"><span>Volatilidade</span><strong data-version-metric="b2-volatility">18,58%</strong><small>Benevente 1: <b data-version-metric="b1-volatility">22,93%</b></small></div></section>
 
       <div class="version-main shell">
+        <section class="version-section"><header class="version-section-heading"><span class="version-label">CARTEIRA-SOMBRA 2026</span><h2>A proteção como referência principal</h2><p>Os ativos permanecem iguais. A exposição responde somente ao risco já observado.</p></header><div data-live-portfolio data-live-strategy="b2"></div></section>
         <section class="version-section"><header class="version-section-heading"><span class="version-label">DIFERENÇA CENTRAL</span><h2>Seleção igual. Exposição variável.</h2><p>A versão 2 altera o risco, não os ativos escolhidos em janeiro.</p></header><div><table class="comparison-matrix"><thead><tr><th>Aspecto</th><th>Benevente 1</th><th>Benevente 2</th></tr></thead><tbody><tr><td>Escolha dos ativos</td><td>Valor, qualidade e comportamento de preços</td><td>A mesma cesta do Benevente 1</td></tr><tr><td>Revisão da cesta</td><td>Uma vez por ano</td><td>Uma vez por ano</td></tr><tr><td>Exposição durante o ano</td><td>Permanece na meta definida em janeiro</td><td>Pode cair para 50% ou 35% em ações</td></tr><tr><td>Sinal de proteção</td><td>Não há</td><td>Queda do mercado e volatilidade recente</td></tr><tr><td>Papel da LLM</td><td>Somente explicação</td><td>Não participa do sinal</td></tr><tr><td>Status</td><td>Resultado oficial da pesquisa</td><td>Experimento retrospectivo</td></tr></tbody></table></div></section>
+
+        <section class="version-section"><header class="version-section-heading"><span class="version-label">ATIVOS E PESOS</span><h2>A origem é a mesma do Benevente 1</h2><p>Valor, qualidade e comportamento de preços definem a cesta anual.</p></header><div><div class="version-weighting"><div class="weight-rule"><strong>Seleção</strong><p>Os cinco ativos são escolhidos em janeiro pela regra multifatorial. A camada de risco não inclui nem exclui empresas.</p></div><div class="weight-rule"><strong>Pesos-base</strong><p>Os pesos registrados em janeiro continuam sendo a referência. Somente a exposição total em ações pode diminuir.</p></div><div class="weight-rule"><strong>Parcela reduzida</strong><p>Quando a proteção atua, o valor retirado proporcionalmente das ações passa a acompanhar o CDI.</p></div></div></div></section>
 
         <section class="version-section"><header class="version-section-heading"><span class="version-label">CONTROLE DE RISCO</span><h2>Como a proteção reage</h2><p>Sempre usa o fechamento anterior. Não olha o dia seguinte.</p></header><div><div class="stress-timeline"><article><span>NORMAL</span><h3>Segue o Benevente 1</h3><p>Sem estresse, a parcela em ações permanece na meta anual original.</p></article><article><span>ALERTA</span><h3>Exposição limitada a 50%</h3><p>Ativa com queda de 12% frente ao pico de 126 pregões ou volatilidade de 40%.</p></article><article><span>SEVERO</span><h3>Exposição limitada a 35%</h3><p>Ativa com queda de 22% ou volatilidade de 60%. O restante acompanha CDI.</p></article></div><div class="version-callout"><h3>O sistema não previu a Covid.</h3><p>O primeiro alerta ocorreu em 28/02/2020 e o nível severo em 10/03/2020, depois que o estresse já estava nos preços. A proteção reage a condições observadas e retorna gradualmente após dez pregões de recuperação.</p></div></div></section>
 
@@ -39,5 +43,6 @@
     </main>
     <footer class="version-footer"><div class="shell"><p>Os retornos exibidos são retrospectivos, incorporam custos modelados e dados parcialmente imputados, e não constituem recomendação, promessa de rentabilidade nem evidência de superioridade futura.</p><a href="./#resultado">Abrir comparação interativa →</a></div></footer>
     <script src="./versions.js"></script>
+    <script src="./paper.js?v=20260823"></script>
   </body>
 </html>

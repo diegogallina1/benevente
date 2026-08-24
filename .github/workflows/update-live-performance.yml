@@ -1,0 +1,51 @@
+name: Atualizar acompanhamento da carteira
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "10 23 * * 1-5"
+      timezone: "America/Sao_Paulo"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: benevente-live-performance
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Preparar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências mínimas
+        run: python -m pip install pytest
+
+      - name: Atualizar séries e validar contrato
+        run: |
+          python tools/update_live_performance.py
+          python -m pytest tests/test_live_performance.py -q
+
+      - name: Publicar somente quando houver novo dado
+        shell: bash
+        run: |
+          if git diff --quiet -- web/live_performance.json; then
+            echo "Nenhuma nova observação de mercado."
+            exit 0
+          fi
+          git config user.name "diegogallina1"
+          git config user.email "214411949+diegogallina1@users.noreply.github.com"
+          git add web/live_performance.json
+          git commit -m "Atualiza acompanhamento corrente de 2026 [skip ci]"
+          git push

@@ -4,7 +4,7 @@
 
 ## Resumo
 
-Decisões de carteira precisam continuar explicáveis depois de executadas. Este trabalho constrói e avalia o Benevente Wealth System, um artefato de apoio à decisão que reúne, no mesmo registro, os dados admitidos, a regra quantitativa, a carteira proposta, a explicação e a aprovação humana. A pesquisa segue design science e avalia o artefato por testes funcionais, auditoria adversarial e um diagnóstico histórico sequencial de onze decisões entre 2015 e 2025. A auditoria encontrou sete defeitos capazes de inflar resultados e revelou uma limitação material: 13,9% da exposição acumulada a ações selecionadas dependeu de séries com proventos imputados. Por isso, o retorno histórico é apresentado como diagnóstico de desenvolvimento, não como validação comercial. Uma reamostragem pareada indica estabilidade interna, mas os intervalos de 95% do excesso de retorno cruzam zero contra CDI, Ibovespa e BOVA11. O protocolo prospectivo foi congelado em 16 de agosto de 2026 e ainda não possui observações suficientes para conclusão. O modelo de linguagem não demonstrou ganho de retorno e permanece restrito à explicação. A contribuição comprovada é a separação verificável entre dado, cálculo, linguagem e responsabilidade.
+Decisões de carteira precisam continuar explicáveis depois de executadas. Este trabalho constrói e avalia o Benevente Wealth System, um artefato de apoio à decisão que reúne, no mesmo registro, os dados admitidos, a regra quantitativa, a carteira proposta, a explicação e a aprovação humana. A pesquisa segue design science e avalia o artefato por testes funcionais, auditoria adversarial e um diagnóstico histórico sequencial de onze decisões entre 2015 e 2025. A auditoria encontrou sete defeitos capazes de inflar resultados e revelou uma limitação material: 13,9% da exposição acumulada a ações selecionadas dependeu de séries com proventos imputados. Por isso, o retorno histórico é apresentado como diagnóstico de desenvolvimento, não como validação comercial. Uma reamostragem pareada indica estabilidade interna, mas os intervalos de 95% do excesso de retorno cruzam zero contra CDI, Ibovespa e BOVA11. A versão anual Benevente 1 foi registrada em 16 de agosto de 2026; a camada de risco e o monitor diário receberam registros posteriores e não herdam essa data. A carteira de 2026 permanece carteira-sombra. O modelo de linguagem não demonstrou ganho de retorno e permanece restrito à explicação. A contribuição comprovada é a separação verificável entre dado, cálculo, linguagem e responsabilidade.
 
 Palavras-chave: governança de investimentos; alocação de carteira; trilha de auditoria; design science; pesquisa reprodutível.
 
@@ -148,7 +148,7 @@ Dois testes de sensibilidade complementam essa inspeção. O primeiro reamostra,
 
 ### 4.5 Registro prospectivo
 
-O protocolo prospectivo foi congelado em 16 de agosto de 2026, com hash e data registrados no repositório. A política precisa superar, após imposto, o CDI e o ETF investível de mercado, manter queda máxima inferior a 35% e acumular pelo menos três anos antes de uma conclusão. Não existe resultado prospectivo suficiente na data deste artigo. Essa ausência é um resultado de estágio do projeto, não uma lacuna a preencher com o histórico. A regra registrada não poderá ser alterada depois de observado um ano desfavorável sem que a mudança constitua um novo protocolo e uma nova contagem.
+A versão anual Benevente 1 foi registrada em 16 de agosto de 2026, com hash e data no repositório. O Benevente 2 e o protocolo de acompanhamento receberam registros próprios depois das respectivas mudanças. A política avaliada precisa superar, após imposto, o CDI e o ETF investível de mercado, manter queda máxima inferior a 35% e acumular pelo menos três anos antes de uma conclusão. Não existe resultado prospectivo suficiente na data deste artigo. A carteira formada em janeiro de 2026 é apenas carteira-sombra, pois antecede os registros. Uma regra não poderá ser alterada depois de observado um resultado desfavorável sem que a mudança constitua nova versão e nova contagem.
 
 ---
 
@@ -259,7 +259,7 @@ Os três resultados estatísticos não permitem rejeitar a hipótese de ausênci
 2. O modelo não agregou retorno. O braço anonimizado ficou 0,05 ponto percentual abaixo do controle determinístico, com p = 0,989.
 3. Manter o modelo longe dos pesos não penalizou o resultado. Quando recebeu essa função, ele produziu vetores que não somavam 100% em 5 dos 13 anos e omitiu dezenas de ativos elegíveis sem sinalizar. O otimizador garante uma alocação válida antes da explicação.
 
-A conclusão de produto é direta. O modelo organiza e explica decisões, mas não as gera. Qualquer futuro uso em sinal, ranking ou peso terá de começar depois do protocolo congelado em 16 de agosto de 2026 e ser comparado prospectivamente ao controle determinístico.
+A conclusão de produto é direta. O modelo organiza e explica decisões, mas não as gera. Qualquer futuro uso em sinal, ranking ou peso terá de começar depois do registro específico da versão avaliada e ser comparado prospectivamente ao controle determinístico.
 
 ### 5.7 Defeitos encontrados na própria auditoria
 
