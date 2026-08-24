@@ -23,12 +23,14 @@ from xml.etree import ElementTree
 BRT = timezone(timedelta(hours=-3))
 CKAN_PACKAGE = "https://dados.cvm.gov.br/api/3/action/package_show?id=cia_aberta-doc-ipe"
 NEWS_ENDPOINT = "https://news.google.com/rss/search"
-NEWS_QUERIES = (
+BASE_NEWS_QUERIES = (
     "mercado financeiro Brasil B3 ações",
     "Banco Central Brasil Copom juros inflação câmbio",
     "CVM fato relevante companhia aberta",
-    "VIVA3 OR CURY3 OR CMIN3 OR BBSE3 OR LEVE3",
 )
+MAX_ITEMS_PER_NEWS_QUERY = 50
+MAX_NEW_ITEMS_PER_RUN = 120
+MAX_GEMINI_ITEMS_PER_RUN = 60
 HIGH_RISK_TERMS = (
     "fraude", "recuperação judicial", "default", "calote", "intervenção", "falência",
     "rompimento", "acidente", "sanção", "investigação", "corrupção", "rebaixamento",
@@ -86,7 +88,7 @@ def _event_id(source: str, title: str, url: str, published_at: str) -> str:
     return hashlib.sha256(value.encode("utf-8")).hexdigest()
 
 
-def fetch_google_news(query: str, cutoff: datetime) -> list[dict[str, Any]]:
+def fetch_google_news(query: str, cutoff: datetime, limit: int = MAX_ITEMS_PER_NEWS_QUERY) -> list[dict[str, Any]]:
     parameters = urllib.parse.urlencode({"q": query, "hl": "pt-BR", "gl": "BR", "ceid": "BR:pt-419"})
     root = ElementTree.fromstring(_request(f"{NEWS_ENDPOINT}?{parameters}"))
     events = []
@@ -111,20 +113,26 @@ def fetch_google_news(query: str, cutoff: datetime) -> list[dict[str, Any]]:
             "published_at": published_at,
             "query": query,
         })
+        if len(events) >= limit:
+            break
     return events
 
 
-def _current_cvm_resource(year: int) -> str:
+def _current_cvm_resource(year: int) -> dict[str, Any]:
     package = json.loads(_request(CKAN_PACKAGE).decode("utf-8"))["result"]
     suffix = f"({year})"
     resources = [item for item in package["resources"] if item.get("name", "").endswith(suffix)]
     if not resources:
         raise RuntimeError(f"recurso IPE {year} não localizado")
-    return resources[0]["url"]
+    return resources[0]
 
 
-def fetch_cvm_ipe(year: int, cutoff: datetime) -> list[dict[str, Any]]:
-    archive = zipfile.ZipFile(io.BytesIO(_request(_current_cvm_resource(year), timeout=60)))
+def fetch_cvm_ipe(year: int, cutoff: datetime, known_fingerprint: str = "") -> tuple[list[dict[str, Any]], str, bool]:
+    resource = _current_cvm_resource(year)
+    fingerprint = resource.get("last_modified") or resource.get("hash") or resource["url"]
+    if known_fingerprint and fingerprint == known_fingerprint:
+        return [], fingerprint, True
+    archive = zipfile.ZipFile(io.BytesIO(_request(resource["url"], timeout=60)))
     csv_names = [name for name in archive.namelist() if name.lower().endswith((".csv", ".txt"))]
     if not csv_names:
         raise RuntimeError("arquivo IPE sem tabela")
@@ -156,7 +164,7 @@ def fetch_cvm_ipe(year: int, cutoff: datetime) -> list[dict[str, Any]]:
             "category": category,
             "company": company,
         })
-    return events
+    return events, fingerprint, False
 
 
 def deterministic_classification(event: dict[str, Any], portfolio_tickers: Iterable[str]) -> dict[str, Any]:
@@ -263,11 +271,21 @@ def _state(score: int) -> str:
     return "critico" if score >= 85 else "alerta" if score >= 70 else "atencao" if score >= 50 else "normal"
 
 
-def build_radar(previous: dict[str, Any], now: datetime, collected: list[dict[str, Any]], source_status: list[dict[str, Any]], api_key: str = "", model: str = "gemini-3.5-flash") -> dict[str, Any]:
+def build_radar(
+    previous: dict[str, Any], now: datetime, collected: list[dict[str, Any]],
+    source_status: list[dict[str, Any]], api_key: str = "", model: str = "gemini-3.5-flash",
+    portfolio_tickers: Iterable[str] = ("VIVA3", "CURY3", "CMIN3", "BBSE3", "LEVE3"),
+) -> dict[str, Any]:
     old_events = {item["id"]: item for item in previous.get("events", [])}
     unique = {item["id"]: item for item in collected}
+    portfolio_tickers = tuple(dict.fromkeys(portfolio_tickers))
     new_events = [item for key, item in unique.items() if key not in old_events]
-    portfolio_tickers = ("VIVA3", "CURY3", "CMIN3", "BBSE3", "LEVE3")
+    new_events.sort(key=lambda item: (
+        item.get("source_tier") == "primaria_oficial",
+        any(ticker.lower() in f"{item.get('title', '')} {item.get('summary', '')}".lower() for ticker in portfolio_tickers),
+        item.get("published_at", ""),
+    ), reverse=True)
+    new_events = new_events[:MAX_NEW_ITEMS_PER_RUN]
     classifications: dict[str, dict[str, Any]] = {}
     classifier_status = "gemini_disponivel_sem_itens_novos" if api_key else "deterministico_sem_chave"
     classifier_error = None
@@ -276,7 +294,7 @@ def build_radar(previous: dict[str, Any], now: datetime, collected: list[dict[st
         if item.get("classification", {}).get("classifier") == "regras_deterministicas"
     ][:40]
     new_ids = {item["id"] for item in new_events}
-    classification_targets = new_events + [item for item in upgrade_events if item["id"] not in new_ids]
+    classification_targets = (new_events + [item for item in upgrade_events if item["id"] not in new_ids])[:MAX_GEMINI_ITEMS_PER_RUN]
     if api_key and classification_targets:
         try:
             for start in range(0, len(classification_targets), 20):
@@ -316,12 +334,31 @@ def build_radar(previous: dict[str, Any], now: datetime, collected: list[dict[st
     return document
 
 
-def collect(now: datetime, lookback_hours: int = 36) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+def collect(
+    now: datetime, lookback_hours: int = 36,
+    portfolio_tickers: Iterable[str] = ("VIVA3", "CURY3", "CMIN3", "BBSE3", "LEVE3"),
+    previous_source_status: Iterable[dict[str, Any]] = (),
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
     cutoff = now - timedelta(hours=lookback_hours)
     events: list[dict[str, Any]] = []
     statuses: list[dict[str, Any]] = []
-    sources = [("CVM IPE", lambda: fetch_cvm_ipe(now.year, cutoff))]
-    sources.extend((f"Google Notícias · {query}", lambda query=query: fetch_google_news(query, cutoff)) for query in NEWS_QUERIES)
+    portfolio_query = " OR ".join(dict.fromkeys(portfolio_tickers))
+    queries = (*BASE_NEWS_QUERIES, portfolio_query) if portfolio_query else BASE_NEWS_QUERIES
+    previous_sources = {item.get("source"): item for item in previous_source_status}
+    previous_cvm = previous_sources.get("CVM IPE", {})
+    try:
+        cvm_events, fingerprint, cached = fetch_cvm_ipe(
+            now.year, cutoff,
+            known_fingerprint=previous_cvm.get("fingerprint", "") if previous_cvm.get("status") == "ok" else "",
+        )
+        events.extend(cvm_events)
+        statuses.append({
+            "source": "CVM IPE", "status": "ok", "items": len(cvm_events),
+            "fingerprint": fingerprint, "download": "dispensado_sem_atualizacao" if cached else "atualizado",
+        })
+    except Exception as error:
+        statuses.append({"source": "CVM IPE", "status": "indisponivel", "items": 0, "detail": f"{type(error).__name__}: {error}"[:240]})
+    sources = [(f"Google Notícias · {query}", lambda query=query: fetch_google_news(query, cutoff)) for query in queries]
     for name, function in sources:
         try:
             source_events = function()
@@ -332,16 +369,33 @@ def collect(now: datetime, lookback_hours: int = 36) -> tuple[list[dict[str, Any
     return list({item["id"]: item for item in events}.values()), statuses
 
 
+def load_portfolio_tickers(web_directory: Path) -> tuple[str, ...]:
+    live_path = web_directory / "live_performance.json"
+    if not live_path.exists():
+        return ("VIVA3", "CURY3", "CMIN3", "BBSE3", "LEVE3")
+    data = json.loads(live_path.read_text(encoding="utf-8"))
+    allocation = data.get("portfolio_definitions", {}).get("benevente1", {}).get("target_allocation", [])
+    tickers = tuple(item["ticker"] for item in allocation if item.get("ticker") and item["ticker"] != "CDI")
+    return tickers or ("VIVA3", "CURY3", "CMIN3", "BBSE3", "LEVE3")
+
+
 def update(output: Path, now: datetime | None = None) -> dict[str, Any]:
     now = now or datetime.now(BRT)
     previous = json.loads(output.read_text(encoding="utf-8")) if output.exists() else {}
-    events, status = collect(now, lookback_hours=168 if not previous.get("events") else 36)
+    portfolio_tickers = load_portfolio_tickers(output.parent)
+    previous_runs = previous.get("consolidations", [])
+    events, status = collect(
+        now, lookback_hours=168 if not previous.get("events") else 36,
+        portfolio_tickers=portfolio_tickers,
+        previous_source_status=previous_runs[0].get("source_status", []) if previous_runs else [],
+    )
     result = build_radar(
         previous, now, events, status, api_key=os.getenv("GEMINI_API_KEY", "").strip(),
         model=os.getenv("GEMINI_MODEL", "gemini-3.5-flash").strip(),
+        portfolio_tickers=portfolio_tickers,
     )
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    output.write_text(json.dumps(result, ensure_ascii=False, separators=(",", ":")) + "\n", encoding="utf-8")
     return result
 
 

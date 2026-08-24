@@ -13,6 +13,9 @@ outputs/*.out
 .vercel/
 artifacts/
 .pytest_cache/
+.mypy_cache/
+.ruff_cache/
+radar-alert.md
 data/prices_yahoo_adjusted_total_return_*.csv
 data/yahoo_adjusted_total_return_*_manifest.json
 # Painéis de preço derivados: reconstruíveis por build_b3_total_return_panel.py

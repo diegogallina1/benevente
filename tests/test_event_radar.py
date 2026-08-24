@@ -64,3 +64,35 @@ def test_configured_gemini_is_reported_when_there_is_nothing_to_classify() -> No
         [{"source": "teste", "status": "ok", "items": 1}], api_key="configurada",
     )
     assert result["consolidations"][0]["classifier_status"] == "gemini_disponivel_sem_itens_novos"
+
+
+def test_portfolio_tickers_are_loaded_from_the_current_live_contract(tmp_path: Path) -> None:
+    live = {
+        "portfolio_definitions": {"benevente1": {"target_allocation": [
+            {"ticker": "ABCD3", "weight": 0.4}, {"ticker": "EFGH4", "weight": 0.3},
+            {"ticker": "CDI", "weight": 0.3},
+        ]}}
+    }
+    (tmp_path / "live_performance.json").write_text(json.dumps(live), encoding="utf-8")
+    assert MODULE.load_portfolio_tickers(tmp_path) == ("ABCD3", "EFGH4")
+
+
+def test_each_run_has_a_hard_cost_cap() -> None:
+    now = datetime(2026, 8, 23, 12, 10, tzinfo=MODULE.BRT)
+    events = [event(str(index), f"Notícia {index}") for index in range(MODULE.MAX_NEW_ITEMS_PER_RUN + 10)]
+    result = MODULE.build_radar({}, now, events, [{"source": "teste", "status": "ok", "items": len(events)}])
+    assert result["consolidations"][0]["new_items"] == MODULE.MAX_NEW_ITEMS_PER_RUN
+    assert len(result["events"]) == MODULE.MAX_NEW_ITEMS_PER_RUN
+
+
+def test_unchanged_cvm_archive_is_not_downloaded(monkeypatch) -> None:
+    monkeypatch.setattr(MODULE, "_current_cvm_resource", lambda year: {
+        "url": "https://example.test/ipe.zip", "last_modified": "2026-08-17T11:01:00",
+    })
+    monkeypatch.setattr(MODULE, "_request", lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError("download indevido")))
+    events, fingerprint, cached = MODULE.fetch_cvm_ipe(
+        2026, datetime(2026, 8, 23, tzinfo=MODULE.BRT), known_fingerprint="2026-08-17T11:01:00",
+    )
+    assert events == []
+    assert fingerprint == "2026-08-17T11:01:00"
+    assert cached is True
