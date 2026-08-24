@@ -157,6 +157,39 @@ def _sample_volatility(returns: list[float]) -> float | None:
     return math.sqrt(variance) * math.sqrt(252.0)
 
 
+def target_allocation(
+    holdings: list[dict[str, Any]], base_equity_weight: float, target_equity_weight: float
+) -> list[dict[str, Any]]:
+    """Escala a cesta proporcionalmente e fecha o livro em 100% com CDI."""
+
+    if base_equity_weight <= 0 or not 0 <= target_equity_weight <= 1:
+        raise LiveDataError("Exposição-alvo inválida")
+    rows = [
+        {
+            "ticker": str(item["ticker"]),
+            "weight": round(float(item["weight"]) / base_equity_weight * target_equity_weight, 12),
+        }
+        for item in holdings
+    ]
+    rows.append({"ticker": "CDI", "weight": round(1.0 - target_equity_weight, 12)})
+    difference = 1.0 - sum(row["weight"] for row in rows)
+    rows[-1]["weight"] = round(rows[-1]["weight"] + difference, 12)
+    if not math.isclose(sum(row["weight"] for row in rows), 1.0, abs_tol=1e-9):
+        raise LiveDataError("A alocação operacional não soma 100%")
+    return rows
+
+
+def _advance_risk_state(state: int, calmer_days: int, tradable: int) -> tuple[int, int]:
+    if tradable > state:
+        return tradable, 0
+    if tradable < state:
+        calmer_days += 1
+        if calmer_days >= B2_CONFIG["recovery_days"]:
+            return state - 1, 0
+        return state, calmer_days
+    return state, 0
+
+
 def apply_benevente2_overlay(
     rows: list[dict[str, Any]], base_equity_weight: float
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
@@ -164,6 +197,7 @@ def apply_benevente2_overlay(
 
     states: list[int] = []
     raw_states: list[int] = []
+    decisions: list[dict[str, Any]] = []
     market_returns: list[float] = []
     previous_market: float | None = None
     state = 0
@@ -192,20 +226,42 @@ def apply_benevente2_overlay(
         raw_states.append(raw)
 
         tradable = raw_states[index - 1] if index else 0
-        if tradable > state:
-            state = tradable
-            calmer_days = 0
-        elif tradable < state:
-            calmer_days += 1
-            if calmer_days >= B2_CONFIG["recovery_days"]:
-                state -= 1
-                calmer_days = 0
-        else:
-            calmer_days = 0
+        previous_state = state
+        state, calmer_days = _advance_risk_state(state, calmer_days, tradable)
         states.append(state)
         row["market_drawdown"] = round(drawdown, 12)
         row["market_volatility"] = round(volatility, 12) if volatility is not None else None
         row["risk_state"] = state
+        row["stress_at_close"] = raw
+        row["tradable_stress"] = tradable
+        if index == 0 or state != previous_state:
+            evidence = rows[index - 1] if index else row
+            trigger = []
+            evidence_drawdown = evidence.get("market_drawdown")
+            evidence_volatility = evidence.get("market_volatility")
+            if evidence_drawdown is not None:
+                if evidence_drawdown <= -B2_CONFIG["severe_drawdown"]:
+                    trigger.append("queda severa")
+                elif evidence_drawdown <= -B2_CONFIG["alert_drawdown"]:
+                    trigger.append("queda de alerta")
+            if evidence_volatility is not None:
+                if evidence_volatility >= B2_CONFIG["severe_volatility"]:
+                    trigger.append("volatilidade severa")
+                elif evidence_volatility >= B2_CONFIG["alert_volatility"]:
+                    trigger.append("volatilidade de alerta")
+            decisions.append({
+                "effective_on": row["date"],
+                "observed_on": evidence["date"] if index else None,
+                "from_state": previous_state if index else None,
+                "to_state": state,
+                "target_equity_weight": (
+                    base_equity_weight if state == 0 else
+                    min(base_equity_weight, B2_CONFIG["alert_equity_cap"] if state == 1 else B2_CONFIG["severe_equity_cap"])
+                ),
+                "observed_market_drawdown": evidence_drawdown,
+                "observed_market_volatility": evidence_volatility,
+                "reason": " e ".join(trigger) if trigger else ("início do ciclo" if index == 0 else "recuperação após dez pregões mais calmos"),
+            })
 
     b2_level = 100.0
     previous_b1 = 100.0
@@ -235,11 +291,21 @@ def apply_benevente2_overlay(
         previous_equity = desired_equity
 
     labels = {0: "normal", 1: "alerta", 2: "severo"}
+    next_state, next_calmer_days = _advance_risk_state(state, calmer_days, raw_states[-1])
+    next_equity = base_equity_weight
+    if next_state == 1:
+        next_equity = min(next_equity, B2_CONFIG["alert_equity_cap"])
+    elif next_state == 2:
+        next_equity = min(next_equity, B2_CONFIG["severe_equity_cap"])
     return rows, {
         "configuration": B2_CONFIG,
         "current_risk_state": labels[states[-1]],
         "current_equity_weight": rows[-1]["benevente2_equity_weight"],
+        "next_session_risk_state": labels[next_state],
+        "next_session_equity_weight": next_equity,
+        "calmer_days_accumulated": next_calmer_days,
         "overlay_turnover": round(total_turnover, 12),
+        "risk_decisions": decisions,
         "activation_date": "2026-08-20",
         "before_activation": "reconstrução retrospectiva",
         "after_activation": "acompanhamento versionado",
@@ -253,6 +319,7 @@ def build_live_document(
     raw_hashes: dict[str, str],
     previous: dict[str, Any] | None = None,
     generated_at: datetime | None = None,
+    force: bool = False,
 ) -> dict[str, Any]:
     """Calcula buy-and-hold com pesos iniciais, sem rebalanceamento intranual."""
 
@@ -283,7 +350,7 @@ def build_live_document(
     # Provedores públicos podem devolver diferenças de ponto flutuante no mesmo
     # conjunto de sessões. Sem uma nova data comum, preservar o registro evita
     # commits artificiais; qualquer revisão entra junto com a sessão seguinte.
-    if previous and previous.get("through") == through:
+    if previous and previous.get("through") == through and not force:
         return previous
 
     cdi_levels = _level_from_rates(cdi_rates)
@@ -330,6 +397,20 @@ def build_live_document(
         )
 
     series, b2 = apply_benevente2_overlay(series, equity_weight)
+    b1_target = target_allocation(holdings, equity_weight, equity_weight)
+    b2_target = target_allocation(
+        holdings, equity_weight, float(b2["next_session_equity_weight"])
+    )
+    b1_by_ticker = {row["ticker"]: row["weight"] for row in b1_target}
+    for row in b2_target:
+        row["difference_from_benevente1"] = round(
+            row["weight"] - b1_by_ticker[row["ticker"]], 12
+        )
+        row["amount_for_brl_100k"] = round(row["weight"] * 100_000.0, 2)
+    for decision_row in b2["risk_decisions"]:
+        decision_row["target_allocation"] = target_allocation(
+            holdings, equity_weight, float(decision_row["target_equity_weight"])
+        )
     last = series[-1]
     equity_last = sum(row["weight"] * (1.0 + row["total_return"]) for row in holding_rows)
     summary = {
@@ -362,6 +443,20 @@ def build_live_document(
         "holdings": holding_rows,
         "cdi_weight": cdi_weight,
         "summary": summary,
+        "portfolio_definitions": {
+            "benevente1": {
+                "rule": "pesos de janeiro mantidos até a revisão anual",
+                "target_allocation": [
+                    {**row, "amount_for_brl_100k": round(row["weight"] * 100_000.0, 2)}
+                    for row in b1_target
+                ],
+            },
+            "benevente2": {
+                "rule": "mesma cesta com exposição definida pelo estado de risco para a próxima sessão",
+                "state_for_next_session": b2["next_session_risk_state"],
+                "target_allocation": b2_target,
+            },
+        },
         "benevente2_overlay": b2,
         "series": series,
         "sources": {
@@ -399,7 +494,9 @@ def build_live_document(
     return document
 
 
-def update(decision_path: Path, output_path: Path, as_of: date | None = None) -> dict[str, Any]:
+def update(
+    decision_path: Path, output_path: Path, as_of: date | None = None, force: bool = False
+) -> dict[str, Any]:
     decision = json.loads(decision_path.read_text(encoding="utf-8"))
     previous = json.loads(output_path.read_text(encoding="utf-8")) if output_path.exists() else None
     start = datetime.strptime(decision["decision_date"], "%Y-%m-%d").date()
@@ -418,7 +515,9 @@ def update(decision_path: Path, output_path: Path, as_of: date | None = None) ->
         "%5EBVSP", start, end
     )
     cdi_rates, raw_hashes["BCB_SGS_12"] = fetch_bcb_cdi(start, end)
-    document = build_live_document(decision, market_series, cdi_rates, raw_hashes, previous)
+    document = build_live_document(
+        decision, market_series, cdi_rates, raw_hashes, previous, force=force
+    )
     if document is not previous:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         output_path.write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -430,8 +529,9 @@ def main() -> None:
     parser.add_argument("--decision", type=Path, default=Path("web/current_decision_2026.json"))
     parser.add_argument("--output", type=Path, default=Path("web/live_performance.json"))
     parser.add_argument("--as-of", type=lambda value: datetime.strptime(value, "%Y-%m-%d").date())
+    parser.add_argument("--force", action="store_true", help="Publica mudança de contrato sem nova sessão")
     args = parser.parse_args()
-    document = update(args.decision, args.output, args.as_of)
+    document = update(args.decision, args.output, args.as_of, args.force)
     print(
         f"Acompanhamento até {document['through']}: "
         f"{document['summary']['portfolio_return']:+.2%}; "

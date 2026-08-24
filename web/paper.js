@@ -122,6 +122,35 @@ function attachLiveChart(host, rows, primary, copy) {
   });
 }
 
+function fullPortfolioPanel(data, mode, copy) {
+  const definition = data.portfolio_definitions?.[mode === "b1" ? "benevente1" : "benevente2"];
+  if (!definition?.target_allocation) return "";
+  const pct = value => `${(Number(value) * 100).toLocaleString(copy.locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}%`;
+  const money = value => Number(value).toLocaleString(copy.locale, { style: "currency", currency: "BRL" });
+  const rows = definition.target_allocation.map(item => {
+    const difference = Number(item.difference_from_benevente1 || 0);
+    const action = mode === "b1" || Math.abs(difference) < 0.000001
+      ? "Manter"
+      : `${difference > 0 ? "Aumentar" : "Reduzir"} ${pct(Math.abs(difference))}`;
+    const actionClass = difference > 0 ? "increase" : difference < 0 ? "reduce" : "hold";
+    return `<tr><td><strong>${item.ticker}</strong></td><td>${pct(item.weight)}</td><td>${money(item.amount_for_brl_100k)}</td><td><span class="allocation-action ${actionClass}">${action}</span></td></tr>`;
+  }).join("");
+  const state = mode === "b2" ? data.portfolio_definitions.benevente2.state_for_next_session : "anual";
+  const decisions = mode === "b2" ? data.benevente2_overlay.risk_decisions.map(item => {
+    const labels = { 0: "normal", 1: "alerta", 2: "severo" };
+    const explanation = item.observed_on
+      ? `Sinal observado em ${new Date(`${item.observed_on}T12:00:00`).toLocaleDateString(copy.locale)}. ${item.reason}.`
+      : "Início do ciclo.";
+    return `<li><time>${new Date(`${item.effective_on}T12:00:00`).toLocaleDateString(copy.locale)}</time><div><strong>${labels[item.to_state]} · ${pct(item.target_equity_weight)} em ações</strong><p>${explanation} O restante acompanha CDI.</p></div></li>`;
+  }).join("") : `<li><time>${new Date(`${data.decision_date}T12:00:00`).toLocaleDateString(copy.locale)}</time><div><strong>Carteira anual registrada</strong><p>Os cinco ativos e os pesos permanecem até a próxima decisão anual.</p></div></li>`;
+  return `<div class="live-allocation-full">
+    <div class="allocation-heading"><div><span>ALVO PARA A PRÓXIMA SESSÃO</span><h4>Carteira completa · estado ${state}</h4></div><small>Simulação com R$ 100.000</small></div>
+    <div class="allocation-table-wrap"><table class="allocation-table"><thead><tr><th>Ativo</th><th>Peso-alvo</th><th>Valor-alvo</th><th>Decisão</th></tr></thead><tbody>${rows}</tbody></table></div>
+    <div class="risk-decision-log"><h4>${mode === "b2" ? "Decisões de risco em 2026" : "Decisão vigente em 2026"}</h4><ol>${decisions}</ol></div>
+    <p class="allocation-disclaimer">Referência para carteira-sombra. A tabela não considera sua posição atual, impostos pessoais, suitability ou quantidade mínima negociável e não transmite ordens.</p>
+  </div>`;
+}
+
 async function renderLivePortfolio(host, data, decision) {
   const copy = liveCopy();
   const mode = host.dataset.liveStrategy === "b1" ? "b1" : "b2";
@@ -141,6 +170,7 @@ async function renderLivePortfolio(host, data, decision) {
     const live = data.holdings.find(row => row.ticker === item.ticker);
     return `<div class="paper-holding"><b>${item.ticker}</b><div class="bar"><i style="width:${item.weight / maxWeight * 100}%"></i></div><span>${plain(item.weight)} · ${pct(live?.total_return || 0)}</span></div>`;
   }).join("");
+  const isVersionPage = host.hasAttribute("data-live-portfolio");
   host.innerHTML = `<div class="paper-portfolio live-portfolio-card">
     <div class="live-card-head"><div><span class="live-status">${status}</span><h3>${copy.title[mode]}</h3><p>${copy.subtitle[mode]} Decisão de ${date(data.decision_date)}, dados até ${date(data.through)}.</p></div><a class="live-version-tab" href="./benevente-${mode === "b2" ? "1" : "2"}.html">Ver ${mode === "b2" ? copy.b1 : copy.b2} →</a></div>
     <div class="paper-metrics live-metrics">
@@ -150,7 +180,7 @@ async function renderLivePortfolio(host, data, decision) {
       <div class="paper-metric"><span>${copy.exposure}</span><b>${plain(currentEquity)}</b><small>${mode === "b2" ? `estado ${data.benevente2_overlay.current_risk_state}` : "peso anual constante"}</small></div>
     </div>
     ${liveChart(data.series, primaryKey, copy)}
-    <details class="live-holdings"><summary>Ver os cinco ativos e pesos de janeiro</summary><div class="paper-holdings">${holdingRows}<div class="paper-holding"><b>${copy.cash}</b><div class="bar cash"><i style="width:${decision.cdi_weight / maxWeight * 100}%"></i></div><span>${plain(decision.cdi_weight)} · ${pct(data.summary.cdi_return)}</span></div></div></details>
+    ${isVersionPage ? fullPortfolioPanel(data, mode, copy) : `<details class="live-holdings"><summary>Ver os cinco ativos e pesos de janeiro</summary><div class="paper-holdings">${holdingRows}<div class="paper-holding"><b>${copy.cash}</b><div class="bar cash"><i style="width:${decision.cdi_weight / maxWeight * 100}%"></i></div><span>${plain(decision.cdi_weight)} · ${pct(data.summary.cdi_return)}</span></div></div></details>`}
     <p class="live-quality">Fechamentos ajustados de fonte pública secundária e CDI oficial do BCB. Números provisórios até a conciliação integral B3/CVM. A rotina não troca ativos, não altera a seleção anual e não usa LLM para calcular retornos.</p>
   </div>`;
   attachLiveChart(host, data.series, primaryKey, copy);

@@ -1,0 +1,3338 @@
+{
+  "schema_version": "1.0.0",
+  "status": "diagnostico_historico_retrospectivo",
+  "period": "2015–2025",
+  "interpretation": "Benevente 1 registra a cesta anual. Benevente 2 reutiliza essa cesta e registra somente mudanças proporcionais de exposição.",
+  "annual_decisions": [
+    {
+      "year": 2015,
+      "decision_date": "2015-01-02",
+      "holding_end_exclusive": "2016-01-04",
+      "selected_configuration": "eq55_n8_low_volatility",
+      "allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.11
+        },
+        {
+          "ticker": "CIEL3",
+          "weight": 0.11
+        },
+        {
+          "ticker": "ITUB3",
+          "weight": 0.0692
+        },
+        {
+          "ticker": "ITUB4",
+          "weight": 0.0408
+        },
+        {
+          "ticker": "VLID3",
+          "weight": 0.11
+        },
+        {
+          "ticker": "WEGE3",
+          "weight": 0.11
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.45
+        }
+      ],
+      "eligible_universe_size": 30,
+      "estimated_cost_brl": 962.9551453578,
+      "benevente1_return": 0.019807304,
+      "benevente2_return": 0.030749665012047567,
+      "cdi_return": 0.1313058206,
+      "mvo_return": -0.0104640541,
+      "ibovespa_return": -0.1064066623,
+      "days_alert": 85,
+      "days_severe": 24,
+      "risk_transitions": [
+        {
+          "year": 2015,
+          "effective_on": "2015-07-23",
+          "observed_on": "2015-07-22",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.12292427637602865,
+          "observed_market_volatility": 0.1588571588545219,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "BBSE3",
+              "weight": 0.09999999999999999
+            },
+            {
+              "ticker": "CIEL3",
+              "weight": 0.09999999999999999
+            },
+            {
+              "ticker": "ITUB3",
+              "weight": 0.0629090909090909
+            },
+            {
+              "ticker": "ITUB4",
+              "weight": 0.03709090909090909
+            },
+            {
+              "ticker": "VLID3",
+              "weight": 0.09999999999999999
+            },
+            {
+              "ticker": "WEGE3",
+              "weight": 0.09999999999999999
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2015,
+          "effective_on": "2015-08-25",
+          "observed_on": "2015-08-24",
+          "from_state": "alerta",
+          "to_state": "severo",
+          "target_equity_weight": 0.35,
+          "observed_market_drawdown": -0.23627092525834426,
+          "observed_market_volatility": 0.22803948821520736,
+          "reason": "queda severa",
+          "target_allocation": [
+            {
+              "ticker": "BBSE3",
+              "weight": 0.06999999999999999
+            },
+            {
+              "ticker": "CIEL3",
+              "weight": 0.06999999999999999
+            },
+            {
+              "ticker": "ITUB3",
+              "weight": 0.044036363636363623
+            },
+            {
+              "ticker": "ITUB4",
+              "weight": 0.02596363636363636
+            },
+            {
+              "ticker": "VLID3",
+              "weight": 0.06999999999999999
+            },
+            {
+              "ticker": "WEGE3",
+              "weight": 0.06999999999999999
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.65
+            }
+          ]
+        },
+        {
+          "year": 2015,
+          "effective_on": "2015-09-10",
+          "observed_on": "2015-09-09",
+          "from_state": "severo",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.19628953155834594,
+          "observed_market_volatility": 0.29418742830057826,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "BBSE3",
+              "weight": 0.09999999999999999
+            },
+            {
+              "ticker": "CIEL3",
+              "weight": 0.09999999999999999
+            },
+            {
+              "ticker": "ITUB3",
+              "weight": 0.0629090909090909
+            },
+            {
+              "ticker": "ITUB4",
+              "weight": 0.03709090909090909
+            },
+            {
+              "ticker": "VLID3",
+              "weight": 0.09999999999999999
+            },
+            {
+              "ticker": "WEGE3",
+              "weight": 0.09999999999999999
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2015,
+          "effective_on": "2015-09-28",
+          "observed_on": "2015-09-25",
+          "from_state": "alerta",
+          "to_state": "severo",
+          "target_equity_weight": 0.35,
+          "observed_market_drawdown": -0.22774409400067408,
+          "observed_market_volatility": 0.24102478037606956,
+          "reason": "queda severa",
+          "target_allocation": [
+            {
+              "ticker": "BBSE3",
+              "weight": 0.06999999999999999
+            },
+            {
+              "ticker": "CIEL3",
+              "weight": 0.06999999999999999
+            },
+            {
+              "ticker": "ITUB3",
+              "weight": 0.044036363636363623
+            },
+            {
+              "ticker": "ITUB4",
+              "weight": 0.02596363636363636
+            },
+            {
+              "ticker": "VLID3",
+              "weight": 0.06999999999999999
+            },
+            {
+              "ticker": "WEGE3",
+              "weight": 0.06999999999999999
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.65
+            }
+          ]
+        },
+        {
+          "year": 2015,
+          "effective_on": "2015-10-16",
+          "observed_on": "2015-10-15",
+          "from_state": "severo",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.18760766104508975,
+          "observed_market_volatility": 0.29183845616295107,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "BBSE3",
+              "weight": 0.09999999999999999
+            },
+            {
+              "ticker": "CIEL3",
+              "weight": 0.09999999999999999
+            },
+            {
+              "ticker": "ITUB3",
+              "weight": 0.0629090909090909
+            },
+            {
+              "ticker": "ITUB4",
+              "weight": 0.03709090909090909
+            },
+            {
+              "ticker": "VLID3",
+              "weight": 0.09999999999999999
+            },
+            {
+              "ticker": "WEGE3",
+              "weight": 0.09999999999999999
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        }
+      ],
+      "decision_evidence_sha256": "c5929e70e05a46f8d4ac5c02d6d6093571e969d45cd4ae9415ec1c457e937077"
+    },
+    {
+      "year": 2016,
+      "decision_date": "2016-01-04",
+      "holding_end_exclusive": "2017-01-02",
+      "selected_configuration": "eq75_n5_value_quality",
+      "allocation": [
+        {
+          "ticker": "ABEV3",
+          "weight": 0.1374
+        },
+        {
+          "ticker": "ENBR3",
+          "weight": 0.24
+        },
+        {
+          "ticker": "SANB3",
+          "weight": 0.24
+        },
+        {
+          "ticker": "SANB4",
+          "weight": 0.1326
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.25
+        }
+      ],
+      "eligible_universe_size": 27,
+      "estimated_cost_brl": 2470.6421053188,
+      "benevente1_return": 0.5089320228,
+      "benevente2_return": 0.4655597382429584,
+      "cdi_return": 0.1388153106,
+      "mvo_return": 0.2385812235,
+      "ibovespa_return": 0.429178235,
+      "days_alert": 47,
+      "days_severe": 21,
+      "risk_transitions": [
+        {
+          "year": 2016,
+          "effective_on": "2016-01-12",
+          "observed_on": "2016-01-11",
+          "from_state": "alerta",
+          "to_state": "severo",
+          "target_equity_weight": 0.35,
+          "observed_market_drawdown": -0.22808201408027162,
+          "observed_market_volatility": 0.23775072805055958,
+          "reason": "queda severa",
+          "target_allocation": [
+            {
+              "ticker": "ABEV3",
+              "weight": 0.06412
+            },
+            {
+              "ticker": "ENBR3",
+              "weight": 0.11199999999999999
+            },
+            {
+              "ticker": "SANB3",
+              "weight": 0.11199999999999999
+            },
+            {
+              "ticker": "SANB4",
+              "weight": 0.06187999999999999
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.65
+            }
+          ]
+        },
+        {
+          "year": 2016,
+          "effective_on": "2016-02-15",
+          "observed_on": "2016-02-12",
+          "from_state": "severo",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.1856728843519706,
+          "observed_market_volatility": 0.3502994153142245,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "ABEV3",
+              "weight": 0.09159999999999999
+            },
+            {
+              "ticker": "ENBR3",
+              "weight": 0.15999999999999998
+            },
+            {
+              "ticker": "SANB3",
+              "weight": 0.15999999999999998
+            },
+            {
+              "ticker": "SANB4",
+              "weight": 0.08839999999999999
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2016,
+          "effective_on": "2016-03-14",
+          "observed_on": "2016-03-11",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.7499999993722354,
+          "observed_market_drawdown": 0.0,
+          "observed_market_volatility": 0.30791231205963776,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "ABEV3",
+              "weight": 0.13739999988499352
+            },
+            {
+              "ticker": "ENBR3",
+              "weight": 0.23999999979911532
+            },
+            {
+              "ticker": "SANB3",
+              "weight": 0.23999999979911532
+            },
+            {
+              "ticker": "SANB4",
+              "weight": 0.13259999988901122
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.2500000006277646
+            }
+          ]
+        },
+        {
+          "year": 2016,
+          "effective_on": "2016-03-18",
+          "observed_on": "2016-03-17",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": 0.0,
+          "observed_market_volatility": 0.4100477862430526,
+          "reason": "volatilidade de alerta",
+          "target_allocation": [
+            {
+              "ticker": "ABEV3",
+              "weight": 0.09159999999999999
+            },
+            {
+              "ticker": "ENBR3",
+              "weight": 0.15999999999999998
+            },
+            {
+              "ticker": "SANB3",
+              "weight": 0.15999999999999998
+            },
+            {
+              "ticker": "SANB4",
+              "weight": 0.08839999999999999
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2016,
+          "effective_on": "2016-04-08",
+          "observed_on": "2016-04-07",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.7499999993722354,
+          "observed_market_drawdown": -0.05338641156389212,
+          "observed_market_volatility": 0.3660582041443502,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "ABEV3",
+              "weight": 0.13739999988499352
+            },
+            {
+              "ticker": "ENBR3",
+              "weight": 0.23999999979911532
+            },
+            {
+              "ticker": "SANB3",
+              "weight": 0.23999999979911532
+            },
+            {
+              "ticker": "SANB4",
+              "weight": 0.13259999988901122
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.2500000006277646
+            }
+          ]
+        },
+        {
+          "year": 2016,
+          "effective_on": "2016-12-20",
+          "observed_on": "2016-12-19",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.12035424848991494,
+          "observed_market_volatility": 0.2656791087878054,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "ABEV3",
+              "weight": 0.09159999999999999
+            },
+            {
+              "ticker": "ENBR3",
+              "weight": 0.15999999999999998
+            },
+            {
+              "ticker": "SANB3",
+              "weight": 0.15999999999999998
+            },
+            {
+              "ticker": "SANB4",
+              "weight": 0.08839999999999999
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        }
+      ],
+      "decision_evidence_sha256": "8c8a42e925a31cf97c99126f4f44377b5424470f80c3283e76bb82a8e93fbeb7"
+    },
+    {
+      "year": 2017,
+      "decision_date": "2017-01-02",
+      "holding_end_exclusive": "2018-01-02",
+      "selected_configuration": "eq75_n5_value_quality",
+      "allocation": [
+        {
+          "ticker": "BRSR6",
+          "weight": 0.0163
+        },
+        {
+          "ticker": "CVCB3",
+          "weight": 0.0137
+        },
+        {
+          "ticker": "FLRY3",
+          "weight": 0.24
+        },
+        {
+          "ticker": "SANB3",
+          "weight": 0.24
+        },
+        {
+          "ticker": "SAPR4",
+          "weight": 0.24
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.25
+        }
+      ],
+      "eligible_universe_size": 33,
+      "estimated_cost_brl": 2972.2404045564,
+      "benevente1_return": 0.2663916286,
+      "benevente2_return": 0.25702068081066387,
+      "cdi_return": 0.0986974772,
+      "mvo_return": 0.216397193,
+      "ibovespa_return": 0.28214939,
+      "days_alert": 12,
+      "days_severe": 0,
+      "risk_transitions": [
+        {
+          "year": 2017,
+          "effective_on": "2017-01-05",
+          "observed_on": "2017-01-04",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.7499999999528947,
+          "observed_market_drawdown": -0.04122581915316026,
+          "observed_market_volatility": 0.2312651568418341,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "BRSR6",
+              "weight": 0.016299999998976245
+            },
+            {
+              "ticker": "CVCB3",
+              "weight": 0.013699999999139543
+            },
+            {
+              "ticker": "FLRY3",
+              "weight": 0.2399999999849263
+            },
+            {
+              "ticker": "SANB3",
+              "weight": 0.2399999999849263
+            },
+            {
+              "ticker": "SAPR4",
+              "weight": 0.2399999999849263
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.2500000000471053
+            }
+          ]
+        },
+        {
+          "year": 2017,
+          "effective_on": "2017-06-22",
+          "observed_on": "2017-06-21",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.12005445017306604,
+          "observed_market_volatility": null,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "BRSR6",
+              "weight": 0.010866666666666665
+            },
+            {
+              "ticker": "CVCB3",
+              "weight": 0.009133333333333334
+            },
+            {
+              "ticker": "FLRY3",
+              "weight": 0.15999999999999998
+            },
+            {
+              "ticker": "SANB3",
+              "weight": 0.15999999999999998
+            },
+            {
+              "ticker": "SAPR4",
+              "weight": 0.15999999999999998
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2017,
+          "effective_on": "2017-07-06",
+          "observed_on": "2017-07-05",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.7499999999528947,
+          "observed_market_drawdown": -0.08541388575637032,
+          "observed_market_volatility": null,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "BRSR6",
+              "weight": 0.016299999998976245
+            },
+            {
+              "ticker": "CVCB3",
+              "weight": 0.013699999999139543
+            },
+            {
+              "ticker": "FLRY3",
+              "weight": 0.2399999999849263
+            },
+            {
+              "ticker": "SANB3",
+              "weight": 0.2399999999849263
+            },
+            {
+              "ticker": "SAPR4",
+              "weight": 0.2399999999849263
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.2500000000471053
+            }
+          ]
+        }
+      ],
+      "decision_evidence_sha256": "ecf075560910d499a0f02237bddaa666e800f50774dd2a2d3e87f8cfaae7b521"
+    },
+    {
+      "year": 2018,
+      "decision_date": "2018-01-02",
+      "holding_end_exclusive": "2019-01-02",
+      "selected_configuration": "eq95_n5_value_quality",
+      "allocation": [
+        {
+          "ticker": "BPAC3",
+          "weight": 0.2207
+        },
+        {
+          "ticker": "BRSR3",
+          "weight": 0.2114
+        },
+        {
+          "ticker": "GRND3",
+          "weight": 0.20559999999999998
+        },
+        {
+          "ticker": "QUAL3",
+          "weight": 0.0732
+        },
+        {
+          "ticker": "SAPR3",
+          "weight": 0.2348
+        },
+        {
+          "ticker": "SEER3",
+          "weight": 0.0043
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.05
+        }
+      ],
+      "eligible_universe_size": 34,
+      "estimated_cost_brl": 18052.7096842109,
+      "benevente1_return": -0.0145201827,
+      "benevente2_return": 0.062216952484904775,
+      "cdi_return": 0.0636703732,
+      "mvo_return": -0.1615651922,
+      "ibovespa_return": 0.1283331836,
+      "days_alert": 77,
+      "days_severe": 0,
+      "risk_transitions": [
+        {
+          "year": 2018,
+          "effective_on": "2018-05-29",
+          "observed_on": "2018-05-28",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.14029183740279305,
+          "observed_market_volatility": 0.25810700523003843,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "BPAC3",
+              "weight": 0.1161578947368421
+            },
+            {
+              "ticker": "BRSR3",
+              "weight": 0.11126315789473684
+            },
+            {
+              "ticker": "GRND3",
+              "weight": 0.10821052631578945
+            },
+            {
+              "ticker": "QUAL3",
+              "weight": 0.03852631578947368
+            },
+            {
+              "ticker": "SAPR3",
+              "weight": 0.12357894736842105
+            },
+            {
+              "ticker": "SEER3",
+              "weight": 0.002263157894736842
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2018,
+          "effective_on": "2018-07-31",
+          "observed_on": "2018-07-30",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.9499999999216376,
+          "observed_market_drawdown": -0.08416141370557562,
+          "observed_market_volatility": 0.15007465224209482,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "BPAC3",
+              "weight": 0.2206999999817952
+            },
+            {
+              "ticker": "BRSR3",
+              "weight": 0.21139999998256231
+            },
+            {
+              "ticker": "GRND3",
+              "weight": 0.2055999999830407
+            },
+            {
+              "ticker": "QUAL3",
+              "weight": 0.07319999999396197
+            },
+            {
+              "ticker": "SAPR3",
+              "weight": 0.23479999998063214
+            },
+            {
+              "ticker": "SEER3",
+              "weight": 0.004299999999645307
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.05000000007836236
+            }
+          ]
+        },
+        {
+          "year": 2018,
+          "effective_on": "2018-08-13",
+          "observed_on": "2018-08-10",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.1270806524074849,
+          "observed_market_volatility": 0.2043009352415881,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "BPAC3",
+              "weight": 0.1161578947368421
+            },
+            {
+              "ticker": "BRSR3",
+              "weight": 0.11126315789473684
+            },
+            {
+              "ticker": "GRND3",
+              "weight": 0.10821052631578945
+            },
+            {
+              "ticker": "QUAL3",
+              "weight": 0.03852631578947368
+            },
+            {
+              "ticker": "SAPR3",
+              "weight": 0.12357894736842105
+            },
+            {
+              "ticker": "SEER3",
+              "weight": 0.002263157894736842
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2018,
+          "effective_on": "2018-10-01",
+          "observed_on": "2018-09-28",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.9499999999216376,
+          "observed_market_drawdown": -0.08314362188702906,
+          "observed_market_volatility": 0.20544102378854387,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "BPAC3",
+              "weight": 0.2206999999817952
+            },
+            {
+              "ticker": "BRSR3",
+              "weight": 0.21139999998256231
+            },
+            {
+              "ticker": "GRND3",
+              "weight": 0.2055999999830407
+            },
+            {
+              "ticker": "QUAL3",
+              "weight": 0.07319999999396197
+            },
+            {
+              "ticker": "SAPR3",
+              "weight": 0.23479999998063214
+            },
+            {
+              "ticker": "SEER3",
+              "weight": 0.004299999999645307
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.05000000007836236
+            }
+          ]
+        }
+      ],
+      "decision_evidence_sha256": "71c499a0582fac49007669a1f4b8ebfa9d75dabb5b06d4fc0878daec2167e154"
+    },
+    {
+      "year": 2019,
+      "decision_date": "2019-01-02",
+      "holding_end_exclusive": "2020-01-02",
+      "selected_configuration": "eq95_n5_triple_factor",
+      "allocation": [
+        {
+          "ticker": "BRSR6",
+          "weight": 0.25
+        },
+        {
+          "ticker": "CMIG3",
+          "weight": 0.08410000000000001
+        },
+        {
+          "ticker": "CSNA3",
+          "weight": 0.25
+        },
+        {
+          "ticker": "IRBR3",
+          "weight": 0.1159
+        },
+        {
+          "ticker": "MGLU3",
+          "weight": 0.25
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.05
+        }
+      ],
+      "eligible_universe_size": 48,
+      "estimated_cost_brl": 2158.8505613139,
+      "benevente1_return": 0.4789654047,
+      "benevente2_return": 0.47896540466131654,
+      "cdi_return": 0.0591568101,
+      "mvo_return": 0.4517019195,
+      "ibovespa_return": 0.274161649,
+      "days_alert": 0,
+      "days_severe": 0,
+      "risk_transitions": [],
+      "decision_evidence_sha256": "5b6c41de5e78eeb29b57c22ef3c756a54190ab7f71f312d57870c14328f44ef2"
+    },
+    {
+      "year": 2020,
+      "decision_date": "2020-01-02",
+      "holding_end_exclusive": "2021-01-04",
+      "selected_configuration": "eq95_n5_triple_factor",
+      "allocation": [
+        {
+          "ticker": "AZUL4",
+          "weight": 0.25
+        },
+        {
+          "ticker": "BBSE3",
+          "weight": 0.24760000000000001
+        },
+        {
+          "ticker": "CMIG3",
+          "weight": 0.096
+        },
+        {
+          "ticker": "EQTL3",
+          "weight": 0.10640000000000001
+        },
+        {
+          "ticker": "MRFG3",
+          "weight": 0.25
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.05
+        }
+      ],
+      "eligible_universe_size": 67,
+      "estimated_cost_brl": 4481.3691845856,
+      "benevente1_return": 0.017842004,
+      "benevente2_return": 0.04350058756361097,
+      "cdi_return": 0.0273258544,
+      "mvo_return": -0.1734904735,
+      "ibovespa_return": 0.0061818458,
+      "days_alert": 55,
+      "days_severe": 76,
+      "risk_transitions": [
+        {
+          "year": 2020,
+          "effective_on": "2020-02-28",
+          "observed_on": "2020-02-27",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.14065331514306367,
+          "observed_market_volatility": 0.3086270951514854,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "AZUL4",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "BBSE3",
+              "weight": 0.13031578947368422
+            },
+            {
+              "ticker": "CMIG3",
+              "weight": 0.05052631578947368
+            },
+            {
+              "ticker": "EQTL3",
+              "weight": 0.056
+            },
+            {
+              "ticker": "MRFG3",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2020,
+          "effective_on": "2020-03-10",
+          "observed_on": "2020-03-09",
+          "from_state": "alerta",
+          "to_state": "severo",
+          "target_equity_weight": 0.35,
+          "observed_market_drawdown": -0.2818166791204607,
+          "observed_market_volatility": 0.5557534648712654,
+          "reason": "queda severa e volatilidade de alerta",
+          "target_allocation": [
+            {
+              "ticker": "AZUL4",
+              "weight": 0.09210526315789472
+            },
+            {
+              "ticker": "BBSE3",
+              "weight": 0.09122105263157894
+            },
+            {
+              "ticker": "CMIG3",
+              "weight": 0.03536842105263157
+            },
+            {
+              "ticker": "EQTL3",
+              "weight": 0.03919999999999999
+            },
+            {
+              "ticker": "MRFG3",
+              "weight": 0.09210526315789472
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.6500000000000001
+            }
+          ]
+        },
+        {
+          "year": 2020,
+          "effective_on": "2020-06-30",
+          "observed_on": "2020-06-29",
+          "from_state": "severo",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.20114236310682865,
+          "observed_market_volatility": 0.26887485276578954,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "AZUL4",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "BBSE3",
+              "weight": 0.13031578947368422
+            },
+            {
+              "ticker": "CMIG3",
+              "weight": 0.05052631578947368
+            },
+            {
+              "ticker": "EQTL3",
+              "weight": 0.056
+            },
+            {
+              "ticker": "MRFG3",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2020,
+          "effective_on": "2020-09-04",
+          "observed_on": "2020-09-03",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.95,
+          "observed_market_drawdown": -0.04624781040069459,
+          "observed_market_volatility": 0.22816393616133665,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "AZUL4",
+              "weight": 0.24999999999999997
+            },
+            {
+              "ticker": "BBSE3",
+              "weight": 0.2476
+            },
+            {
+              "ticker": "CMIG3",
+              "weight": 0.09599999999999999
+            },
+            {
+              "ticker": "EQTL3",
+              "weight": 0.1064
+            },
+            {
+              "ticker": "MRFG3",
+              "weight": 0.24999999999999997
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.050000000000000044
+            }
+          ]
+        }
+      ],
+      "decision_evidence_sha256": "a7ac3c99f57845bd3c932742563ec1a3b68dacfedb4169086995301b8c7540d8"
+    },
+    {
+      "year": 2021,
+      "decision_date": "2021-01-04",
+      "holding_end_exclusive": "2022-01-03",
+      "selected_configuration": "eq95_n5_triple_factor",
+      "allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.25
+        },
+        {
+          "ticker": "CSMG3",
+          "weight": 0.0719
+        },
+        {
+          "ticker": "EQTL3",
+          "weight": 0.1281
+        },
+        {
+          "ticker": "MRFG3",
+          "weight": 0.25
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.25
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.05
+        }
+      ],
+      "eligible_universe_size": 72,
+      "estimated_cost_brl": 2561.690195324,
+      "benevente1_return": 0.2188116617,
+      "benevente2_return": 0.14922763097500846,
+      "cdi_return": 0.0437955007,
+      "mvo_return": 0.0587262238,
+      "ibovespa_return": -0.1158589045,
+      "days_alert": 76,
+      "days_severe": 11,
+      "risk_transitions": [
+        {
+          "year": 2021,
+          "effective_on": "2021-03-01",
+          "observed_on": "2021-02-26",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.12026191711150946,
+          "observed_market_volatility": 0.29814123151944594,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "BBSE3",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "CSMG3",
+              "weight": 0.03784210526315789
+            },
+            {
+              "ticker": "EQTL3",
+              "weight": 0.06742105263157894
+            },
+            {
+              "ticker": "MRFG3",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "TASA4",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2021,
+          "effective_on": "2021-03-15",
+          "observed_on": "2021-03-12",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.9499999999999998,
+          "observed_market_drawdown": -0.08728223232779864,
+          "observed_market_volatility": 0.31937716809701966,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "BBSE3",
+              "weight": 0.24999999999999997
+            },
+            {
+              "ticker": "CSMG3",
+              "weight": 0.07189999999999999
+            },
+            {
+              "ticker": "EQTL3",
+              "weight": 0.12809999999999996
+            },
+            {
+              "ticker": "MRFG3",
+              "weight": 0.24999999999999997
+            },
+            {
+              "ticker": "TASA4",
+              "weight": 0.24999999999999997
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.050000000000000155
+            }
+          ]
+        },
+        {
+          "year": 2021,
+          "effective_on": "2021-09-09",
+          "observed_on": "2021-09-08",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.13276900894490018,
+          "observed_market_volatility": 0.2242991331523937,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "BBSE3",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "CSMG3",
+              "weight": 0.03784210526315789
+            },
+            {
+              "ticker": "EQTL3",
+              "weight": 0.06742105263157894
+            },
+            {
+              "ticker": "MRFG3",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "TASA4",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2021,
+          "effective_on": "2021-12-01",
+          "observed_on": "2021-11-30",
+          "from_state": "alerta",
+          "to_state": "severo",
+          "target_equity_weight": 0.35,
+          "observed_market_drawdown": -0.22069034145389155,
+          "observed_market_volatility": 0.22630637021353586,
+          "reason": "queda severa",
+          "target_allocation": [
+            {
+              "ticker": "BBSE3",
+              "weight": 0.09210526315789473
+            },
+            {
+              "ticker": "CSMG3",
+              "weight": 0.026489473684210528
+            },
+            {
+              "ticker": "EQTL3",
+              "weight": 0.047194736842105255
+            },
+            {
+              "ticker": "MRFG3",
+              "weight": 0.09210526315789473
+            },
+            {
+              "ticker": "TASA4",
+              "weight": 0.09210526315789473
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.65
+            }
+          ]
+        },
+        {
+          "year": 2021,
+          "effective_on": "2021-12-16",
+          "observed_on": "2021-12-15",
+          "from_state": "severo",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.17097765644967833,
+          "observed_market_volatility": 0.2342136002392998,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "BBSE3",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "CSMG3",
+              "weight": 0.03784210526315789
+            },
+            {
+              "ticker": "EQTL3",
+              "weight": 0.06742105263157894
+            },
+            {
+              "ticker": "MRFG3",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "TASA4",
+              "weight": 0.13157894736842105
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        }
+      ],
+      "decision_evidence_sha256": "fa72b0650de02d3a42e82440d08c9fdc9b94af5ada1266b50cd6a471022b90dc"
+    },
+    {
+      "year": 2022,
+      "decision_date": "2022-01-03",
+      "holding_end_exclusive": "2023-01-02",
+      "selected_configuration": "eq75_n5_triple_factor",
+      "allocation": [
+        {
+          "ticker": "FHER3",
+          "weight": 0.24
+        },
+        {
+          "ticker": "GOAU4",
+          "weight": 0.2023
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.0692
+        },
+        {
+          "ticker": "UNIP6",
+          "weight": 0.1508
+        },
+        {
+          "ticker": "USIM5",
+          "weight": 0.0877
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.25
+        }
+      ],
+      "eligible_universe_size": 90,
+      "estimated_cost_brl": 5086.9095768739,
+      "benevente1_return": 0.0172989961,
+      "benevente2_return": 0.05245374513674994,
+      "cdi_return": 0.1229491555,
+      "mvo_return": -0.0315777492,
+      "ibovespa_return": 0.058784473,
+      "days_alert": 110,
+      "days_severe": 0,
+      "risk_transitions": [
+        {
+          "year": 2022,
+          "effective_on": "2022-02-09",
+          "observed_on": "2022-02-08",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.75,
+          "observed_market_drawdown": -0.0797682919863153,
+          "observed_market_volatility": 0.14526949418284688,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "FHER3",
+              "weight": 0.24
+            },
+            {
+              "ticker": "GOAU4",
+              "weight": 0.2023
+            },
+            {
+              "ticker": "TASA4",
+              "weight": 0.0692
+            },
+            {
+              "ticker": "UNIP6",
+              "weight": 0.1508
+            },
+            {
+              "ticker": "USIM5",
+              "weight": 0.0877
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.25
+            }
+          ]
+        },
+        {
+          "year": 2022,
+          "effective_on": "2022-05-03",
+          "observed_on": "2022-05-02",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.12281813265399466,
+          "observed_market_volatility": 0.17209472853010357,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "FHER3",
+              "weight": 0.15999999999999998
+            },
+            {
+              "ticker": "GOAU4",
+              "weight": 0.13486666666666666
+            },
+            {
+              "ticker": "TASA4",
+              "weight": 0.04613333333333333
+            },
+            {
+              "ticker": "UNIP6",
+              "weight": 0.10053333333333332
+            },
+            {
+              "ticker": "USIM5",
+              "weight": 0.05846666666666667
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2022,
+          "effective_on": "2022-06-02",
+          "observed_on": "2022-06-01",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.75,
+          "observed_market_drawdown": -0.08398454003350797,
+          "observed_market_volatility": 0.19929441441964896,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "FHER3",
+              "weight": 0.24
+            },
+            {
+              "ticker": "GOAU4",
+              "weight": 0.2023
+            },
+            {
+              "ticker": "TASA4",
+              "weight": 0.0692
+            },
+            {
+              "ticker": "UNIP6",
+              "weight": 0.1508
+            },
+            {
+              "ticker": "USIM5",
+              "weight": 0.0877
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.25
+            }
+          ]
+        },
+        {
+          "year": 2022,
+          "effective_on": "2022-06-13",
+          "observed_on": "2022-06-10",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.13234350700926845,
+          "observed_market_volatility": 0.17697794087086904,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "FHER3",
+              "weight": 0.15999999999999998
+            },
+            {
+              "ticker": "GOAU4",
+              "weight": 0.13486666666666666
+            },
+            {
+              "ticker": "TASA4",
+              "weight": 0.04613333333333333
+            },
+            {
+              "ticker": "UNIP6",
+              "weight": 0.10053333333333332
+            },
+            {
+              "ticker": "USIM5",
+              "weight": 0.05846666666666667
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2022,
+          "effective_on": "2022-08-22",
+          "observed_on": "2022-08-19",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.75,
+          "observed_market_drawdown": -0.08286583941355019,
+          "observed_market_volatility": 0.17713874655257097,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "FHER3",
+              "weight": 0.24
+            },
+            {
+              "ticker": "GOAU4",
+              "weight": 0.2023
+            },
+            {
+              "ticker": "TASA4",
+              "weight": 0.0692
+            },
+            {
+              "ticker": "UNIP6",
+              "weight": 0.1508
+            },
+            {
+              "ticker": "USIM5",
+              "weight": 0.0877
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.25
+            }
+          ]
+        },
+        {
+          "year": 2022,
+          "effective_on": "2022-12-13",
+          "observed_on": "2022-12-12",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.12228067923948804,
+          "observed_market_volatility": 0.24422082010388974,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "FHER3",
+              "weight": 0.15999999999999998
+            },
+            {
+              "ticker": "GOAU4",
+              "weight": 0.13486666666666666
+            },
+            {
+              "ticker": "TASA4",
+              "weight": 0.04613333333333333
+            },
+            {
+              "ticker": "UNIP6",
+              "weight": 0.10053333333333332
+            },
+            {
+              "ticker": "USIM5",
+              "weight": 0.05846666666666667
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        }
+      ],
+      "decision_evidence_sha256": "a24e54b87f12dfa6968cc1872861f6cf6d3956d6248505ee66cfc769c082768d"
+    },
+    {
+      "year": 2023,
+      "decision_date": "2023-01-02",
+      "holding_end_exclusive": "2024-01-02",
+      "selected_configuration": "eq55_n5_triple_factor",
+      "allocation": [
+        {
+          "ticker": "BRAP4",
+          "weight": 0.0574
+        },
+        {
+          "ticker": "CURY3",
+          "weight": 0.0353
+        },
+        {
+          "ticker": "KEPL3",
+          "weight": 0.1365
+        },
+        {
+          "ticker": "UNIP6",
+          "weight": 0.1447
+        },
+        {
+          "ticker": "VIVA3",
+          "weight": 0.17600000000000002
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.4501
+        }
+      ],
+      "eligible_universe_size": 90,
+      "estimated_cost_brl": 1969.2083132487,
+      "benevente1_return": 0.2156503186,
+      "benevente2_return": 0.22548209095993932,
+      "cdi_return": 0.1293265759,
+      "mvo_return": 0.1097559678,
+      "ibovespa_return": 0.2614217493,
+      "days_alert": 27,
+      "days_severe": 0,
+      "risk_transitions": [
+        {
+          "year": 2023,
+          "effective_on": "2023-01-05",
+          "observed_on": "2023-01-04",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.55,
+          "observed_market_drawdown": -0.09151916901810875,
+          "observed_market_volatility": 0.21332705557597065,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "BRAP4",
+              "weight": 0.0574
+            },
+            {
+              "ticker": "CURY3",
+              "weight": 0.0353
+            },
+            {
+              "ticker": "KEPL3",
+              "weight": 0.1365
+            },
+            {
+              "ticker": "UNIP6",
+              "weight": 0.1447
+            },
+            {
+              "ticker": "VIVA3",
+              "weight": 0.17600000000000002
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.45009999999999994
+            }
+          ]
+        },
+        {
+          "year": 2023,
+          "effective_on": "2023-03-20",
+          "observed_on": "2023-03-17",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.12042937686927702,
+          "observed_market_volatility": 0.1617582338554596,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "BRAP4",
+              "weight": 0.05219130751045644
+            },
+            {
+              "ticker": "CURY3",
+              "weight": 0.03209674486270231
+            },
+            {
+              "ticker": "KEPL3",
+              "weight": 0.12411347517730496
+            },
+            {
+              "ticker": "UNIP6",
+              "weight": 0.1315693762502273
+            },
+            {
+              "ticker": "VIVA3",
+              "weight": 0.16002909619930897
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        },
+        {
+          "year": 2023,
+          "effective_on": "2023-04-26",
+          "observed_on": "2023-04-25",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.55,
+          "observed_market_drawdown": -0.10975191964921005,
+          "observed_market_volatility": 0.2170743143375794,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "BRAP4",
+              "weight": 0.0574
+            },
+            {
+              "ticker": "CURY3",
+              "weight": 0.0353
+            },
+            {
+              "ticker": "KEPL3",
+              "weight": 0.1365
+            },
+            {
+              "ticker": "UNIP6",
+              "weight": 0.1447
+            },
+            {
+              "ticker": "VIVA3",
+              "weight": 0.17600000000000002
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.45009999999999994
+            }
+          ]
+        }
+      ],
+      "decision_evidence_sha256": "bac070875f73f18e17e4c6cb347ae85205d3c45710620440ef3b03888b2d91ca"
+    },
+    {
+      "year": 2024,
+      "decision_date": "2024-01-02",
+      "holding_end_exclusive": "2025-01-02",
+      "selected_configuration": "eq55_n5_triple_factor",
+      "allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.073
+        },
+        {
+          "ticker": "CMIN3",
+          "weight": 0.08470000000000001
+        },
+        {
+          "ticker": "CURY3",
+          "weight": 0.17600000000000002
+        },
+        {
+          "ticker": "PLPL3",
+          "weight": 0.0403
+        },
+        {
+          "ticker": "VIVA3",
+          "weight": 0.17600000000000002
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.45
+        }
+      ],
+      "eligible_universe_size": 90,
+      "estimated_cost_brl": 2094.353459116,
+      "benevente1_return": -0.0308317841,
+      "benevente2_return": -0.029030372485984057,
+      "cdi_return": 0.1077709035,
+      "mvo_return": 0.029383938,
+      "ibovespa_return": -0.0935514744,
+      "days_alert": 6,
+      "days_severe": 0,
+      "risk_transitions": [
+        {
+          "year": 2024,
+          "effective_on": "2024-12-19",
+          "observed_on": "2024-12-18",
+          "from_state": "normal",
+          "to_state": "alerta",
+          "target_equity_weight": 0.5,
+          "observed_market_drawdown": -0.12066053265862886,
+          "observed_market_volatility": 0.2308852882828957,
+          "reason": "queda de alerta",
+          "target_allocation": [
+            {
+              "ticker": "BBSE3",
+              "weight": 0.06636363636363636
+            },
+            {
+              "ticker": "CMIN3",
+              "weight": 0.07700000000000001
+            },
+            {
+              "ticker": "CURY3",
+              "weight": 0.16
+            },
+            {
+              "ticker": "PLPL3",
+              "weight": 0.03663636363636364
+            },
+            {
+              "ticker": "VIVA3",
+              "weight": 0.16
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.5
+            }
+          ]
+        }
+      ],
+      "decision_evidence_sha256": "2d6282c1fca8a21c23d45becf39d7035b3e91402289c86ebfb62710e5b1c3408"
+    },
+    {
+      "year": 2025,
+      "decision_date": "2025-01-02",
+      "holding_end_exclusive": "2025-12-31",
+      "selected_configuration": "eq55_n5_triple_factor",
+      "allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.1161
+        },
+        {
+          "ticker": "CMIN3",
+          "weight": 0.034300000000000004
+        },
+        {
+          "ticker": "CURY3",
+          "weight": 0.1732
+        },
+        {
+          "ticker": "STBP3",
+          "weight": 0.0504
+        },
+        {
+          "ticker": "VIVA3",
+          "weight": 0.17600000000000002
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.45
+        }
+      ],
+      "eligible_universe_size": 96,
+      "estimated_cost_brl": 1000.3248979294,
+      "benevente1_return": 0.4440271158,
+      "benevente2_return": 0.43697308861298967,
+      "cdi_return": 0.1420925347,
+      "mvo_return": 0.3050869553,
+      "ibovespa_return": 0.3413111342,
+      "days_alert": 18,
+      "days_severe": 0,
+      "risk_transitions": [
+        {
+          "year": 2025,
+          "effective_on": "2025-01-29",
+          "observed_on": "2025-01-28",
+          "from_state": "alerta",
+          "to_state": "normal",
+          "target_equity_weight": 0.55,
+          "observed_market_drawdown": -0.09556172939472563,
+          "observed_market_volatility": 0.16964481178930002,
+          "reason": "recuperação após dez pregões mais calmos",
+          "target_allocation": [
+            {
+              "ticker": "BBSE3",
+              "weight": 0.1161
+            },
+            {
+              "ticker": "CMIN3",
+              "weight": 0.034300000000000004
+            },
+            {
+              "ticker": "CURY3",
+              "weight": 0.1732
+            },
+            {
+              "ticker": "STBP3",
+              "weight": 0.0504
+            },
+            {
+              "ticker": "VIVA3",
+              "weight": 0.17600000000000002
+            },
+            {
+              "ticker": "TITULO_CDI",
+              "weight": 0.44999999999999996
+            }
+          ]
+        }
+      ],
+      "decision_evidence_sha256": "037b0f33be9ed69729ca6b3eef852463ff9b18f81f035336856196a69ffb7d23"
+    }
+  ],
+  "risk_transitions": [
+    {
+      "year": 2015,
+      "effective_on": "2015-07-23",
+      "observed_on": "2015-07-22",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.12292427637602865,
+      "observed_market_volatility": 0.1588571588545219,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.09999999999999999
+        },
+        {
+          "ticker": "CIEL3",
+          "weight": 0.09999999999999999
+        },
+        {
+          "ticker": "ITUB3",
+          "weight": 0.0629090909090909
+        },
+        {
+          "ticker": "ITUB4",
+          "weight": 0.03709090909090909
+        },
+        {
+          "ticker": "VLID3",
+          "weight": 0.09999999999999999
+        },
+        {
+          "ticker": "WEGE3",
+          "weight": 0.09999999999999999
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2015,
+      "effective_on": "2015-08-25",
+      "observed_on": "2015-08-24",
+      "from_state": "alerta",
+      "to_state": "severo",
+      "target_equity_weight": 0.35,
+      "observed_market_drawdown": -0.23627092525834426,
+      "observed_market_volatility": 0.22803948821520736,
+      "reason": "queda severa",
+      "target_allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.06999999999999999
+        },
+        {
+          "ticker": "CIEL3",
+          "weight": 0.06999999999999999
+        },
+        {
+          "ticker": "ITUB3",
+          "weight": 0.044036363636363623
+        },
+        {
+          "ticker": "ITUB4",
+          "weight": 0.02596363636363636
+        },
+        {
+          "ticker": "VLID3",
+          "weight": 0.06999999999999999
+        },
+        {
+          "ticker": "WEGE3",
+          "weight": 0.06999999999999999
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.65
+        }
+      ]
+    },
+    {
+      "year": 2015,
+      "effective_on": "2015-09-10",
+      "observed_on": "2015-09-09",
+      "from_state": "severo",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.19628953155834594,
+      "observed_market_volatility": 0.29418742830057826,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.09999999999999999
+        },
+        {
+          "ticker": "CIEL3",
+          "weight": 0.09999999999999999
+        },
+        {
+          "ticker": "ITUB3",
+          "weight": 0.0629090909090909
+        },
+        {
+          "ticker": "ITUB4",
+          "weight": 0.03709090909090909
+        },
+        {
+          "ticker": "VLID3",
+          "weight": 0.09999999999999999
+        },
+        {
+          "ticker": "WEGE3",
+          "weight": 0.09999999999999999
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2015,
+      "effective_on": "2015-09-28",
+      "observed_on": "2015-09-25",
+      "from_state": "alerta",
+      "to_state": "severo",
+      "target_equity_weight": 0.35,
+      "observed_market_drawdown": -0.22774409400067408,
+      "observed_market_volatility": 0.24102478037606956,
+      "reason": "queda severa",
+      "target_allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.06999999999999999
+        },
+        {
+          "ticker": "CIEL3",
+          "weight": 0.06999999999999999
+        },
+        {
+          "ticker": "ITUB3",
+          "weight": 0.044036363636363623
+        },
+        {
+          "ticker": "ITUB4",
+          "weight": 0.02596363636363636
+        },
+        {
+          "ticker": "VLID3",
+          "weight": 0.06999999999999999
+        },
+        {
+          "ticker": "WEGE3",
+          "weight": 0.06999999999999999
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.65
+        }
+      ]
+    },
+    {
+      "year": 2015,
+      "effective_on": "2015-10-16",
+      "observed_on": "2015-10-15",
+      "from_state": "severo",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.18760766104508975,
+      "observed_market_volatility": 0.29183845616295107,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.09999999999999999
+        },
+        {
+          "ticker": "CIEL3",
+          "weight": 0.09999999999999999
+        },
+        {
+          "ticker": "ITUB3",
+          "weight": 0.0629090909090909
+        },
+        {
+          "ticker": "ITUB4",
+          "weight": 0.03709090909090909
+        },
+        {
+          "ticker": "VLID3",
+          "weight": 0.09999999999999999
+        },
+        {
+          "ticker": "WEGE3",
+          "weight": 0.09999999999999999
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "effective_on": "2016-01-12",
+      "observed_on": "2016-01-11",
+      "from_state": "alerta",
+      "to_state": "severo",
+      "target_equity_weight": 0.35,
+      "observed_market_drawdown": -0.22808201408027162,
+      "observed_market_volatility": 0.23775072805055958,
+      "reason": "queda severa",
+      "target_allocation": [
+        {
+          "ticker": "ABEV3",
+          "weight": 0.06412
+        },
+        {
+          "ticker": "ENBR3",
+          "weight": 0.11199999999999999
+        },
+        {
+          "ticker": "SANB3",
+          "weight": 0.11199999999999999
+        },
+        {
+          "ticker": "SANB4",
+          "weight": 0.06187999999999999
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.65
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "effective_on": "2016-02-15",
+      "observed_on": "2016-02-12",
+      "from_state": "severo",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.1856728843519706,
+      "observed_market_volatility": 0.3502994153142245,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "ABEV3",
+          "weight": 0.09159999999999999
+        },
+        {
+          "ticker": "ENBR3",
+          "weight": 0.15999999999999998
+        },
+        {
+          "ticker": "SANB3",
+          "weight": 0.15999999999999998
+        },
+        {
+          "ticker": "SANB4",
+          "weight": 0.08839999999999999
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "effective_on": "2016-03-14",
+      "observed_on": "2016-03-11",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.7499999993722354,
+      "observed_market_drawdown": 0.0,
+      "observed_market_volatility": 0.30791231205963776,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "ABEV3",
+          "weight": 0.13739999988499352
+        },
+        {
+          "ticker": "ENBR3",
+          "weight": 0.23999999979911532
+        },
+        {
+          "ticker": "SANB3",
+          "weight": 0.23999999979911532
+        },
+        {
+          "ticker": "SANB4",
+          "weight": 0.13259999988901122
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.2500000006277646
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "effective_on": "2016-03-18",
+      "observed_on": "2016-03-17",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": 0.0,
+      "observed_market_volatility": 0.4100477862430526,
+      "reason": "volatilidade de alerta",
+      "target_allocation": [
+        {
+          "ticker": "ABEV3",
+          "weight": 0.09159999999999999
+        },
+        {
+          "ticker": "ENBR3",
+          "weight": 0.15999999999999998
+        },
+        {
+          "ticker": "SANB3",
+          "weight": 0.15999999999999998
+        },
+        {
+          "ticker": "SANB4",
+          "weight": 0.08839999999999999
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "effective_on": "2016-04-08",
+      "observed_on": "2016-04-07",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.7499999993722354,
+      "observed_market_drawdown": -0.05338641156389212,
+      "observed_market_volatility": 0.3660582041443502,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "ABEV3",
+          "weight": 0.13739999988499352
+        },
+        {
+          "ticker": "ENBR3",
+          "weight": 0.23999999979911532
+        },
+        {
+          "ticker": "SANB3",
+          "weight": 0.23999999979911532
+        },
+        {
+          "ticker": "SANB4",
+          "weight": 0.13259999988901122
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.2500000006277646
+        }
+      ]
+    },
+    {
+      "year": 2016,
+      "effective_on": "2016-12-20",
+      "observed_on": "2016-12-19",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.12035424848991494,
+      "observed_market_volatility": 0.2656791087878054,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "ABEV3",
+          "weight": 0.09159999999999999
+        },
+        {
+          "ticker": "ENBR3",
+          "weight": 0.15999999999999998
+        },
+        {
+          "ticker": "SANB3",
+          "weight": 0.15999999999999998
+        },
+        {
+          "ticker": "SANB4",
+          "weight": 0.08839999999999999
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2017,
+      "effective_on": "2017-01-05",
+      "observed_on": "2017-01-04",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.7499999999528947,
+      "observed_market_drawdown": -0.04122581915316026,
+      "observed_market_volatility": 0.2312651568418341,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "BRSR6",
+          "weight": 0.016299999998976245
+        },
+        {
+          "ticker": "CVCB3",
+          "weight": 0.013699999999139543
+        },
+        {
+          "ticker": "FLRY3",
+          "weight": 0.2399999999849263
+        },
+        {
+          "ticker": "SANB3",
+          "weight": 0.2399999999849263
+        },
+        {
+          "ticker": "SAPR4",
+          "weight": 0.2399999999849263
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.2500000000471053
+        }
+      ]
+    },
+    {
+      "year": 2017,
+      "effective_on": "2017-06-22",
+      "observed_on": "2017-06-21",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.12005445017306604,
+      "observed_market_volatility": null,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "BRSR6",
+          "weight": 0.010866666666666665
+        },
+        {
+          "ticker": "CVCB3",
+          "weight": 0.009133333333333334
+        },
+        {
+          "ticker": "FLRY3",
+          "weight": 0.15999999999999998
+        },
+        {
+          "ticker": "SANB3",
+          "weight": 0.15999999999999998
+        },
+        {
+          "ticker": "SAPR4",
+          "weight": 0.15999999999999998
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2017,
+      "effective_on": "2017-07-06",
+      "observed_on": "2017-07-05",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.7499999999528947,
+      "observed_market_drawdown": -0.08541388575637032,
+      "observed_market_volatility": null,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "BRSR6",
+          "weight": 0.016299999998976245
+        },
+        {
+          "ticker": "CVCB3",
+          "weight": 0.013699999999139543
+        },
+        {
+          "ticker": "FLRY3",
+          "weight": 0.2399999999849263
+        },
+        {
+          "ticker": "SANB3",
+          "weight": 0.2399999999849263
+        },
+        {
+          "ticker": "SAPR4",
+          "weight": 0.2399999999849263
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.2500000000471053
+        }
+      ]
+    },
+    {
+      "year": 2018,
+      "effective_on": "2018-05-29",
+      "observed_on": "2018-05-28",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.14029183740279305,
+      "observed_market_volatility": 0.25810700523003843,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "BPAC3",
+          "weight": 0.1161578947368421
+        },
+        {
+          "ticker": "BRSR3",
+          "weight": 0.11126315789473684
+        },
+        {
+          "ticker": "GRND3",
+          "weight": 0.10821052631578945
+        },
+        {
+          "ticker": "QUAL3",
+          "weight": 0.03852631578947368
+        },
+        {
+          "ticker": "SAPR3",
+          "weight": 0.12357894736842105
+        },
+        {
+          "ticker": "SEER3",
+          "weight": 0.002263157894736842
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2018,
+      "effective_on": "2018-07-31",
+      "observed_on": "2018-07-30",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.9499999999216376,
+      "observed_market_drawdown": -0.08416141370557562,
+      "observed_market_volatility": 0.15007465224209482,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "BPAC3",
+          "weight": 0.2206999999817952
+        },
+        {
+          "ticker": "BRSR3",
+          "weight": 0.21139999998256231
+        },
+        {
+          "ticker": "GRND3",
+          "weight": 0.2055999999830407
+        },
+        {
+          "ticker": "QUAL3",
+          "weight": 0.07319999999396197
+        },
+        {
+          "ticker": "SAPR3",
+          "weight": 0.23479999998063214
+        },
+        {
+          "ticker": "SEER3",
+          "weight": 0.004299999999645307
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.05000000007836236
+        }
+      ]
+    },
+    {
+      "year": 2018,
+      "effective_on": "2018-08-13",
+      "observed_on": "2018-08-10",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.1270806524074849,
+      "observed_market_volatility": 0.2043009352415881,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "BPAC3",
+          "weight": 0.1161578947368421
+        },
+        {
+          "ticker": "BRSR3",
+          "weight": 0.11126315789473684
+        },
+        {
+          "ticker": "GRND3",
+          "weight": 0.10821052631578945
+        },
+        {
+          "ticker": "QUAL3",
+          "weight": 0.03852631578947368
+        },
+        {
+          "ticker": "SAPR3",
+          "weight": 0.12357894736842105
+        },
+        {
+          "ticker": "SEER3",
+          "weight": 0.002263157894736842
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2018,
+      "effective_on": "2018-10-01",
+      "observed_on": "2018-09-28",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.9499999999216376,
+      "observed_market_drawdown": -0.08314362188702906,
+      "observed_market_volatility": 0.20544102378854387,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "BPAC3",
+          "weight": 0.2206999999817952
+        },
+        {
+          "ticker": "BRSR3",
+          "weight": 0.21139999998256231
+        },
+        {
+          "ticker": "GRND3",
+          "weight": 0.2055999999830407
+        },
+        {
+          "ticker": "QUAL3",
+          "weight": 0.07319999999396197
+        },
+        {
+          "ticker": "SAPR3",
+          "weight": 0.23479999998063214
+        },
+        {
+          "ticker": "SEER3",
+          "weight": 0.004299999999645307
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.05000000007836236
+        }
+      ]
+    },
+    {
+      "year": 2020,
+      "effective_on": "2020-02-28",
+      "observed_on": "2020-02-27",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.14065331514306367,
+      "observed_market_volatility": 0.3086270951514854,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "AZUL4",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "BBSE3",
+          "weight": 0.13031578947368422
+        },
+        {
+          "ticker": "CMIG3",
+          "weight": 0.05052631578947368
+        },
+        {
+          "ticker": "EQTL3",
+          "weight": 0.056
+        },
+        {
+          "ticker": "MRFG3",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2020,
+      "effective_on": "2020-03-10",
+      "observed_on": "2020-03-09",
+      "from_state": "alerta",
+      "to_state": "severo",
+      "target_equity_weight": 0.35,
+      "observed_market_drawdown": -0.2818166791204607,
+      "observed_market_volatility": 0.5557534648712654,
+      "reason": "queda severa e volatilidade de alerta",
+      "target_allocation": [
+        {
+          "ticker": "AZUL4",
+          "weight": 0.09210526315789472
+        },
+        {
+          "ticker": "BBSE3",
+          "weight": 0.09122105263157894
+        },
+        {
+          "ticker": "CMIG3",
+          "weight": 0.03536842105263157
+        },
+        {
+          "ticker": "EQTL3",
+          "weight": 0.03919999999999999
+        },
+        {
+          "ticker": "MRFG3",
+          "weight": 0.09210526315789472
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.6500000000000001
+        }
+      ]
+    },
+    {
+      "year": 2020,
+      "effective_on": "2020-06-30",
+      "observed_on": "2020-06-29",
+      "from_state": "severo",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.20114236310682865,
+      "observed_market_volatility": 0.26887485276578954,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "AZUL4",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "BBSE3",
+          "weight": 0.13031578947368422
+        },
+        {
+          "ticker": "CMIG3",
+          "weight": 0.05052631578947368
+        },
+        {
+          "ticker": "EQTL3",
+          "weight": 0.056
+        },
+        {
+          "ticker": "MRFG3",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2020,
+      "effective_on": "2020-09-04",
+      "observed_on": "2020-09-03",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.95,
+      "observed_market_drawdown": -0.04624781040069459,
+      "observed_market_volatility": 0.22816393616133665,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "AZUL4",
+          "weight": 0.24999999999999997
+        },
+        {
+          "ticker": "BBSE3",
+          "weight": 0.2476
+        },
+        {
+          "ticker": "CMIG3",
+          "weight": 0.09599999999999999
+        },
+        {
+          "ticker": "EQTL3",
+          "weight": 0.1064
+        },
+        {
+          "ticker": "MRFG3",
+          "weight": 0.24999999999999997
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.050000000000000044
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "effective_on": "2021-03-01",
+      "observed_on": "2021-02-26",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.12026191711150946,
+      "observed_market_volatility": 0.29814123151944594,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "CSMG3",
+          "weight": 0.03784210526315789
+        },
+        {
+          "ticker": "EQTL3",
+          "weight": 0.06742105263157894
+        },
+        {
+          "ticker": "MRFG3",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "effective_on": "2021-03-15",
+      "observed_on": "2021-03-12",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.9499999999999998,
+      "observed_market_drawdown": -0.08728223232779864,
+      "observed_market_volatility": 0.31937716809701966,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.24999999999999997
+        },
+        {
+          "ticker": "CSMG3",
+          "weight": 0.07189999999999999
+        },
+        {
+          "ticker": "EQTL3",
+          "weight": 0.12809999999999996
+        },
+        {
+          "ticker": "MRFG3",
+          "weight": 0.24999999999999997
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.24999999999999997
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.050000000000000155
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "effective_on": "2021-09-09",
+      "observed_on": "2021-09-08",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.13276900894490018,
+      "observed_market_volatility": 0.2242991331523937,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "CSMG3",
+          "weight": 0.03784210526315789
+        },
+        {
+          "ticker": "EQTL3",
+          "weight": 0.06742105263157894
+        },
+        {
+          "ticker": "MRFG3",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "effective_on": "2021-12-01",
+      "observed_on": "2021-11-30",
+      "from_state": "alerta",
+      "to_state": "severo",
+      "target_equity_weight": 0.35,
+      "observed_market_drawdown": -0.22069034145389155,
+      "observed_market_volatility": 0.22630637021353586,
+      "reason": "queda severa",
+      "target_allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.09210526315789473
+        },
+        {
+          "ticker": "CSMG3",
+          "weight": 0.026489473684210528
+        },
+        {
+          "ticker": "EQTL3",
+          "weight": 0.047194736842105255
+        },
+        {
+          "ticker": "MRFG3",
+          "weight": 0.09210526315789473
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.09210526315789473
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.65
+        }
+      ]
+    },
+    {
+      "year": 2021,
+      "effective_on": "2021-12-16",
+      "observed_on": "2021-12-15",
+      "from_state": "severo",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.17097765644967833,
+      "observed_market_volatility": 0.2342136002392998,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "CSMG3",
+          "weight": 0.03784210526315789
+        },
+        {
+          "ticker": "EQTL3",
+          "weight": 0.06742105263157894
+        },
+        {
+          "ticker": "MRFG3",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.13157894736842105
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "effective_on": "2022-02-09",
+      "observed_on": "2022-02-08",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.75,
+      "observed_market_drawdown": -0.0797682919863153,
+      "observed_market_volatility": 0.14526949418284688,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "FHER3",
+          "weight": 0.24
+        },
+        {
+          "ticker": "GOAU4",
+          "weight": 0.2023
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.0692
+        },
+        {
+          "ticker": "UNIP6",
+          "weight": 0.1508
+        },
+        {
+          "ticker": "USIM5",
+          "weight": 0.0877
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.25
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "effective_on": "2022-05-03",
+      "observed_on": "2022-05-02",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.12281813265399466,
+      "observed_market_volatility": 0.17209472853010357,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "FHER3",
+          "weight": 0.15999999999999998
+        },
+        {
+          "ticker": "GOAU4",
+          "weight": 0.13486666666666666
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.04613333333333333
+        },
+        {
+          "ticker": "UNIP6",
+          "weight": 0.10053333333333332
+        },
+        {
+          "ticker": "USIM5",
+          "weight": 0.05846666666666667
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "effective_on": "2022-06-02",
+      "observed_on": "2022-06-01",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.75,
+      "observed_market_drawdown": -0.08398454003350797,
+      "observed_market_volatility": 0.19929441441964896,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "FHER3",
+          "weight": 0.24
+        },
+        {
+          "ticker": "GOAU4",
+          "weight": 0.2023
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.0692
+        },
+        {
+          "ticker": "UNIP6",
+          "weight": 0.1508
+        },
+        {
+          "ticker": "USIM5",
+          "weight": 0.0877
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.25
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "effective_on": "2022-06-13",
+      "observed_on": "2022-06-10",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.13234350700926845,
+      "observed_market_volatility": 0.17697794087086904,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "FHER3",
+          "weight": 0.15999999999999998
+        },
+        {
+          "ticker": "GOAU4",
+          "weight": 0.13486666666666666
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.04613333333333333
+        },
+        {
+          "ticker": "UNIP6",
+          "weight": 0.10053333333333332
+        },
+        {
+          "ticker": "USIM5",
+          "weight": 0.05846666666666667
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "effective_on": "2022-08-22",
+      "observed_on": "2022-08-19",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.75,
+      "observed_market_drawdown": -0.08286583941355019,
+      "observed_market_volatility": 0.17713874655257097,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "FHER3",
+          "weight": 0.24
+        },
+        {
+          "ticker": "GOAU4",
+          "weight": 0.2023
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.0692
+        },
+        {
+          "ticker": "UNIP6",
+          "weight": 0.1508
+        },
+        {
+          "ticker": "USIM5",
+          "weight": 0.0877
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.25
+        }
+      ]
+    },
+    {
+      "year": 2022,
+      "effective_on": "2022-12-13",
+      "observed_on": "2022-12-12",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.12228067923948804,
+      "observed_market_volatility": 0.24422082010388974,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "FHER3",
+          "weight": 0.15999999999999998
+        },
+        {
+          "ticker": "GOAU4",
+          "weight": 0.13486666666666666
+        },
+        {
+          "ticker": "TASA4",
+          "weight": 0.04613333333333333
+        },
+        {
+          "ticker": "UNIP6",
+          "weight": 0.10053333333333332
+        },
+        {
+          "ticker": "USIM5",
+          "weight": 0.05846666666666667
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "effective_on": "2023-01-05",
+      "observed_on": "2023-01-04",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.55,
+      "observed_market_drawdown": -0.09151916901810875,
+      "observed_market_volatility": 0.21332705557597065,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "BRAP4",
+          "weight": 0.0574
+        },
+        {
+          "ticker": "CURY3",
+          "weight": 0.0353
+        },
+        {
+          "ticker": "KEPL3",
+          "weight": 0.1365
+        },
+        {
+          "ticker": "UNIP6",
+          "weight": 0.1447
+        },
+        {
+          "ticker": "VIVA3",
+          "weight": 0.17600000000000002
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.45009999999999994
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "effective_on": "2023-03-20",
+      "observed_on": "2023-03-17",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.12042937686927702,
+      "observed_market_volatility": 0.1617582338554596,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "BRAP4",
+          "weight": 0.05219130751045644
+        },
+        {
+          "ticker": "CURY3",
+          "weight": 0.03209674486270231
+        },
+        {
+          "ticker": "KEPL3",
+          "weight": 0.12411347517730496
+        },
+        {
+          "ticker": "UNIP6",
+          "weight": 0.1315693762502273
+        },
+        {
+          "ticker": "VIVA3",
+          "weight": 0.16002909619930897
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2023,
+      "effective_on": "2023-04-26",
+      "observed_on": "2023-04-25",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.55,
+      "observed_market_drawdown": -0.10975191964921005,
+      "observed_market_volatility": 0.2170743143375794,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "BRAP4",
+          "weight": 0.0574
+        },
+        {
+          "ticker": "CURY3",
+          "weight": 0.0353
+        },
+        {
+          "ticker": "KEPL3",
+          "weight": 0.1365
+        },
+        {
+          "ticker": "UNIP6",
+          "weight": 0.1447
+        },
+        {
+          "ticker": "VIVA3",
+          "weight": 0.17600000000000002
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.45009999999999994
+        }
+      ]
+    },
+    {
+      "year": 2024,
+      "effective_on": "2024-12-19",
+      "observed_on": "2024-12-18",
+      "from_state": "normal",
+      "to_state": "alerta",
+      "target_equity_weight": 0.5,
+      "observed_market_drawdown": -0.12066053265862886,
+      "observed_market_volatility": 0.2308852882828957,
+      "reason": "queda de alerta",
+      "target_allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.06636363636363636
+        },
+        {
+          "ticker": "CMIN3",
+          "weight": 0.07700000000000001
+        },
+        {
+          "ticker": "CURY3",
+          "weight": 0.16
+        },
+        {
+          "ticker": "PLPL3",
+          "weight": 0.03663636363636364
+        },
+        {
+          "ticker": "VIVA3",
+          "weight": 0.16
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.5
+        }
+      ]
+    },
+    {
+      "year": 2025,
+      "effective_on": "2025-01-29",
+      "observed_on": "2025-01-28",
+      "from_state": "alerta",
+      "to_state": "normal",
+      "target_equity_weight": 0.55,
+      "observed_market_drawdown": -0.09556172939472563,
+      "observed_market_volatility": 0.16964481178930002,
+      "reason": "recuperação após dez pregões mais calmos",
+      "target_allocation": [
+        {
+          "ticker": "BBSE3",
+          "weight": 0.1161
+        },
+        {
+          "ticker": "CMIN3",
+          "weight": 0.034300000000000004
+        },
+        {
+          "ticker": "CURY3",
+          "weight": 0.1732
+        },
+        {
+          "ticker": "STBP3",
+          "weight": 0.0504
+        },
+        {
+          "ticker": "VIVA3",
+          "weight": 0.17600000000000002
+        },
+        {
+          "ticker": "TITULO_CDI",
+          "weight": 0.44999999999999996
+        }
+      ]
+    }
+  ],
+  "sources_sha256": {
+    "web/annual_research.json": "0cf3e5ed48ead9007b5e7f343f738b2f5e43f7b593c7dcf841494b2e2c744c6a",
+    "artifacts/benevente2_event_risk/candidate_annual_comparison.csv": "5c6e4558bf7534400f01d95876096b0e3aae0bfc706f75ad66fe8580f06831f9",
+    "artifacts/benevente2_event_risk/candidate_daily_comparison.csv": "eb8c9d6e5354b1a940ec389675205827cb1566d9922b81eea010b769b3e7d759"
+  }
+}

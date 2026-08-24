@@ -55,6 +55,24 @@ def test_builds_buy_and_hold_without_rebalancing() -> None:
     assert result["benevente2_overlay"]["current_risk_state"] == "normal"
     assert result["strategy"] == "Benevente 2"
     assert result["status"] == "carteira_sombra_acompanhamento_corrente"
+    assert sum(
+        row["weight"] for row in result["portfolio_definitions"]["benevente1"]["target_allocation"]
+    ) == pytest.approx(1.0)
+    assert sum(
+        row["weight"] for row in result["portfolio_definitions"]["benevente2"]["target_allocation"]
+    ) == pytest.approx(1.0)
+
+
+def test_operational_alert_scales_every_asset_and_moves_five_points_to_cdi() -> None:
+    holdings = [{"ticker": "AAA3", "weight": 0.30}, {"ticker": "BBB3", "weight": 0.25}]
+    normal = MODULE.target_allocation(holdings, 0.55, 0.55)
+    alert = MODULE.target_allocation(holdings, 0.55, 0.50)
+    normal_by_ticker = {row["ticker"]: row["weight"] for row in normal}
+    alert_by_ticker = {row["ticker"]: row["weight"] for row in alert}
+    assert alert_by_ticker["AAA3"] == pytest.approx(0.30 * 0.50 / 0.55)
+    assert alert_by_ticker["BBB3"] == pytest.approx(0.25 * 0.50 / 0.55)
+    assert alert_by_ticker["CDI"] - normal_by_ticker["CDI"] == pytest.approx(0.05)
+    assert sum(alert_by_ticker.values()) == pytest.approx(1.0)
 
 
 def test_same_content_is_idempotent() -> None:
@@ -144,4 +162,6 @@ def test_strategy_pages_share_the_same_live_structure() -> None:
         assert 'class="strategy-tab"' in source
         assert f'data-live-strategy="{mode}"' in source
         assert "CARTEIRA-SOMBRA 2026" in source
-        assert "paper.js?v=20260823" in source
+        assert "paper.js?v=20260824" in source
+        assert f'data-strategy-decisions="{mode}"' in source
+        assert "COMO REPLICAR" in source
