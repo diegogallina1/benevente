@@ -80,10 +80,20 @@ def test_same_content_is_idempotent() -> None:
 def test_changed_content_chains_the_previous_record() -> None:
     decision, series, cdi = fixture_inputs()
     first = MODULE.build_live_document(decision, series, cdi, {"fixture": "0" * 64})
-    series["AAA3"]["2026-01-06"] = 13.0
+    for ticker, value in (("AAA3", 13.0), ("BBB3", 21.0), ("BOVA11", 111.0), ("IBOVESPA", 104_000.0)):
+        series[ticker]["2026-01-07"] = value
+    cdi["2026-01-07"] = 0.001
     second = MODULE.build_live_document(decision, series, cdi, {"fixture": "1" * 64}, first)
     assert second["previous_record_sha256"] == first["record_sha256"]
     assert second["record_sha256"] != first["record_sha256"]
+
+
+def test_same_market_date_ignores_provider_float_noise() -> None:
+    decision, series, cdi = fixture_inputs()
+    first = MODULE.build_live_document(decision, series, cdi, {"fixture": "0" * 64})
+    series["AAA3"]["2026-01-06"] += 0.000001
+    second = MODULE.build_live_document(decision, series, cdi, {"fixture": "1" * 64}, first)
+    assert second == first
 
 
 def test_rejects_incomplete_weights() -> None:

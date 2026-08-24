@@ -280,6 +280,11 @@ def build_live_document(
     start_day, through = timeline[0], timeline[-1]
     if start_day != decision_date:
         raise LiveDataError(f"A primeira data comum é {start_day}, não {decision_date}")
+    # Provedores públicos podem devolver diferenças de ponto flutuante no mesmo
+    # conjunto de sessões. Sem uma nova data comum, preservar o registro evita
+    # commits artificiais; qualquer revisão entra junto com a sessão seguinte.
+    if previous and previous.get("through") == through:
+        return previous
 
     cdi_levels = _level_from_rates(cdi_rates)
     cdi_start = _value_on_or_before(cdi_levels, start_day)
