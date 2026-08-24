@@ -16,9 +16,10 @@ const modelSteps = {
   policy: { number:"01 · POLÍTICA", title:"A política vem antes do ativo.", text:"O responsável define patrimônio, perfil, limite de ações, concentração por emissor, custos e revisão anual.", uses:"Perfil e limites explícitos", blocks:"Pesos acima da política", produces:"Uma política reproduzível", rule:"<strong>Regra:</strong> sem política, não há carteira." },
   data: { number:"02 · DADOS", title:"A decisão usa somente o que já era público.", text:"Em janeiro, o motor combina demonstrações ITR/DFP já divulgadas, histórico de preços, liquidez e CDI. Cada arquivo tem origem, data e hash registrados.", uses:"B3, CVM e Banco Central", blocks:"Informação divulgada depois da decisão", produces:"Base anual verificável", rule:"<strong>Regra:</strong> o retorno do ano avaliado nunca participa da escolha." },
   screen: { number:"03 · FILTRO FUNDAMENTAL", title:"Qualidade e segurança vêm antes do ranking.", text:"Empresas operacionais e bancos são avaliados por métricas compatíveis com seus demonstrativos. Liquidez, rentabilidade, geração de caixa, solvência e disponibilidade dos dados eliminam casos não comparáveis.", uses:"ROIC ou ROE, caixa, dívida, valuation e liquidez", blocks:"Dados ausentes, fragilidade financeira e baixa negociabilidade", produces:"Universo elegível da revisão", rule:"<strong>Regra:</strong> ausência de evidência não vira aprovação." },
-  optimizer: { number:"04 · SELEÇÃO E PESOS", title:"Valor, qualidade e momento formam a cesta.", text:"As configurações candidatas combinam fatores, número de posições e orçamento de ações. A configuração do ano é escolhida pelo Sharpe dos anos já encerrados; os ativos recebem pesos proporcionais ao score dentro das regras, e o CDI recebe o saldo.", uses:"Fatores fundamentais e de mercado, custos e limites", blocks:"Escolha baseada no retorno futuro", produces:"Carteira anual e custo de rebalanceamento", rule:"<strong>Comparação:</strong> o MVO é calculado separadamente sobre o mesmo universo elegível. Ele não escolhe a carteira Benevente." },
+  optimizer: { number:"01 · CÁLCULO", title:"Valor, qualidade e momento formam a cesta.", text:"As configurações candidatas combinam fatores, número de posições e orçamento de ações. A configuração do ano é escolhida pelo Sharpe dos anos já encerrados; os ativos recebem pesos proporcionais à pontuação dentro das regras, e o CDI recebe o saldo.", uses:"Fatores fundamentais e de mercado, custos e limites", blocks:"Escolha baseada no retorno futuro", produces:"Carteira anual e custo de rebalanceamento", rule:"<strong>Comparação:</strong> o MVO é calculado separadamente sobre o mesmo universo elegível. Ele não escolhe a carteira Benevente." },
+  explanation: { number:"02 · EXPLICAÇÃO", title:"A linguagem recebe uma decisão já fechada.", text:"O modelo recebe somente fatos aprovados sobre a cesta, transforma-os em uma justificativa legível e destaca riscos e perguntas para revisão. Ele não consulta retornos futuros, não muda a lista de ativos e não define pesos.", uses:"Fatos aprovados e referências do dossiê", blocks:"Números inventados e alteração da carteira", produces:"Tese, riscos e perguntas de revisão", rule:"<strong>Avaliação:</strong> fidelidade, completude, cobertura de riscos e ausência de números inventados são medidas separadamente do retorno." },
   risk: { number:"05 · CONTROLE DE RISCO", title:"O Benevente 2 pode reduzir exposição durante o ano.", text:"A cesta fundamentalista não muda. Se drawdown ou volatilidade do Ibovespa cruzarem níveis predefinidos, parte da carteira migra temporariamente para CDI no pregão seguinte.", uses:"Ibovespa até o fechamento anterior", blocks:"Reação com informação futura", produces:"Exposição entre 35% e o peso anual", rule:"<strong>Status:</strong> extensão retrospectiva experimental; não é resultado prospectivo nem ação da LLM." },
-  review: { number:"06 · REVISÃO", title:"O resultado é uma proposta, não uma ordem.", text:"A instituição revisa tese, riscos, pesos e custos. Se decidir implementar, registra a operação e confere a nota de corretagem depois.", uses:"Proposta, evidências e custo estimado", blocks:"Execução automática", produces:"Carteira-sombra e registro de decisão", rule:"<strong>Regra:</strong> resultados prospectivos ficam separados do backtest histórico." }
+  review: { number:"03 · DECISÃO", title:"O resultado é uma proposta, não uma ordem.", text:"O revisor humano confere tese, riscos, pesos e custos. Se decidir implementar, registra a operação e confere a nota de corretagem depois.", uses:"Proposta, evidências e custo estimado", blocks:"Execução automática", produces:"Carteira-sombra e registro de decisão", rule:"<strong>Regra:</strong> resultados prospectivos ficam separados do backtest histórico." }
 };
 
 let currentProfile = "moderado";
@@ -260,7 +261,7 @@ function renderAssetWorkbench() {
   const coverage = researchData.meta.coverage;
   const source = researchData.meta.source_tier === "public_reproducible_research" ? "fonte pública de pesquisa" : "fonte qualificada";
   const series = coverage.price_tickers ? `${coverage.price_tickers.toLocaleString("pt-BR")} séries ajustadas` : "séries ajustadas";
-  document.querySelector("#research-status").innerHTML = `<b>Pesquisa reproduzível, ainda não validada para uso institucional.</b><span>O painel usa ${escapeHtml(series)}, CDI do BCB e ${coverage.fundamental_snapshots?.toLocaleString("pt-BR") || "—"} demonstrações CVM disponíveis em cada decisão. Proventos, JCP e eventos societários ainda exigem reconciliação B3/CVM ou fonte licenciada.</span>`;
+  document.querySelector("#research-status").innerHTML = `<b>Pesquisa reproduzível, ainda não validada para uso institucional.</b><span>O painel usa ${escapeHtml(series)}, CDI do BCB e ${coverage.fundamental_snapshots?.toLocaleString("pt-BR") || "—"} registros fundamentais da CVM disponíveis em cada decisão. Proventos, JCP e eventos societários ainda exigem reconciliação B3/CVM ou fonte licenciada.</span>`;
   document.querySelector("#asset-summary").innerHTML = `<div><small>DECISÃO</small><strong>${formatDateBr(decision.decision_date)}</strong><span>Carteira mantida até ${formatDateBr(decision.holding_end_exclusive)}.</span></div><div><small>RENDA VARIÁVEL</small><strong>${plainPct(equityWeight)}</strong><span>${equities.length} ativo(s) elegível(is). CDI completa a alocação.</span></div><div><small>RESULTADO POSTERIOR</small><strong>${pct(decision.net_return)}</strong><span>Após custo estimado de ${money.format(decision.estimated_cost_brl)}.</span></div>`;
   document.querySelector("#asset-grid").innerHTML = holdings.map(item => {
     const transition = transitionByTicker[item.ticker];
@@ -741,10 +742,28 @@ if (demoForm) demoForm.addEventListener("submit", async event => {
 function renderModel(step) { const item=modelSteps[step]; document.querySelector("#model-detail").innerHTML=`<span class="detail-number">${item.number}</span><h3>${item.title}</h3><p>${item.text}</p><div class="detail-grid"><div><small>USA</small><b>${item.uses}</b></div><div><small>BLOQUEIA</small><b>${item.blocks}</b></div><div><small>PRODUZ</small><b>${item.produces}</b></div><div><small>RESPONSÁVEL</small><b>Instituição e revisor humano</b></div></div><p class="detail-rule">${item.rule}</p>`; }
 document.querySelectorAll(".model-step").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".model-step").forEach(item=>item.classList.remove("active"));button.classList.add("active");renderModel(button.dataset.step)}));
 
-renderModel("policy");
-Promise.all([fetch("./annual_research.json"), fetch("./fund_presets.json")]).then(async ([research, fundPresets]) => {
+renderModel("optimizer");
+Promise.all([fetch("./annual_research.json"), fetch("./fund_presets.json"), fetch("./data_contract.json").catch(() => null)]).then(async ([research, fundPresets, contractResponse]) => {
   if (!research.ok || !fundPresets.ok) throw new Error("research unavailable");
   researchData = await research.json(); fundPresetsData = await fundPresets.json();
+  if (contractResponse?.ok) {
+    try {
+      const contract = await contractResponse.json();
+      const values = {
+        "annual-decisions": contract.research_window.annual_decisions,
+        "historical-issuers": contract.historical_panel.evaluated_distinct_issuers,
+        "price-series": contract.historical_panel.price_series,
+        "fundamentals": new Intl.NumberFormat("pt-BR").format(contract.historical_panel.fundamental_records),
+        "current-instruments": new Intl.NumberFormat("pt-BR").format(contract.current_b3_catalog.instruments),
+      };
+      document.querySelectorAll("[data-contract]").forEach(element => {
+        const value = values[element.dataset.contract];
+        if (value !== undefined) element.textContent = value;
+      });
+    } catch (_) {
+      // Os números estáticos no HTML são o fallback editorial validado em teste.
+    }
+  }
   extraSeries[1] = {}; extraSeries[2] = {}; extraSeries[3] = {}; extraSeries[5] = {}; extraSeries[11] = {};
   refreshDecisionStudio(); renderBenevente2Panel();
 }).catch(() => {

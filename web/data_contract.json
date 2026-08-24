@@ -1,0 +1,48 @@
+{
+  "schema_version": "1.0.0",
+  "updated_at": "2026-08-23",
+  "research_window": {
+    "first_decision_year": 2015,
+    "last_decision_year": 2025,
+    "annual_decisions": 11,
+    "classification": "diagnóstico de desenvolvimento"
+  },
+  "prospective_protocol": {
+    "frozen_at": "2026-08-16",
+    "sha256": "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d",
+    "first_evaluable_decisions": "decisões posteriores a 16/08/2026"
+  },
+  "historical_panel": {
+    "evaluated_distinct_issuers": 514,
+    "price_series": 497,
+    "fundamental_records": 2868,
+    "delisted_issuers": 166,
+    "definition": "Painel histórico reconstruído para as decisões anuais avaliadas entre 2015 e 2025. Não equivale ao catálogo atual da bolsa."
+  },
+  "current_b3_catalog": {
+    "instruments": 1406,
+    "observed_at": "2026-08-12",
+    "definition": "Instrumentos observados na B3 em 12/08/2026 para exploração de cobertura atual. Não foram todos elegíveis nem avaliados em cada ano histórico."
+  },
+  "corporate_events": {
+    "primary_records": 18190,
+    "covered_price_series": 475,
+    "requested_price_series": 497,
+    "unresolved_price_series": 22,
+    "unresolved_subscriptions": 218,
+    "unresolved_manual_events": 271,
+    "institutionally_reconciled": false
+  },
+  "role_contract": {
+    "calculation": "A regra quantitativa anual seleciona ativos e calcula pesos.",
+    "explanation": "O modelo de linguagem descreve somente fatos já aprovados e não altera a carteira.",
+    "decision": "A responsabilidade pela aprovação e eventual execução permanece humana."
+  },
+  "terminology": {
+    "look_ahead_bias": "look-ahead bias / viés de antecipação",
+    "historical_panel": "painel histórico avaliado",
+    "current_catalog": "catálogo atual da B3",
+    "dated_record": "registro datado",
+    "prospective_validation": "avaliação de decisões posteriores ao protocolo congelado"
+  }
+}

@@ -171,3 +171,46 @@ body{font-size:15px}.hero{grid-template-columns:minmax(0,42rem);min-height:auto}
 .line-chart{min-height:360px}
 @media(max-width:900px){.evidence-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.evidence-board-head,.audit-protocol-grid{grid-template-columns:1fr}.stage-ribbon{align-items:flex-start;justify-content:flex-start}.audit-block ol{columns:1}}
 @media(max-width:600px){.stage-ribbon{display:block}.stage-ribbon span{display:block;margin-bottom:.2rem}.evidence-grid{grid-template-columns:1fr}.evidence-card{min-height:0}.hero h1 br{display:none}.hero-actions .button,.hero-actions .text-link{width:100%;justify-content:center}.line-chart{min-height:290px}}
+
+/* Evidence contract release, 2026-08-23. One type family, shorter sections and
+   explicit boundaries between calculation, explanation and human decision. */
+.role-contract{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;max-width:50rem;margin:1.35rem 0 0;border:1px solid #d9e5e1;border-radius:12px;overflow:hidden;background:#d9e5e1}
+.role-contract div{padding:.9rem 1rem;background:#fff}
+.role-contract span{display:block;color:#0f766e;font:700 .62rem "DM Mono",monospace;letter-spacing:.1em}
+.role-contract p{margin:.3rem 0 0;color:#405a55;font-size:.78rem;line-height:1.45}
+.proof{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(15rem,1.35fr)}
+.proof p{grid-column:auto}
+.research-signal{grid-template-columns:repeat(4,minmax(0,1fr)) auto;margin-bottom:4rem}
+.research-signal>div{min-height:7.7rem}
+.model-steps{grid-template-columns:1fr;max-width:18rem}
+.model-section,.comparison,.lab-section,.evidence-board,.research-disclosure{padding-top:clamp(3rem,5vw,5rem);padding-bottom:clamp(3rem,5vw,5rem)}
+.version-gateway{padding:64px 0 72px}
+.version-gateway-card{min-height:210px}
+.version-gateway-card>strong{margin-top:30px}
+.evidence-matrix-wrap{overflow-x:auto;border:1px solid #d7e3e0;border-radius:14px;background:#fff}
+.evidence-matrix{width:100%;border-collapse:collapse;min-width:760px;font-size:.82rem}
+.evidence-matrix th{padding:.8rem 1rem;background:#f2f7f5;color:#58706a;text-align:left;font:700 .64rem "DM Mono",monospace;letter-spacing:.07em}
+.evidence-matrix td{padding:.9rem 1rem;border-top:1px solid #e3ebe8;color:#405a55;line-height:1.5;vertical-align:top}
+.evidence-matrix td:first-child{color:#173c37;font-weight:650}
+.evidence-status{display:inline-flex;padding:.28rem .48rem;border-radius:999px;font:700 .61rem "DM Mono",monospace;white-space:nowrap}
+.evidence-status.demonstrated{background:#e6f4ef;color:#126b5e}
+.evidence-status.not-demonstrated{background:#f7ece7;color:#8b4d36}
+.evidence-status.sensitivity{background:#f1ecf7;color:#69508a}
+.evidence-status.observed{background:#e8f1f7;color:#316b8d}
+.explanation-quality{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:2rem;margin-top:1rem;padding:1.25rem;border:1px solid #d7e3e0;border-radius:14px;background:#102a43;color:#edf8f5}
+.explanation-quality>div>span{font:700 .62rem "DM Mono",monospace;letter-spacing:.09em;color:#80daca}
+.explanation-quality h3{margin:.55rem 0 .4rem;font-size:1.25rem;letter-spacing:-.03em}
+.explanation-quality p{margin:0;color:#b9cad0;font-size:.82rem;line-height:1.55}
+.explanation-quality ul{display:grid;grid-template-columns:1fr 1fr;gap:.55rem;list-style:none;margin:0;padding:0}
+.explanation-quality li{padding:.7rem;border:1px solid rgba(230,248,243,.18);border-radius:9px;background:rgba(255,255,255,.035)}
+.explanation-quality b,.explanation-quality span{display:block}
+.explanation-quality b{font-size:.76rem}
+.explanation-quality li span{margin-top:.2rem;color:#b9cad0;font-size:.7rem;line-height:1.4}
+.contamination-note{margin:1rem 0 0;padding:1rem 1.1rem;border-left:3px solid #765b9d;background:#f4f0f8;color:#554865;font-size:.8rem;line-height:1.6}
+.audit-impact{margin:.8rem 0 0;padding:.7rem;border-radius:8px;background:#fff1e9;color:#874a34;font-size:.78rem;line-height:1.45}
+.research-disclosure{max-width:66rem}
+.research-disclosure>p:not(.eyebrow){max-width:62rem}
+.footer p{max-width:58rem;font-size:.72rem;line-height:1.55}
+@media(max-width:1050px){.research-signal{grid-template-columns:1fr 1fr}.research-signal .text-link{grid-column:1/-1;border-left:0;border-top:1px solid #dce7e2;justify-content:center}.proof{grid-template-columns:repeat(3,1fr)}.proof p{grid-column:1/-1}}
+@media(max-width:780px){.role-contract,.explanation-quality{grid-template-columns:1fr}.role-contract{gap:1px}.explanation-quality ul{grid-template-columns:1fr 1fr}.proof{grid-template-columns:1fr 1fr}.proof p{grid-column:1/-1}}
+@media(max-width:520px){.role-contract,.proof,.research-signal,.explanation-quality ul{grid-template-columns:1fr}.proof p,.research-signal .text-link{grid-column:auto}.evidence-board-head h2{font-size:2rem}}

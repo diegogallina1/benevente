@@ -8,10 +8,11 @@
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
     <link rel="stylesheet" href="./commercial.css" />
     <link rel="stylesheet" href="./paper.css" />
+    <link rel="stylesheet" href="./site-polish.css" />
   </head>
   <body>
     <nav class="paper-nav shell">
@@ -20,6 +21,7 @@
       <a href="./btech">Produto</a>
       <a href="./metodo" class="current">Método</a>
     </nav>
+    <p class="page-stage shell"><strong>Protótipo de pesquisa.</strong> O histórico 2015–2025 é diagnóstico de desenvolvimento. O protocolo prospectivo foi congelado em 16/08/2026.</p>
     <main class="shell paper-page">
       <p class="eyebrow"><span></span> Documentação pública</p>
       <h1>Como isso é feito, o que foi tentado e o que falhou.</h1>
@@ -131,12 +133,15 @@
       <table class="paper-table">
         <thead><tr><th>Comparação</th><th>Diferença anual</th><th>p</th></tr></thead>
         <tbody>
-          <tr><td>Nomeado menos anonimizado (contaminação temporal)</td><td class="num">+0,38 p.p.</td><td class="num">0,905</td></tr>
+          <tr><td>Nomeado menos anonimizado (sensibilidade à memória temporal)</td><td class="num">+0,38 p.p.</td><td class="num">0,905</td></tr>
           <tr><td>Anonimizado menos determinístico (valor do modelo)</td><td class="num">−0,05 p.p.</td><td class="num">0,989</td></tr>
           <tr><td>Anonimizado menos monolítico (valor do desacoplamento)</td><td class="num">+0,81 p.p.</td><td class="num">0,777</td></tr>
         </tbody>
       </table>
-      <p><b>Resultado:</b> três nulos. Não há evidência de contaminação temporal, que era a objeção mais séria a qualquer uso de modelo de linguagem em backtest histórico. O modelo não agrega retorno: reproduz o ranqueamento determinístico em vez de acrescentar julgamento. E manter o modelo longe dos pesos não custa desempenho. O braço monolítico, que recebeu a caneta, não estourou nenhum teto, mas devolveu carteiras que não somavam um em 5 dos 13 anos, variando de 0,92 a 1,017, e omitiu 65 e 83 ativos elegíveis em 2021 e 2022. O otimizador não é cerimônia porque impede violação de limite; é porque garante uma alocação aritmeticamente válida sem precisar de conserto. <b>O modelo se justifica por organizar e explicar decisões, não por gerá-las.</b></p>
+      <p><b>Resultado:</b> três nulos. A comparação nomeado versus anonimizado é um teste de sensibilidade, não prova de descontaminação. Anonimizar o nome não elimina possível memória histórica do modelo nem transforma 13 anos em amostra independente. O modelo não agregou retorno: reproduziu o ranqueamento determinístico em vez de acrescentar julgamento. Manter o modelo longe dos pesos também não custou desempenho. O braço monolítico devolveu carteiras que não somavam um em 5 dos 13 anos, variando de 0,92 a 1,017, e omitiu 65 e 83 ativos elegíveis em 2021 e 2022. O otimizador garante uma alocação aritmeticamente válida sem precisar de conserto. O modelo se justifica por organizar e explicar decisões, não por gerá-las.</p>
+
+      <h3>6.6 Avaliar a explicação como explicação</h3>
+      <p>Retorno da carteira não mede qualidade textual. A camada de linguagem recebe fatos já aprovados e é avaliada separadamente por fidelidade às fontes, completude dos fatores relevantes, cobertura de riscos materiais e ausência de números inventados. Qualquer número sem referência reprova a saída. Essas métricas têm protocolo definido, mas ainda não possuem amostra prospectiva suficiente para uma conclusão.</p>
 
       <h2>7 · Defeitos encontrados na própria auditoria</h2>
       <p>Sete defeitos foram encontrados e corrigidos. Todos inflavam o resultado.</p>
@@ -149,16 +154,16 @@
           <tr><td>Imposto ausente</td><td>Retorno superestimado</td><td>Modelo tributário brasileiro</td></tr>
           <tr><td>Custo fixo ignorando liquidez</td><td>Ordem grande sem penalidade</td><td>Deslizamento por participação no volume</td></tr>
           <tr><td>Rebalanceamento diário implícito</td><td>Artefato de vetorização</td><td>Trajetória de compra e manutenção</td></tr>
-          <tr><td>Filtro de sessões usando pico global</td><td>Anos legítimos descartados</td><td>Pico móvel local</td></tr>
+          <tr><td>Filtro de sessões usando pico global</td><td>Look-ahead bias / viés de antecipação e descarte de anos legítimos</td><td>Pico móvel local</td></tr>
         </tbody>
       </table>
-      <p>Depois da última correção o CAGR publicado caiu e a queda máxima subiu de 30,4% para 47,8%. O número foi publicado assim mesmo.</p>
+      <p>Depois da última correção o CAGR publicado caiu e a queda máxima subiu de 30,4% para 47,8%. O resultado foi mantido porque essa piora é evidência do valor da auditoria, não um detalhe a esconder.</p>
 
       <h2>8 · Como é rodado</h2>
       <p>Cada etapa é um programa próprio, com entradas e saídas em arquivo, e cada saída carrega o SHA-256 do arquivo que a gerou. A ordem é: construir o universo datado da B3, construir a ponte B3/CVM, extrair os fundamentos com data de recebimento, montar o painel de retorno total com detecção de eventos societários, montar as referências de mercado, rodar a busca aninhada sobre as 36 configurações, costurar a série publicada a partir da configuração que cada ano escolheu, e gerar a evidência de auditoria e o pacote do site.</p>
       <p><a class="text-link" href="./research_manifest.json">Baixar o manifesto de reprodução com hashes SHA-256 →</a></p>
       <p>O registro pré-especificado é emitido no fim, carrega o hash de cada entrada e da própria configuração, e é versionado no repositório para que a data fique carimbada por terceiro. Um registro que exista só no disco de quem o escreveu não demonstra anterioridade nenhuma. Um portão de segurança estático e ao vivo roda antes e depois de cada publicação, e sai com código diferente de zero quando algo regride.</p>
-      <p>Os coeficientes do escore, os limiares da tela, as constantes de aversão a risco e a grade de configurações não são publicados. Estão registrados de forma verificável pelo hash, de modo que a anterioridade é demonstrável sem que a implementação seja replicável por leitura. É uma escolha deliberada e está declarada aqui para que se saiba exatamente o que está e o que não está divulgado.</p>
+      <p>O repositório publica código, configurações, artefatos de avaliação e hashes necessários à reprodução acadêmica. O site resume a lógica sem expor o código na interface, enquanto o repositório permanece como fonte técnica verificável.</p>
 
       <h2>9 · Limitações</h2>
       <ul>
@@ -170,8 +175,10 @@
         <li>Uso comercial exige licença de dados, enquadramento regulatório, suitability e aprovação formal. Nada disso existe hoje.</li>
         <li>O Benevente 2 e os perfis de risco foram concebidos depois da Covid-19, ainda não têm validação prospectiva e não modelam o imposto das vendas intranuais.</li>
       </ul>
+      <p>Nenhuma reamostragem de 2015–2025 elimina simultaneamente a amostra pequena de decisões, a cobertura incompleta de eventos societários e a possível memória histórica dos modelos de linguagem. O registro de 16/08/2026 é a fronteira temporal verificável a partir da qual novas afirmações sobre a camada de linguagem poderão ser avaliadas.</p>
 
       <p><a class="text-link" href="./#estagio">Em que estágio o projeto está →</a></p>
+      <p class="paper-foot">Os retornos exibidos são retrospectivos, incorporam custos modelados e dados parcialmente imputados, e não constituem recomendação, promessa de rentabilidade nem evidência de superioridade futura.</p>
     </main>
   </body>
 </html>
