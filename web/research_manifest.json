@@ -12,7 +12,7 @@
     "allocation": "Regra quantitativa anual, com configuração escolhida apenas pelos anos já encerrados.",
     "llm": "Explica teses, riscos e perguntas de revisão; não seleciona ativos nem define pesos.",
     "mvo": "Comparador quantitativo independente e alocador apenas nos braços experimentais.",
-    "benevente2": "Estratégia principal em acompanhamento: preserva a cesta anual e reduz exposição após estresse observável no fechamento anterior."
+    "benevente2": "Extensão de risco acompanhada em carteira-sombra desde 2026: preserva a cesta anual e reduz exposição após estresse observável no fechamento anterior."
   },
   "evaluation": {
     "decision_years": [

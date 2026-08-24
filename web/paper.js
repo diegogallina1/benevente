@@ -4,7 +4,7 @@ const LIVE_COPY = {
     title: { b1: "Benevente 1 em 2026", b2: "Benevente 2 em 2026" },
     subtitle: {
       b1: "Controle anual sem alteração intranual de exposição.",
-      b2: "Referência principal com proteção por risco; mesmos cinco ativos do Benevente 1.",
+      b2: "Extensão de risco em carteira-sombra; mesmos cinco ativos do Benevente 1.",
     },
     failed: "O último registro íntegro do acompanhamento não pôde ser carregado.",
     current: "Acompanhamento corrente",

@@ -18,7 +18,7 @@ const modelSteps = {
   screen: { number:"03 · FILTRO FUNDAMENTAL", title:"Qualidade e segurança vêm antes do ranking.", text:"Empresas operacionais e bancos são avaliados por métricas compatíveis com seus demonstrativos. Liquidez, rentabilidade, geração de caixa, solvência e disponibilidade dos dados eliminam casos não comparáveis.", uses:"ROIC ou ROE, caixa, dívida, valuation e liquidez", blocks:"Dados ausentes, fragilidade financeira e baixa negociabilidade", produces:"Universo elegível da revisão", rule:"<strong>Regra:</strong> ausência de evidência não vira aprovação." },
   optimizer: { number:"01 · CÁLCULO", title:"Valor, qualidade e momento formam a cesta.", text:"As configurações candidatas combinam fatores, número de posições e orçamento de ações. A configuração do ano é escolhida pelo Sharpe dos anos já encerrados; os ativos recebem pesos proporcionais à pontuação dentro das regras, e o CDI recebe o saldo.", uses:"Fatores fundamentais e de mercado, custos e limites", blocks:"Escolha baseada no retorno futuro", produces:"Carteira anual e custo de rebalanceamento", rule:"<strong>Comparação:</strong> o MVO é calculado separadamente sobre o mesmo universo elegível. Ele não escolhe a carteira Benevente." },
   explanation: { number:"02 · EXPLICAÇÃO", title:"A linguagem recebe uma decisão já fechada.", text:"O modelo recebe somente fatos aprovados sobre a cesta, transforma-os em uma justificativa legível e destaca riscos e perguntas para revisão. Ele não consulta retornos futuros, não muda a lista de ativos e não define pesos.", uses:"Fatos aprovados e referências do dossiê", blocks:"Números inventados e alteração da carteira", produces:"Tese, riscos e perguntas de revisão", rule:"<strong>Avaliação:</strong> fidelidade, completude, cobertura de riscos e ausência de números inventados são medidas separadamente do retorno." },
-  risk: { number:"05 · CONTROLE DE RISCO", title:"O Benevente 2 pode reduzir exposição durante o ano.", text:"A cesta fundamentalista não muda. Se queda ou volatilidade do Ibovespa cruzarem níveis predefinidos, parte da carteira migra temporariamente para CDI no pregão seguinte. Em paralelo, o Gemini classifica notícias e fatos relevantes para alertar o revisor, sem mudar pesos.", uses:"Ibovespa até o fechamento anterior e radar de eventos", blocks:"Reação com informação futura e ordem automática", produces:"Exposição entre 35% e o peso anual, mais alertas humanos", rule:"<strong>Status:</strong> estratégia principal em acompanhamento. O histórico continua retrospectivo e o radar não entra no retorno publicado." },
+  risk: { number:"05 · CONTROLE DE RISCO", title:"O Benevente 2 pode reduzir exposição durante o ano.", text:"A cesta fundamentalista não muda. Se queda ou volatilidade do Ibovespa cruzarem níveis predefinidos, parte da carteira migra temporariamente para CDI no pregão seguinte. Em paralelo, o Gemini classifica notícias e fatos relevantes para alertar o revisor, sem mudar pesos.", uses:"Ibovespa até o fechamento anterior e radar de eventos", blocks:"Reação com informação futura e ordem automática", produces:"Exposição entre 35% e o peso anual, mais alertas humanos", rule:"<strong>Status:</strong> extensão de risco acompanhada em carteira-sombra desde 2026. O histórico continua retrospectivo e o radar não entra no retorno publicado." },
   review: { number:"03 · DECISÃO", title:"O resultado é uma proposta, não uma ordem.", text:"O revisor humano confere tese, riscos, pesos e custos. Se decidir implementar, registra a operação e confere a nota de corretagem depois.", uses:"Proposta, evidências e custo estimado", blocks:"Execução automática", produces:"Carteira-sombra e registro de decisão", rule:"<strong>Regra:</strong> resultados prospectivos ficam separados do backtest histórico." }
 };
 
@@ -401,7 +401,7 @@ function renderWealthCards(period) {
   const growth = column => rows.every(item => Number.isFinite(Number(item[column])))
     ? rows.reduce((value, item) => value * (1 + Number(item[column])), 1) : null;
   const tracks = [
-    ["Benevente 2", "benevente2_return", "Estratégia principal", "primary"],
+    ["Benevente 2", "benevente2_return", "Extensão de risco", "primary"],
     ["Ibovespa", "benchmark_IBOVESPA", "Mercado brasileiro", "benchmark"],
     ["CDI", "cdi_net_return", "Custo de oportunidade", "benchmark"],
   ];
@@ -595,7 +595,7 @@ function renderComparison(period) {
     : `Benevente 1 ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
   const baseRows = [
     ["Benevente 1", benevente, "Regra anual publicada"],
-    benevente2 ? ["Benevente 2", benevente2, "Estratégia principal em acompanhamento"] : null,
+    benevente2 ? ["Benevente 2", benevente2, "Extensão de risco em carteira-sombra"] : null,
     ["MVO de referência", mvo, "Otimização neutra independente"],
     ["CDI", cdi, "Rendimento do caixa"],
     ibovespa ? ["Ibovespa", ibovespa, "Índice de retorno total da B3"] : null,
@@ -608,7 +608,7 @@ function renderComparison(period) {
   }).filter(Boolean);
   document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${escapeHtml(name)}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td>${escapeHtml(note)}</td></tr>`).join("");
   const marketNote = ibovespa ? ` Contra o Ibovespa, ${pct(benevente.cumulative - ibovespa.cumulative)}.` : "";
-  document.querySelector("#research-note").textContent = `Na janela escolhida, a diferença do Benevente 1 para o CDI é ${pct(versusCdi)} e para o MVO é ${pct(versusMvo)}.${marketNote} O Benevente 2 mantém a seleção anual e altera somente a exposição. Ele é a estratégia principal acompanhada, mas seus números de 2015–2025 continuam retrospectivos.`;
+  document.querySelector("#research-note").textContent = `Na janela escolhida, a diferença do Benevente 1 para o CDI é ${pct(versusCdi)} e para o MVO é ${pct(versusMvo)}.${marketNote} O Benevente 1 é a regra anual publicada. O Benevente 2 mantém a seleção e altera somente a exposição; seus números de 2015–2025 são retrospectivos e 2026 permanece carteira-sombra.`;
   renderCurveToggles(period); renderLineChart(period); renderWealthCards(period);
 }
 

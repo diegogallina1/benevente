@@ -3,8 +3,8 @@
   const decisionHosts = document.querySelectorAll("[data-strategy-decisions]");
   document.querySelectorAll(".comparison-matrix tbody tr").forEach(row => {
     if (row.cells?.[0]?.textContent.trim() !== "Status" || row.cells.length < 3) return;
-    row.cells[1].textContent = "Base anual da pesquisa";
-    row.cells[2].textContent = "Estratégia principal em acompanhamento";
+    row.cells[1].textContent = "Regra anual publicada";
+    row.cells[2].textContent = "Extensão acompanhada em carteira-sombra";
   });
   if (!metricNodes.length && !decisionHosts.length) return;
 

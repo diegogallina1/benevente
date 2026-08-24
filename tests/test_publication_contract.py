@@ -9,17 +9,18 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_home_has_static_evidence_and_research_stage() -> None:
+def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     home = (ROOT / "web" / "index.html").read_text(encoding="utf-8")
     assert "Carregando" not in home
     assert "PROTÓTIPO DE PESQUISA" in home
-    assert "Matriz de Evidências" in home
-    assert "Cada afirmação tem um limite" in home
-    assert "2026 permanece carteira-sombra" in home
-    assert "Reproduzir no GitHub" not in home
+    assert "O Benevente 1 é a regra anual publicada" in home
+    assert "diagnóstico retrospectivo, não validação prospectiva" in home
+    assert "Reproduzir no GitHub" in home
     assert "O Benevente separa o que calcula, o que explica e o que decide" in home
-    assert "sensibilidade, não prova de descontaminação" in home
-    assert "fidelidade" in home.lower() and "números inventados" in home.lower()
+    for core_class in ("hero shell", "version-gateway shell", "model-shell", "comparison shell", "lab-section"):
+        assert core_class in home
+    for moved_class in ("research-signal shell", "evidence-board shell", "research-disclosure shell"):
+        assert moved_class not in home
     assert "hero-performance" in home
     assert "Benevente 2, Ibovespa e CDI" not in home  # comparison is visual, not repeated as prose
     assert all(label in home for label in ("+543,8%", "+240,1%", "+174,4%"))
@@ -39,6 +40,8 @@ def test_benevente_2_has_direct_benchmarks_and_shared_design_system() -> None:
     assert 'data-version-metric="ibov-cumulative"' in benevente2
     assert 'data-version-metric="cdi-cumulative"' in benevente2
     assert "Experimento retrospectivo" not in benevente2
+    assert "Regra anual publicada" in benevente2
+    assert "Extensão acompanhada em carteira-sombra" in benevente2
 
 
 def test_site_data_contract_matches_canonical_sources() -> None:
