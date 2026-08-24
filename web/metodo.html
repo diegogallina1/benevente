@@ -35,8 +35,8 @@
       <p>O painel cobre <b>4.066 pregões</b>, de 04/01/2010 a 30/12/2025. A data inicial não é arbitrária: cada decisão anual exige 253 sessões anteriores de retorno, e 2011 teve apenas 249 pregões. Sem baixar 2010, a primeira decisão possível ficaria presa em 2015 em vez de 2012.</p>
 
       <h3>1.2 Eventos societários: o que já foi recuperado e o que falta</h3>
-      <p>O arquivo primário da B3 recuperado em 20/08/2026 contém 18.190 registros de dividendos, JCP, desdobramentos, grupamentos, bonificações e subscrições. A consulta encontrou cobertura para 475 de 497 ativos do painel de preços. Vinte e dois códigos, em sua maioria antigos ou deslistados, não foram devolvidos pela página atual. Há ainda 218 subscrições e 53 cisões, incorporações ou restituições em ações que não podem ser tratadas como ajuste mecânico sem resolver preço, direito e conversão.</p>
-      <p>Isso melhora a rastreabilidade, mas não rebatiza a série publicada como institucional. O backtest atual ainda combina o COTAHIST com preços ajustados públicos e um detector de razões redondas cujo recall medido foi de 23,3%. O próximo painel só receberá o selo de reconciliação quando for reconstruído desde o preço bruto, os 22 códigos faltantes tiverem fonte primária e cada subscrição estiver resolvida. Até lá, os números continuam classificados como pesquisa reproduzível.</p>
+      <p>A página atual da B3 respondeu para 475 das 497 séries consultadas. Depois de excluir eventos anteriores ao intervalo realmente observado de cada código, o arquivo contém 9.772 registros, 127 subscrições e 153 eventos manuais. Vinte e dois códigos, em sua maioria antigos ou deslistados, não foram devolvidos. Uma resposta do endpoint registra que a consulta foi feita; não certifica que todo o histórico foi devolvido.</p>
+      <p>A prova foi feita sobre a própria estratégia. Das 56 observações ativo-ano mantidas, 54 puderam ser reconstruídas com fechamento bruto e o arquivo atual da B3. Sete diferiram do retorno ajustado publicado em mais de cinco pontos percentuais e duas observações de MRFG3 ficaram sem resposta. Nenhum evento manual coincidiu com uma posição aberta. O resultado bloqueia, em vez de conceder, o selo institucional: o painel continua pesquisa reproduzível até existir um livro histórico primário ou licenciado capaz de reproduzir cada retorno.</p>
 
       <h3>1.3 Fundamentos com data de recebimento</h3>
       <p>Vêm dos formulários ITR e DFP da CVM. A data de recebimento pelo regulador é usada como porta: um documento só entra na decisão de janeiro do ano <i>t</i> se foi recebido antes daquela data. A série de doze meses é montada como anual mais o acumulado do ano corrente menos o acumulado comparativo, usando apenas a coluna acumulada. O ITR também publica o trimestre isolado, e misturar as duas corrompe todo indicador a partir do segundo trimestre.</p>
@@ -168,7 +168,7 @@
       <h2>9 · Limitações</h2>
       <ul>
         <li>A janela avaliada é a mesma que serviu para desenvolver a regra. Onze anos avaliados não são onze anos de validação prospectiva.</li>
-        <li>Foram arquivados 18.190 eventos primários da B3, mas 22 ativos seguem sem cobertura completa e 218 subscrições precisam de resolução. O painel publicado ainda não foi reconstruído com esse arquivo.</li>
+        <li>A página atual da B3 respondeu para 475 de 497 séries, mas não reproduziu integralmente os retornos publicados: sete de 54 comparações excederam 5 p.p. e duas não puderam ser feitas.</li>
         <li>Papéis sem cobertura de provedor recebem o rendimento mediano da seção transversal do ano. É aproximação, e os afetados estão no relatório de cobertura.</li>
         <li>A queda máxima chegou a 47,8% em base diária. Nenhuma suitability razoável coloca um cliente conservador nessa carteira.</li>
         <li>Onze observações anuais são poucas. O Sharpe deflacionado corrige o viés de busca, não o tamanho da amostra.</li>

@@ -4,7 +4,7 @@
 
 ## Resumo
 
-Decisões de carteira precisam continuar explicáveis depois de executadas. Este trabalho constrói e avalia o Benevente Wealth System, um artefato de apoio à decisão que reúne, no mesmo registro, os dados admitidos, a regra quantitativa, a carteira proposta, a explicação e a aprovação humana. A pesquisa segue design science e avalia o artefato por testes funcionais, auditoria adversarial e um diagnóstico histórico sequencial de onze decisões entre 2015 e 2025. A auditoria encontrou sete defeitos capazes de inflar resultados e revelou uma limitação material: 13,9% da exposição acumulada a ações selecionadas dependeu de séries com proventos imputados. Por isso, o retorno histórico é apresentado como diagnóstico de desenvolvimento, não como validação comercial. Uma reamostragem pareada indica estabilidade interna, mas os intervalos de 95% do excesso de retorno cruzam zero contra CDI, Ibovespa e BOVA11. A versão anual Benevente 1 foi registrada em 16 de agosto de 2026; a camada de risco e o monitor diário receberam registros posteriores e não herdam essa data. A carteira de 2026 permanece carteira-sombra. O modelo de linguagem não demonstrou ganho de retorno e permanece restrito à explicação. A contribuição comprovada é a separação verificável entre dado, cálculo, linguagem e responsabilidade.
+Decisões de carteira precisam continuar explicáveis depois de executadas. Este trabalho constrói e avalia o Benevente Wealth System, um artefato que registra os dados admitidos, a regra quantitativa, a carteira proposta, a explicação e a aprovação humana. A pesquisa segue design science e combina testes funcionais, auditoria adversarial e diagnóstico sequencial de onze decisões entre 2015 e 2025. Sete defeitos capazes de inflar resultados foram corrigidos. A auditoria também revelou que 13,9% da exposição acumulada a ações dependia de proventos imputados. A tentativa de reconstruir 56 observações ativo-ano com fechamentos brutos e eventos da página atual da B3 comparou 54, encontrou sete divergências superiores a cinco pontos percentuais e deixou duas sem resposta. O sistema recusou o selo de reconciliação. Os retornos são, portanto, diagnóstico de desenvolvimento, não validação comercial. Na reamostragem pareada, os intervalos de 95% do excesso de retorno cruzam zero contra CDI, Ibovespa e BOVA11. O Benevente 1 foi registrado em 16 de agosto de 2026; extensões posteriores não herdam essa data. O modelo de linguagem não demonstrou ganho de retorno e permanece restrito à explicação. A contribuição comprovada é separar, de forma verificável, dado, cálculo, linguagem e responsabilidade.
 
 Palavras-chave: governança de investimentos; alocação de carteira; trilha de auditoria; design science; pesquisa reprodutível.
 
@@ -14,7 +14,7 @@ Palavras-chave: governança de investimentos; alocação de carteira; trilha de 
 
 Este trabalho parte de um problema operacional: a recomendação é produzida hoje, mas pode precisar ser defendida anos depois. Sem preservar o dado admitido, a versão da regra e a aprovação, a justificativa posterior pode incorporar informações inexistentes na decisão. O Benevente produz a proposta e seu registro verificável. A intensidade do problema e a disposição a pagar ainda precisam ser medidas em piloto. O artigo não atribui ao artefato impacto regional ou demanda comercial não observados.
 
-O problema é concreto e tem data. Quando um cliente pergunta em 2026 por que determinada ação entrou na carteira em janeiro de 2023, o escritório precisa demonstrar três coisas simultaneamente.
+Quando um cliente pergunta por que uma ação entrou na carteira anos antes, o escritório precisa demonstrar três coisas.
 
 1. Quais dados existiam naquela data. Um balanço republicado em 2024 não pode aparecer como se estivesse disponível em janeiro de 2023. Sem controle de data de recebimento, todo backtest e toda justificativa ficam contaminados por informação que ninguém tinha.
 2. Qual regra foi aplicada. Não a regra que o escritório usa hoje, mas a que estava vigente naquele janeiro, com os limites que estavam vigentes.
@@ -39,8 +39,6 @@ Markowitz (1952) fundamenta a comparação média-variância, ou MVO, calculada 
 Os estudos recentes também recomendam separar utilidade narrativa de capacidade preditiva. Perlin et al. (2025) executaram 30 mil simulações com 1.522 empresas anonimizadas e não encontraram superioridade consistente do Gemini sobre 1/N ou S&P 500, sobretudo em horizontes longos. Pelster e Val (2024) adotaram um experimento ao vivo, desenho mais adequado para evitar conhecimento posterior. Kim, Muhn e Nikolaev (2024) reportam que modelos podem extrair informações narrativas úteis de demonstrativos anonimizados, sem que isso implique alfa de negociação. Li et al. (2026), no FINSABER, mostram que vantagens aparentes se deterioram em universos amplos, horizontes longos e regimes distintos. FINCON (Yu et al., 2024) inspira a divisão de responsabilidades, não autonomia de negociação. Esse conjunto sustenta a escolha do Benevente: a regra determinística calcula, o modelo apenas explica fatos aprovados e sua utilidade será avaliada prospectivamente.
 
 Essas escolhas definem o tipo de evidência que o trabalho pode produzir. O backtest é um experimento histórico sobre um protocolo e não uma simulação da experiência individual de todo cliente. Suitability, necessidade de liquidez, tributação específica, ativos já detidos e restrições contratuais podem mudar a carteira implementável. Por isso, o artefato separa três objetos que costumam aparecer misturados: a regra acadêmica usada para medir o sinal; a política institucional que limita o risco; e o texto explicativo que ajuda uma pessoa a revisar a decisão. Uma boa curva não substitui nenhum dos três.
-
-O posicionamento do artefato decorre desses três pontos. O Benevente não é apresentado como gerador comprovado de alfa. Seu diferencial verificável é manter unidos os insumos, a regra, a explicação e a aprovação. O diagnóstico histórico serve para pressionar essa arquitetura e revelar erros, inclusive quando a correção piora o resultado publicado.
 
 ---
 
@@ -68,7 +66,7 @@ O fluxo da Figura 1 separa funções que costumam aparecer misturadas. Dados e f
 
 O universo de registro é o arquivo histórico de cotações da própria B3, não um feed de terceiro. A consequência é direta e mensurável. O painel construído cobre 514 emissores entre 2010 e 2025, dos quais 166 deixam de negociar antes de dezembro de 2025, 77 deles antes de 2020, e 58 já haviam perdido mais de 60% do próprio topo quando pararam de negociar. Um painel montado a partir de provedor público simplesmente não contém essas empresas. A diferença entre incluí-las e não incluí-las é a diferença entre medir a estratégia e medir a sorte de ter olhado só para os sobreviventes.
 
-Preços deslistados exigem tratamento de eventos societários sem a ajuda do provedor. A primeira versão detectava razões de preço redondas e obteve precisão de 88,1%, mas recall de apenas 23,3% contra o arquivo de eventos disponível. Para retirar essa heurística da posição de fonte principal, uma nova rotina consultou diretamente os registros públicos da B3 e arquivou 18.190 dividendos, juros sobre capital próprio, desdobramentos, grupamentos, bonificações e eventos manuais. A consulta cobriu 475 de 497 ativos do painel. Vinte e dois códigos não foram devolvidos pela página atual e 271 eventos, entre eles 218 subscrições, ainda exigem resolução de direitos e conversões. A série publicada não foi requalificada: ela continua como dado de pesquisa até ser reconstruída desde o preço bruto, com cobertura integral e cada evento aplicado em relatório próprio.
+Preços deslistados exigem tratamento de eventos societários sem a ajuda do provedor. A primeira versão detectava razões de preço redondas e obteve precisão de 88,1%, mas recall de apenas 23,3% contra o arquivo de eventos disponível. Para retirar essa heurística da posição de fonte principal, uma nova rotina consultou diretamente a página pública da B3 (B3, 2026b). A página respondeu para 475 das 497 séries. Depois de excluir eventos anteriores ao intervalo realmente observado de cada código, o arquivo contém 9.772 registros, 127 subscrições e 153 eventos manuais. Vinte e dois códigos não foram devolvidos. A auditoria também corrigiu uma interpretação indevida: resposta do endpoint não significa cobertura histórica completa. Entre as 56 observações ativo-ano efetivamente mantidas, 54 puderam ser reconstruídas com o arquivo atual; sete divergiram do retorno ajustado publicado em mais de cinco pontos percentuais e duas observações de MRFG3 ficaram sem resposta. Nenhum evento manual coincidiu com uma posição aberta. A série publicada não foi requalificada: ela continua como dado de pesquisa até que uma base histórica primária ou licenciada consiga reproduzir cada retorno desde o preço bruto.
 
 Os fundamentos vêm dos formulários ITR e DFP da CVM, com a data de recebimento usada como porta: um documento só entra na decisão de janeiro do ano *t* se o regulador o recebeu antes daquela data. A ponte entre o ticker da B3 e o CNPJ da CVM é construída ano a ano, e sua cobertura é publicada em vez de suposta. Em 2012, primeiro ano da série, 266 de 314 ações tiveram ponte aceita e 171 tiveram fundamentos completos, porque a série do ITR começa em 2011 e 2012 é o primeiro ano em que a construção de doze meses tem os dois lados disponíveis.
 
@@ -126,7 +124,7 @@ O ranqueamento exige no mínimo três anos encerrados. Como o painel começa em 
 Quatro referências foram calculadas de forma independente.
 
 - CDI, série 12 do Banco Central, como custo de oportunidade do caixa.
-- Ibovespa, índice de retorno total que incorpora os proventos da carteira teórica e, por isso, é comparável a uma carteira que os reinveste (B3, 2026b).
+- Ibovespa, índice de retorno total que incorpora os proventos da carteira teórica e, por isso, é comparável a uma carteira que os reinveste (B3, 2026c).
 - BOVA11, ETF negociável que busca acompanhar o Ibovespa e permite observar uma implementação passiva sujeita a taxa, custos de negociação e diferença de aderência (BlackRock, 2026).
 - Otimização média-variância sobre o mesmo universo elegível. Esse método estima retorno médio e covariância com dados anteriores e escolhe pesos que maximizam a relação entre retorno esperado e risco sob os mesmos limites de elegibilidade.
 
@@ -242,6 +240,8 @@ Proteção intranual concebida depois da Covid-19. O Benevente 2 reduz a exposi�
 
 O produto restringe o modelo de linguagem à explicação. Um experimento retrospectivo separado permitiu que ele produzisse escore ou pesos apenas para medir o custo dessa restrição. Como o treinamento do modelo pode conter notícias e desfechos posteriores, os quatro braços são diagnóstico de sensibilidade, não validação temporal da LLM.
 
+A futura extensão Benevente 3 avaliará prospectivamente fidelidade, completude, cobertura de riscos e números inventados. Ela não seleciona ativos nem herda os resultados das versões 1 e 2.
+
 - Nomeado: o modelo vê os nomes das empresas e devolve um escore limitado, que inclina o retorno esperado dentro do otimizador convexo.
 - Anonimizado: idêntico, mas as empresas são identificadas apenas por números, de modo que o modelo vê os fundamentos e não as marcas.
 - Determinístico: controle sem modelo algum, ordenando o mesmo universo pelo escore de fator pré-declarado.
@@ -323,7 +323,7 @@ A matriz converge com a literatura externa. A ausência de alfa atribuído ao mo
 
 A primeira limitação é temporal. Onze decisões anuais são poucas, e a janela avaliada também serviu ao desenvolvimento. O prêmio de retrospectiva de 0,65 ponto percentual e o Sharpe deflacionado tratam parte do risco de múltiplas tentativas, mas não equivalem a validação prospectiva. A reamostragem também não cria regimes que a história não contém.
 
-A segunda limitação está nos dados. A coleta primária avançou para 18.190 eventos e 95,6% dos ativos do painel, mas 22 códigos e 271 eventos manuais ainda bloqueiam a reconciliação integral. Papéis sem cobertura completa recebem, em casos identificados, uma distribuição imputada pela mediana transversal do ano. Essa fragilidade atingiu 13,9% da exposição acumulada a ações e 50% da carteira total em 2020. O novo arquivo melhora a auditabilidade, mas o resultado só poderá ser recalculado e comparado quando o preço bruto, o evento e a conversão estiverem ligados sem lacunas.
+A segunda limitação está nos dados. A página atual da B3 respondeu para 95,6% das séries consultadas, mas esse percentual mede resposta do serviço, não completude histórica. A reconstrução das posições efetivamente mantidas encontrou sete diferenças materiais em 54 comparações e duas observações sem resposta. Papéis sem cobertura completa recebem, em casos identificados, uma distribuição imputada pela mediana transversal do ano. Essa fragilidade atingiu 13,9% da exposição acumulada a ações e 50% da carteira total em 2020. O novo arquivo melhora a auditabilidade porque permite reprovar a própria reconciliação; não transforma a curva em evidência institucional.
 
 A terceira é econômica. A queda máxima diária chegou a 47,8%, nível incompatível com um perfil conservador e ligeiramente pior que os 47,0% do Ibovespa. O protótipo não demonstrou proteção de capital. A extensão de controle de risco concebida depois da Covid-19 é retrospectiva, não tem imposto intranual conciliado e não demonstrou retorno adicional.
 
@@ -331,7 +331,7 @@ Por fim, o produto não elimina responsabilidade profissional. Uso comercial exi
 
 ### 7.2 Recomendações de pesquisa e implantação
 
-O passo científico prioritário é acumular decisões depois do registro congelado. Em paralelo, a pesquisa deve completar os 22 códigos e resolver os 271 eventos manuais antes de reconstruir o retorno. A reamostragem em blocos já mede dependência serial curta; testes seguintes devem acrescentar trajetórias sintéticas com regimes de baixa prolongada que não estejam limitadas à ordem histórica. Simulação não substitui observação futura. Um estudo com notícias deve ser registrado como braço separado, com frequência trimestral ou orientada a eventos e horário verificável. O passo de produto é um piloto silencioso, sem execução automática, capaz de medir tempo, completude documental, divergência de custos, compreensão do usuário e disposição a pagar.
+O passo científico prioritário é acumular decisões depois do registro congelado. Em paralelo, uma versão institucional precisará adquirir ou construir um livro histórico de eventos capaz de cobrir os 22 códigos não devolvidos e reproduzir as sete diferenças materiais encontradas no escopo da estratégia. A reamostragem em blocos já mede dependência serial curta; testes seguintes devem acrescentar trajetórias sintéticas com regimes de baixa prolongada que não estejam limitadas à ordem histórica. Simulação não substitui observação futura. Um estudo com notícias deve ser registrado como braço separado, com frequência trimestral ou orientada a eventos e horário verificável. O passo de produto é um piloto silencioso, sem execução automática, capaz de medir tempo, completude documental, divergência de custos, compreensão do usuário e disposição a pagar.
 
 ---
 
@@ -341,13 +341,13 @@ O Benevente Wealth System foi construído para resolver uma falha operacional es
 
 No diagnóstico de 2015 a 2025, a carteira apresentou retorno anualizado superior aos comparadores e queda máxima semelhante à do mercado. A incerteza da amostra e a dependência parcial de séries imputadas impedem tratar essa diferença como superioridade comprovada. Os testes negativos são informativos: a frequência anual não perdeu para reseleções mais rápidas, o modelo de linguagem não acrescentou retorno e a alocação direta por texto produziu carteiras aritmeticamente inconsistentes em parte dos anos. Esses achados justificam um sistema em que a matemática calcula a alocação, a linguagem ajuda a compreendê-la e uma pessoa conserva a responsabilidade final.
 
-A conclusão comprovada é mais estreita e mais defensável que a versão anterior do artigo: o artefato cria uma cadeia auditável e usa essa cadeia para descobrir erros que mudam o próprio resultado. A viabilidade comercial será confirmada somente se um piloto mostrar ganho de tempo, completude documental, compreensão e disposição a pagar. A validade financeira exigirá completar a reconciliação primária e acumular dados posteriores ao registro; a política de risco começa sua amostra confirmatória em 2027. Até lá, o desempenho histórico permanece diagnóstico de desenvolvimento.
+A conclusão comprovada é mais estreita e mais defensável que a versão anterior do artigo: o artefato cria uma cadeia auditável e usa essa cadeia para descobrir erros que mudam o próprio resultado. A tentativa de reconciliação é parte desse resultado porque o sistema recusou uma fonte primária incapaz de reproduzir integralmente a série publicada. A viabilidade comercial será confirmada somente se um piloto mostrar ganho de tempo, completude documental, compreensão e disposição a pagar. A validade financeira exigirá uma base histórica reconciliável e dados posteriores ao registro; a política de risco começa sua amostra confirmatória em 2027. Até lá, o desempenho histórico permanece diagnóstico de desenvolvimento.
 
 ---
 
 ## 9. Disponibilidade
 
-O código de reprodução, os testes, os manifestos criptográficos e os arquivos que sustentam os resultados estão disponíveis no repositório público do projeto, em https://github.com/diegogallina1/benevente. A demonstração web do artefato está disponível em https://benevente-wealth-system.vercel.app/. O repositório identifica as fontes, as limitações de cobertura e os comandos necessários para reproduzir as avaliações.
+O código, os testes, os manifestos e os arquivos de evidência estão em https://github.com/diegogallina1/benevente. A demonstração está em https://benevente-wealth-system.vercel.app/. O repositório documenta fontes, limitações e comandos de reprodução.
 
 ---
 
@@ -361,7 +361,9 @@ Banco Central do Brasil. (2026). *Sistema Gerenciador de Séries Temporais: sér
 
 B3 S.A. – Brasil, Bolsa, Balcão. (2026a). *Cotações históricas: série histórica de preços dos títulos negociados na Bolsa*. https://www.b3.com.br/pt_br/market-data-e-indices/servicos-de-dados/market-data/historico/mercado-a-vista/cotacoes-historicas/
 
-B3 S.A. – Brasil, Bolsa, Balcão. (2026b). *Ibovespa B3*. https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-amplos/ibovespa.htm
+B3 S.A. – Brasil, Bolsa, Balcão. (2026b). *Dividendos e outros eventos corporativos*. https://sistemaswebb3-listados.b3.com.br/dividensOtherCorpActPage/
+
+B3 S.A. – Brasil, Bolsa, Balcão. (2026c). *Ibovespa B3*. https://www.b3.com.br/pt_br/market-data-e-indices/indices/indices-amplos/ibovespa.htm
 
 Benevente Wealth System. (2026). *Documentação técnica, repositório de dados e validação de horizontes*. https://github.com/diegogallina1/benevente
 

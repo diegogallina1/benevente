@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-08-23",
+  "updated_at": "2026-08-24",
   "research_window": {
     "first_decision_year": 2015,
     "last_decision_year": 2025,
@@ -33,12 +33,18 @@
     "definition": "Instrumentos observados na B3 em 12/08/2026 para exploração de cobertura atual. Não foram todos elegíveis nem avaliados em cada ano histórico."
   },
   "corporate_events": {
-    "primary_records": 18190,
-    "covered_price_series": 475,
+    "primary_records_within_observed_spans": 9772,
+    "current_endpoint_queried_series": 475,
     "requested_price_series": 497,
-    "unresolved_price_series": 22,
-    "unresolved_subscriptions": 218,
-    "unresolved_manual_events": 271,
+    "current_endpoint_unavailable_series": 22,
+    "historically_reconciled_series": 0,
+    "unresolved_subscriptions": 127,
+    "unresolved_manual_events": 153,
+    "published_holding_year_records": 56,
+    "holding_year_records_compared": 54,
+    "holding_year_records_without_endpoint_response": 2,
+    "material_return_differences_over_5pp": 7,
+    "interpretation": "Resposta da página atual da B3 não certifica completude histórica. A tentativa de reconstrução não reproduziu integralmente o painel ajustado publicado.",
     "institutionally_reconciled": false
   },
   "role_contract": {

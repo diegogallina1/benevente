@@ -1,18 +1,19 @@
 {
   "source": "B3 listed-company primary records",
   "official_page": "https://sistemaswebb3-listados.b3.com.br/dividensOtherCorpActPage/",
-  "extracted_at": "2026-08-21T01:15:30.188864+00:00",
+  "extracted_at": "2026-08-24T02:29:23.050186+00:00",
   "price_panel": "data/prices_b3_cotahist_price_return_only_2011_2025.csv",
   "mapping": "data/b3_historical_cvm_ticker_map_2012_2025.csv",
   "issuer_count_requested": 389,
   "issuer_count_queried_this_run": 19,
   "ticker_count_requested": 497,
-  "ticker_count_complete": 475,
-  "event_count": 18190,
-  "cash_event_count": 17468,
-  "share_event_count": 451,
-  "unresolved_subscription_count": 218,
-  "unresolved_manual_event_count": 271,
+  "ticker_count_endpoint_queried": 475,
+  "ticker_count_historically_reconciled": 0,
+  "event_count": 9772,
+  "cash_event_count": 9387,
+  "share_event_count": 232,
+  "unresolved_subscription_count": 127,
+  "unresolved_manual_event_count": 153,
   "failed_issuers": [
     {
       "issuer": "ABRE",
@@ -91,16 +92,17 @@
       "error": "B3 request failed after 4 attempts: GetListedSupplementCompany"
     }
   ],
-  "events_sha256": "ee60afb0d322f280118b32de22260751f659385c27999574cfa980442599b088",
-  "coverage_sha256": "7764911e9eb0857629c55f3967b607fff57720663b76e756a2a135483066b2d8",
-  "status": "primary_archive_partial",
+  "events_sha256": "230465e490dc3600c4859253ca9050a19beb213cd5d82f9df5032525de1f8402",
+  "coverage_sha256": "91d3addb9a8197c59dae782f228504c7b6985a2e385291af24349714eb9fecb2",
+  "status": "primary_endpoint_archive_partial",
   "archive_validation": {
     "official_source": true,
-    "coverage_rate": 0.9557344064386318,
+    "endpoint_query_rate": 0.9557344064386318,
+    "historical_reconciliation_rate": 0.0,
     "duplicate_event_ids": 0,
     "invalid_normalized_records": 0,
-    "unresolved_manual_events": 271,
-    "status": "blocked_until_complete_reconciliation"
+    "unresolved_manual_events": 153,
+    "status": "blocked_current_endpoint_is_not_a_complete_historical_ledger"
   },
-  "verification_note": "This archive does not certify the existing adjusted price panel. Institutional verification requires reconstruction from raw closes and resolution of subscriptions and ticker conversions."
+  "verification_note": "A successful response from the current B3 page is evidence that the endpoint was queried, not that every historical event was returned. This archive does not certify the existing adjusted price panel. Institutional verification requires a complete historical primary or licensed ledger, raw closes, and explicit resolution of rights and security conversions."
 }

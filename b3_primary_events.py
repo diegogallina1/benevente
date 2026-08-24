@@ -158,6 +158,11 @@ class TickerContext:
         cum = _date(last_cum_date)
         if cum is None:
             return None
+        # The current B3 endpoint can return events from long before this
+        # ticker's observed price history.  Do not map an old right to the
+        # first session of the panel and thereby manufacture an adjustment.
+        if cum < self.trading_dates[0] - pd.Timedelta(days=7):
+            return None
         for session in self.trading_dates:
             if session > cum:
                 return session.date().isoformat()
@@ -289,9 +294,13 @@ def normalize_issuer_events(
     for context in contexts:
         coverage.append({
             "ticker": context.ticker, "coverage_start": context.coverage_start,
-            "coverage_end": context.coverage_end, "status": "complete" if context.isin else "partial",
+            "coverage_end": context.coverage_end,
+            "status": "queried_current_endpoint" if context.isin else "partial",
             "source_url": supplement_url, "extracted_at": extracted_at,
-            "note": "B3 company supplement and paginated cash history queried" if context.isin
+            "note": (
+                "B3 current company supplement and paginated cash history queried; "
+                "historical completeness not certified"
+            ) if context.isin
                     else "ticker has no ISIN mapping; events cannot be assigned safely",
         })
     return events, coverage
@@ -310,15 +319,30 @@ def archive_primary_events(
     if resume and events_target.exists() and coverage_target.exists():
         prior_events = pd.read_csv(events_target)
         prior_coverage = pd.read_csv(coverage_target)
+        if not prior_events.empty and "b3_last_cum_date" in prior_events:
+            cum_date = pd.to_datetime(
+                prior_events["b3_last_cum_date"], format="%d/%m/%Y", errors="coerce"
+            )
+            ex_date = pd.to_datetime(prior_events["ex_date"], errors="coerce")
+            stale_bridge = cum_date.notna() & ex_date.notna() & (
+                ex_date - cum_date > pd.Timedelta(days=7)
+            )
+            prior_events = prior_events.loc[~stale_bridge].copy()
         if not prior_events.empty and "b3_label" in prior_events:
             remapped = prior_events["b3_label"].map(_cash_type)
             changed = prior_events["event_type"].eq("unknown") & remapped.ne("unknown")
             prior_events.loc[changed, "event_type"] = remapped.loc[changed]
             prior_events.loc[changed, "status"] = "confirmed"
+        archival_status = prior_coverage.status.astype(str).str.lower()
         completed_tickers = set(
-            prior_coverage.loc[prior_coverage.status.astype(str).str.lower().eq("complete"), "ticker"]
+            prior_coverage.loc[
+                archival_status.isin({"complete", "queried_current_endpoint"}), "ticker"
+            ]
             .astype(str).str.upper().str.removesuffix(".SA")
         )
+        prior_coverage.loc[
+            archival_status.eq("complete"), "status"
+        ] = "queried_current_endpoint"
     grouped: dict[str, list[TickerContext]] = {}
     for context in contexts:
         if context.issuer and context.ticker not in completed_tickers:
@@ -382,7 +406,10 @@ def archive_primary_events(
         "issuer_count_requested": len({_issuer(context.ticker) for context in contexts if _issuer(context.ticker)}),
         "issuer_count_queried_this_run": len(issuers),
         "ticker_count_requested": len(contexts),
-        "ticker_count_complete": int(coverage.status.eq("complete").sum()),
+        "ticker_count_endpoint_queried": int(
+            coverage.status.eq("queried_current_endpoint").sum()
+        ),
+        "ticker_count_historically_reconciled": 0,
         "event_count": int(len(events)),
         "cash_event_count": int(events.event_type.isin(["dividend", "jcp", "income", "amortization", "capital_restitution"]).sum()) if not events.empty else 0,
         "share_event_count": int(events.event_type.isin(["split", "reverse_split", "bonus"]).sum()) if not events.empty else 0,
@@ -391,19 +418,23 @@ def archive_primary_events(
         "failed_issuers": failures,
         "events_sha256": file_sha256(events_target),
         "coverage_sha256": file_sha256(coverage_target),
-        "status": "primary_archive_complete" if not failures and coverage.status.eq("complete").all()
-                  else "primary_archive_partial",
+        "status": "primary_endpoint_archive_partial",
         "archive_validation": {
             "official_source": True,
-            "coverage_rate": float(coverage.status.eq("complete").mean()) if len(coverage) else 0.0,
+            "endpoint_query_rate": float(
+                coverage.status.eq("queried_current_endpoint").mean()
+            ) if len(coverage) else 0.0,
+            "historical_reconciliation_rate": 0.0,
             "duplicate_event_ids": int(events.event_id.duplicated().sum()) if not events.empty else 0,
             "invalid_normalized_records": int(events.event_type.eq("unknown").sum()) if not events.empty else 0,
             "unresolved_manual_events": int(events.event_type.isin(["subscription", "merger", "spin_off", "ticker_change", "delisting"]).sum()) if not events.empty else 0,
-            "status": "blocked_until_complete_reconciliation",
+            "status": "blocked_current_endpoint_is_not_a_complete_historical_ledger",
         },
         "verification_note": (
-            "This archive does not certify the existing adjusted price panel. Institutional verification "
-            "requires reconstruction from raw closes and resolution of subscriptions and ticker conversions."
+            "A successful response from the current B3 page is evidence that the endpoint was queried, "
+            "not that every historical event was returned. This archive does not certify the existing "
+            "adjusted price panel. Institutional verification requires a complete historical primary or "
+            "licensed ledger, raw closes, and explicit resolution of rights and security conversions."
         ),
     }
     manifest_target.write_text(json.dumps(manifest, indent=2, ensure_ascii=False), encoding="utf-8")

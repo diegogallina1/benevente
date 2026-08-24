@@ -272,15 +272,20 @@ Os números, as limitações e o início confirmatório em 2027 estão em
 
 ### Eventos societários primários
 
-`b3_primary_events.py` arquiva o histórico público oficial de proventos em
-dinheiro e o cadastro suplementar da companhia na B3. A primeira execução
-recuperou 18.190 eventos e cobriu 475 de 497 ativos consultados. O arquivo é
-uma melhoria de evidência, mas não certifica o painel ajustado existente: 22
-ativos e 218 subscrições ainda bloqueiam a reconciliação integral.
+`b3_primary_events.py` arquiva os registros devolvidos pela página pública de
+proventos e pelo cadastro suplementar da companhia na B3. A página atual
+respondeu para 475 de 497 séries. Depois de remover eventos anteriores ao
+intervalo observado de cada código, ficaram 9.772 registros, 127 subscrições e
+153 eventos manuais. Resposta do endpoint não significa histórico completo.
+A auditoria das 56 observações ativo-ano realmente mantidas comparou 54 e
+encontrou sete diferenças superiores a cinco pontos percentuais; duas
+observações de MRFG3 ficaram sem resposta. Por isso, o painel ajustado continua
+classificado para pesquisa e não recebe selo de reconciliação institucional.
 
 ```powershell
 .\.venv-benevente\Scripts\python.exe b3_primary_events.py
 .\.venv-benevente\Scripts\python.exe b3_primary_events.py --resume
+.\.venv-benevente\Scripts\python.exe tools/build_primary_reconciliation_audit.py
 ```
 
 Veja [o protocolo de reconciliação](docs/primary_event_reconciliation.md).

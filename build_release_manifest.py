@@ -42,6 +42,8 @@ CANONICAL_FILES = [
     "data/b3_primary_corporate_events_2011_2025.csv",
     "data/b3_primary_event_coverage_2011_2025.csv",
     "data/b3_primary_events_2011_2025_manifest.json",
+    "artifacts/primary_reconciliation/summary.json",
+    "artifacts/primary_reconciliation/strategy_holding_year_audit.csv",
     "data/benevente_profile_risk_v1_registration.json",
     "artifacts/risk_system_validation_20260820/summary.json",
     "artifacts/risk_system_validation_20260820/annual_profile_comparison.csv",
@@ -80,6 +82,9 @@ def build() -> dict:
     llm = json.loads((ROOT / "artifacts/llm_contamination/summary.json").read_text(encoding="utf-8"))
     benevente2 = json.loads((ROOT / "artifacts/benevente2_event_risk/summary.json").read_text(encoding="utf-8"))
     primary_events = json.loads((ROOT / "data/b3_primary_events_2011_2025_manifest.json").read_text(encoding="utf-8"))
+    primary_reconciliation = json.loads(
+        (ROOT / "artifacts/primary_reconciliation/summary.json").read_text(encoding="utf-8")
+    )
     risk_validation = json.loads((ROOT / "artifacts/risk_system_validation_20260820/summary.json").read_text(encoding="utf-8"))
     daily = pd.read_csv(ROOT / "artifacts/published_nested/daily_curve.csv")
 
@@ -151,7 +156,12 @@ def build() -> dict:
             "historical_asset_classes": sorted(universe.asset_class.dropna().astype(str).unique().tolist()),
             "cvm_source_archives": len(raw_cvm_records),
             "primary_event_records": int(primary_events["event_count"]),
-            "primary_event_tickers_complete": int(primary_events["ticker_count_complete"]),
+            "primary_event_tickers_endpoint_queried": int(
+                primary_events["ticker_count_endpoint_queried"]
+            ),
+            "primary_event_tickers_historically_reconciled": int(
+                primary_events["ticker_count_historically_reconciled"]
+            ),
             "primary_event_tickers_requested": int(primary_events["ticker_count_requested"]),
             "unresolved_subscriptions": int(primary_events["unresolved_subscription_count"]),
             "unresolved_manual_events": int(primary_events.get("unresolved_manual_event_count", primary_events["unresolved_subscription_count"])),
@@ -159,18 +169,24 @@ def build() -> dict:
         "sources": "B3 COTAHIST, CVM ITR/DFP e BCB SGS 12; complemento de retorno total público documentado no manifesto do painel.",
         "source_tier": price_manifest.get("source_tier", "public_reproducible_research"),
         "institutional_performance_verified": False,
+        "primary_reconciliation": primary_reconciliation,
         "limitations": [
             "A janela 2015–2025 também participou do desenvolvimento; não é validação prospectiva.",
             (
-                "O arquivo primário B3 cobre "
-                f"{int(primary_events['ticker_count_complete'])} de "
-                f"{int(primary_events['ticker_count_requested'])} ativos consultados; "
-                "a série publicada ainda não foi reconstruída com esse arquivo."
+                "A página atual da B3 respondeu para "
+                f"{int(primary_events['ticker_count_endpoint_queried'])} de "
+                f"{int(primary_events['ticker_count_requested'])} séries, mas não certifica "
+                "a completude histórica dos eventos."
             ),
             (
                 f"Há {int(primary_events.get('unresolved_manual_event_count', primary_events['unresolved_subscription_count']))} "
                 f"eventos manuais, incluindo {int(primary_events['unresolved_subscription_count'])} subscrições, "
                 "que exigem resolução explícita antes de uma reconciliação institucional."
+            ),
+            (
+                "Na auditoria das 56 observações ativo-ano realmente mantidas, "
+                f"{int(primary_reconciliation['material_differences_over_5pp'])} diferenças excederam "
+                "5 pontos percentuais e 2 observações não tiveram resposta do endpoint."
             ),
             "Parte das distribuições é imputada quando a fonte pública não cobre o papel.",
             "Custos e tributos são modelados, não conciliados com notas reais de corretagem.",

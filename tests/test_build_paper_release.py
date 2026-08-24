@@ -13,6 +13,8 @@ def test_paper_release_reconciles_canonical_metrics() -> None:
     assert round(bundle["published_strategy"]["daily_max_drawdown"], 4) == -0.4778
     assert round(bundle["benevente_2"]["cagr"], 4) == 0.1845
     assert bundle["llm_experiment"]["malformed_weight_years"] == 5
+    assert bundle["primary_event_reconciliation"]["status"] == "blocked_not_institutionally_reconciled"
+    assert bundle["primary_event_reconciliation"]["material_differences_over_5pp"] == 7
 
 
 def test_paper_release_writes_strict_json(tmp_path: Path) -> None:

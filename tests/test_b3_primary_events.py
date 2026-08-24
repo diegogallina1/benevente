@@ -26,6 +26,7 @@ def test_next_session_never_uses_the_cum_rights_date() -> None:
     assert context().next_session("02/01/2020") == "2020-01-03"
     assert context().next_session("03/01/2020") == "2020-01-06"
     assert context().next_session("06/01/2020") is None
+    assert context().next_session("16/11/1998") is None
 
 
 def test_normalizer_maps_security_class_and_keeps_subscription_unresolved() -> None:
@@ -54,7 +55,8 @@ def test_normalizer_maps_security_class_and_keeps_subscription_unresolved() -> N
     assert split["share_factor"] == 2.0
     subscription = next(row for row in events if row["event_type"] == "subscription")
     assert subscription["resolution"] == ""
-    assert coverage[0]["status"] == "complete"
+    assert coverage[0]["status"] == "queried_current_endpoint"
+    assert "historical completeness not certified" in coverage[0]["note"]
 
 
 def test_identical_cash_installments_are_not_collapsed() -> None:

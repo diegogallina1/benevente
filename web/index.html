@@ -97,7 +97,7 @@
 
       <section class="research-signal shell" aria-label="Contrato único de dados">
         <div><span>PAINEL HISTÓRICO AVALIADO</span><strong data-contract="historical-issuers">514</strong><p>Emissores reconstruídos para as decisões de 2015–2025, incluindo 166 deslistados.</p></div>
-        <div><span>SÉRIES DE PREÇOS</span><strong data-contract="price-series">497</strong><p>Séries documentadas. O arquivo primário de eventos cobre 475 delas.</p></div>
+        <div><span>SÉRIES DE PREÇOS</span><strong data-contract="price-series">497</strong><p>Séries documentadas. A página atual da B3 respondeu para 475, sem certificar o histórico completo.</p></div>
         <div><span>REGISTROS FUNDAMENTAIS</span><strong data-contract="fundamentals">2.868</strong><p>Demonstrações CVM com data de recebimento usada na decisão.</p></div>
         <div><span>CATÁLOGO ATUAL DA B3</span><strong data-contract="current-instruments">1.406</strong><p>Instrumentos observados em 12/08/2026. Não equivalem ao universo elegível de cada ano histórico.</p></div>
         <a class="text-link" href="./data_contract.json">Abrir contrato <span>→</span></a>
@@ -166,13 +166,14 @@
               <tr><td>Uma LLM pode adicionar julgamento além de uma regra determinística.</td><td>O braço anonimizado ficou 0,05 p.p. ao ano abaixo do controle determinístico, com p = 0,989.</td><td><span class="evidence-status not-demonstrated">Não demonstrado</span> para geração de alfa.</td></tr>
               <tr><td>Anonimizar empresas pode reduzir memória histórica do modelo.</td><td>A diferença entre braços nomeado e anonimizado foi 0,38 p.p. ao ano, com p = 0,905.</td><td><span class="evidence-status sensitivity">Sensibilidade</span>, não prova de descontaminação.</td></tr>
               <tr><td>Auditoria de dados deve mudar conclusões quando encontra falhas.</td><td>Sete defeitos foram corrigidos. A queda máxima publicada subiu de 30,4% para 47,8%.</td><td><span class="evidence-status demonstrated">Demonstrado</span> como resultado de auditoria.</td></tr>
+              <tr><td>Uma fonte primária deve reproduzir os retornos ajustados usados.</td><td>Das 56 observações ativo-ano mantidas, 54 foram comparadas; sete divergiram mais de 5 p.p. e duas não tiveram resposta do endpoint.</td><td><span class="evidence-status not-demonstrated">Reconciliação bloqueada</span>; painel mantido como pesquisa.</td></tr>
               <tr><td>Revisões mais frequentes podem reagir mais rápido.</td><td>Na amostra, trimestral e mensal não melhoraram de forma robusta a decisão anual.</td><td><span class="evidence-status observed">Observado</span> nesta amostra, sem rejeitar benefício em outras.</td></tr>
               <tr><td>O histórico pode antecipar desempenho futuro.</td><td>A janela 2015–2025 também orientou o desenvolvimento e contém 11 decisões anuais.</td><td><span class="evidence-status not-demonstrated">Não demonstrado</span> até haver dados posteriores ao protocolo.</td></tr>
             </tbody>
           </table>
         </div>
         <div class="explanation-quality">
-          <div><span>QUALIDADE DA EXPLICAÇÃO</span><h3>A linguagem é avaliada pelo texto, não pelo retorno.</h3><p>A camada explicativa ainda precisa acumular observações prospectivas. O protocolo mede quatro critérios sem permitir que o modelo altere a carteira.</p></div>
+          <div><span>BENEVENTE 3 · ESTUDO FUTURO</span><h3>A linguagem será avaliada pelo texto, não pelo retorno.</h3><p>Essa extensão ainda precisa acumular observações prospectivas. O protocolo mede quatro critérios sem permitir que o modelo altere a carteira ou herde os resultados das versões 1 e 2.</p></div>
           <ul>
             <li><b>Fidelidade</b><span>Cada afirmação deve apontar para um fato aprovado.</span></li>
             <li><b>Completude</b><span>A explicação precisa cobrir os fatores relevantes da decisão.</span></li>
@@ -199,7 +200,7 @@
         <p class="eyebrow"><span></span> Estágio atual</p>
         <h2>Isto é pesquisa, não um produto.</h2>
         <p>Protótipo de pesquisa. O histórico 2015–2025 é diagnóstico de desenvolvimento, não validação futura. O Benevente 1 foi registrado em 16/08, o Benevente 2 em 20/08 e o acompanhamento diário em 23/08/2026. A carteira de 2026 foi formada antes desses registros e permanece carteira-sombra.</p>
-        <p>O artefato já produz uma cadeia verificável entre dados, regra, explicação e revisão humana. Ainda faltam reconciliação completa de eventos, licença de dados para uso comercial, suitability e observações posteriores ao protocolo congelado. A pergunta prospectiva é se a explicação melhora a compreensão e a qualidade da revisão sem alterar o cálculo.</p>
+        <p>O artefato já produz uma cadeia verificável entre dados, regra, explicação e revisão humana. A reconciliação histórica com a página atual da B3 foi tentada e reprovada: sete de 54 comparações apresentaram divergência material e duas ficaram sem resposta. Ainda faltam uma base institucional de eventos, licença de dados para uso comercial, suitability e observações posteriores aos registros das estratégias. A avaliação prospectiva da explicação pertence ao Benevente 3.</p>
         <div class="estagio-links">
           <a class="text-link" href="./quant-ai.html">Evidência e método detalhado <span>→</span></a>
           <a class="text-link" href="./btech.html">Como isso viraria um produto <span>→</span></a>

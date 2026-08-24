@@ -36,8 +36,10 @@ def test_site_data_contract_matches_canonical_sources() -> None:
     assert contract["historical_panel"]["fundamental_records"] == manifest["coverage"]["fundamental_records"]
     assert contract["current_b3_catalog"]["instruments"] == universe["instrument_count"]
     assert contract["current_b3_catalog"]["observed_at"] == universe["observed_at"]
-    assert contract["corporate_events"]["primary_records"] == manifest["coverage"]["primary_event_records"]
-    assert contract["corporate_events"]["covered_price_series"] == manifest["coverage"]["primary_event_tickers_complete"]
+    assert contract["corporate_events"]["primary_records_within_observed_spans"] == manifest["coverage"]["primary_event_records"]
+    assert contract["corporate_events"]["current_endpoint_queried_series"] == manifest["coverage"]["primary_event_tickers_endpoint_queried"]
+    assert contract["corporate_events"]["historically_reconciled_series"] == manifest["coverage"]["primary_event_tickers_historically_reconciled"]
+    assert contract["corporate_events"]["material_return_differences_over_5pp"] == manifest["primary_reconciliation"]["material_differences_over_5pp"]
     assert contract["prospective_protocol"]["sha256"] == __import__("hashlib").sha256(protocol_path.read_bytes()).hexdigest()
     versions = json.loads((ROOT / "web" / "protocol_versions.json").read_text(encoding="utf-8"))
     assert [item["name"] for item in versions["versions"]] == [

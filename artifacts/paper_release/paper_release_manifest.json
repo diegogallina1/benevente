@@ -1,6 +1,6 @@
 {
   "evidence": "paper_evidence.json",
-  "evidence_sha256": "8c7ea8a70f3fb02403cd0886576023bf1c731f84338218505e058ec0d592a471",
-  "input_count": 10,
+  "evidence_sha256": "da3b6415c4352febc84539221f57e1202a4d12de8ab5e00a49c47d09511424f8",
+  "input_count": 11,
   "status": "validated"
 }

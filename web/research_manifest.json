@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-08-23T23:29:13+00:00",
+  "generated_at_utc": "2026-08-24T02:34:12+00:00",
   "status": "research_only",
   "names": {
     "academic": "Benevente Quant AI",
@@ -80,20 +80,53 @@
       "fii",
       "other"
     ],
-    "cvm_source_archives": 48,
-    "primary_event_records": 18190,
-    "primary_event_tickers_complete": 475,
+    "cvm_source_archives": 0,
+    "primary_event_records": 9772,
+    "primary_event_tickers_endpoint_queried": 475,
+    "primary_event_tickers_historically_reconciled": 0,
     "primary_event_tickers_requested": 497,
-    "unresolved_subscriptions": 218,
-    "unresolved_manual_events": 271
+    "unresolved_subscriptions": 127,
+    "unresolved_manual_events": 153
   },
   "sources": "B3 COTAHIST, CVM ITR/DFP e BCB SGS 12; complemento de retorno total público documentado no manifesto do painel.",
   "source_tier": "public_reproducible_research",
   "institutional_performance_verified": false,
+  "primary_reconciliation": {
+    "status": "blocked_not_institutionally_reconciled",
+    "scope": "published Benevente 1 equity holding-years, 2015-2025",
+    "holding_year_records": 56,
+    "distinct_published_tickers": 40,
+    "current_endpoint_compared_records": 54,
+    "current_endpoint_unavailable_records": 2,
+    "manual_events_overlapping_actual_holds": 0,
+    "material_differences_over_5pp": 7,
+    "median_absolute_difference": 0.0014079139995021028,
+    "weighted_mean_absolute_difference": 0.07570331719663898,
+    "endpoint_unavailable_share_of_equity_weight_years": 0.06060606114766819,
+    "material_difference_share_of_equity_weight_years": 0.11045932371416967,
+    "current_b3_endpoint_archive": {
+      "records": 9772,
+      "price_series_queried": 475,
+      "price_series_requested": 497,
+      "manual_events_unresolved": 153
+    },
+    "interpretation": "The current B3 page is useful primary evidence but is not a complete historical corporate-action ledger. It cannot reproduce every published holding return, so the provider-adjusted performance panel remains research-grade and no institutional reconciliation seal is granted.",
+    "material_difference_threshold": 0.05,
+    "inputs": {
+      "data/prices_b3_cotahist_price_return_only_2011_2025.csv": "48f541a4e0c0cbe723b0db27980e546b56dfa80d4b4b26fc273410fc95e20938",
+      "data/b3_primary_corporate_events_2011_2025.csv": "230465e490dc3600c4859253ca9050a19beb213cd5d82f9df5032525de1f8402",
+      "data/b3_primary_event_coverage_2011_2025.csv": "91d3addb9a8197c59dae782f228504c7b6985a2e385291af24349714eb9fecb2",
+      "data/b3_primary_events_2011_2025_manifest.json": "2bdbee0f97659421dfdbce58edb46bb6aaea32ce68a1cd1e95904dd6de196042",
+      "artifacts/published_nested/annual_holdings.csv": "91052211e7c4e7fd1cb0a34d5fee8e87ceb184722bc0afcdc1982c75d5d68222",
+      "artifacts/published_nested/annual_results.csv": "4433b1bf6205fb04be02ce237eba8d23023fae832f8d6cf6bff85e6abae72baf"
+    },
+    "detail_sha256": "55193e1e0d3741fbf3330b88eaca7adb9669cb604c10b239c69afda9042d1018"
+  },
   "limitations": [
     "A janela 2015–2025 também participou do desenvolvimento; não é validação prospectiva.",
-    "O arquivo primário B3 cobre 475 de 497 ativos consultados; a série publicada ainda não foi reconstruída com esse arquivo.",
-    "Há 271 eventos manuais, incluindo 218 subscrições, que exigem resolução explícita antes de uma reconciliação institucional.",
+    "A página atual da B3 respondeu para 475 de 497 séries, mas não certifica a completude histórica dos eventos.",
+    "Há 153 eventos manuais, incluindo 127 subscrições, que exigem resolução explícita antes de uma reconciliação institucional.",
+    "Na auditoria das 56 observações ativo-ano realmente mantidas, 7 diferenças excederam 5 pontos percentuais e 2 observações não tiveram resposta do endpoint.",
     "Parte das distribuições é imputada quando a fonte pública não cobre o papel.",
     "Custos e tributos são modelados, não conciliados com notas reais de corretagem.",
     "A camada de risco por perfil é retrospectiva e ainda não modela o imposto intranual."
@@ -201,18 +234,28 @@
     },
     {
       "path": "data/b3_primary_corporate_events_2011_2025.csv",
-      "bytes": 5949794,
-      "sha256": "ee60afb0d322f280118b32de22260751f659385c27999574cfa980442599b088"
+      "bytes": 3202492,
+      "sha256": "230465e490dc3600c4859253ca9050a19beb213cd5d82f9df5032525de1f8402"
     },
     {
       "path": "data/b3_primary_event_coverage_2011_2025.csv",
-      "bytes": 142190,
-      "sha256": "7764911e9eb0857629c55f3967b607fff57720663b76e756a2a135483066b2d8"
+      "bytes": 149790,
+      "sha256": "91d3addb9a8197c59dae782f228504c7b6985a2e385291af24349714eb9fecb2"
     },
     {
       "path": "data/b3_primary_events_2011_2025_manifest.json",
-      "bytes": 3652,
-      "sha256": "3938fe2aa6ce01a9a0d7b5abb0d3d51c141bcf3040761b2c97f2d75de2607ffd"
+      "bytes": 3967,
+      "sha256": "2bdbee0f97659421dfdbce58edb46bb6aaea32ce68a1cd1e95904dd6de196042"
+    },
+    {
+      "path": "artifacts/primary_reconciliation/summary.json",
+      "bytes": 2007,
+      "sha256": "1446908fcd756e12f15219a9bcce9ac33ba635f95c718b3577a861ef691c5f35"
+    },
+    {
+      "path": "artifacts/primary_reconciliation/strategy_holding_year_audit.csv",
+      "bytes": 10974,
+      "sha256": "55193e1e0d3741fbf3330b88eaca7adb9669cb604c10b239c69afda9042d1018"
     },
     {
       "path": "data/benevente_profile_risk_v1_registration.json",
@@ -245,248 +288,7 @@
       "sha256": "fd9d76d253333fa27ef61caca9450124457bd8b8880417222d6482a02419a8a4"
     }
   ],
-  "cvm_source_archives": [
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2010.zip",
-      "bytes": 8900829,
-      "sha256": "c6a9c95c2510e8a71bb583084492e9c52c3f423a3be56f1c5d2dd4f6960677ff"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2011.zip",
-      "bytes": 9225478,
-      "sha256": "858423fba40124d7a30abea4e70248f7251e1d2c792e9fcece5a57afd3115f34"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2012.zip",
-      "bytes": 9201737,
-      "sha256": "3aff7a726d324d29924887eed45bbc58bc30b66cd9079bafe701d55efdfe0849"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2013.zip",
-      "bytes": 9171449,
-      "sha256": "ef379ac9aab9567434ca6d36053d8bd1f0a2a47a0c65a2e1d218259da530e224"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2014.zip",
-      "bytes": 9079931,
-      "sha256": "b8795dba134754475a485c0f88b6542face6613bb418d261caa011d90e032f28"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2015.zip",
-      "bytes": 8987623,
-      "sha256": "39a7001be9eaa91a6acc83831c816794df4f92441d7702b80da6c4b234352b4e"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2016.zip",
-      "bytes": 9832691,
-      "sha256": "772f06a73c5fe80534b61365ea5d03f9d8fcce21b87823bd5c9d48699bcf71d5"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2017.zip",
-      "bytes": 10150935,
-      "sha256": "1ff8185d61759e49b406c55c5d0b593587c2e76e9032c95f836f7fea02fc9d58"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2018.zip",
-      "bytes": 10237924,
-      "sha256": "280dcf5acd7bdb529acc186c9a1195092a1e06cf1e33ddcdca0b11c31261296f"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2019.zip",
-      "bytes": 11185526,
-      "sha256": "bc82a1162b44686e8953b521e3424a5938b6661ff4655f832db4ea9488296a0d"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2020.zip",
-      "bytes": 12637854,
-      "sha256": "8fb97d1887aed1e1e2d85e54cb133baf9f65b9f46f60fa8720f09c1f7a74362e"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2021.zip",
-      "bytes": 13283026,
-      "sha256": "64b8693b709538a0357c5179ae02231cb380d0000956ee57a873a21d4efda2e4"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2022.zip",
-      "bytes": 13449342,
-      "sha256": "d5d60d04c772cb0183ecc744652b1c4b50c7b4e791243331b90ad256615b2dd8"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2023.zip",
-      "bytes": 13563515,
-      "sha256": "3de5b9a5dddd0dad376658c8517b6c0b8d47b2d1e904905dbe512292f2f814eb"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2024.zip",
-      "bytes": 13396290,
-      "sha256": "9dcd1641a80d910ab59e354c560db03560e1f67963f49211b2cf8da33ba16aa0"
-    },
-    {
-      "path": "work/cvm_cache/dfp_cia_aberta_2025.zip",
-      "bytes": 12728936,
-      "sha256": "5690c0574e493adc92f6156bb859c8900769a82b4e56af05f043bf15a54bd2d1"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2010.zip",
-      "bytes": 6327657,
-      "sha256": "a83d0dd42ed2fc57d83245ef75561585179eaff68351454a9c804dac2611970b"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2011.zip",
-      "bytes": 7050662,
-      "sha256": "7ef45a3f8fa9d62f396cc11a692566e9d16137cc6d0ffccaaff8d8d507b4cad8"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2012.zip",
-      "bytes": 7427318,
-      "sha256": "cd48dd32bab6d410dc523a3de0d27ca3bb7ebd8c403e6fa1de647b1454fbd069"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2013.zip",
-      "bytes": 7741288,
-      "sha256": "2c746f2cf0636236972a06be1d4e15dabaac15281e88753505acae9385a76f79"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2014.zip",
-      "bytes": 7929118,
-      "sha256": "8797e5b66f4c126d9266746ab704bdb0d787ed5d92dca917ceffa2749b150a50"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2015.zip",
-      "bytes": 7853370,
-      "sha256": "21be79d408fcc08e9edafcee941f02a339c5664e96b3ad83afd84f27ed838d60"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2016.zip",
-      "bytes": 7583877,
-      "sha256": "bfd0513d903cb3e5a43360dcb1673b3c9ac1f23396974726cca764df64d481cc"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2017.zip",
-      "bytes": 7605478,
-      "sha256": "cb90963d1e7d6b2416265eb7aa0a463b98d067ade096f47b724467184273b0ab"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2018.zip",
-      "bytes": 7824065,
-      "sha256": "7a349acbce124fdb0846c371b3e68e5ff06781ead4b8713d6080eabf6737d082"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2019.zip",
-      "bytes": 7935765,
-      "sha256": "30f461d5d3b3cdbab84faac20c158c6a41cea1ee0223c40d988db9845e2c6a51"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2020.zip",
-      "bytes": 9233986,
-      "sha256": "17d2d911201f64dc8ff501104ce8fe343cd4ab3bdb41ea03eb6bfc2c4f6b80ab"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2021.zip",
-      "bytes": 10494738,
-      "sha256": "882e4c19c0719b7ac75f8e906c264fdd69b899cf0a2942ad00c4eb14a1b855bd"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2022.zip",
-      "bytes": 10754671,
-      "sha256": "ff437062f01e6609a0d9ca899849120467d438429edbaef55b90fe4654defa35"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2023.zip",
-      "bytes": 8132230,
-      "sha256": "64ac106b85e1587ddd8df0d8f23e198598180e6bb18f38727df11508c7fe6769"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2024.zip",
-      "bytes": 8410185,
-      "sha256": "4b5cc977ff6f81fa89bace9f4e41f022723ff731435b511a51987d326bb932a5"
-    },
-    {
-      "path": "work/cvm_cache/fre_cia_aberta_2025.zip",
-      "bytes": 8497048,
-      "sha256": "cb9934b6fa92a3d9872c35d83d7287c8d94e537981aa66be2d544d66a67552e2"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2011.zip",
-      "bytes": 24581120,
-      "sha256": "11f0d8cc47bad618a6e705a4615f8444d652967cc210dd29af8d18cad11b2a9a"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2012.zip",
-      "bytes": 24650791,
-      "sha256": "f1d642a1a644e2528ae96c7963e6319a87537d083d003f965cee637ff9d39842"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2013.zip",
-      "bytes": 24514311,
-      "sha256": "a336c9d5d5f2e4650bf2c16a80600daf3a423d7bbcd594f1d8dd94bf12f148ea"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2014.zip",
-      "bytes": 24468760,
-      "sha256": "c10271ea978a7da9c0fb2ef57d6b485dc9eb8032c0634479d8f4afa90ba0ead9"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2015.zip",
-      "bytes": 24295580,
-      "sha256": "2755f06e74668144620b4265e59db8149284252a1b3a5bb6404c0db22b21c64b"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2016.zip",
-      "bytes": 23803768,
-      "sha256": "3c2954a0d7e2c4c1c6dec157134e959fd0dea0ba53001d4bab01d04727d67c21"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2017.zip",
-      "bytes": 24127956,
-      "sha256": "f2e626260461ec4e04614d32212ca8dc5a1be7c5b56c261343eb8866c9ed5f26"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2018.zip",
-      "bytes": 23460448,
-      "sha256": "a551278c83e5c0584edd2a29b6035e34e833176176827e3f04a28f8373df536b"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2019.zip",
-      "bytes": 24435666,
-      "sha256": "dbfe1e32296563a9efdcb993ed5811876e3d50b778bc547fe004af15b9a75021"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2020.zip",
-      "bytes": 27151708,
-      "sha256": "4ca11b431eb21aa98f813a3c18086ca600f234f5eb0dcec0c51a8641fccbca0a"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2021.zip",
-      "bytes": 31230595,
-      "sha256": "c8723d5ccd4a6e99e9bc1566f2a558139cee1c2d96e4b940c4bcbedcb46a173a"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2022.zip",
-      "bytes": 32324459,
-      "sha256": "5befa34f1b4aa2e6da1e4175efcf64c8a95b8f69480904832bf9ef2fd32c13cb"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2023.zip",
-      "bytes": 32349672,
-      "sha256": "afcb6e877fc8df18d7dbdc2e56f0724d5d216d6ea81bff647541260b0774e98f"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2024.zip",
-      "bytes": 32722879,
-      "sha256": "9ccacd740d161ec2993e2309b8412bafaf8343476eca7e311abf8048f4ddd30d"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2025.zip",
-      "bytes": 31626337,
-      "sha256": "1a978e73b08afded2ad01b2e94cc2883ed4f9294fec77e2519f206bc6cfcb21d"
-    },
-    {
-      "path": "work/cvm_cache/itr_cia_aberta_2026.zip",
-      "bytes": 12926736,
-      "sha256": "56b2be43df05adb0afa080b855bc5665f982832ab5364f60847fda3c44a60b2a"
-    }
-  ],
+  "cvm_source_archives": [],
   "audit_evidence_sha256": "123b4dac353a26be36b72579378629af7127061443bb700a7cb63531d3ff2985",
   "audit_years": 11
 }

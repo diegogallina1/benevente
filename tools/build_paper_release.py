@@ -30,6 +30,7 @@ INPUTS = {
     "llm_constraints": ROOT / "artifacts" / "llm_contamination" / "constraint_audit.csv",
     "rebalance_frequency": ROOT / "artifacts" / "rebalance_frequency" / "summary.json",
     "persistence": ROOT / "artifacts" / "persistence" / "summary.json",
+    "primary_reconciliation": ROOT / "artifacts" / "primary_reconciliation" / "summary.json",
 }
 
 
@@ -82,6 +83,7 @@ def build_bundle() -> dict[str, Any]:
     llm = load_json(INPUTS["llm_experiment"])
     cadence = load_json(INPUTS["rebalance_frequency"])
     persistence = load_json(INPUTS["persistence"])
+    reconciliation = load_json(INPUTS["primary_reconciliation"])
     constraints = load_csv(INPUTS["llm_constraints"])
 
     evaluation = [row for row in annual if 2015 <= int(row["decision_year"]) <= 2025]
@@ -178,6 +180,7 @@ def build_bundle() -> dict[str, Any]:
             "rebalance_frequency": cadence,
             "position_persistence": persistence,
         },
+        "primary_event_reconciliation": reconciliation,
         "inputs": {
             label: {
                 "path": path.relative_to(ROOT).as_posix(),

@@ -1,0 +1,31 @@
+{
+  "status": "blocked_not_institutionally_reconciled",
+  "scope": "published Benevente 1 equity holding-years, 2015-2025",
+  "holding_year_records": 56,
+  "distinct_published_tickers": 40,
+  "current_endpoint_compared_records": 54,
+  "current_endpoint_unavailable_records": 2,
+  "manual_events_overlapping_actual_holds": 0,
+  "material_differences_over_5pp": 7,
+  "median_absolute_difference": 0.0014079139995021028,
+  "weighted_mean_absolute_difference": 0.07570331719663898,
+  "endpoint_unavailable_share_of_equity_weight_years": 0.06060606114766819,
+  "material_difference_share_of_equity_weight_years": 0.11045932371416967,
+  "current_b3_endpoint_archive": {
+    "records": 9772,
+    "price_series_queried": 475,
+    "price_series_requested": 497,
+    "manual_events_unresolved": 153
+  },
+  "interpretation": "The current B3 page is useful primary evidence but is not a complete historical corporate-action ledger. It cannot reproduce every published holding return, so the provider-adjusted performance panel remains research-grade and no institutional reconciliation seal is granted.",
+  "material_difference_threshold": 0.05,
+  "inputs": {
+    "data/prices_b3_cotahist_price_return_only_2011_2025.csv": "48f541a4e0c0cbe723b0db27980e546b56dfa80d4b4b26fc273410fc95e20938",
+    "data/b3_primary_corporate_events_2011_2025.csv": "230465e490dc3600c4859253ca9050a19beb213cd5d82f9df5032525de1f8402",
+    "data/b3_primary_event_coverage_2011_2025.csv": "91d3addb9a8197c59dae782f228504c7b6985a2e385291af24349714eb9fecb2",
+    "data/b3_primary_events_2011_2025_manifest.json": "2bdbee0f97659421dfdbce58edb46bb6aaea32ce68a1cd1e95904dd6de196042",
+    "artifacts/published_nested/annual_holdings.csv": "91052211e7c4e7fd1cb0a34d5fee8e87ceb184722bc0afcdc1982c75d5d68222",
+    "artifacts/published_nested/annual_results.csv": "4433b1bf6205fb04be02ce237eba8d23023fae832f8d6cf6bff85e6abae72baf"
+  },
+  "detail_sha256": "55193e1e0d3741fbf3330b88eaca7adb9669cb604c10b239c69afda9042d1018"
+}

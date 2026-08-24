@@ -25,7 +25,10 @@ BTECH_OUTPUT = OUTPUTS / "Benevente_Wealth_System_BTECH_Final.docx"
 IEEE_SOURCE = ROOT / "paper" / "ieee_cifer_2027.tex"
 IEEE_OUTPUT = OUTPUTS / "Benevente_Quant_AI_IEEE_Final.tex"
 BTECH_AUTHOR = "Diego Gallina"
-BTECH_AFFILIATION = "Fucape Business School, Vitória, ES, Brasil"
+BTECH_AFFILIATION = (
+    "Pesquisador, Fucape Business School, Vitória, ES, Brasil, "
+    "214411949+diegogallina1@users.noreply.github.com"
+)
 
 
 def clear_body(document: Document) -> None:
