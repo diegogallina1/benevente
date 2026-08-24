@@ -24,6 +24,11 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     assert "hero-performance" in home
     assert "Benevente 2, Ibovespa e CDI" not in home  # comparison is visual, not repeated as prose
     assert all(label in home for label in ("+543,8%", "+240,1%", "+174,4%"))
+    assert 'data-dossier-strategy="b1"' in home
+    assert 'data-dossier-strategy="b2"' in home
+    assert home.index('data-dossier-strategy="b1"') < home.index('for="decision-year"')
+    assert "Pesos anuais fixos" in home
+    assert "Controle de risco" in home
 
 
 def test_benevente_2_has_direct_benchmarks_and_shared_design_system() -> None:

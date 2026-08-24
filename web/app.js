@@ -23,6 +23,7 @@ const modelSteps = {
 };
 
 let currentProfile = "moderado";
+let currentDossierStrategy = "b1";
 let selectedCurves = new Set();
 const extraSeries = { 1: {}, 2: {}, 3: {}, 5: {}, 11: {} };
 const addedSeries = new Map();
@@ -208,12 +209,27 @@ function activeProfileRows() {
   return researchData?.annual || [];
 }
 
+function dossierStrategy() {
+  return currentDossierStrategy === "b2"
+    ? { key: "b2", name: "Benevente 2", short: "B2", returnKey: "benevente2_return", operation: "Controle de risco durante o ano" }
+    : { key: "b1", name: "Benevente 1", short: "B1", returnKey: "net_return", operation: "Pesos mantidos até a revisão anual" };
+}
+
+function syncDossierStrategyButtons() {
+  document.querySelectorAll("[data-dossier-strategy]").forEach(button => {
+    const active = button.dataset.dossierStrategy === currentDossierStrategy;
+    button.classList.toggle("active", active);
+    button.setAttribute("aria-selected", String(active));
+  });
+}
+
 function renderProfileHistory() {
   const container = document.querySelector("#profile-history");
   if (!container || !researchData) return;
   const rows = activeProfileRows();
   if (!rows.length) { container.innerHTML = ""; return; }
-  container.innerHTML = `<div class="profile-history-head"><div><span class="control-label">ANO A ANO</span><b>Benevente 1 × Benevente 2</b><small>A cesta de janeiro é a mesma. A versão 2 pode reduzir a exposição durante o ano.</small></div><span>${rows.length} anos completos</span></div><div class="profile-year-grid">${rows.map(row => `<button type="button" class="profile-year ${String(selectedAnnualDecision()?.decision_year) === String(row.decision_year) ? "active" : ""}" data-year="${row.decision_year}"><small>${row.decision_year}</small><b>B2 ${pct(row.benevente2_return)}</b><span>B1 ${pct(row.net_return)} · CDI ${pct(row.cdi_net_return)}</span></button>`).join("")}</div>`;
+  const strategy = dossierStrategy();
+  container.innerHTML = `<div class="profile-history-head"><div><span class="control-label">ANO A ANO</span><b>${strategy.name}</b><small>${strategy.operation}. Clique em um ano para abrir a decisão.</small></div><span>${rows.length} anos completos</span></div><div class="profile-year-grid">${rows.map(row => `<button type="button" class="profile-year ${String(selectedAnnualDecision()?.decision_year) === String(row.decision_year) ? "active" : ""}" data-year="${row.decision_year}" aria-label="${strategy.name} em ${row.decision_year}: ${pct(Number(row[strategy.returnKey]))}"><small>${row.decision_year}</small><b>${pct(Number(row[strategy.returnKey]))}</b><span>${strategy.short} · CDI ${pct(row.cdi_net_return)}</span></button>`).join("")}</div>`;
   container.querySelectorAll(".profile-year").forEach(button => button.addEventListener("click", () => {
     document.querySelector("#decision-year").value = button.dataset.year;
     renderAssetWorkbench(); renderProfileHistory();
@@ -252,14 +268,24 @@ function renderAssetWorkbench() {
   const equities = holdings.filter(item => item.ticker !== "TITULO_CDI");
   const equityWeight = equities.reduce((sum, item) => sum + item.weight, 0);
   const transitionByTicker = Object.fromEntries(transitions.map(item => [item.ticker, item]));
+  const strategy = dossierStrategy();
   const selected = configurationLabel(decision.selected_configuration);
-  document.querySelector("#dossier-policy").textContent = `${selected}. A configuração foi escolhida apenas com anos encerrados; o retorno posterior não participou da escolha.`;
+  document.querySelector("#dossier-policy").textContent = strategy.key === "b2"
+    ? `${selected}. A cesta nasce em janeiro como no Benevente 1. Durante o ano, alertas de mercado podem reduzir proporcionalmente as ações e aumentar o CDI.`
+    : `${selected}. A cesta e os pesos de janeiro são mantidos até a próxima revisão anual.`;
   const coverage = researchData.meta.coverage;
   const source = researchData.meta.source_tier === "public_reproducible_research" ? "fonte pública de pesquisa" : "fonte qualificada";
   const series = coverage.price_tickers ? `${coverage.price_tickers.toLocaleString("pt-BR")} séries ajustadas` : "séries ajustadas";
   document.querySelector("#research-status").innerHTML = `<b>Pesquisa reproduzível, ainda não validada para uso institucional.</b><span>O painel usa ${escapeHtml(series)}, CDI do BCB e ${coverage.fundamental_snapshots?.toLocaleString("pt-BR") || "—"} registros fundamentais da CVM disponíveis em cada decisão. A tentativa de reconciliação com a página atual da B3 foi executada e bloqueou o selo institucional; uma base histórica primária ou licenciada ainda é necessária.</span>`;
   const b2Return = Number(decision.benevente2_return);
-  document.querySelector("#asset-summary").innerHTML = `<div><small>DECISÃO</small><strong>${formatDateBr(decision.decision_date)}</strong><span>${plainPct(equityWeight)} em ações, ${equities.length} emissores.</span></div><div><small>BENEVENTE 1</small><strong>${pct(decision.net_return)}</strong><span>Cesta mantida até ${formatDateBr(decision.holding_end_exclusive)}.</span></div><div><small>BENEVENTE 2</small><strong>${Number.isFinite(b2Return) ? pct(b2Return) : "—"}</strong><span>Mesma cesta, com controle intranual de exposição.</span></div><div><small>REFERÊNCIAS</small><strong>CDI ${pct(decision.cdi_net_return)}</strong><span>MVO ${pct(decision.mvo_eligible_net_return)} · Ibovespa ${pct(decision.benchmark_IBOVESPA)}</span></div>`;
+  const selectedReturn = Number(decision[strategy.returnKey]);
+  const b2Config = researchData.meta?.benevente2?.training_only_selection?.configuration || {};
+  const alertEquity = Math.min(equityWeight, Number(b2Config.alert_equity_cap) || .50);
+  const severeEquity = Math.min(equityWeight, Number(b2Config.severe_equity_cap) || .35);
+  const exposureSummary = strategy.key === "b2"
+    ? `Janeiro ${plainPct(equityWeight)} · alerta ${plainPct(alertEquity)} · estresse ${plainPct(severeEquity)}`
+    : `${plainPct(equityWeight)} em ações durante o ciclo anual`;
+  document.querySelector("#asset-summary").innerHTML = `<div><small>CARTEIRA SELECIONADA</small><strong>${strategy.name}</strong><span>${strategy.operation}.</span></div><div><small>RESULTADO DO ANO</small><strong>${Number.isFinite(selectedReturn) ? pct(selectedReturn) : "—"}</strong><span>${formatDateBr(decision.decision_date)} a ${formatDateBr(decision.holding_end_exclusive)}.</span></div><div><small>EXPOSIÇÃO EM AÇÕES</small><strong>${plainPct(equityWeight)}</strong><span>${exposureSummary}.</span></div><div><small>REFERÊNCIAS</small><strong>CDI ${pct(decision.cdi_net_return)}</strong><span>MVO ${pct(decision.mvo_eligible_net_return)} · Ibovespa ${pct(decision.benchmark_IBOVESPA)}</span></div>`;
   document.querySelector("#asset-grid").innerHTML = holdings.map(item => {
     const transition = transitionByTicker[item.ticker];
     const isCdi = item.ticker === "TITULO_CDI";
@@ -268,12 +294,19 @@ function renderAssetWorkbench() {
     const volatility = item.trailing_12m_volatility_at_decision == null ? "Não aplicável" : plainPct(item.trailing_12m_volatility_at_decision);
     const currentReason = transition?.reason_pt || "Mantido segundo a política e a revisão anual.";
     const actionClass = ({ Entrada: "entered", Aumento: "increased", Redução: "reduced", Saída: "exited" })[status] || (isCdi ? "defensive" : "maintained");
-    return `<article class="asset-card ${isCdi ? "defensive" : ""}"><div class="asset-card-top"><div><small>${isCdi ? "PARCELA DEFENSIVA" : "ATIVO ELEGÍVEL"}</small><h3>${isCdi ? "CDI" : item.ticker.replace(".SA", "")}</h3></div><span class="asset-status ${actionClass}">${status}</span></div><div class="asset-metrics"><div><small>PESO</small><b>${plainPct(item.weight)}</b></div><div><small>12M ANTERIOR</small><b>${signal}</b></div><div><small>VOL. 12M</small><b>${volatility}</b></div></div><p><b>Critério:</b> ${item.decision_rationale_pt || item.decision_rationale}</p><p><b>Revisão:</b> ${currentReason}</p><div class="asset-return"><b>Resultado observado depois da decisão</b>${pct(item.realised_next_year_return)} no período anual. Mostrado para avaliar a regra, não para justificar a entrada.</div><div class="asset-weight"><span>Score na decisão: ${item.value_quality_score == null ? "não calculado" : item.value_quality_score.toLocaleString("pt-BR", {minimumFractionDigits:2,maximumFractionDigits:2})}</span><strong>${item.decision_action_pt || ""}</strong></div></article>`;
+    const alertWeight = isCdi ? 1 - alertEquity : item.weight * alertEquity / Math.max(equityWeight, .0001);
+    const severeWeight = isCdi ? 1 - severeEquity : item.weight * severeEquity / Math.max(equityWeight, .0001);
+    const allocationDetail = strategy.key === "b2"
+      ? `<div class="asset-allocation-path"><span>Janeiro <b>${plainPct(item.weight)}</b></span><span>Alerta <b>${plainPct(alertWeight)}</b></span><span>Estresse <b>${plainPct(severeWeight)}</b></span></div>`
+      : `<div class="asset-allocation-path single"><span>Peso mantido no ano <b>${plainPct(item.weight)}</b></span></div>`;
+    return `<article class="asset-card ${isCdi ? "defensive" : ""}"><div class="asset-card-top"><div><small>${isCdi ? "PARCELA CDI" : "ATIVO ELEGÍVEL"}</small><h3>${isCdi ? "CDI" : item.ticker.replace(".SA", "")}</h3></div><span class="asset-status ${actionClass}">${status}</span></div>${allocationDetail}<div class="asset-metrics"><div><small>12M ANTERIOR</small><b>${signal}</b></div><div><small>VOL. 12M</small><b>${volatility}</b></div></div><p><b>Critério:</b> ${item.decision_rationale_pt || item.decision_rationale}</p><p><b>Revisão:</b> ${currentReason}</p><div class="asset-return"><b>Resultado observado depois da decisão</b>${pct(item.realised_next_year_return)} no período anual. Mostrado para avaliar a regra, não para justificar a entrada.</div><div class="asset-weight"><span>Score na decisão: ${item.value_quality_score == null ? "não calculado" : item.value_quality_score.toLocaleString("pt-BR", {minimumFractionDigits:2,maximumFractionDigits:2})}</span><strong>${item.decision_action_pt || ""}</strong></div></article>`;
   }).join("");
   const panel = document.querySelector("#asset-action-panel");
   panel.classList.add("active");
   const difference = Number.isFinite(b2Return) ? b2Return - Number(decision.net_return) : null;
-  panel.innerHTML = `<div><span class="action-label">O QUE NÃO MUDA</span><b>Ativos e pesos-base de janeiro.</b><p>As duas versões começam o ano com a mesma cesta. Valor, qualidade e comportamento definem os nomes.</p></div><div><span class="action-label">O QUE MUDA NO BENEVENTE 2</span><b>${difference == null ? "Controle intranual" : `${pct(difference)} no resultado anual`}</b><p>Quando queda ou volatilidade acionam alerta, todas as ações são reduzidas proporcionalmente e a diferença passa a CDI.</p></div><div><span class="action-label">PRÓXIMA REVISÃO</span><b>${formatDateBr(decision.holding_end_exclusive)}</b><p>Os ativos só são reavaliados no ciclo anual. Alertas de notícias exigem revisão humana e não mudam a carteira sozinhos.</p></div>`;
+  panel.innerHTML = strategy.key === "b2"
+    ? `<div><span class="action-label">SELEÇÃO DE JANEIRO</span><b>Mesmos ativos e pesos-base do Benevente 1.</b><p>Valor, qualidade e comportamento de preços definem os nomes antes do início do período.</p></div><div><span class="action-label">CONTROLE DURANTE O ANO</span><b>${difference == null ? "Exposição variável" : `${pct(difference)} frente ao Benevente 1`}</b><p>Com dados conhecidos até o fechamento anterior, alertas reduzem todas as ações proporcionalmente. O valor liberado passa para CDI.</p></div><div><span class="action-label">REVISÃO DOS ATIVOS</span><b>${formatDateBr(decision.holding_end_exclusive)}</b><p>A lista de ativos só muda na revisão anual. Notícias classificadas pelo radar geram alerta humano, sem ordem automática.</p></div>`
+    : `<div><span class="action-label">SELEÇÃO DE JANEIRO</span><b>Valor, qualidade e comportamento de preços.</b><p>A regra escolhe a cesta somente com dados disponíveis antes da decisão.</p></div><div><span class="action-label">DURANTE O ANO</span><b>Pesos fixos até a revisão.</b><p>Oscilações e notícias não alteram a exposição. Cada ativo permanece com o peso definido em janeiro.</p></div><div><span class="action-label">PRÓXIMA DECISÃO</span><b>${formatDateBr(decision.holding_end_exclusive)}</b><p>Na revisão anual, os dados são atualizados e a regra decide quais posições manter, reduzir, retirar ou incluir.</p></div>`;
 }
 
 function refreshDecisionStudio() {
@@ -707,7 +740,13 @@ document.querySelector("#chart-add-form").addEventListener("submit", async event
     help.textContent = "Série adicionada. Use as chaves para mostrar ou ocultar linhas e clique no gráfico para inspecionar datas.";
   } catch (error) { help.textContent = error.message || "Não foi possível adicionar a série."; }
 });
-document.querySelector("#decision-year").addEventListener("change", renderAssetWorkbench);
+document.querySelector("#decision-year").addEventListener("change", () => { renderAssetWorkbench(); renderProfileHistory(); });
+document.querySelectorAll("[data-dossier-strategy]").forEach(button => button.addEventListener("click", () => {
+  currentDossierStrategy = button.dataset.dossierStrategy === "b2" ? "b2" : "b1";
+  syncDossierStrategyButtons();
+  renderAssetWorkbench();
+  renderProfileHistory();
+}));
 
 // O formulário de demonstração só existe onde há convite comercial. Enquanto
 // o projeto está em pesquisa, a home não o carrega, e sem esta guarda o
