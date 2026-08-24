@@ -93,7 +93,6 @@ def build_bundle() -> dict[str, Any]:
         "cdi_cagr": cagr(evaluation, "cdi_net_return"),
         "mvo_cagr": cagr(evaluation, "mvo_eligible_net_return"),
         "ibovespa_cagr": cagr(evaluation, "benchmark_IBOVESPA"),
-        "bova11_cagr": cagr(evaluation, "benchmark_BOVA11"),
     }
 
     daily_rows = [
@@ -113,7 +112,6 @@ def build_bundle() -> dict[str, Any]:
     assert_close("CDI CAGR", recomputed["cdi_cagr"], search["references"]["cdi_cagr"])
     assert_close("MVO CAGR", recomputed["mvo_cagr"], search["references"]["mvo_cagr"])
     assert_close("Ibovespa CAGR", recomputed["ibovespa_cagr"], search["references"]["ibovespa_cagr"])
-    assert_close("BOVA11 CAGR", recomputed["bova11_cagr"], search["references"]["bova11_cagr"])
     assert_close(
         "Benevente 1 daily drawdown",
         recomputed["benevente_1_daily_max_drawdown"],
@@ -128,8 +126,8 @@ def build_bundle() -> dict[str, Any]:
 
     return {
         "release_contract": {
-            "canonical_strategy": "Benevente 1",
-            "experimental_extension": "Benevente 2",
+            "annual_selection_strategy": "Benevente 1",
+            "primary_shadow_strategy": "Benevente 2",
             "evaluation_window": "2015-2025",
             "decision_count": len(evaluation),
             "claim_status": "retrospective development evidence; not prospective validation",
@@ -151,7 +149,6 @@ def build_bundle() -> dict[str, Any]:
             "cdi_cagr": recomputed["cdi_cagr"],
             "mvo_cagr": recomputed["mvo_cagr"],
             "ibovespa_cagr": recomputed["ibovespa_cagr"],
-            "bova11_cagr": recomputed["bova11_cagr"],
         },
         "benevente_2": {
             "status": b2["status"],

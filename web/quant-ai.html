@@ -81,23 +81,7 @@
       </table>
       <p>Two of these are reported as "no evidence of benefit" rather than "proven harmful", and the distinction is not cosmetic. Eleven paired annual observations cannot reject a null of no difference, so the honest claim is the weaker one, even where every point estimate leans the same way.</p>
 
-      <h2>6 · Defects found by auditing our own backtest</h2>
-      <p>Seven defects were found and corrected. Every one of them inflated the result, which is what one should expect: an error that hurts your own numbers gets noticed immediately, and an error that helps them does not.</p>
-      <table class="paper-table">
-        <thead><tr><th>Defect</th><th>Effect</th><th>Correction</th></tr></thead>
-        <tbody>
-          <tr><td>MVO comparator identical to the strategy</td><td>Strategy compared against itself</td><td>Independent implementation</td></tr>
-          <tr><td>Vendor panel dropped delisted issuers</td><td>Survivorship bias</td><td>Universe rebuilt from the exchange archive</td></tr>
-          <tr><td>Delisting year discarded entirely</td><td>The loss truncated the year</td><td>Position liquidated into cash</td></tr>
-          <tr><td>No tax</td><td>Return overstated</td><td>Domestic tax regime modelled</td></tr>
-          <tr><td>Flat cost ignoring liquidity</td><td>Large orders unpenalised</td><td>Slippage by participation in volume</td></tr>
-          <tr><td>Implicit daily rebalancing</td><td>Vectorisation artefact</td><td>Exact buy-and-hold path</td></tr>
-          <tr><td>Session filter using a global peak</td><td>Legitimate years discarded</td><td>Local rolling peak</td></tr>
-        </tbody>
-      </table>
-      <p>After the last correction the published CAGR fell and the daily drawdown rose from 30.4% to 47.8%. The figures were published as they came out.</p>
-
-      <h2>7 · Experiment: four arms, one universe</h2>
+      <h2>6 · Experiment: four arms, one universe</h2>
       <p>The same January decision was executed four ways over thirteen annual decisions, holding the eligible universe, the optimiser, the ceilings and the cost model constant. Model: <code>gemini-3.1-flash-lite</code>, temperature zero, structured output validated against a schema, every raw response archived.</p>
       <table class="paper-table">
         <thead><tr><th>Arm</th><th>What differs</th><th>CAGR</th><th>Beats cash</th></tr></thead>
@@ -120,27 +104,27 @@
       </table>
       <div class="paper-callout warn"><b>The retrospective result is null</b>None of the three effects survives testing. The model reproduces the deterministic ranking. Direct model-generated weights failed to sum to one in five of thirteen years and silently omitted eligible names in two. This supports keeping language away from allocation, but it does not prove contamination absent or validate the model. The production system therefore restricts language to explanation; any future predictive role requires a new prospective arm.</div>
 
-      <h2>8 · Published strategy</h2>
+      <h2>7 · Published strategies</h2>
       <table class="paper-table">
         <thead><tr><th>Series</th><th>CAGR 2015–2025</th><th>Years won</th><th>Max drawdown</th></tr></thead>
         <tbody>
-          <tr class="highlight"><td>Benevente</td><td class="num">17.86%</td><td class="num">Not applicable</td><td class="num">−47.8%</td></tr>
-          <tr><td>Benevente, after tax</td><td class="num">16.03%</td><td class="num">Not applicable</td><td class="num">Not calculated</td></tr>
+          <tr class="highlight"><td>Benevente 2, primary shadow strategy</td><td class="num">18.45%</td><td class="num">Not applicable</td><td class="num">−28.7%</td></tr>
+          <tr><td>Benevente 1, annual selection</td><td class="num">17.86%</td><td class="num">Not applicable</td><td class="num">−47.8%</td></tr>
+          <tr><td>Benevente 1, after annual tax model</td><td class="num">16.03%</td><td class="num">Not applicable</td><td class="num">Not calculated</td></tr>
           <tr><td>Ibovespa (total-return index)</td><td class="num">11.77%</td><td class="num">7 of 11</td><td class="num">−47.0%</td></tr>
-          <tr><td>BOVA11 (investable ETF)</td><td class="num">11.72%</td><td class="num">7 of 11</td><td class="num">−47.2%</td></tr>
           <tr><td>Neutral MVO, same universe</td><td class="num">7.83%</td><td class="num">10 of 11</td><td class="num">−61.15%</td></tr>
           <tr><td>Cash (CDI)</td><td class="num">9.61%</td><td class="num">6 of 11</td><td class="num">0%</td></tr>
         </tbody>
       </table>
-      <p>The strategy wins seven of eleven years against both market references, with an annualised margin of about six percentage points. The Ibovespa is B3's total-return index and therefore includes reinvested distributions, but it remains a theoretical portfolio. BOVA11 is the investable ETF used to observe an implementable passive exposure, including fees, trading costs and tracking difference. The strategy also exceeds cash and an independently computed neutral optimisation over the same eligible universe. Its equity budget varied between 55% and 95%, and the resulting 47.8% maximum drawdown was close to the 47.0% drawdown of the index and the 47.2% drawdown of the ETF.</p>
+      <p>The annual selection wins seven of eleven years against the Ibovespa and exceeds cash and an independently computed neutral optimisation over the same eligible universe. Benevente 2 keeps that basket and changes only the equity exposure after observable stress. Retrospectively it raised CAGR to 18.45% and reduced maximum drawdown from 47.8% to 28.7%. For BRL 100,000, an aggregate estimate puts incremental intrayear tax at BRL 2,195 and terminal wealth after that incremental tax at BRL 634,531. This estimate is not tax-lot reconciliation.</p>
       <p>The evaluation window is also the window that ranked the configurations, so it describes the sample. The 2026 allocation predates the registered versions and remains a shadow portfolio. Prospective evaluation starts with a later annual decision made under a registered version that is not changed after outcomes are observed.</p>
 
       <div id="live-portfolio"></div>
 
-      <h2>9 · Reproduction contract</h2>
+      <h2>8 · Reproduction contract</h2>
       <p>The repository publishes code, configuration grid, dated inputs where licensing permits, tests, raw experiment outputs and SHA-256 manifests. The website explains the method without exposing source code in the interface; the paper and supplementary package remain the scientific record. The frozen protocol cannot be changed after an outcome without creating a new version and a new prospective count.</p>
 
-      <h2>10 · Limitations</h2>
+      <h2>9 · Limitations</h2>
       <ul>
         <li>Eleven annual evaluations for the strategy and thirteen for the model experiment. Every test is underpowered; effect sizes are reported with p-values rather than as findings.</li>
         <li>Corporate actions for the delisted tail rest on a detector whose precision and recall are published but imperfect; distributions for issuers no provider still serves are imputed from the cross-section and flagged per ticker.</li>

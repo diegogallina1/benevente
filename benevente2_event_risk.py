@@ -87,7 +87,8 @@ def apply_overlay(frame: pd.DataFrame, target_equity: pd.Series,
     benevente1_return = frame.get("benevente1_daily_return", frame["strategy"].pct_change().fillna(0.0))
     cdi_return = frame.get("cdi_daily_return", frame["cdi"].pct_change().fillna(0.0))
     overlay_reduction = target_equity - desired_equity
-    overlay_turnover = overlay_reduction.diff().abs().fillna(overlay_reduction.abs())
+    overlay_change = overlay_reduction.diff().fillna(overlay_reduction)
+    overlay_turnover = overlay_change.abs()
     overlay_cost = overlay_turnover * config.cost_bps / 10_000.0
     benevente2_return = cdi_return + multiplier * (benevente1_return - cdi_return) - overlay_cost
 
@@ -97,6 +98,8 @@ def apply_overlay(frame: pd.DataFrame, target_equity: pd.Series,
     result["base_equity_weight"] = target_equity
     result["benevente2_equity_weight"] = desired_equity
     result["overlay_turnover"] = overlay_turnover
+    result["overlay_sale_rate"] = overlay_change.clip(lower=0.0)
+    result["overlay_buy_rate"] = (-overlay_change).clip(lower=0.0)
     result["overlay_cost_rate"] = overlay_cost
     result["benevente1_return"] = benevente1_return
     result["benevente2_return"] = benevente2_return
@@ -105,6 +108,127 @@ def apply_overlay(frame: pd.DataFrame, target_equity: pd.Series,
     result["benevente2"] = (1.0 + benevente2_return).cumprod()
     result["cdi_rebased"] = (1.0 + cdi_return).cumprod()
     return result
+
+
+def estimate_intrayear_tax(result: pd.DataFrame, initial_capital: float,
+                           tax_rate: float = 0.15,
+                           monthly_sales_exemption: float = 20_000.0) -> dict[str, float | int | str]:
+    """Estimate the incremental tax caused by Benevente 2 risk reductions.
+
+    The experiment has the aggregate equity sleeve, not broker tax lots for
+    every issuer. The estimate resets the aggregate cost basis at each January
+    decision, values protective sales with the observable equity-sleeve return
+    and applies the Brazilian cash-equity monthly exemption. Taxable monthly
+    losses are carried forward. This is not a broker-note reconciliation.
+    """
+    if initial_capital <= 0:
+        raise ValueError("initial_capital must be positive")
+    required = {
+        "date", "decision_year", "base_equity_weight", "benevente2_equity_weight",
+        "benevente1_return", "benevente2_return", "cdi_return", "overlay_sale_rate",
+        "overlay_buy_rate",
+    }
+    missing = required.difference(result.columns)
+    if missing:
+        raise ValueError(f"Tax estimate is missing columns: {sorted(missing)}")
+
+    frame = result.sort_values("date").reset_index(drop=True).copy()
+    frame["date"] = pd.to_datetime(frame["date"])
+    wealth = float(initial_capital)
+    gross_terminal = float(initial_capital)
+    tax_paid = 0.0
+    taxable_months = 0
+    exempt_months = 0
+    loss_carry = 0.0
+    current_month: pd.Period | None = None
+    month_sales = 0.0
+    month_gain = 0.0
+    current_year: int | None = None
+    equity_index = 1.0
+    average_basis = 1.0
+    overlay_units = 0.0
+
+    def close_month() -> float:
+        nonlocal month_sales, month_gain, loss_carry, taxable_months, exempt_months
+        if current_month is None or month_sales <= 0:
+            month_sales = month_gain = 0.0
+            return 0.0
+        payment = 0.0
+        if month_sales <= monthly_sales_exemption:
+            exempt_months += 1
+        else:
+            taxable_months += 1
+            if month_gain < 0:
+                loss_carry += -month_gain
+            else:
+                taxable_gain = max(month_gain - loss_carry, 0.0)
+                loss_carry = max(loss_carry - month_gain, 0.0)
+                payment = taxable_gain * tax_rate
+        month_sales = month_gain = 0.0
+        return payment
+
+    for row in frame.itertuples(index=False):
+        month = row.date.to_period("M")
+        if current_month is not None and month != current_month:
+            payment = close_month()
+            wealth = max(wealth - payment, 0.0)
+            tax_paid += payment
+        current_month = month
+
+        year = int(row.decision_year)
+        if current_year != year:
+            # Annual-selection tax belongs to Benevente 1's existing model.
+            # Resetting here isolates only sales added by the risk overlay.
+            current_year = year
+            equity_index = 1.0
+            average_basis = 1.0
+            overlay_units = 0.0
+
+        sale_value = wealth * max(float(row.overlay_sale_rate), 0.0)
+        if sale_value > 0:
+            gain_fraction = 1.0 - average_basis / equity_index if equity_index > 0 else 0.0
+            month_sales += sale_value
+            month_gain += sale_value * gain_fraction
+            overlay_units += sale_value / equity_index
+
+        buy_value = wealth * max(float(row.overlay_buy_rate), 0.0)
+        if buy_value > 0 and equity_index > 0:
+            bought_units = buy_value / equity_index
+            remaining = max(overlay_units - bought_units, 0.0)
+            if remaining > 0:
+                average_basis = (
+                    average_basis * remaining + equity_index * bought_units
+                ) / (remaining + bought_units)
+            else:
+                average_basis = equity_index
+            overlay_units = remaining
+
+        base_equity = max(float(row.base_equity_weight), 1e-12)
+        equity_return = float(row.cdi_return) + (
+            float(row.benevente1_return) - float(row.cdi_return)
+        ) / base_equity
+        equity_index *= max(1.0 + equity_return, 1e-9)
+        wealth *= 1.0 + float(row.benevente2_return)
+        gross_terminal *= 1.0 + float(row.benevente2_return)
+
+    payment = close_month()
+    wealth = max(wealth - payment, 0.0)
+    tax_paid += payment
+    years = max(int(frame["decision_year"].nunique()), 1)
+    return {
+        "initial_capital_brl": float(initial_capital),
+        "gross_terminal_wealth_brl": gross_terminal,
+        "estimated_terminal_wealth_after_incremental_tax_brl": wealth,
+        "estimated_incremental_tax_brl": tax_paid,
+        "incremental_tax_as_initial_capital_rate": tax_paid / initial_capital,
+        "gross_cagr": (gross_terminal / initial_capital) ** (1.0 / years) - 1.0,
+        "cagr_after_incremental_tax": (wealth / initial_capital) ** (1.0 / years) - 1.0,
+        "taxable_months": taxable_months,
+        "exempt_months": exempt_months,
+        "monthly_sales_exemption_brl": monthly_sales_exemption,
+        "tax_rate": tax_rate,
+        "method": "proxy agregado da parcela em ações; base reiniciada em cada decisão anual",
+    }
 
 
 def metrics(returns: pd.Series, cdi_return: pd.Series, dates: pd.Series) -> dict[str, float]:
@@ -280,8 +404,12 @@ def run_experiment(curve_path: Path, annual_path: Path, output: Path) -> dict:
         ["holdout_cagr", "holdout_max_drawdown"], ascending=[False, False]
     ).iloc[0]
 
+    tax_sensitivity = [
+        estimate_intrayear_tax(selected_trial, capital)
+        for capital in range(50_000, 1_000_001, 50_000)
+    ]
     summary = {
-        "status": "retrospective_experiment_not_published",
+        "status": "primary_shadow_strategy_with_retrospective_evidence",
         "version_contract": {
             "Benevente 1": "Seleção multifatorial anual publicada, sem camada intranual.",
             "Benevente 2": "Mesma seleção anual, com redução de risco baseada em Ibovespa observável no fechamento anterior.",
@@ -304,6 +432,12 @@ def run_experiment(curve_path: Path, annual_path: Path, output: Path) -> dict:
                 "p_value": float(selected_paired_test.pvalue),
             },
             "warning": "Quatro anos de treino são insuficientes para uma escolha estável.",
+        },
+        "intrayear_tax_estimate": {
+            "scope": "imposto incremental provocado pelas reduções intranuais do Benevente 2",
+            "method": "proxy agregado da parcela em ações, com alíquota de 15%, isenção mensal de R$ 20 mil em vendas e compensação de perdas tributáveis",
+            "excludes": "lotes fiscais por emissor, situação individual, operações externas à estratégia e conciliação de notas de corretagem",
+            "capital_sensitivity": tax_sensitivity,
         },
         "covid_2020_trace_for_training_selected_candidate": {
             "first_alert_session": str(crisis_active.date.iloc[0].date()) if not crisis_active.empty else None,
@@ -337,8 +471,8 @@ def run_experiment(curve_path: Path, annual_path: Path, output: Path) -> dict:
         },
         "limitations": [
             "A família de proteção foi concebida depois da Covid e carrega viés retrospectivo conceitual.",
-            "Não há arquivo histórico de notícias com horário de publicação; a LLM não participa deste teste.",
-            "Custos da camada são aproximação em pontos-base; imposto intranual ainda não foi modelado.",
+            "O radar atual classifica notícias com Gemini, mas não participa deste teste histórico nem altera pesos.",
+            "Custos são aproximações em pontos-base; o imposto intranual é uma estimativa agregada sensível ao capital, não conciliação fiscal por ativo.",
             "Somente sete anos entram na separação 2019–2025; o teste pareado tem baixa potência.",
         ],
     }

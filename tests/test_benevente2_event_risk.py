@@ -2,7 +2,13 @@ import pandas as pd
 import numpy as np
 import pytest
 
-from benevente2_event_risk import RiskOverlayConfig, apply_overlay, observable_stress, reconcile_daily_returns
+from benevente2_event_risk import (
+    RiskOverlayConfig,
+    apply_overlay,
+    estimate_intrayear_tax,
+    observable_stress,
+    reconcile_daily_returns,
+)
 
 
 def sample_frame(periods: int = 40) -> pd.DataFrame:
@@ -54,3 +60,17 @@ def test_daily_reconciliation_matches_declared_annual_endpoint() -> None:
     returns = reconcile_daily_returns(level, years, targets)
     assert (1 + returns[years.eq(2020)]).prod() - 1 == pytest.approx(0.05)
     assert (1 + returns[years.eq(2021)]).prod() - 1 == pytest.approx(0.20)
+
+
+def test_intrayear_tax_depends_on_capital_and_respects_monthly_exemption() -> None:
+    frame = sample_frame(60)
+    frame["benevente1_daily_return"] = 0.002
+    frame["cdi_daily_return"] = 0.0002
+    config = RiskOverlayConfig(volatility_window=5, peak_window=20, recovery_days=10, cost_bps=0)
+    result = apply_overlay(frame, pd.Series(0.95, index=frame.index), config)
+    small = estimate_intrayear_tax(result, 20_000)
+    large = estimate_intrayear_tax(result, 1_000_000)
+    assert small["estimated_incremental_tax_brl"] == pytest.approx(0.0)
+    assert large["estimated_incremental_tax_brl"] >= 0
+    assert large["estimated_terminal_wealth_after_incremental_tax_brl"] <= large["gross_terminal_wealth_brl"]
+    assert large["monthly_sales_exemption_brl"] == 20_000

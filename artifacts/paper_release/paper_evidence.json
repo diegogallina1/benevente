@@ -1,7 +1,7 @@
 {
   "release_contract": {
-    "canonical_strategy": "Benevente 1",
-    "experimental_extension": "Benevente 2",
+    "annual_selection_strategy": "Benevente 1",
+    "primary_shadow_strategy": "Benevente 2",
     "evaluation_window": "2015-2025",
     "decision_count": 11,
     "claim_status": "retrospective development evidence; not prospective validation"
@@ -37,7 +37,6 @@
     "cdi_cagr": 0.09609571930908412,
     "mvo_cagr": 0.07834134942607607,
     "ibovespa_cagr": 0.11769711878033418,
-    "bova11_cagr": 0.11724118199980071,
     "benevente_1_daily_max_drawdown": -0.47784912800289203
   },
   "published_strategy": {
@@ -54,11 +53,10 @@
   "benchmarks": {
     "cdi_cagr": 0.09609571930908412,
     "mvo_cagr": 0.07834134942607607,
-    "ibovespa_cagr": 0.11769711878033418,
-    "bova11_cagr": 0.11724118199980071
+    "ibovespa_cagr": 0.11769711878033418
   },
   "benevente_2": {
-    "status": "retrospective_experiment_not_published",
+    "status": "primary_shadow_strategy_with_retrospective_evidence",
     "cumulative_return": 5.4377397824180465,
     "cagr": 0.18446223898599223,
     "daily_max_drawdown": -0.28745686793003866,
@@ -422,8 +420,8 @@
     },
     "benevente_2": {
       "path": "artifacts/benevente2_event_risk/summary.json",
-      "sha256": "64aed4383e65e0da82dadcff113f3b699123be738213632a3c9dd99d3f621173",
-      "bytes": 6190
+      "sha256": "8bc321fb4f6f18cb89675a2dc1b9c19561e0a3e018f227890421bc345c7d1a00",
+      "bytes": 20196
     },
     "llm_experiment": {
       "path": "artifacts/llm_contamination/summary.json",

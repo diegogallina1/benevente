@@ -180,7 +180,7 @@ body{font-size:15px}.hero{grid-template-columns:minmax(0,42rem);min-height:auto}
 .role-contract p{margin:.3rem 0 0;color:#405a55;font-size:.78rem;line-height:1.45}
 .proof{grid-template-columns:repeat(3,minmax(0,1fr)) minmax(15rem,1.35fr)}
 .proof p{grid-column:auto}
-.research-signal{grid-template-columns:repeat(4,minmax(0,1fr)) auto;margin-bottom:4rem}
+.research-signal{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:4rem}
 .research-signal>div{min-height:7.7rem}
 .model-steps{grid-template-columns:1fr;max-width:18rem}
 .model-section,.comparison,.lab-section,.evidence-board,.research-disclosure{padding-top:clamp(3rem,5vw,5rem);padding-bottom:clamp(3rem,5vw,5rem)}
@@ -214,3 +214,14 @@ body{font-size:15px}.hero{grid-template-columns:minmax(0,42rem);min-height:auto}
 @media(max-width:1050px){.research-signal{grid-template-columns:1fr 1fr}.research-signal .text-link{grid-column:1/-1;border-left:0;border-top:1px solid #dce7e2;justify-content:center}.proof{grid-template-columns:repeat(3,1fr)}.proof p{grid-column:1/-1}}
 @media(max-width:780px){.role-contract,.explanation-quality{grid-template-columns:1fr}.role-contract{gap:1px}.explanation-quality ul{grid-template-columns:1fr 1fr}.proof{grid-template-columns:1fr 1fr}.proof p{grid-column:1/-1}}
 @media(max-width:520px){.role-contract,.proof,.research-signal,.explanation-quality ul{grid-template-columns:1fr}.proof p,.research-signal .text-link{grid-column:auto}.evidence-board-head h2{font-size:2rem}}
+
+/* Responsive release: the chart stays usable without nested scrolling. */
+.asset-summary{grid-template-columns:repeat(4,minmax(0,1fr))}
+.wealth-cards-grid.single{grid-template-columns:minmax(0,26rem)}
+.wealth-tax-note{max-width:52rem;margin:.75rem 0 0;color:#546d66;font-size:.75rem;line-height:1.55}
+.compact-chart-layout .line-chart{touch-action:pan-y pinch-zoom}
+.comparison-controls,.chart-title,.chart-tools{min-width:0}
+@media(max-width:1100px){.asset-summary{grid-template-columns:1fr 1fr}.compact-chart-layout{grid-template-columns:minmax(0,1fr) 15rem}.nav{height:auto;min-height:68px}.nav nav{flex-wrap:wrap;justify-content:flex-end}}
+@media(max-width:900px){.compact-chart-layout{grid-template-columns:1fr}.chart-sidepanel{border-left:0;border-top:1px solid #d8e5e0;padding:1rem 0 0}.comparison-table-wrap{overflow-x:auto}.comparison-table-wrap table{min-width:34rem}.dossier-toolbar{grid-template-columns:1fr}.embedded-dossier .asset-summary{grid-template-columns:1fr 1fr}}
+@media(max-width:720px){.shell{width:min(100% - 28px,1180px)}.nav{align-items:flex-start;padding-block:.8rem;gap:.65rem}.nav,.nav nav{flex-direction:column;width:100%}.nav nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.35rem}.nav nav a{text-align:center;padding:.5rem .35rem;border:1px solid #d9e5e1;border-radius:8px}.hero{padding-top:2.6rem}.hero h1{font-size:clamp(2.15rem,11vw,3rem)}.comparison-head,.lab-head{grid-template-columns:1fr}.comparison-controls{display:block}.period-options{margin-top:.55rem}.period{flex:1;min-width:3.4rem}.return-chart{padding:.75rem}.compact-chart-layout .line-chart{min-height:17rem}.chart-tools small{flex-basis:100%}.chart-inspector{position:static}.embedded-dossier .asset-summary{grid-template-columns:1fr}.research-signal>div{min-height:0}.wealth-panel{padding:1rem}.wealth-form{grid-template-columns:1fr}.fixed-comparators-wrap{overflow-x:auto}.fixed-comparators-wrap table{min-width:42rem}}
+@media(max-width:480px){.stage-ribbon{font-size:.7rem}.comparison-card{padding:.65rem}.curve-toggles{gap:.35rem}.curve-toggle{font-size:.63rem}.chart-return-summary span{width:100%;justify-content:space-between}.compact-chart-layout .line-chart{min-height:15.5rem}.profile-year-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.embedded-dossier{padding:.65rem}.asset-card{padding:.75rem}.asset-summary>div{padding:.65rem}.wealth-cards-grid.single{grid-template-columns:1fr}}

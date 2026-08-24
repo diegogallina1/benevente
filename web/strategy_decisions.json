@@ -86,7 +86,7 @@
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.5
+              "weight": 0.5000000000000001
             }
           ]
         },
@@ -168,7 +168,7 @@
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.5
+              "weight": 0.5000000000000001
             }
           ]
         },
@@ -250,7 +250,7 @@
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.5
+              "weight": 0.5000000000000001
             }
           ]
         }
@@ -356,7 +356,7 @@
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.5
+              "weight": 0.5000000000000001
             }
           ]
         },
@@ -389,7 +389,7 @@
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.2500000006277646
+              "weight": 0.2500000006277645
             }
           ]
         },
@@ -422,7 +422,7 @@
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.5
+              "weight": 0.5000000000000001
             }
           ]
         },
@@ -455,7 +455,7 @@
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.2500000006277646
+              "weight": 0.2500000006277645
             }
           ]
         },
@@ -488,7 +488,7 @@
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.5
+              "weight": 0.5000000000000001
             }
           ]
         }
@@ -749,15 +749,15 @@
           "target_allocation": [
             {
               "ticker": "BPAC3",
-              "weight": 0.2206999999817952
+              "weight": 0.22069999998179518
             },
             {
               "ticker": "BRSR3",
-              "weight": 0.21139999998256231
+              "weight": 0.2113999999825623
             },
             {
               "ticker": "GRND3",
-              "weight": 0.2055999999830407
+              "weight": 0.20559999998304068
             },
             {
               "ticker": "QUAL3",
@@ -765,7 +765,7 @@
             },
             {
               "ticker": "SAPR3",
-              "weight": 0.23479999998063214
+              "weight": 0.2347999999806321
             },
             {
               "ticker": "SEER3",
@@ -773,7 +773,7 @@
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.05000000007836236
+              "weight": 0.05000000007836258
             }
           ]
         },
@@ -831,15 +831,15 @@
           "target_allocation": [
             {
               "ticker": "BPAC3",
-              "weight": 0.2206999999817952
+              "weight": 0.22069999998179518
             },
             {
               "ticker": "BRSR3",
-              "weight": 0.21139999998256231
+              "weight": 0.2113999999825623
             },
             {
               "ticker": "GRND3",
-              "weight": 0.2055999999830407
+              "weight": 0.20559999998304068
             },
             {
               "ticker": "QUAL3",
@@ -847,7 +847,7 @@
             },
             {
               "ticker": "SAPR3",
-              "weight": 0.23479999998063214
+              "weight": 0.2347999999806321
             },
             {
               "ticker": "SEER3",
@@ -855,7 +855,7 @@
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.05000000007836236
+              "weight": 0.05000000007836258
             }
           ]
         }
@@ -1016,7 +1016,7 @@
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.6500000000000001
+              "weight": 0.65
             }
           ]
         },
@@ -1208,7 +1208,7 @@
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.050000000000000155
+              "weight": 0.050000000000000044
             }
           ]
         },
@@ -1380,27 +1380,27 @@
           "target_allocation": [
             {
               "ticker": "FHER3",
-              "weight": 0.24
+              "weight": 0.23999999999999996
             },
             {
               "ticker": "GOAU4",
-              "weight": 0.2023
+              "weight": 0.20229999999999998
             },
             {
               "ticker": "TASA4",
-              "weight": 0.0692
+              "weight": 0.06919999999999998
             },
             {
               "ticker": "UNIP6",
-              "weight": 0.1508
+              "weight": 0.15079999999999996
             },
             {
               "ticker": "USIM5",
-              "weight": 0.0877
+              "weight": 0.08769999999999999
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.25
+              "weight": 0.2500000000000002
             }
           ]
         },
@@ -1417,27 +1417,27 @@
           "target_allocation": [
             {
               "ticker": "FHER3",
-              "weight": 0.15999999999999998
+              "weight": 0.15999999999999995
             },
             {
               "ticker": "GOAU4",
-              "weight": 0.13486666666666666
+              "weight": 0.13486666666666663
             },
             {
               "ticker": "TASA4",
-              "weight": 0.04613333333333333
+              "weight": 0.046133333333333325
             },
             {
               "ticker": "UNIP6",
-              "weight": 0.10053333333333332
+              "weight": 0.10053333333333331
             },
             {
               "ticker": "USIM5",
-              "weight": 0.05846666666666667
+              "weight": 0.05846666666666665
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.5
+              "weight": 0.5000000000000001
             }
           ]
         },
@@ -1454,27 +1454,27 @@
           "target_allocation": [
             {
               "ticker": "FHER3",
-              "weight": 0.24
+              "weight": 0.23999999999999996
             },
             {
               "ticker": "GOAU4",
-              "weight": 0.2023
+              "weight": 0.20229999999999998
             },
             {
               "ticker": "TASA4",
-              "weight": 0.0692
+              "weight": 0.06919999999999998
             },
             {
               "ticker": "UNIP6",
-              "weight": 0.1508
+              "weight": 0.15079999999999996
             },
             {
               "ticker": "USIM5",
-              "weight": 0.0877
+              "weight": 0.08769999999999999
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.25
+              "weight": 0.2500000000000002
             }
           ]
         },
@@ -1491,27 +1491,27 @@
           "target_allocation": [
             {
               "ticker": "FHER3",
-              "weight": 0.15999999999999998
+              "weight": 0.15999999999999995
             },
             {
               "ticker": "GOAU4",
-              "weight": 0.13486666666666666
+              "weight": 0.13486666666666663
             },
             {
               "ticker": "TASA4",
-              "weight": 0.04613333333333333
+              "weight": 0.046133333333333325
             },
             {
               "ticker": "UNIP6",
-              "weight": 0.10053333333333332
+              "weight": 0.10053333333333331
             },
             {
               "ticker": "USIM5",
-              "weight": 0.05846666666666667
+              "weight": 0.05846666666666665
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.5
+              "weight": 0.5000000000000001
             }
           ]
         },
@@ -1528,27 +1528,27 @@
           "target_allocation": [
             {
               "ticker": "FHER3",
-              "weight": 0.24
+              "weight": 0.23999999999999996
             },
             {
               "ticker": "GOAU4",
-              "weight": 0.2023
+              "weight": 0.20229999999999998
             },
             {
               "ticker": "TASA4",
-              "weight": 0.0692
+              "weight": 0.06919999999999998
             },
             {
               "ticker": "UNIP6",
-              "weight": 0.1508
+              "weight": 0.15079999999999996
             },
             {
               "ticker": "USIM5",
-              "weight": 0.0877
+              "weight": 0.08769999999999999
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.25
+              "weight": 0.2500000000000002
             }
           ]
         },
@@ -1565,27 +1565,27 @@
           "target_allocation": [
             {
               "ticker": "FHER3",
-              "weight": 0.15999999999999998
+              "weight": 0.15999999999999995
             },
             {
               "ticker": "GOAU4",
-              "weight": 0.13486666666666666
+              "weight": 0.13486666666666663
             },
             {
               "ticker": "TASA4",
-              "weight": 0.04613333333333333
+              "weight": 0.046133333333333325
             },
             {
               "ticker": "UNIP6",
-              "weight": 0.10053333333333332
+              "weight": 0.10053333333333331
             },
             {
               "ticker": "USIM5",
-              "weight": 0.05846666666666667
+              "weight": 0.05846666666666665
             },
             {
               "ticker": "TITULO_CDI",
-              "weight": 0.5
+              "weight": 0.5000000000000001
             }
           ]
         }
@@ -1948,7 +1948,7 @@
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.5
+          "weight": 0.5000000000000001
         }
       ]
     },
@@ -2030,7 +2030,7 @@
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.5
+          "weight": 0.5000000000000001
         }
       ]
     },
@@ -2112,7 +2112,7 @@
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.5
+          "weight": 0.5000000000000001
         }
       ]
     },
@@ -2178,7 +2178,7 @@
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.5
+          "weight": 0.5000000000000001
         }
       ]
     },
@@ -2211,7 +2211,7 @@
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.2500000006277646
+          "weight": 0.2500000006277645
         }
       ]
     },
@@ -2244,7 +2244,7 @@
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.5
+          "weight": 0.5000000000000001
         }
       ]
     },
@@ -2277,7 +2277,7 @@
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.2500000006277646
+          "weight": 0.2500000006277645
         }
       ]
     },
@@ -2310,7 +2310,7 @@
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.5
+          "weight": 0.5000000000000001
         }
       ]
     },
@@ -2479,15 +2479,15 @@
       "target_allocation": [
         {
           "ticker": "BPAC3",
-          "weight": 0.2206999999817952
+          "weight": 0.22069999998179518
         },
         {
           "ticker": "BRSR3",
-          "weight": 0.21139999998256231
+          "weight": 0.2113999999825623
         },
         {
           "ticker": "GRND3",
-          "weight": 0.2055999999830407
+          "weight": 0.20559999998304068
         },
         {
           "ticker": "QUAL3",
@@ -2495,7 +2495,7 @@
         },
         {
           "ticker": "SAPR3",
-          "weight": 0.23479999998063214
+          "weight": 0.2347999999806321
         },
         {
           "ticker": "SEER3",
@@ -2503,7 +2503,7 @@
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.05000000007836236
+          "weight": 0.05000000007836258
         }
       ]
     },
@@ -2561,15 +2561,15 @@
       "target_allocation": [
         {
           "ticker": "BPAC3",
-          "weight": 0.2206999999817952
+          "weight": 0.22069999998179518
         },
         {
           "ticker": "BRSR3",
-          "weight": 0.21139999998256231
+          "weight": 0.2113999999825623
         },
         {
           "ticker": "GRND3",
-          "weight": 0.2055999999830407
+          "weight": 0.20559999998304068
         },
         {
           "ticker": "QUAL3",
@@ -2577,7 +2577,7 @@
         },
         {
           "ticker": "SAPR3",
-          "weight": 0.23479999998063214
+          "weight": 0.2347999999806321
         },
         {
           "ticker": "SEER3",
@@ -2585,7 +2585,7 @@
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.05000000007836236
+          "weight": 0.05000000007836258
         }
       ]
     },
@@ -2659,7 +2659,7 @@
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.6500000000000001
+          "weight": 0.65
         }
       ]
     },
@@ -2807,7 +2807,7 @@
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.050000000000000155
+          "weight": 0.050000000000000044
         }
       ]
     },
@@ -2935,27 +2935,27 @@
       "target_allocation": [
         {
           "ticker": "FHER3",
-          "weight": 0.24
+          "weight": 0.23999999999999996
         },
         {
           "ticker": "GOAU4",
-          "weight": 0.2023
+          "weight": 0.20229999999999998
         },
         {
           "ticker": "TASA4",
-          "weight": 0.0692
+          "weight": 0.06919999999999998
         },
         {
           "ticker": "UNIP6",
-          "weight": 0.1508
+          "weight": 0.15079999999999996
         },
         {
           "ticker": "USIM5",
-          "weight": 0.0877
+          "weight": 0.08769999999999999
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.25
+          "weight": 0.2500000000000002
         }
       ]
     },
@@ -2972,27 +2972,27 @@
       "target_allocation": [
         {
           "ticker": "FHER3",
-          "weight": 0.15999999999999998
+          "weight": 0.15999999999999995
         },
         {
           "ticker": "GOAU4",
-          "weight": 0.13486666666666666
+          "weight": 0.13486666666666663
         },
         {
           "ticker": "TASA4",
-          "weight": 0.04613333333333333
+          "weight": 0.046133333333333325
         },
         {
           "ticker": "UNIP6",
-          "weight": 0.10053333333333332
+          "weight": 0.10053333333333331
         },
         {
           "ticker": "USIM5",
-          "weight": 0.05846666666666667
+          "weight": 0.05846666666666665
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.5
+          "weight": 0.5000000000000001
         }
       ]
     },
@@ -3009,27 +3009,27 @@
       "target_allocation": [
         {
           "ticker": "FHER3",
-          "weight": 0.24
+          "weight": 0.23999999999999996
         },
         {
           "ticker": "GOAU4",
-          "weight": 0.2023
+          "weight": 0.20229999999999998
         },
         {
           "ticker": "TASA4",
-          "weight": 0.0692
+          "weight": 0.06919999999999998
         },
         {
           "ticker": "UNIP6",
-          "weight": 0.1508
+          "weight": 0.15079999999999996
         },
         {
           "ticker": "USIM5",
-          "weight": 0.0877
+          "weight": 0.08769999999999999
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.25
+          "weight": 0.2500000000000002
         }
       ]
     },
@@ -3046,27 +3046,27 @@
       "target_allocation": [
         {
           "ticker": "FHER3",
-          "weight": 0.15999999999999998
+          "weight": 0.15999999999999995
         },
         {
           "ticker": "GOAU4",
-          "weight": 0.13486666666666666
+          "weight": 0.13486666666666663
         },
         {
           "ticker": "TASA4",
-          "weight": 0.04613333333333333
+          "weight": 0.046133333333333325
         },
         {
           "ticker": "UNIP6",
-          "weight": 0.10053333333333332
+          "weight": 0.10053333333333331
         },
         {
           "ticker": "USIM5",
-          "weight": 0.05846666666666667
+          "weight": 0.05846666666666665
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.5
+          "weight": 0.5000000000000001
         }
       ]
     },
@@ -3083,27 +3083,27 @@
       "target_allocation": [
         {
           "ticker": "FHER3",
-          "weight": 0.24
+          "weight": 0.23999999999999996
         },
         {
           "ticker": "GOAU4",
-          "weight": 0.2023
+          "weight": 0.20229999999999998
         },
         {
           "ticker": "TASA4",
-          "weight": 0.0692
+          "weight": 0.06919999999999998
         },
         {
           "ticker": "UNIP6",
-          "weight": 0.1508
+          "weight": 0.15079999999999996
         },
         {
           "ticker": "USIM5",
-          "weight": 0.0877
+          "weight": 0.08769999999999999
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.25
+          "weight": 0.2500000000000002
         }
       ]
     },
@@ -3120,27 +3120,27 @@
       "target_allocation": [
         {
           "ticker": "FHER3",
-          "weight": 0.15999999999999998
+          "weight": 0.15999999999999995
         },
         {
           "ticker": "GOAU4",
-          "weight": 0.13486666666666666
+          "weight": 0.13486666666666663
         },
         {
           "ticker": "TASA4",
-          "weight": 0.04613333333333333
+          "weight": 0.046133333333333325
         },
         {
           "ticker": "UNIP6",
-          "weight": 0.10053333333333332
+          "weight": 0.10053333333333331
         },
         {
           "ticker": "USIM5",
-          "weight": 0.05846666666666667
+          "weight": 0.05846666666666665
         },
         {
           "ticker": "TITULO_CDI",
-          "weight": 0.5
+          "weight": 0.5000000000000001
         }
       ]
     },
@@ -3331,8 +3331,8 @@
     }
   ],
   "sources_sha256": {
-    "web/annual_research.json": "0cf3e5ed48ead9007b5e7f343f738b2f5e43f7b593c7dcf841494b2e2c744c6a",
+    "web/annual_research.json": "ff5ac586fd1418584f23b90b85dde3a46a252d7d976990b261532a21964adbb0",
     "artifacts/benevente2_event_risk/candidate_annual_comparison.csv": "5c6e4558bf7534400f01d95876096b0e3aae0bfc706f75ad66fe8580f06831f9",
-    "artifacts/benevente2_event_risk/candidate_daily_comparison.csv": "eb8c9d6e5354b1a940ec389675205827cb1566d9922b81eea010b769b3e7d759"
+    "artifacts/benevente2_event_risk/candidate_daily_comparison.csv": "4b25dc16011b219e4d2d3a5022ec79490d52be5edfdff4474cf73b4a78fd7fae"
   }
 }

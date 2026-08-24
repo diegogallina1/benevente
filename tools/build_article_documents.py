@@ -27,7 +27,7 @@ IEEE_OUTPUT = OUTPUTS / "Benevente_Quant_AI_IEEE_Final.tex"
 BTECH_AUTHOR = "Diego Gallina"
 BTECH_AFFILIATION = (
     "Pesquisador, Fucape Business School, Vitória, ES, Brasil, "
-    "214411949+diegogallina1@users.noreply.github.com"
+    "diego@wisesearch.com"
 )
 
 

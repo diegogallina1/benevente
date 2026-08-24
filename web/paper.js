@@ -16,7 +16,6 @@ const LIVE_COPY = {
     b1: "Benevente 1",
     b2: "Benevente 2",
     cdi: "CDI",
-    bova: "BOVA11",
     ibov: "Ibovespa (preço)",
     cash: "CDI",
   },
@@ -37,7 +36,6 @@ const LIVE_COPY = {
     b1: "Benevente 1",
     b2: "Benevente 2",
     cdi: "CDI",
-    bova: "BOVA11",
     ibov: "Ibovespa (price)",
     cash: "CDI",
   },
@@ -64,7 +62,6 @@ function liveChart(rows, primary, copy) {
     [primary, primary === "benevente2" ? copy.b2 : copy.b1, "#0c8076"],
     [primary === "benevente2" ? "portfolio" : "benevente2", primary === "benevente2" ? copy.b1 : copy.b2, "#65a99e"],
     ["cdi", copy.cdi, "#3b779a"],
-    ["bova11", copy.bova, "#9b6b48"],
     ["ibovespa_price", copy.ibov, "#7a8490"],
   ];
   const all = keys.flatMap(([key]) => rows.map(row => Number(row[key])).filter(Number.isFinite));
@@ -106,7 +103,7 @@ function attachLiveChart(host, rows, primary, copy) {
   if (!svg || !cursor || !readout) return;
   const names = {
     benevente2: copy.b2, portfolio: copy.b1, cdi: copy.cdi,
-    bova11: copy.bova, ibovespa_price: copy.ibov,
+    ibovespa_price: copy.ibov,
   };
   svg.addEventListener("pointermove", event => {
     const bounds = svg.getBoundingClientRect();
@@ -116,7 +113,7 @@ function attachLiveChart(host, rows, primary, copy) {
     const x = fraction * 820;
     cursor.setAttribute("x1", x.toFixed(2));
     cursor.setAttribute("x2", x.toFixed(2));
-    const order = [primary, primary === "benevente2" ? "portfolio" : "benevente2", "cdi", "bova11", "ibovespa_price"];
+    const order = [primary, primary === "benevente2" ? "portfolio" : "benevente2", "cdi", "ibovespa_price"];
     const values = order.map(key => `${names[key]} ${(Number(row[key]) - 100).toLocaleString(copy.locale, { signDisplay: "always", maximumFractionDigits: 2 })}%`);
     readout.textContent = `${new Date(`${row.date}T12:00:00`).toLocaleDateString(copy.locale)} · ${values.join(" · ")}`;
   });

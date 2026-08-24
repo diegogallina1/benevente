@@ -31,4 +31,15 @@
 
 @media (max-width: 640px) {
   .version-hero h1 { font-size: 2.35rem; }
+  .paper-nav { height: auto; padding-block: .7rem; display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; }
+  .paper-nav a { text-align: center; padding: .48rem .35rem; border: 1px solid #d8e5e0; border-radius: 8px; }
+  .paper-page { padding-top: 2rem; overflow-wrap: anywhere; }
+  .paper-page h1 { font-size: 2.2rem; }
+  .paper-page .paper-table { display: block; width: 100%; min-width: 0; overflow-x: auto; }
 }
+
+/* Mobile and tablet treatment shared by the two strategy pages. */
+.version-section>div{min-width:0}.version-section .fixed-comparators-wrap{overflow-x:auto}.live-chart-svg{touch-action:pan-y pinch-zoom}
+@media(max-width:960px){.version-page .shell{width:min(100% - 32px,1120px)}.version-nav{height:auto;min-height:68px;padding-block:.7rem}.version-nav nav{flex-wrap:wrap;justify-content:flex-end}.version-hero-grid{grid-template-columns:1fr;gap:28px}.version-section{grid-template-columns:1fr;gap:24px;padding:48px 0}.comparison-matrix{min-width:640px}.version-section>div{overflow-x:auto}.version-flow,.version-evidence{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){.version-page .shell{width:min(100% - 24px,1120px)}.version-nav{align-items:flex-start;flex-direction:column;gap:.55rem}.version-nav nav{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:.3rem}.version-nav nav a{text-align:center;border:1px solid #dbe4e8;border-radius:8px}.version-hero{padding:38px 0}.version-hero h1{font-size:2.25rem}.version-scoreboard{grid-template-columns:1fr 1fr}.version-metric{min-height:106px;padding:17px}.version-metric strong{font-size:22px}.version-main{padding:54px 0}.version-section{padding:38px 0}.version-flow,.version-evidence{grid-template-columns:1fr}.stress-timeline{grid-template-columns:1fr}.version-next{align-items:flex-start;flex-direction:column}.version-next a{width:100%;text-align:center}.comparison-matrix{min-width:560px}.live-chart{min-width:0}.live-chart-legend{display:grid;grid-template-columns:1fr 1fr}.live-chart-axis span:nth-child(2){display:none}}
+@media(max-width:430px){.version-scoreboard{grid-template-columns:1fr}.version-metric{border-right:0;border-bottom:1px solid #dbe4e8}.version-metric:last-child{border-bottom:0}.version-nav nav{grid-template-columns:1fr}.version-hero h1{font-size:2rem}.comparison-matrix{min-width:520px}.live-chart-legend{grid-template-columns:1fr}}

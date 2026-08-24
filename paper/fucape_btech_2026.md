@@ -4,7 +4,7 @@
 
 ## Resumo
 
-Decisões de carteira precisam continuar explicáveis depois de executadas. Este trabalho constrói e avalia o Benevente Wealth System, um artefato que registra os dados admitidos, a regra quantitativa, a carteira proposta, a explicação e a aprovação humana. A pesquisa segue design science e combina testes funcionais, auditoria adversarial e diagnóstico sequencial de onze decisões entre 2015 e 2025. Sete defeitos capazes de inflar resultados foram corrigidos. A auditoria também revelou que 13,9% da exposição acumulada a ações dependia de proventos imputados. A tentativa de reconstruir 56 observações ativo-ano com fechamentos brutos e eventos da página atual da B3 comparou 54, encontrou sete divergências superiores a cinco pontos percentuais e deixou duas sem resposta. O sistema recusou o selo de reconciliação. Os retornos são, portanto, diagnóstico de desenvolvimento, não validação comercial. Na reamostragem pareada, os intervalos de 95% do excesso de retorno cruzam zero contra CDI, Ibovespa e BOVA11. O Benevente 1 foi registrado em 16 de agosto de 2026; extensões posteriores não herdam essa data. O modelo de linguagem não demonstrou ganho de retorno e permanece restrito à explicação. A contribuição comprovada é separar, de forma verificável, dado, cálculo, linguagem e responsabilidade.
+Decisões de carteira precisam continuar explicáveis depois de executadas. Este trabalho constrói e avalia o Benevente Wealth System, um artefato que registra os dados admitidos, a regra quantitativa, a carteira proposta, a explicação e a aprovação humana. A pesquisa segue design science e combina testes funcionais, auditoria adversarial e diagnóstico sequencial de onze decisões entre 2015 e 2025. Sete controles capazes de impedir inflação artificial dos resultados foram incorporados. A auditoria também revelou que 13,9% da exposição acumulada a ações dependia de proventos imputados. A tentativa de reconstruir 56 observações ativo-ano com fechamentos brutos e eventos da página atual da B3 comparou 54, encontrou sete divergências superiores a cinco pontos percentuais e deixou duas sem resposta. O sistema recusou o selo de reconciliação. Os retornos são, portanto, diagnóstico de desenvolvimento, não validação comercial. Na reamostragem pareada, os intervalos de 95% do excesso de retorno cruzam zero contra CDI e Ibovespa. O Benevente 1 foi registrado em 16 de agosto de 2026; extensões posteriores não herdam essa data. O modelo de linguagem não demonstrou ganho de retorno e permanece restrito à explicação. A contribuição comprovada é separar, de forma verificável, dado, cálculo, linguagem e responsabilidade.
 
 Palavras-chave: governança de investimentos; alocação de carteira; trilha de auditoria; design science; pesquisa reprodutível.
 
@@ -88,7 +88,7 @@ A cadência anual é uma hipótese coerente com a natureza do sinal e, neste est
 
 Anual não significa que o sistema ignora o risco durante doze meses. Preços, concentração, liquidez e eventos materiais podem ser monitorados continuamente, e uma política institucional pode prever um gatilho extraordinário. Significa apenas que a reseleção sistemática da cesta acontece uma vez por ano. No teste de robustez, mantendo regra e dados constantes, a reseleção anual superou as versões trimestral e mensal antes mesmo dos custos. Com apenas onze anos pareados, isso não prova que a frequência anual seja universalmente ótima; mostra que não houve evidência para substituir a regra mais simples nesta amostra.
 
-Notícias não entram no modelo atual. Esse limite é intencional: um estudo com notícias exige arquivo histórico licenciado, horário de publicação, deduplicação e uma data de corte verificável para o modelo de linguagem. Misturar notícias retrospectivamente ao protocolo anual criaria uma nova oportunidade de usar informação futura. O estudo futuro adequado é um braço separado, pré-registrado, com revisão trimestral ou por evento e notícias carimbadas no tempo, comparado à regra anual sem alterar esta última.
+Notícias não entram no retorno histórico deste estudo. No acompanhamento corrente, um radar com Gemini lê fontes públicas, deduplica ocorrências e classifica alertas para revisão humana. Ele não altera ativos nem pesos. Avaliar se notícias acrescentam valor preditivo exige um braço prospectivo separado, com horário de publicação, corte verificável e decisões arquivadas antes do desfecho. Misturar notícias retrospectivamente ao protocolo anual criaria uma nova oportunidade de usar informação futura.
 
 ### 3.5 Custos, imposto e execução
 
@@ -121,16 +121,15 @@ O ranqueamento exige no mínimo três anos encerrados. Como o painel começa em 
 
 ### 4.2 Comparadores
 
-Quatro referências foram calculadas de forma independente.
+Três referências foram calculadas de forma independente.
 
 - CDI, série 12 do Banco Central, como custo de oportunidade do caixa.
 - Ibovespa, índice de retorno total que incorpora os proventos da carteira teórica e, por isso, é comparável a uma carteira que os reinveste (B3, 2026c).
-- BOVA11, ETF negociável que busca acompanhar o Ibovespa e permite observar uma implementação passiva sujeita a taxa, custos de negociação e diferença de aderência (BlackRock, 2026).
 - Otimização média-variância sobre o mesmo universo elegível. Esse método estima retorno médio e covariância com dados anteriores e escolhe pesos que maximizam a relação entre retorno esperado e risco sob os mesmos limites de elegibilidade.
 
 Esse último merece nota. Em uma versão anterior do sistema, a série rotulada como MVO de referência era numericamente idêntica à estratégia em todos os anos, ou seja, a estratégia estava sendo comparada a si mesma. O defeito foi encontrado na auditoria interna, corrigido com uma implementação independente, e o comparador passou a produzir resultados distintos, inclusive desfavoráveis à estratégia em um dos onze anos.
 
-Ibovespa e BOVA11 não são duplicatas. O primeiro mede o retorno total de uma carteira teórica e estabelece a referência econômica do mercado. O segundo representa um caminho efetivamente negociável para buscar essa exposição. A pequena diferença entre as duas séries é informativa, pois reúne taxa, fricções operacionais e erro de aderência. Todos os comparadores usam as mesmas datas de início e fim da carteira.
+O Ibovespa mede o retorno total de uma carteira teórica e estabelece a referência econômica do mercado. Não é diretamente investível, mas evita duplicar no texto duas séries quase idênticas. Todos os comparadores usam as mesmas datas de início e fim da carteira.
 
 ### 4.3 Correção por múltiplas tentativas
 
@@ -146,7 +145,7 @@ Dois testes de sensibilidade complementam essa inspeção. O primeiro reamostra,
 
 ### 4.5 Registro prospectivo
 
-A versão anual Benevente 1 foi registrada em 16 de agosto de 2026, com hash e data no repositório. O Benevente 2 e o protocolo de acompanhamento receberam registros próprios depois das respectivas mudanças. A política avaliada precisa superar, após imposto, o CDI e o ETF investível de mercado, manter queda máxima inferior a 35% e acumular pelo menos três anos antes de uma conclusão. Não existe resultado prospectivo suficiente na data deste artigo. A carteira formada em janeiro de 2026 é apenas carteira-sombra, pois antecede os registros. Uma regra não poderá ser alterada depois de observado um resultado desfavorável sem que a mudança constitua nova versão e nova contagem.
+A versão anual Benevente 1 foi registrada em 16 de agosto de 2026, com hash e data no repositório. O Benevente 2 e o protocolo de acompanhamento receberam registros próprios depois das respectivas mudanças. O Benevente 2 é a estratégia principal em acompanhamento, enquanto o Benevente 1 permanece como base de seleção anual. Para sustentar uma conclusão futura, a versão precisa superar CDI e Ibovespa após custos e tributos aplicáveis, manter queda máxima inferior a 35% e acumular pelo menos três anos de observações posteriores ao registro. Não existe resultado prospectivo suficiente na data deste artigo. A carteira formada em janeiro de 2026 é apenas carteira-sombra, pois antecede os registros. Uma regra não poderá ser alterada depois de observado um resultado desfavorável sem que a mudança constitua nova versão e nova contagem.
 
 ---
 
@@ -161,17 +160,20 @@ A Tabela 2 apresenta o diagnóstico financeiro de onze decisões, de 2015 a 2025
 | Série | Retorno anualizado | Valor final de R$ 100 mil | Anos vencidos | Queda máxima diária |
 |---|---:|---:|:---:|---:|
 | Benevente 1 | 17,86% | R$ 609.832 | | −47,8% |
-| Benevente, após IR | 16,03% | R$ 513.052 | | |
+| Benevente 2, antes do IR incremental | 18,45% | R$ 643.774 | | −28,7% |
+| Benevente 2, após estimativa do IR incremental¹ | 18,29% | R$ 634.531 | | −28,7% |
+| Benevente 1, após modelo anual de IR | 16,03% | R$ 513.052 | | |
 | Ibovespa | 11,77% | R$ 340.068 | 7 de 11 | −47,0% |
-| BOVA11 (ETF investível) | 11,72% | R$ 338.545 | 7 de 11 | −47,2% |
 | CDI | 9,61% | R$ 274.368 | 6 de 11 | 0% |
 | MVO neutra, mesmo universo | 7,83% | R$ 229.255 | 10 de 11 | |
 
-A coluna em reais traduz a taxa anualizada em escala econômica. Sob as hipóteses do diagnóstico, R$ 100 mil teriam terminado em R$ 609.832 na carteira, R$ 340.068 no Ibovespa e R$ 274.368 no CDI. Esses valores dependem da qualidade da série reconstruída e devem ser lidos junto com a Seção 5.2.
+¹ Estimativa agregada para R$ 100 mil, com alíquota de 15%, isenção mensal quando as vendas não superam R$ 20 mil e compensação de perdas. Ela mede apenas o imposto adicional causado pelas reduções intranuais do Benevente 2; não substitui a apuração por lote nem a conciliação de notas de corretagem.
+
+A coluna em reais traduz a taxa anualizada em escala econômica. Sob as hipóteses do diagnóstico, R$ 100 mil teriam terminado em R$ 609.832 no Benevente 1, R$ 643.774 no Benevente 2 antes do imposto incremental, R$ 340.068 no Ibovespa e R$ 274.368 no CDI. Esses valores dependem da qualidade da série reconstruída e devem ser lidos junto com a Seção 5.2.
 
 Em janelas móveis, contra o CDI a carteira vence 8 de 9 janelas de três anos, 6 de 7 de cinco anos e 2 de 2 de dez anos. Contra a otimização de referência, vence todas as janelas de três, cinco e dez anos. Essas contagens não são observações independentes: as nove janelas de três anos contêm apenas três blocos sem sobreposição, e as de dez anos contêm apenas um. Elas descrevem a amostra, mas não aumentam artificialmente seu tamanho.
 
-O retorno veio acompanhado de risco elevado. A queda máxima diária chegou a 47,8%, praticamente igual à do Ibovespa, 47,0%, e à do BOVA11, 47,2%. Entre 2018 e 2021, a política selecionada manteve 95% em ações e concentrou essa parcela em cinco ou seis emissores. O sistema não antecipou a Covid-19 e não protegeu o capital durante a queda. A carteira sofreu quase todo o recuo do mercado e recuperou-se depois. Portanto, o resultado é incompatível com a promessa de perfil conservador e não pode ser vendido como proteção de crise.
+O retorno do Benevente 1 veio acompanhado de risco elevado. A queda máxima diária chegou a 47,8%, praticamente igual à do Ibovespa, 47,0%. Entre 2018 e 2021, a política selecionada manteve 95% em ações e concentrou essa parcela em cinco ou seis emissores. O Benevente 2, hoje adotado como referência principal de acompanhamento, preservou os mesmos ativos e reduziu a exposição somente depois de estresse observado, levando a queda máxima retrospectiva a 28,7%. A maior perda ocorreu na Covid-19; fora desse episódio, as quedas observadas foram menores. Isso torna a versão 2 mais compatível com uma política equilibrada, mas a amostra não permite classificá-la como conservadora nem afirmar proteção futura.
 
 ### 5.2 Qualidade dos dados e dependência de imputação
 
@@ -189,14 +191,13 @@ Aplicar uma perda adicional de 10 pontos percentuais apenas à parcela imputada 
 
 ### 5.3 Incerteza da amostra
 
-A reamostragem pareada preserva, em cada sorteio, o mesmo ano da estratégia e dos comparadores. Em 100 mil amostras, a probabilidade interna de excesso positivo foi alta, mas o intervalo de 95% ainda cruzou zero contra CDI, Ibovespa e BOVA11. Somente a comparação com a implementação específica de MVO permaneceu positiva em todo o intervalo. Isso não autoriza concluir que o Benevente supera esses referenciais na população; mostra apenas que a ordenação observada não dependeu de um único ano sorteado repetidamente.
+A reamostragem pareada preserva, em cada sorteio, o mesmo ano da estratégia e dos comparadores. Em 100 mil amostras, a probabilidade interna de excesso positivo foi alta, mas o intervalo de 95% ainda cruzou zero contra CDI e Ibovespa. Somente a comparação com a implementação específica de MVO permaneceu positiva em todo o intervalo. Isso não autoriza concluir que o Benevente supera esses referenciais na população; mostra apenas que a ordenação observada não dependeu de um único ano sorteado repetidamente.
 
 | Comparador | Amostras com excesso positivo | Mediana do excesso anualizado | Intervalo de 95% |
 |---|---:|---:|---:|
 | CDI | 93,4% | +8,19 p.p. | −2,27 a +20,01 p.p. |
 | MVO de referência | 100,0% | +10,06 p.p. | +4,73 a +15,29 p.p. |
 | Ibovespa | 94,4% | +5,94 p.p. | −1,31 a +14,28 p.p. |
-| BOVA11 | 94,3% | +5,98 p.p. | −1,34 a +14,41 p.p. |
 
 O limite do procedimento é importante. Reamostrar onze anos não cria um mercado de baixa prolongado que não esteja na série, não produz novas trajetórias de inflação e juros e não transforma desenvolvimento em validação externa. A informação correta é que há estabilidade interna suficiente para continuar o teste prospectivo, não que a superioridade esteja comprovada.
 
@@ -234,7 +235,7 @@ A diferença surgiu antes dos custos: o retorno bruto caiu 4,66 pontos da cadên
 
 Modelo de linguagem como fonte de retorno. Este é o teste que mais interessa à governança do produto, e está detalhado a seguir.
 
-Proteção intranual concebida depois da Covid-19. O Benevente 2 reduz a exposição após estresse de queda e volatilidade do Ibovespa. No histórico, a queda máxima recuou de 47,8% para 28,7%, sem diferença detectável de retorno entre 2019 e 2025 (p = 0,964). Por perfil, a proteção reduziu a queda de 18,9% para 9,9% no conservador, de 28,1% para 17,9% no equilibrado e de 37,6% para 29,3% no arrojado, com pequena redução do CAGR. Em 5.000 reamostragens de blocos, o percentil adverso de 2,5% chegou a 14,2%, 27,7% e 49,1%. A regra foi registrada em 20 de agosto de 2026 para acompanhamento em 2027. Ela permanece retrospectiva, sem imposto intranual, e não integra o resultado principal.
+Proteção intranual concebida depois da Covid-19. O Benevente 2 reduz a exposição após estresse de queda e volatilidade do Ibovespa. No histórico, a queda máxima recuou de 47,8% para 28,7%. A configuração escolhida somente com 2015–2018 também elevou o CAGR de 17,86% para 18,45%, mas a diferença anual de retorno em 2019–2025 não foi detectável (p = 0,964). Para R$ 100 mil, a estimativa agregada do imposto incremental das reduções foi de R$ 2.195 e levou o valor terminal estimado de R$ 643.774 para R$ 634.531, antes da tributação já pertencente à revisão anual. A regra é a referência principal para a carteira-sombra; sua evidência histórica permanece retrospectiva.
 
 ### 5.6 O experimento com modelo de linguagem: três resultados nulos
 
@@ -289,7 +290,7 @@ O benefício comercial não deve ser apresentado como promessa de superar o merc
 
 ### 6.2 Fluxo operacional
 
-O uso começa pela política da instituição. Depois de escolher o perfil e aceitar seus limites, o usuário vê quais arquivos e demonstrações estavam disponíveis e quais passaram na validação. A triagem mostra aprovados e reprovados com o respectivo motivo. A carteira candidata apresenta pesos, parcela defensiva, custo e comparação com CDI, Ibovespa, BOVA11 e MVO. Em seguida, o profissional revisa a tese em linguagem natural, registra riscos, aprova ou rejeita a proposta e informa a justificativa. O dossiê final reúne esse percurso e a versão da regra. Laboratório e documento de decisão são, portanto, duas vistas do mesmo registro, e não etapas desconectadas.
+O uso começa pela política equilibrada em estudo. O usuário vê quais arquivos e demonstrações estavam disponíveis e quais passaram na validação. A triagem mostra aprovados e reprovados com o respectivo motivo. A carteira candidata apresenta pesos, parcela defensiva, custo e comparação com CDI, Ibovespa e MVO. Em seguida, o profissional revisa a tese em linguagem natural, registra riscos, aprova ou rejeita a proposta e informa a justificativa. O dossiê final reúne esse percurso e a versão da regra. Laboratório e documento de decisão são, portanto, duas vistas do mesmo registro, e não etapas desconectadas.
 
 ### 6.3 Implantação e piloto comercial
 
@@ -325,9 +326,9 @@ A primeira limitação é temporal. Onze decisões anuais são poucas, e a janel
 
 A segunda limitação está nos dados. A página atual da B3 respondeu para 95,6% das séries consultadas, mas esse percentual mede resposta do serviço, não completude histórica. A reconstrução das posições efetivamente mantidas encontrou sete diferenças materiais em 54 comparações e duas observações sem resposta. Papéis sem cobertura completa recebem, em casos identificados, uma distribuição imputada pela mediana transversal do ano. Essa fragilidade atingiu 13,9% da exposição acumulada a ações e 50% da carteira total em 2020. O novo arquivo melhora a auditabilidade porque permite reprovar a própria reconciliação; não transforma a curva em evidência institucional.
 
-A terceira é econômica. A queda máxima diária chegou a 47,8%, nível incompatível com um perfil conservador e ligeiramente pior que os 47,0% do Ibovespa. O protótipo não demonstrou proteção de capital. A extensão de controle de risco concebida depois da Covid-19 é retrospectiva, não tem imposto intranual conciliado e não demonstrou retorno adicional.
+A terceira é econômica. A queda máxima diária do Benevente 1 chegou a 47,8%, ligeiramente pior que os 47,0% do Ibovespa. O Benevente 2 reduziu essa marca retrospectiva para 28,7% e melhorou o retorno pontual, mas foi concebido depois da Covid-19, não possui imposto intranual conciliado por lote e ainda não demonstrou benefício prospectivo.
 
-Por fim, o produto não elimina responsabilidade profissional. Uso comercial exige enquadramento regulatório, política de suitability, segurança, contrato de fontes e aprovação humana. O modelo de linguagem não antecipou a Covid-19, não seleciona ativos e não define pesos. Notícias também não entram no protocolo atual porque não há, neste experimento, um arquivo histórico com horário de publicação e corte verificável.
+Por fim, o produto não elimina responsabilidade profissional. Uso comercial exige enquadramento regulatório, política de suitability, segurança, contrato de fontes e aprovação humana. O modelo de linguagem não antecipou a Covid-19, não seleciona ativos e não define pesos. O radar atual lê e classifica notícias com Gemini para alerta humano, mas não participa do retorno histórico nem muda a carteira.
 
 ### 7.2 Recomendações de pesquisa e implantação
 
@@ -368,8 +369,6 @@ B3 S.A. – Brasil, Bolsa, Balcão. (2026c). *Ibovespa B3*. https://www.b3.com.b
 Benevente Wealth System. (2026). *Documentação técnica, repositório de dados e validação de horizontes*. https://github.com/diegogallina1/benevente
 
 Black, F., & Litterman, R. (1992). Global portfolio optimization. *Financial Analysts Journal, 48*(5), 28–43. https://doi.org/10.2469/faj.v48.n5.28
-
-BlackRock. (2026). *iShares Ibovespa Fundo de Índice (BOVA11): factsheet*. https://www.blackrock.com/br/literature/fact-sheet/bova11-ishares-ibovespa-fundo-de-ndice-fund-fact-sheet-pt-lm.pdf
 
 Comissão de Valores Mobiliários. (2021a). *Resolução CVM nº 19, de 25 de fevereiro de 2021: atividade de consultoria de valores mobiliários* (texto consolidado). https://conteudo.cvm.gov.br/legislacao/resolucoes/resol019.html
 

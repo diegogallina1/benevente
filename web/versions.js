@@ -1,6 +1,11 @@
 (async function () {
   const metricNodes = document.querySelectorAll("[data-version-metric]");
   const decisionHosts = document.querySelectorAll("[data-strategy-decisions]");
+  document.querySelectorAll(".comparison-matrix tbody tr").forEach(row => {
+    if (row.cells?.[0]?.textContent.trim() !== "Status" || row.cells.length < 3) return;
+    row.cells[1].textContent = "Base anual da pesquisa";
+    row.cells[2].textContent = "Estratégia principal em acompanhamento";
+  });
   if (!metricNodes.length && !decisionHosts.length) return;
 
   const pct = (value, digits = 1, signed = false) => {
@@ -42,7 +47,6 @@
           <div class="annual-allocation">${renderAllocation(item.allocation)}</div>
           <div class="annual-meta">${riskSummary}<span>${item.eligible_universe_size} ativos elegíveis</span><span>custo estimado ${money(item.estimated_cost_brl)}</span></div>
           ${transitions}
-          <p class="decision-hash">Evidência da decisão: <code>${item.decision_evidence_sha256.slice(0, 16)}…</code></p>
         </div>
       </details>`;
     }).join("");
@@ -61,7 +65,6 @@
     const b1 = experiment.full_period_metrics["Benevente 1"];
     const b2 = experiment.training_only_selection.full_period_metrics;
     const references = experiment.full_period_metrics;
-    const bovaReference = evidence.annual_scoreboard.find(item => item.reference.startsWith("BOVA11"));
     const values = {
       "b1-cagr": pct(b1.cagr), "b1-cumulative": pct(b1.cumulative_return, 1, true),
       "b1-drawdown": pct(b1.max_drawdown), "b1-volatility": pct(b1.annual_volatility),
@@ -69,7 +72,6 @@
       "b2-cumulative": pct(b2.cumulative_return, 1, true), "b2-drawdown": pct(b2.max_drawdown),
       "b2-volatility": pct(b2.annual_volatility), "cdi-cagr": pct(references.CDI.cagr),
       "mvo-cagr": pct(references.MVO.cagr), "ibov-cagr": pct(references.Ibovespa.cagr),
-      "bova-cagr": pct(bovaReference?.reference_cagr),
       "b2-holdout-cagr": pct(experiment.training_only_selection.holdout_2019_2025_metrics.cagr),
       "b1-holdout-cagr": pct(experiment.holdout_2019_2025_metrics["Benevente 1"].cagr),
       "b2-covid": pct(experiment.covid_2020_trace_for_training_selected_candidate.annual_returns["Benevente 2"]),
@@ -78,6 +80,11 @@
     };
     metricNodes.forEach(node => { node.textContent = values[node.dataset.versionMetric] || "—"; });
     decisionHosts.forEach(host => renderDecisionLedger(host, ledger));
+    document.querySelectorAll("[data-tax-sensitivity]").forEach(host => {
+      const rows = experiment.intrayear_tax_estimate?.capital_sensitivity || [];
+      const selected = rows.filter(item => [50000, 100000, 250000, 1000000].includes(Number(item.initial_capital_brl)));
+      host.innerHTML = selected.map(item => `<tr><td>${money(item.initial_capital_brl)}</td><td>${money(item.estimated_incremental_tax_brl)}</td><td>${pct(item.cagr_after_incremental_tax)}</td><td>${money(item.estimated_terminal_wealth_after_incremental_tax_brl)}</td></tr>`).join("");
+    });
   } catch (_) {
     metricNodes.forEach(node => { node.textContent = "—"; });
     decisionHosts.forEach(host => { host.innerHTML = "<p class=\"live-error\">O histórico de decisões não pôde ser carregado.</p>"; });

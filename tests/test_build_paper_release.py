@@ -7,7 +7,8 @@ from tools.build_paper_release import build_bundle, write_release
 
 def test_paper_release_reconciles_canonical_metrics() -> None:
     bundle = build_bundle()
-    assert bundle["release_contract"]["canonical_strategy"] == "Benevente 1"
+    assert bundle["release_contract"]["annual_selection_strategy"] == "Benevente 1"
+    assert bundle["release_contract"]["primary_shadow_strategy"] == "Benevente 2"
     assert bundle["release_contract"]["decision_count"] == 11
     assert round(bundle["published_strategy"]["cagr"], 4) == 0.1786
     assert round(bundle["published_strategy"]["daily_max_drawdown"], 4) == -0.4778

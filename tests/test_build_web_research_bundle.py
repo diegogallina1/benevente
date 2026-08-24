@@ -53,10 +53,10 @@ def test_bundle_aligns_ibovespa_to_annual_decision_dates_as_a_total_return_index
     # clear; the caveat must now point at investability instead.
     limitation = result["meta"]["ibovespa"]["limitation"].lower()
     assert "índice de preço" not in limitation
-    assert "retorno total" in limitation and "bova11" in limitation
+    assert "retorno total" in limitation and "não é diretamente investível" in limitation
 
 
-def test_bundle_publishes_ibovespa_and_bova11_as_distinct_monthly_references(tmp_path: Path):
+def test_bundle_publishes_only_ibovespa_as_the_market_reference(tmp_path: Path):
     source = tmp_path / "run"; source.mkdir()
     pd.DataFrame([{
         "decision_year": 2024, "decision_date": "2024-01-02", "holding_end_exclusive": "2025-01-02",
@@ -75,7 +75,7 @@ def test_bundle_publishes_ibovespa_and_bova11_as_distinct_monthly_references(tmp
 
     series = result["monthly_curve"]["series"]
     assert series["Ibovespa"][-1] == 120.0
-    assert series["BOVA11"][-1] == 119.0
+    assert "BOVA11" not in series
     assert result["profile_curves"] == {}
 
 
@@ -108,12 +108,12 @@ def test_bundle_adds_benevente2_without_replacing_published_strategy(tmp_path: P
         {"date": "2025-01-02", "benevente2": 1.0},
         {"date": "2025-12-31", "benevente2": 1.12},
     ]).to_csv(b2 / "candidate_daily_comparison.csv", index=False)
-    (b2 / "summary.json").write_text('{"status":"retrospective_experiment_not_published"}', encoding="utf-8")
+    (b2 / "summary.json").write_text('{"status":"primary_shadow_strategy_with_retrospective_evidence"}', encoding="utf-8")
     result = build_web_research_bundle(source, tmp_path / "out.json", benevente2_source=b2)
     assert result["annual"][0]["net_return"] == .10
     assert result["annual"][0]["benevente2_return"] == .12
-    assert result["meta"]["benevente2"]["status"] == "retrospective_experiment_not_published"
-    assert "Benevente 2 · experimental" in result["monthly_curve"]["series"]
+    assert result["meta"]["benevente2"]["status"] == "primary_shadow_strategy_with_retrospective_evidence"
+    assert "Benevente 2" in result["monthly_curve"]["series"]
 
 
 def test_bundle_writes_strict_json_when_benevente2_starts_after_daily_book(tmp_path: Path):
@@ -134,13 +134,13 @@ def test_bundle_writes_strict_json_when_benevente2_starts_after_daily_book(tmp_p
         {"date": "2025-01-03", "benevente2": 1.0},
         {"date": "2025-12-31", "benevente2": 1.12},
     ]).to_csv(b2 / "candidate_daily_comparison.csv", index=False)
-    (b2 / "summary.json").write_text('{"status":"retrospective_experiment_not_published"}', encoding="utf-8")
+    (b2 / "summary.json").write_text('{"status":"primary_shadow_strategy_with_retrospective_evidence"}', encoding="utf-8")
 
     destination = tmp_path / "out.json"
     result = build_web_research_bundle(source, destination, benevente2_source=b2)
     parsed = json.loads(destination.read_text(encoding="utf-8"))
 
-    values = parsed["monthly_curve"]["series"]["Benevente 2 · experimental"]
+    values = parsed["monthly_curve"]["series"]["Benevente 2"]
     assert parsed["monthly_curve"]["evaluation_starts"] == "2025-01-02"
     assert values[0] == 100.0
     assert values[-1] == 112.0

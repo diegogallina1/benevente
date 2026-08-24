@@ -18,7 +18,7 @@ const modelSteps = {
   screen: { number:"03 · FILTRO FUNDAMENTAL", title:"Qualidade e segurança vêm antes do ranking.", text:"Empresas operacionais e bancos são avaliados por métricas compatíveis com seus demonstrativos. Liquidez, rentabilidade, geração de caixa, solvência e disponibilidade dos dados eliminam casos não comparáveis.", uses:"ROIC ou ROE, caixa, dívida, valuation e liquidez", blocks:"Dados ausentes, fragilidade financeira e baixa negociabilidade", produces:"Universo elegível da revisão", rule:"<strong>Regra:</strong> ausência de evidência não vira aprovação." },
   optimizer: { number:"01 · CÁLCULO", title:"Valor, qualidade e momento formam a cesta.", text:"As configurações candidatas combinam fatores, número de posições e orçamento de ações. A configuração do ano é escolhida pelo Sharpe dos anos já encerrados; os ativos recebem pesos proporcionais à pontuação dentro das regras, e o CDI recebe o saldo.", uses:"Fatores fundamentais e de mercado, custos e limites", blocks:"Escolha baseada no retorno futuro", produces:"Carteira anual e custo de rebalanceamento", rule:"<strong>Comparação:</strong> o MVO é calculado separadamente sobre o mesmo universo elegível. Ele não escolhe a carteira Benevente." },
   explanation: { number:"02 · EXPLICAÇÃO", title:"A linguagem recebe uma decisão já fechada.", text:"O modelo recebe somente fatos aprovados sobre a cesta, transforma-os em uma justificativa legível e destaca riscos e perguntas para revisão. Ele não consulta retornos futuros, não muda a lista de ativos e não define pesos.", uses:"Fatos aprovados e referências do dossiê", blocks:"Números inventados e alteração da carteira", produces:"Tese, riscos e perguntas de revisão", rule:"<strong>Avaliação:</strong> fidelidade, completude, cobertura de riscos e ausência de números inventados são medidas separadamente do retorno." },
-  risk: { number:"05 · CONTROLE DE RISCO", title:"O Benevente 2 pode reduzir exposição durante o ano.", text:"A cesta fundamentalista não muda. Se drawdown ou volatilidade do Ibovespa cruzarem níveis predefinidos, parte da carteira migra temporariamente para CDI no pregão seguinte.", uses:"Ibovespa até o fechamento anterior", blocks:"Reação com informação futura", produces:"Exposição entre 35% e o peso anual", rule:"<strong>Status:</strong> extensão retrospectiva experimental; não é resultado prospectivo nem ação da LLM." },
+  risk: { number:"05 · CONTROLE DE RISCO", title:"O Benevente 2 pode reduzir exposição durante o ano.", text:"A cesta fundamentalista não muda. Se queda ou volatilidade do Ibovespa cruzarem níveis predefinidos, parte da carteira migra temporariamente para CDI no pregão seguinte. Em paralelo, o Gemini classifica notícias e fatos relevantes para alertar o revisor, sem mudar pesos.", uses:"Ibovespa até o fechamento anterior e radar de eventos", blocks:"Reação com informação futura e ordem automática", produces:"Exposição entre 35% e o peso anual, mais alertas humanos", rule:"<strong>Status:</strong> estratégia principal em acompanhamento. O histórico continua retrospectivo e o radar não entra no retorno publicado." },
   review: { number:"03 · DECISÃO", title:"O resultado é uma proposta, não uma ordem.", text:"O revisor humano confere tese, riscos, pesos e custos. Se decidir implementar, registra a operação e confere a nota de corretagem depois.", uses:"Proposta, evidências e custo estimado", blocks:"Execução automática", produces:"Carteira-sombra e registro de decisão", rule:"<strong>Regra:</strong> resultados prospectivos ficam separados do backtest histórico." }
 };
 
@@ -31,7 +31,7 @@ let chartZoom = 1;
 let chartFocus = null;
 let chartScale = "linear";
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
-const colors = { "Benevente":"#0f766e", "Benevente 1":"#0f766e", "Benevente 2 · experimental":"#20a486", "Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490", "BOVA11":"#4a5560" };
+const colors = { "Benevente":"#0f766e", "Benevente 1":"#0f766e", "Benevente 2":"#20a486", "Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490" };
 // Any string that reaches innerHTML has to be escaped, including strings the
 // user typed into the compare box and the name of a file they imported. Nothing
 // here is persisted or shared, so the exposure is to the person's own browser
@@ -56,11 +56,10 @@ function annualCurve(period) {
   // references come from the run itself instead of a separately aligned blob.
   const tracks = {
     "Benevente 1": "net_return",
-    "Benevente 2 · experimental": "benevente2_return",
+    "Benevente 2": "benevente2_return",
     "MVO de referência": "mvo_eligible_net_return",
     "CDI": "cdi_net_return",
     "Ibovespa": "benchmark_IBOVESPA",
-    "BOVA11": "benchmark_BOVA11",
   };
   const series = {};
   Object.entries(tracks).forEach(([name, column]) => {
@@ -123,18 +122,7 @@ function smoothPath(points) {
 function profileDataset(period) {
   const monthly = monthlyDataset(period);
   if (monthly) return monthly;
-  const profileCurve = researchData?.profile_curves?.[activeProfileKey()];
-  if (!profileCurve || !comparisonWindows[period]) return annualCurve(period);
-  const keep = Math.min(comparisonWindows[period] + 1, profileCurve.dates.length);
-  const dates = profileCurve.dates.slice(-keep);
-  // Each track is rebased to 100 on the first date of the selected window so
-  // the comparison never mixes starting points.
-  const series = Object.fromEntries(Object.entries(profileCurve.series).map(([name, values]) => {
-    const window = values.slice(-keep);
-    const base = window[0];
-    return [name, Number.isFinite(base) && base > 0 ? window.map(value => +(value / base * 100).toFixed(4)) : window];
-  }));
-  return { dates, series };
+  return annualCurve(period);
 }
 function seriesFor(period) {
   const base = profileDataset(period);
@@ -195,8 +183,7 @@ function pct(value, digits = 1) { return `${value >= 0 ? "+" : ""}${(value * 100
 function plainPct(value, digits = 1) { return `${(value * 100).toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits })}%`; }
 function selectedAnnualDecision() {
   const year = Number(document.querySelector("#decision-year")?.value);
-  const profile = researchData?.profiles?.[activeProfileKey()];
-  const rows = Array.isArray(profile) ? profile : profile?.annual || researchData?.annual || [];
+  const rows = researchData?.annual || [];
   return rows.find(item => item.decision_year === year) || rows.at(-1);
 }
 
@@ -218,8 +205,7 @@ function activePolicy() {
 }
 
 function activeProfileRows() {
-  const profile = researchData?.profiles?.[activeProfileKey()];
-  return Array.isArray(profile) ? profile : profile?.annual || researchData?.annual || [];
+  return researchData?.annual || [];
 }
 
 function renderProfileHistory() {
@@ -227,12 +213,23 @@ function renderProfileHistory() {
   if (!container || !researchData) return;
   const rows = activeProfileRows();
   if (!rows.length) { container.innerHTML = ""; return; }
-  const label = activeProfileLabel();
-  container.innerHTML = `<div class="profile-history-head"><div><span class="control-label">HISTÓRICO DA POLÍTICA</span><b>${label}</b><small>Resultado líquido de cada cesta anual congelada antes do período.</small></div><span>${rows.length} anos completos</span></div><div class="profile-year-grid">${rows.map(row => `<button type="button" class="profile-year ${String(selectedAnnualDecision()?.decision_year) === String(row.decision_year) ? "active" : ""}" data-year="${row.decision_year}"><small>${row.decision_year}</small><b>${pct(row.net_return)}</b><span>MVO ${pct(row.mvo_eligible_net_return)} · CDI ${pct(row.cdi_net_return)}</span></button>`).join("")}</div>`;
+  container.innerHTML = `<div class="profile-history-head"><div><span class="control-label">ANO A ANO</span><b>Benevente 1 × Benevente 2</b><small>A cesta de janeiro é a mesma. A versão 2 pode reduzir a exposição durante o ano.</small></div><span>${rows.length} anos completos</span></div><div class="profile-year-grid">${rows.map(row => `<button type="button" class="profile-year ${String(selectedAnnualDecision()?.decision_year) === String(row.decision_year) ? "active" : ""}" data-year="${row.decision_year}"><small>${row.decision_year}</small><b>B2 ${pct(row.benevente2_return)}</b><span>B1 ${pct(row.net_return)} · CDI ${pct(row.cdi_net_return)}</span></button>`).join("")}</div>`;
   container.querySelectorAll(".profile-year").forEach(button => button.addEventListener("click", () => {
     document.querySelector("#decision-year").value = button.dataset.year;
     renderAssetWorkbench(); renderProfileHistory();
   }));
+}
+
+function configurationLabel(value) {
+  const match = String(value || "").match(/^eq(\d+)_n(\d+)_(.+)$/);
+  if (!match) return "configuração anual documentada";
+  const factors = {
+    triple_factor: "valor, qualidade e comportamento de preços",
+    value_quality: "valor e qualidade",
+    low_volatility: "baixa volatilidade",
+    momentum_12m: "comportamento de preços em 12 meses",
+  };
+  return `${match[1]}% em ações · mínimo de ${match[2]} emissores · ${factors[match[3]] || "fatores quantitativos"}`;
 }
 
 function syncDecisionYears() {
@@ -248,21 +245,21 @@ function renderAssetWorkbench() {
   if (!researchData) return;
   const decision = selectedAnnualDecision();
   if (!decision) return;
-  const profileRun = researchData.profiles?.[activeProfileKey()];
-  const holdingsSource = (!Array.isArray(profileRun) && profileRun?.holdings) || researchData.holdings;
-  const transitionsSource = (!Array.isArray(profileRun) && profileRun?.transitions) || researchData.transitions;
+  const holdingsSource = researchData.holdings;
+  const transitionsSource = researchData.transitions;
   const holdings = holdingsSource.filter(item => item.decision_year === decision.decision_year);
   const transitions = transitionsSource.filter(item => item.decision_year === decision.decision_year);
   const equities = holdings.filter(item => item.ticker !== "TITULO_CDI");
   const equityWeight = equities.reduce((sum, item) => sum + item.weight, 0);
   const transitionByTicker = Object.fromEntries(transitions.map(item => [item.ticker, item]));
-  const selected = String(decision.selected_configuration || "configuração anual").replaceAll("_", " ");
-  document.querySelector("#dossier-policy").textContent = `Benevente Wealth System · ${selected}. A decisão destinou ${plainPct(decision.target_equity_weight)} à renda variável. A configuração foi escolhida apenas com anos já encerrados; o retorno após ${formatDateBr(decision.decision_date)} não participou da escolha.`;
+  const selected = configurationLabel(decision.selected_configuration);
+  document.querySelector("#dossier-policy").textContent = `${selected}. A configuração foi escolhida apenas com anos encerrados; o retorno posterior não participou da escolha.`;
   const coverage = researchData.meta.coverage;
   const source = researchData.meta.source_tier === "public_reproducible_research" ? "fonte pública de pesquisa" : "fonte qualificada";
   const series = coverage.price_tickers ? `${coverage.price_tickers.toLocaleString("pt-BR")} séries ajustadas` : "séries ajustadas";
   document.querySelector("#research-status").innerHTML = `<b>Pesquisa reproduzível, ainda não validada para uso institucional.</b><span>O painel usa ${escapeHtml(series)}, CDI do BCB e ${coverage.fundamental_snapshots?.toLocaleString("pt-BR") || "—"} registros fundamentais da CVM disponíveis em cada decisão. A tentativa de reconciliação com a página atual da B3 foi executada e bloqueou o selo institucional; uma base histórica primária ou licenciada ainda é necessária.</span>`;
-  document.querySelector("#asset-summary").innerHTML = `<div><small>DECISÃO</small><strong>${formatDateBr(decision.decision_date)}</strong><span>Carteira mantida até ${formatDateBr(decision.holding_end_exclusive)}.</span></div><div><small>RENDA VARIÁVEL</small><strong>${plainPct(equityWeight)}</strong><span>${equities.length} ativo(s) elegível(is). CDI completa a alocação.</span></div><div><small>RESULTADO POSTERIOR</small><strong>${pct(decision.net_return)}</strong><span>Após custo estimado de ${money.format(decision.estimated_cost_brl)}.</span></div>`;
+  const b2Return = Number(decision.benevente2_return);
+  document.querySelector("#asset-summary").innerHTML = `<div><small>DECISÃO</small><strong>${formatDateBr(decision.decision_date)}</strong><span>${plainPct(equityWeight)} em ações, ${equities.length} emissores.</span></div><div><small>BENEVENTE 1</small><strong>${pct(decision.net_return)}</strong><span>Cesta mantida até ${formatDateBr(decision.holding_end_exclusive)}.</span></div><div><small>BENEVENTE 2</small><strong>${Number.isFinite(b2Return) ? pct(b2Return) : "—"}</strong><span>Mesma cesta, com controle intranual de exposição.</span></div><div><small>REFERÊNCIAS</small><strong>CDI ${pct(decision.cdi_net_return)}</strong><span>MVO ${pct(decision.mvo_eligible_net_return)} · Ibovespa ${pct(decision.benchmark_IBOVESPA)}</span></div>`;
   document.querySelector("#asset-grid").innerHTML = holdings.map(item => {
     const transition = transitionByTicker[item.ticker];
     const isCdi = item.ticker === "TITULO_CDI";
@@ -275,8 +272,8 @@ function renderAssetWorkbench() {
   }).join("");
   const panel = document.querySelector("#asset-action-panel");
   panel.classList.add("active");
-  const evidenceHash = String(decision.decision_evidence_sha256 || "hash indisponível nesta cópia");
-  panel.innerHTML = `<div><span class="action-label">COMO LER</span><b>Escolha antes, resultado depois.</b><p>O dossiê separa o que estava disponível em janeiro da rentabilidade observada no ano.</p></div><div><span class="action-label">EVIDÊNCIA DA DECISÃO</span><b><code>${escapeHtml(evidenceHash.slice(0, 16))}${evidenceHash.length > 16 ? "…" : ""}</code></b><p>SHA-256 da linha anual, cesta e transições. ${escapeHtml(decision.approval_status || "Registro técnico; aprovação humana real não coletada.")}</p></div><div><span class="action-label">PRÓXIMA REVISÃO</span><b>${formatDateBr(decision.holding_end_exclusive)}</b><p>Reavaliar elegibilidade, dados CVM, liquidez, custos e pesos. Não é instrução de compra ou venda.</p></div>`;
+  const difference = Number.isFinite(b2Return) ? b2Return - Number(decision.net_return) : null;
+  panel.innerHTML = `<div><span class="action-label">O QUE NÃO MUDA</span><b>Ativos e pesos-base de janeiro.</b><p>As duas versões começam o ano com a mesma cesta. Valor, qualidade e comportamento definem os nomes.</p></div><div><span class="action-label">O QUE MUDA NO BENEVENTE 2</span><b>${difference == null ? "Controle intranual" : `${pct(difference)} no resultado anual`}</b><p>Quando queda ou volatilidade acionam alerta, todas as ações são reduzidas proporcionalmente e a diferença passa a CDI.</p></div><div><span class="action-label">PRÓXIMA REVISÃO</span><b>${formatDateBr(decision.holding_end_exclusive)}</b><p>Os ativos só são reavaliados no ciclo anual. Alertas de notícias exigem revisão humana e não mudam a carteira sozinhos.</p></div>`;
 }
 
 function refreshDecisionStudio() {
@@ -376,6 +373,7 @@ function renderUniverse() {
 }
 
 const wealth = document.querySelector("#wealth"), wealthOut = document.querySelector("#wealth-output");
+wealthOut.value = money.format(wealth.value);
 wealth.addEventListener("input", () => {
   wealthOut.value = money.format(wealth.value);
   // Os cards seguem o cursor. Esperar o envio fazia o controle parecer inerte,
@@ -402,12 +400,7 @@ function renderWealthCards(period) {
   const capital = Math.max(0, Number(document.querySelector("#wealth")?.value) || 0);
   const growth = column => rows.every(item => Number.isFinite(Number(item[column])))
     ? rows.reduce((value, item) => value * (1 + Number(item[column])), 1) : null;
-  const tracks = [
-    ["Benevente", "net_return", "Carteira publicada"],
-    ["CDI", "cdi_net_return", "Rendimento do caixa"],
-    ["Ibovespa", "benchmark_IBOVESPA", "Índice de retorno total da B3"],
-    ["BOVA11", "benchmark_BOVA11", "ETF investível que acompanha o Ibovespa"],
-  ];
+  const tracks = [["Benevente 2", "benevente2_return", "Estratégia principal em acompanhamento"]];
   const cards = tracks.map(([name, column, note]) => {
     const factor = growth(column);
     if (factor === null) return "";
@@ -416,7 +409,10 @@ function renderWealthCards(period) {
     return `<article class="wealth-card" style="--series-color:${seriesColor(name, 0)}"><header><b>${escapeHtml(name)}</b><small>${escapeHtml(note)}</small></header><strong>${money.format(final)}</strong><div class="wealth-card-foot"><span>${factor.toLocaleString("pt-BR", {minimumFractionDigits: 1, maximumFractionDigits: 1})}x o valor aplicado</span><span class="${gain >= 0 ? "up" : "down"}">${gain >= 0 ? "+" : "−"}${money.format(Math.abs(gain))}</span></div></article>`;
   }).join("");
   const start = rows[0].decision_date, finish = rows.at(-1).holding_end_exclusive;
-  host.innerHTML = `<p class="wealth-cards-lede">Aplicando ${money.format(capital)} em ${formatDateBr(start)} e resgatando em ${formatDateBr(finish)}, sem aportes no meio.</p><div class="wealth-cards-grid">${cards}</div>`;
+  const taxRows = researchData?.meta?.benevente2?.intrayear_tax_estimate?.capital_sensitivity || [];
+  const tax = period === "11" ? taxRows.find(item => Number(item.initial_capital_brl) === capital) : null;
+  const taxText = tax ? `<p class="wealth-tax-note">Estimativa adicional de IR das reduções intranuais: ${money.format(tax.estimated_incremental_tax_brl)}. Patrimônio estimado após esse imposto: <b>${money.format(tax.estimated_terminal_wealth_after_incremental_tax_brl)}</b>. Modelo agregado; não substitui notas de corretagem.</p>` : "";
+  host.innerHTML = `<p class="wealth-cards-lede">Benevente 2 com ${money.format(capital)} aplicados em ${formatDateBr(start)} e mantidos até ${formatDateBr(finish)}, sem aportes.</p><div class="wealth-cards-grid single">${cards}</div>${taxText}`;
 }
 
 function renderCurveToggles(period) {
@@ -580,32 +576,25 @@ function renderComparison(period) {
   const afterTax = statsFor("net_return_after_tax");
   const cdiAfterTax = statsFor("cdi_net_return_after_tax");
   const ibovespa = statsFor("benchmark_IBOVESPA");
-  const bova11 = statsFor("benchmark_BOVA11");
   const winCdi = winsAgainst("cdi_net_return");
   const winMvo = winsAgainst("mvo_eligible_net_return");
   const winMarket = ibovespa ? winsAgainst("benchmark_IBOVESPA") : null;
-  const winBova = bova11 ? winsAgainst("benchmark_BOVA11") : null;
   const start = rows[0].decision_date, end = rows.at(-1).holding_end_exclusive;
   const versusCdi = benevente.cumulative - cdi.cumulative, versusMvo = benevente.cumulative - mvo.cumulative;
-  document.querySelector("#period-description").textContent = `Janela avaliada: ${formatDateBr(start)} a ${formatDateBr(end)}, ${rows.length} ano(s), com custos modelados. O imposto aparece separado; o Benevente 2 ainda não possui modelo tributário intranual.`;
+  document.querySelector("#period-description").textContent = `Janela avaliada: ${formatDateBr(start)} a ${formatDateBr(end)}, ${rows.length} ano(s), com custos modelados. O imposto incremental do Benevente 2 aparece na simulação em reais.`;
   const marketPhrase = winMarket === null ? "" : ` Contra o Ibovespa, venceu ${winMarket} de ${rows.length}.`;
-  const investablePhrase = winBova === null ? "" : ` Contra o BOVA11, venceu ${winBova} de ${rows.length}.`;
   // A percentage is easy to nod at and hard to feel. The same number said in
   // reais is what a reader actually compares against the fund they already own,
   // so it travels beside every series instead of only in the headline.
   document.querySelector("#comparison-summary").textContent = benevente2
     ? `Benevente 2 ${plainPct(benevente2.cumulative)} acumulado; Benevente 1 ${plainPct(benevente.cumulative)}. A melhoria principal foi reduzir risco, não provar retorno adicional.`
-    : `Benevente 1 ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}${investablePhrase}`;
-  // Gross of tax, like a fund factsheet. Ibovespa and BOVA11 stay side by side:
-  // the first is the total-return market index and the second is the security
-  // an investor could have bought to obtain similar exposure.
+    : `Benevente 1 ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
   const baseRows = [
     ["Benevente 1", benevente, "Regra anual publicada"],
-    benevente2 ? ["Benevente 2", benevente2, "Controle de risco experimental"] : null,
+    benevente2 ? ["Benevente 2", benevente2, "Estratégia principal em acompanhamento"] : null,
     ["MVO de referência", mvo, "Otimização neutra independente"],
     ["CDI", cdi, "Rendimento do caixa"],
     ibovespa ? ["Ibovespa", ibovespa, "Índice de retorno total da B3"] : null,
-    bova11 ? ["BOVA11", bova11, "ETF investível que acompanha o Ibovespa"] : null,
   ].filter(Boolean);
   const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => {
     const metrics = metricsForSeries(values, profileDataset(period).dates);
@@ -615,8 +604,7 @@ function renderComparison(period) {
   }).filter(Boolean);
   document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${escapeHtml(name)}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td>${escapeHtml(note)}</td></tr>`).join("");
   const marketNote = ibovespa ? ` Contra o Ibovespa, ${pct(benevente.cumulative - ibovespa.cumulative)}.` : "";
-  const investableNote = bova11 ? ` Contra o BOVA11, ${pct(benevente.cumulative - bova11.cumulative)}.` : "";
-  document.querySelector("#research-note").textContent = `Na janela escolhida, a diferença do Benevente 1 para o CDI é ${pct(versusCdi)} e para o MVO é ${pct(versusMvo)}.${marketNote}${investableNote} O Ibovespa mede o retorno total da carteira teórica, enquanto o BOVA11 representa uma forma negociável de acompanhar esse mercado. O Benevente 2 mantém a seleção anual e altera somente a exposição. Como foi concebido depois da Covid, continua classificado como experimento retrospectivo.`;
+  document.querySelector("#research-note").textContent = `Na janela escolhida, a diferença do Benevente 1 para o CDI é ${pct(versusCdi)} e para o MVO é ${pct(versusMvo)}.${marketNote} O Benevente 2 mantém a seleção anual e altera somente a exposição. Ele é a estratégia principal acompanhada, mas seus números de 2015–2025 continuam retrospectivos.`;
   renderCurveToggles(period); renderLineChart(period); renderWealthCards(period);
 }
 

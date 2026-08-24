@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "generated_at_utc": "2026-08-24T02:34:12+00:00",
+  "generated_at_utc": "2026-08-24T12:51:56+00:00",
   "status": "research_only",
   "names": {
     "academic": "Benevente Quant AI",
@@ -12,7 +12,7 @@
     "allocation": "Regra quantitativa anual, com configuração escolhida apenas pelos anos já encerrados.",
     "llm": "Explica teses, riscos e perguntas de revisão; não seleciona ativos nem define pesos.",
     "mvo": "Comparador quantitativo independente e alocador apenas nos braços experimentais.",
-    "benevente2": "Extensão experimental: preserva a cesta anual e reduz exposição após estresse observável no fechamento anterior."
+    "benevente2": "Estratégia principal em acompanhamento: preserva a cesta anual e reduz exposição após estresse observável no fechamento anterior."
   },
   "evaluation": {
     "decision_years": [
@@ -31,7 +31,6 @@
     "strategy_cagr_after_modeled_tax": 0.16027289798042021,
     "cdi_cagr": 0.09609571930908412,
     "ibovespa_cagr": 0.11769711878033418,
-    "bova11_cagr": 0.11724118199980071,
     "mvo_reference_cagr": 0.07834134942607607,
     "strategy_max_daily_drawdown": -0.47784912800289203,
     "ibovespa_max_daily_drawdown": -0.4695421729681053,
@@ -129,7 +128,7 @@
     "Na auditoria das 56 observações ativo-ano realmente mantidas, 7 diferenças excederam 5 pontos percentuais e 2 observações não tiveram resposta do endpoint.",
     "Parte das distribuições é imputada quando a fonte pública não cobre o papel.",
     "Custos e tributos são modelados, não conciliados com notas reais de corretagem.",
-    "A camada de risco por perfil é retrospectiva e ainda não modela o imposto intranual."
+    "A camada de risco do Benevente 2 é retrospectiva; o imposto intranual é uma estimativa agregada, não uma conciliação por lote e nota de corretagem."
   ],
   "canonical_files": [
     {
@@ -179,8 +178,8 @@
     },
     {
       "path": "artifacts/benevente2_event_risk/summary.json",
-      "bytes": 6190,
-      "sha256": "64aed4383e65e0da82dadcff113f3b699123be738213632a3c9dd99d3f621173"
+      "bytes": 20196,
+      "sha256": "8bc321fb4f6f18cb89675a2dc1b9c19561e0a3e018f227890421bc345c7d1a00"
     },
     {
       "path": "artifacts/benevente2_event_risk/candidate_annual_comparison.csv",
@@ -189,8 +188,8 @@
     },
     {
       "path": "artifacts/benevente2_event_risk/candidate_daily_comparison.csv",
-      "bytes": 1148254,
-      "sha256": "eb8c9d6e5354b1a940ec389675205827cb1566d9922b81eea010b769b3e7d759"
+      "bytes": 1173370,
+      "sha256": "4b25dc16011b219e4d2d3a5022ec79490d52be5edfdff4474cf73b4a78fd7fae"
     },
     {
       "path": "artifacts/benevente2_event_risk/sensitivity_grid.csv",

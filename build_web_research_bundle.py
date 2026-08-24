@@ -97,7 +97,7 @@ def _ibovespa_on_decision_dates(annual: pd.DataFrame, price_input: str | Path | 
         "label": "Ibovespa",
         "dates": [date.strftime("%Y-%m-%d") for date in dates],
         "values_base_100": [round(value / base * 100, 6) for value in values],
-        "limitation": "Índice de retorno total da B3: reinveste proventos. Não é diretamente investível; para o custo real de comprar o mercado, veja BOVA11.",
+        "limitation": "Índice de retorno total da B3: reinveste os proventos da carteira teórica.",
     }
 
 
@@ -122,7 +122,6 @@ def _profile_curves(profile_results: dict[str, dict]) -> dict[str, dict]:
             "MVO de referência": "mvo_eligible_net_return",
             "CDI": "cdi_net_return",
             "Ibovespa": "benchmark_IBOVESPA",
-            "BOVA11": "benchmark_BOVA11",
         }
         series: dict[str, list[float]] = {}
         for name, column in tracks.items():
@@ -136,19 +135,12 @@ def _profile_curves(profile_results: dict[str, dict]) -> dict[str, dict]:
     return payload
 
 
-# The two market references answer different questions and must travel
-# together. Ibovespa is B3's total-return index and measures the theoretical
-# market portfolio with distributions reinvested. BOVA11 is a security that an
-# investor could actually buy, so its path also reflects implementation costs
-# and tracking difference. Hiding either one makes the website's benchmark
-# contract disagree with the papers.
 MONTHLY_SERIES_LABELS = {
     "strategy": "Benevente 1",
-    "benevente2": "Benevente 2 · experimental",
+    "benevente2": "Benevente 2",
     "mvo": "MVO de referência",
     "cdi": "CDI",
     "IBOVESPA": "Ibovespa",
-    "BOVA11": "BOVA11",
 }
 
 
@@ -316,12 +308,34 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
         profile_root = Path(profile_source)
         profile_results[str(profile)] = _localized_records(profile_root)
     evidence = json.loads(Path(audit_evidence).read_text(encoding="utf-8")) if audit_evidence else None
+    if evidence:
+        # The public product uses one domestic market reference. BOVA11 tracked
+        # the Ibovespa closely enough to add visual noise without changing the
+        # interpretation, so it remains in the research source files only.
+        for key in ("annual_scoreboard", "rolling_windows"):
+            if isinstance(evidence.get(key), list):
+                evidence[key] = [
+                    row for row in evidence[key]
+                    if "BOVA11" not in str(row.get("reference", ""))
+                ]
     if evidence and source_metadata.get("claims", {}).get("strategy_max_daily_drawdown") is not None:
         evidence["worst_annual_return"] = evidence.get("max_drawdown")
         evidence["max_drawdown"] = float(source_metadata["claims"]["strategy_max_daily_drawdown"])
         evidence["max_drawdown_basis"] = "daily"
         if isinstance(evidence.get("readiness"), dict):
             evidence["readiness"]["max_drawdown"] = evidence["max_drawdown"]
+    annual_public = annual.drop(columns=["benchmark_BOVA11"], errors="ignore")
+    ibovespa = (
+        _ibovespa_on_decision_dates(annual, ibovespa_price_input)
+        if ibovespa_price_input else
+        json.loads(Path(existing_bundle).read_text(encoding="utf-8")).get("meta", {}).get("ibovespa")
+        if existing_bundle else None
+    )
+    if isinstance(ibovespa, dict):
+        ibovespa["limitation"] = (
+            "Índice de retorno total da B3: reinveste os proventos da carteira teórica. "
+            "Não é diretamente investível."
+        )
     payload = {
         "meta": {
             "title": "Estratégia anual — decisão com os dados da data",
@@ -341,14 +355,9 @@ def build_web_research_bundle(source: str | Path, destination: str | Path,
             "evidence": evidence,
             "benevente2": benevente2_summary,
             "protocol": protocol,
-            "ibovespa": (
-                _ibovespa_on_decision_dates(annual, ibovespa_price_input)
-                if ibovespa_price_input else
-                json.loads(Path(existing_bundle).read_text(encoding="utf-8")).get("meta", {}).get("ibovespa")
-                if existing_bundle else None
-            ),
+            "ibovespa": ibovespa,
         },
-        "annual": _records(annual),
+        "annual": _records(annual_public),
         "monthly_curve": _monthly_curve(root, benevente2_source),
         "profiles": profile_results,
         "profile_curves": _profile_curves(profile_results),

@@ -14,13 +14,11 @@ def test_home_has_static_evidence_and_research_stage() -> None:
     assert "Carregando" not in home
     assert "PROTÓTIPO DE PESQUISA" in home
     assert "Matriz de Evidências" in home
-    assert "Ver os 7 defeitos corrigidos" in home
-    assert "Uma fronteira para cada método" in home
+    assert "Cada afirmação tem um limite" in home
     assert "2026 permanece carteira-sombra" in home
-    assert "Reproduzir no GitHub" in home
+    assert "Reproduzir no GitHub" not in home
     assert "O Benevente separa o que calcula, o que explica e o que decide" in home
     assert "sensibilidade, não prova de descontaminação" in home
-    assert "a queda máxima passou de 30,4% para 47,8%" in home
     assert "fidelidade" in home.lower() and "números inventados" in home.lower()
 
 
@@ -52,7 +50,7 @@ def test_site_uses_honest_language_model_and_cadence_claims() -> None:
     method = (ROOT / "web" / "metodo.html").read_text(encoding="utf-8")
     quant = (ROOT / "web" / "quant-ai.html").read_text(encoding="utf-8")
     combined = home + method
-    assert "look-ahead bias / viés de antecipação" in combined
+    assert "teste de sensibilidade, não prova de descontaminação" in combined
     assert "Não há evidência de contaminação temporal" not in method
     assert "teste de sensibilidade, não prova de descontaminação" in method
     assert "does not reject a benefit in other periods" in quant
