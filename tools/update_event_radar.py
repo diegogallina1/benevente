@@ -269,7 +269,7 @@ def build_radar(previous: dict[str, Any], now: datetime, collected: list[dict[st
     new_events = [item for key, item in unique.items() if key not in old_events]
     portfolio_tickers = ("VIVA3", "CURY3", "CMIN3", "BBSE3", "LEVE3")
     classifications: dict[str, dict[str, Any]] = {}
-    classifier_status = "deterministico_sem_chave"
+    classifier_status = "gemini_disponivel_sem_itens_novos" if api_key else "deterministico_sem_chave"
     classifier_error = None
     upgrade_events = [
         item for item in old_events.values()

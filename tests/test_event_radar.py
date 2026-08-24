@@ -49,3 +49,18 @@ def test_published_radar_respects_contract() -> None:
     assert published["schedule"] == ["00:10", "12:10"]
     assert len(published["record_sha256"]) == 64
     assert published["policy"].startswith("O radar informa")
+
+
+def test_configured_gemini_is_reported_when_there_is_nothing_to_classify() -> None:
+    now = datetime(2026, 8, 23, 12, 10, tzinfo=MODULE.BRT)
+    prior_event = event("a", "Evento já classificado")
+    prior_event["classification"] = {
+        **MODULE.deterministic_classification(prior_event, []),
+        "classifier": "gemini:gemini-3.5-flash",
+    }
+    prior_event["state"] = "normal"
+    result = MODULE.build_radar(
+        {"events": [prior_event]}, now, [prior_event],
+        [{"source": "teste", "status": "ok", "items": 1}], api_key="configurada",
+    )
+    assert result["consolidations"][0]["classifier_status"] == "gemini_disponivel_sem_itens_novos"
