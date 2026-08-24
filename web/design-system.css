@@ -1,0 +1,206 @@
+/* Visual system: compact, data-led and intentionally consistent across routes. */
+:root {
+  --sans: "Plus Jakarta Sans", Arial, sans-serif;
+  --display: "Plus Jakarta Sans", Arial, sans-serif;
+  --mono: "Plus Jakarta Sans", Arial, sans-serif;
+  --serif: "Plus Jakarta Sans", Arial, sans-serif;
+  --surface: #ffffff;
+  --surface-soft: #f2f7f4;
+  --surface-mint: #dff7ec;
+  --ink-strong: #0d2b3f;
+  --ink-soft: #5b6f7c;
+  --brand-green: #0b8377;
+  --brand-dark: #102f38;
+  --hairline: #d9e4e0;
+}
+
+body,
+body.version-page,
+button,
+input,
+select,
+textarea {
+  font-family: var(--sans);
+}
+
+/* One typographic voice for prose, labels, numbers and data visualisations. */
+body *,
+body.version-page *,
+button,
+input,
+select,
+textarea,
+svg text {
+  font-family: var(--sans) !important;
+}
+
+h1, h2, h3, h4,
+.hero h1,
+.section-heading h2,
+.comparison h2,
+.lab-head h2,
+.model-heading h2,
+.version-hero h1,
+.version-section-heading h2,
+.paper-page h1,
+.paper-page h2,
+.paper-page h3 {
+  font-family: var(--display);
+  font-style: normal;
+  letter-spacing: -.045em;
+}
+
+.hero h1 em,
+.version-hero h1 em,
+.section-heading h2 em,
+.comparison h2 em,
+.lab-head h2 em,
+.model-heading h2 em {
+  font-family: inherit;
+  font-style: normal;
+}
+
+/* The first viewport now has a real second column instead of dead space. */
+.hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(25rem, .82fr);
+  gap: clamp(2rem, 5vw, 5.5rem);
+  align-items: center;
+  padding-top: clamp(3rem, 5vw, 4.75rem);
+  padding-bottom: clamp(3rem, 5vw, 4.75rem);
+}
+
+.hero-copy { min-width: 0; }
+.hero h1 { max-width: 48rem; font-size: clamp(2.75rem, 4.4vw, 4.25rem); line-height: 1.01; }
+.hero .lede { max-width: 47rem; color: var(--ink-soft); font-size: clamp(.95rem, 1.2vw, 1.08rem); }
+
+.hero-performance {
+  position: relative;
+  min-height: 30rem;
+  padding: clamp(1.4rem, 3vw, 2.1rem);
+  border: 1px solid rgba(13, 83, 72, .13);
+  border-radius: 2rem;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 82% 16%, rgba(255,255,255,.95) 0 11%, transparent 33%),
+    linear-gradient(145deg, #d7f8e8 0%, #edfff8 45%, #c8f0e4 100%);
+  box-shadow: 0 28px 70px rgba(11, 74, 66, .12);
+}
+
+.hero-performance::before,
+.hero-performance::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+  pointer-events: none;
+}
+.hero-performance::before { width: 15rem; height: 15rem; right: -5rem; top: -5rem; background: rgba(113, 229, 195, .32); }
+.hero-performance::after { width: 12rem; height: 12rem; left: -5rem; bottom: -6rem; background: rgba(255, 255, 255, .68); }
+.hero-performance > * { position: relative; z-index: 1; }
+.hero-performance-head { display: flex; justify-content: space-between; gap: 1rem; color: #447067; font: 600 .66rem var(--sans); letter-spacing: .08em; }
+.hero-performance-primary { margin: 4.2rem 0 2.25rem; }
+.hero-performance-primary small { display: block; color: #215d55; font-size: .78rem; font-weight: 700; }
+.hero-performance-primary strong { display: block; margin: .45rem 0; color: var(--brand-dark); font-size: clamp(3rem, 5vw, 4.7rem); line-height: 1; letter-spacing: -.075em; }
+.hero-performance-primary p { max-width: 20rem; margin: 0; color: #52736b; font-size: .72rem; line-height: 1.55; }
+.hero-performance-bars { display: grid; gap: .85rem; padding: 1rem; border: 1px solid rgba(16, 72, 63, .11); border-radius: 1rem; background: rgba(255,255,255,.72); backdrop-filter: blur(8px); }
+.hero-performance-bars header { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: .35rem; color: #244b45; font-size: .7rem; }
+.hero-performance-bars header span { font-family: var(--sans); font-weight: 600; }
+.hero-performance-bars i { display: block; height: .38rem; overflow: hidden; border-radius: 999px; background: #dfebe7; }
+.hero-performance-bars em { display: block; height: 100%; border-radius: inherit; background: var(--brand-green); }
+.hero-performance-bars > div:nth-child(2) em { background: #758592; }
+.hero-performance-bars > div:nth-child(3) em { background: #3d7d9d; }
+.hero-performance-foot { display: flex; align-items: center; gap: .8rem; margin-top: 1.1rem; color: #52736b; font-size: .62rem; }
+.hero-performance-foot span { padding: .32rem .48rem; border-radius: 999px; background: rgba(255,255,255,.68); }
+.hero-performance-foot a { margin-left: auto; color: #0a6259; font-weight: 800; text-decoration: none; }
+
+/* Dense comparison: controls on the left and all outcomes on the right. */
+.wealth-panel {
+  display: grid;
+  grid-template-columns: minmax(16rem, .68fr) minmax(0, 1.32fr);
+  gap: clamp(1.4rem, 3vw, 3rem);
+  align-items: start;
+  margin-top: 1.15rem;
+  padding: clamp(1.25rem, 2.5vw, 2rem);
+  border-radius: 1.25rem;
+  background: var(--surface-soft);
+}
+.wealth-form { margin: 0; align-self: stretch; align-content: start; }
+.wealth-form h3 { margin-bottom: 1.5rem; font-size: clamp(1.35rem, 2vw, 1.8rem); }
+#wealth-cards { min-width: 0; }
+.wealth-cards-lede { margin-bottom: .75rem; }
+.wealth-cards-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(11rem, .75fr);
+  gap: .7rem;
+}
+.wealth-card { min-height: 8.4rem; padding: 1rem; border-radius: .9rem; box-shadow: none; }
+.wealth-card.primary { grid-row: span 2; min-height: 17.8rem; display: flex; flex-direction: column; justify-content: space-between; background: var(--brand-dark); color: #fff; }
+.wealth-card.primary header b, .wealth-card.primary strong, .wealth-card.primary .wealth-card-foot { color: #fff; }
+.wealth-card.primary header small, .wealth-card.primary .wealth-card-foot span { color: #bcd0cc; }
+.wealth-card.primary strong { margin: auto 0 1.5rem; font-size: clamp(2rem, 3.4vw, 3.3rem); }
+.wealth-card.benchmark { min-height: 8.55rem; background: #fff; }
+.wealth-card.benchmark strong { font-size: clamp(1.35rem, 2vw, 1.8rem); }
+.wealth-card-foot { gap: .65rem; flex-wrap: wrap; }
+.wealth-tax-note { grid-column: 1 / -1; padding-top: .8rem; border-top: 1px solid var(--hairline); }
+
+/* Benevente 2 gets an explicit benchmark story before the long-form method. */
+.version-benchmark {
+  display: grid;
+  grid-template-columns: minmax(17rem, .8fr) minmax(0, 1.2fr);
+  gap: clamp(1.5rem, 4vw, 4rem);
+  margin-top: 1rem;
+  padding: clamp(1.4rem, 3vw, 2.1rem);
+  border-radius: 1.25rem;
+  background: #eaf7f2;
+}
+.version-benchmark-copy > span { color: var(--brand-green); font: 700 .62rem var(--sans); letter-spacing: .09em; }
+.version-benchmark-copy h2 { max-width: 28rem; margin: .7rem 0; color: var(--ink-strong); font-size: clamp(1.65rem, 2.7vw, 2.5rem); line-height: 1.08; }
+.version-benchmark-copy p { max-width: 28rem; margin: 0; color: var(--ink-soft); font-size: .78rem; line-height: 1.65; }
+.version-benchmark-copy a { display: inline-block; margin-top: 1rem; color: #0a6d63; font-size: .72rem; font-weight: 800; text-decoration: none; }
+.version-benchmark-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .6rem; }
+.version-benchmark-grid article { display: flex; flex-direction: column; min-height: 12rem; padding: 1rem; border: 1px solid #d5e5df; border-radius: .85rem; background: rgba(255,255,255,.82); }
+.version-benchmark-grid article.primary { color: #fff; border-color: var(--brand-dark); background: var(--brand-dark); }
+.version-benchmark-grid span { color: #667c78; font-size: .67rem; font-weight: 700; }
+.version-benchmark-grid .primary span, .version-benchmark-grid .primary small { color: #bfd1cd; }
+.version-benchmark-grid strong { display: block; margin: 1.35rem 0 .25rem; color: var(--ink-strong); font-size: clamp(1.55rem, 2.6vw, 2.4rem); line-height: 1; letter-spacing: -.065em; }
+.version-benchmark-grid .primary strong { color: #fff; }
+.version-benchmark-grid small { color: #70827e; font-size: .62rem; }
+.version-benchmark-grid i { display: block; height: .35rem; margin-top: auto; overflow: hidden; border-radius: 999px; background: #dce8e4; }
+.version-benchmark-grid em { display: block; height: 100%; border-radius: inherit; background: var(--brand-green); }
+.version-benchmark-grid article:nth-child(2) em { background: #758592; }
+.version-benchmark-grid article:nth-child(3) em { background: #3d7d9d; }
+
+/* Less air, clearer cards, and the same rhythm on every route. */
+.version-hero { padding-top: 3.6rem; padding-bottom: 3.4rem; }
+.version-main { padding-top: 4rem; padding-bottom: 4rem; }
+.version-section { gap: clamp(2rem, 5vw, 4rem); padding: 3.25rem 0; }
+.version-hero h1 { font-size: clamp(2.7rem, 5vw, 4.3rem); }
+.version-hero h1 em { font-family: inherit; font-style: normal; }
+.version-metric strong, .evidence-card strong { font-family: var(--sans); }
+.model-section, .comparison, .lab-section, .evidence-board, .research-disclosure { padding-top: clamp(2.75rem, 4.5vw, 4.5rem); padding-bottom: clamp(2.75rem, 4.5vw, 4.5rem); }
+.version-gateway { padding-top: 3.5rem; padding-bottom: 4rem; }
+.version-gateway-card { min-height: 13.5rem; }
+
+@media (max-width: 980px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-performance { min-height: 25rem; }
+  .wealth-panel { grid-template-columns: 1fr; }
+  .version-benchmark { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 680px) {
+  .hero { gap: 1.5rem; padding-top: 2.25rem; }
+  .hero h1 { font-size: clamp(2.25rem, 11vw, 3.2rem); }
+  .hero-performance { min-height: auto; padding: 1.2rem; border-radius: 1.25rem; }
+  .hero-performance-primary { margin: 2.2rem 0 1.5rem; }
+  .hero-performance-primary strong { font-size: 3rem; }
+  .hero-performance-foot { flex-wrap: wrap; }
+  .hero-performance-foot a { width: 100%; margin: .2rem 0 0; }
+  .wealth-cards-grid { grid-template-columns: 1fr; }
+  .wealth-card.primary { grid-row: auto; min-height: 12rem; }
+  .wealth-card.primary strong { margin: 1.75rem 0 1rem; }
+  .version-benchmark-grid { grid-template-columns: 1fr; }
+  .version-benchmark-grid article { min-height: 8.5rem; }
+  .version-benchmark-grid strong { margin: 1rem 0 .25rem; }
+}

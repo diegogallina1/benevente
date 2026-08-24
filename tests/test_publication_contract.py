@@ -20,6 +20,25 @@ def test_home_has_static_evidence_and_research_stage() -> None:
     assert "O Benevente separa o que calcula, o que explica e o que decide" in home
     assert "sensibilidade, não prova de descontaminação" in home
     assert "fidelidade" in home.lower() and "números inventados" in home.lower()
+    assert "hero-performance" in home
+    assert "Benevente 2, Ibovespa e CDI" not in home  # comparison is visual, not repeated as prose
+    assert all(label in home for label in ("+543,8%", "+240,1%", "+174,4%"))
+
+
+def test_benevente_2_has_direct_benchmarks_and_shared_design_system() -> None:
+    pages = [ROOT / "web" / name for name in (
+        "index.html", "benevente-1.html", "benevente-2.html", "metodo.html", "btech.html", "quant-ai.html"
+    )]
+    for path in pages:
+        source = path.read_text(encoding="utf-8")
+        assert "Plus+Jakarta+Sans" in source, path
+        assert "DM+Mono" not in source, path
+        assert "design-system.css" in source, path
+    benevente2 = (ROOT / "web" / "benevente-2.html").read_text(encoding="utf-8")
+    assert "Benevente 2, Ibovespa e CDI na mesma janela" in benevente2
+    assert 'data-version-metric="ibov-cumulative"' in benevente2
+    assert 'data-version-metric="cdi-cumulative"' in benevente2
+    assert "Experimento retrospectivo" not in benevente2
 
 
 def test_site_data_contract_matches_canonical_sources() -> None:

@@ -400,19 +400,23 @@ function renderWealthCards(period) {
   const capital = Math.max(0, Number(document.querySelector("#wealth")?.value) || 0);
   const growth = column => rows.every(item => Number.isFinite(Number(item[column])))
     ? rows.reduce((value, item) => value * (1 + Number(item[column])), 1) : null;
-  const tracks = [["Benevente 2", "benevente2_return", "Estratégia principal em acompanhamento"]];
-  const cards = tracks.map(([name, column, note]) => {
+  const tracks = [
+    ["Benevente 2", "benevente2_return", "Estratégia principal", "primary"],
+    ["Ibovespa", "benchmark_IBOVESPA", "Mercado brasileiro", "benchmark"],
+    ["CDI", "cdi_net_return", "Custo de oportunidade", "benchmark"],
+  ];
+  const cards = tracks.map(([name, column, note, kind]) => {
     const factor = growth(column);
     if (factor === null) return "";
     const final = capital * factor;
     const gain = final - capital;
-    return `<article class="wealth-card" style="--series-color:${seriesColor(name, 0)}"><header><b>${escapeHtml(name)}</b><small>${escapeHtml(note)}</small></header><strong>${money.format(final)}</strong><div class="wealth-card-foot"><span>${factor.toLocaleString("pt-BR", {minimumFractionDigits: 1, maximumFractionDigits: 1})}x o valor aplicado</span><span class="${gain >= 0 ? "up" : "down"}">${gain >= 0 ? "+" : "−"}${money.format(Math.abs(gain))}</span></div></article>`;
+    return `<article class="wealth-card ${kind}" style="--series-color:${seriesColor(name, 0)}"><header><b>${escapeHtml(name)}</b><small>${escapeHtml(note)}</small></header><strong>${money.format(final)}</strong><div class="wealth-card-foot"><span>${factor.toLocaleString("pt-BR", {minimumFractionDigits: 1, maximumFractionDigits: 1})}x o valor aplicado</span><span class="${gain >= 0 ? "up" : "down"}">${gain >= 0 ? "+" : "−"}${money.format(Math.abs(gain))}</span></div></article>`;
   }).join("");
   const start = rows[0].decision_date, finish = rows.at(-1).holding_end_exclusive;
   const taxRows = researchData?.meta?.benevente2?.intrayear_tax_estimate?.capital_sensitivity || [];
   const tax = period === "11" ? taxRows.find(item => Number(item.initial_capital_brl) === capital) : null;
   const taxText = tax ? `<p class="wealth-tax-note">Estimativa adicional de IR das reduções intranuais: ${money.format(tax.estimated_incremental_tax_brl)}. Patrimônio estimado após esse imposto: <b>${money.format(tax.estimated_terminal_wealth_after_incremental_tax_brl)}</b>. Modelo agregado; não substitui notas de corretagem.</p>` : "";
-  host.innerHTML = `<p class="wealth-cards-lede">Benevente 2 com ${money.format(capital)} aplicados em ${formatDateBr(start)} e mantidos até ${formatDateBr(finish)}, sem aportes.</p><div class="wealth-cards-grid single">${cards}</div>${taxText}`;
+  host.innerHTML = `<p class="wealth-cards-lede">O mesmo capital, aplicado em ${formatDateBr(start)} e mantido até ${formatDateBr(finish)}, sem aportes.</p><div class="wealth-cards-grid">${cards}</div>${taxText}`;
 }
 
 function renderCurveToggles(period) {
