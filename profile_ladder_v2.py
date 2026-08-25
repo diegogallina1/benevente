@@ -36,6 +36,7 @@ from zoneinfo import ZoneInfo
 import argparse
 import hashlib
 import json
+import subprocess
 
 import pandas as pd
 
@@ -109,9 +110,33 @@ def evaluate(profile: str, engine, panel: pd.DataFrame, start_year: int, end_yea
     return blended, {"daily": daily, "results": results, "realised_equity": realised_equity, "share": share}
 
 
-def register(output: Path) -> dict:
+def resolve_approver(explicit: str | None) -> tuple[str, str]:
+    """Who is freezing this policy, and how we know.
+
+    Neither v1 nor the risk policy recorded a signer, which is a gap in a system
+    whose thesis is that an identified person signs the decision. A registration
+    with no name attached is an audit trail that stops exactly where it matters.
+    Falling back to the repository identity is acceptable because that identity
+    is already attached to every commit; falling back to nothing is not.
+    """
+    if explicit:
+        return explicit.strip(), "explicit"
+    try:
+        name = subprocess.run(["git", "config", "user.name"], cwd=ROOT, capture_output=True,
+                              text=True, timeout=10).stdout.strip()
+    except (OSError, subprocess.SubprocessError):
+        name = ""
+    if not name:
+        raise SystemExit("Recuse-se a registrar sem assinante: informe --approved-by ou configure git config user.name")
+    return name, "git identity"
+
+
+def register(output: Path, approved_by: str | None = None) -> dict:
+    approver, approval_source = resolve_approver(approved_by)
     payload = {
         "policy": "benevente_profile_ladder_v2",
+        "approved_by": approver,
+        "approval_source": approval_source,
         "supersedes": "benevente_profile_ladder_v1",
         "status": "registered_not_prospectively_validated",
         "registered_at": datetime.now(ZoneInfo("America/Sao_Paulo")).isoformat(),
@@ -209,6 +234,8 @@ def main() -> None:
     parser.add_argument("--run", action="store_true")
     parser.add_argument("--register", action="store_true",
                         help="Freeze the policy. This is a human act and is never run automatically.")
+    parser.add_argument("--approved-by", default=None,
+                        help="Person accountable for freezing this policy. Defaults to the git identity.")
     parser.add_argument("--registration", default="data/benevente_profile_ladder_v2_registration.json")
     parser.add_argument("--output", default="artifacts/profile_ladder_v2")
     parser.add_argument("--start-year", type=int, default=2015)
@@ -218,8 +245,10 @@ def main() -> None:
         frame = run(Path(args.output), args.start_year, args.end_year)
         print(frame.to_string(index=False, float_format=lambda value: f"{value:.4f}"))
     if args.register:
-        payload = register(Path(args.registration))
+        payload = register(Path(args.registration), args.approved_by)
         print(f"registered {payload['policy']} sha256={payload['registration_sha256'][:16]}")
+        print(f"aprovado por {payload['approved_by']} ({payload['approval_source']}) "
+              f"em {payload['registered_at']}")
     if not (args.run or args.register):
         parser.print_help()
 

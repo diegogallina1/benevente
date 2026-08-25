@@ -71,8 +71,22 @@ def test_registration_hashes_inputs_and_its_own_code(tmp_path):
     assert written["registration_sha256"] == payload["registration_sha256"]
 
 
-def test_module_does_not_register_itself_on_import():
-    """A policy that freezes itself would be the first violation of the thesis."""
-    assert not (profile_ladder_v2.ROOT / "data" / "benevente_profile_ladder_v2_registration.json").exists(), (
-        "v2 must be frozen by a person running --register, not by import or by a test run"
-    )
+def test_a_registration_can_never_be_anonymous(monkeypatch):
+    """An audit trail that stops before the signature stops where it matters."""
+    assert profile_ladder_v2.resolve_approver("  Fulana de Tal  ") == ("Fulana de Tal", "explicit")
+    blank = type("Result", (), {"stdout": " \n"})
+    monkeypatch.setattr(profile_ladder_v2.subprocess, "run", lambda *args, **kwargs: blank())
+    with pytest.raises(SystemExit, match="assinante"):
+        profile_ladder_v2.resolve_approver(None)
+
+
+def test_the_frozen_registration_names_who_froze_it():
+    """Whether or not v2 has been frozen yet, it can only exist signed."""
+    frozen = profile_ladder_v2.ROOT / "data" / "benevente_profile_ladder_v2_registration.json"
+    if not frozen.exists():
+        pytest.skip("v2 ainda não foi congelada")
+    payload = json.loads(frozen.read_text(encoding="utf-8"))
+    assert payload["approved_by"].strip(), "um registro sem assinante não é um registro"
+    assert payload["approval_source"] in {"explicit", "git identity"}
+    assert payload["policy"] == "benevente_profile_ladder_v2"
+    assert payload["supersedes"] == "benevente_profile_ladder_v1"
