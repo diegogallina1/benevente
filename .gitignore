@@ -30,3 +30,5 @@ data/prices_b3_cotahist_2011_2026.csv
 data/prices_b3_with_global_*.csv
 
 .vercel
+# Cache do dataset aberto do Tesouro, rebaixável por research_fixed_income_probe.py
+data/tesouro_direto_precos_taxas.csv
