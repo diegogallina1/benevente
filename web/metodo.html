@@ -61,34 +61,48 @@
 
       <h2>4 · Como a regra foi escolhida</h2>
       <p>Esta é a parte que a maioria dos backtests erra, e que erramos primeiro. Uma grade de regras candidatas foi avaliada, a melhor foi publicada, e o seu posto passou de 57º no critério de treino declarado para 1º no holdout. Isso só é possível se o holdout foi lido. Nada a jusante daquela escolha era fora da amostra.</p>
-      <p>O protocolo atual é <b>aninhado</b>. Para a decisão do ano <i>t</i>, as 36 configurações são ordenadas usando somente os anos já encerrados antes de <i>t</i>, por Sharpe do excesso sobre o CDI; o ano <i>t</i> é então avaliado uma vez. Trocar de configuração é cobrado como rebalanceamento integral, porque num livro real significa liquidar uma carteira para comprar outra. Como o ranqueamento exige três anos encerrados, <b>2012 a 2014 é a janela de seleção e 2015 a 2025 é a janela de avaliação</b>, com onze decisões.</p>
-      <p>Três quantidades são publicadas junto de qualquer resultado: o desfecho aninhado, o vencedor da amostra inteira, e a diferença entre os dois. Essa diferença é o <b>prêmio de retrospectiva</b>, hoje em <b>0,65 ponto percentual ao ano</b>. Ela mede exatamente o que um concorrente ganharia publicando o vencedor da busca como se fosse resultado obtenível. Com um ano a menos de treino esse prêmio era de 4,98 pontos.</p>
-      <p>Com 36 tentativas, o Sharpe da vencedora é enviesado para cima pela própria busca, e por isso é deflacionado: Sharpe observado de 0,933 contra um máximo esperado sob a hipótese nula de 0,355, resultando em <b>Sharpe deflacionado de 0,986</b>, significante a 95%.</p>
+      <p>A correção seguinte foi um protocolo <b>aninhado</b>. Para a decisão do ano <i>t</i>, as 36 configurações eram ordenadas usando somente os anos já encerrados antes de <i>t</i>, por Sharpe do excesso sobre o CDI; o ano <i>t</i> era então avaliado uma vez. Trocar de configuração era cobrado como rebalanceamento integral, porque num livro real significa liquidar uma carteira para comprar outra. Junto de qualquer resultado publicava-se o desfecho aninhado, o vencedor da amostra inteira e a diferença entre os dois — o <b>prêmio de retrospectiva</b>, de 0,65 ponto percentual ao ano, que mede o que um concorrente ganharia publicando o vencedor da busca como se fosse obtenível.</p>
+      <p>Isso resolvia o problema de <i>ler o holdout</i>, mas não o de <b>buscar</b>. Em 2026 a mesma busca foi rodada sobre uma grade ampliada, de 36 para 256 candidatos, com insumos, código e janela idênticos. O resultado inverteu a expectativa: o desfecho aninhado caiu de <b>15,31% para 12,68% ao ano</b>, e o Sharpe deflacionado caiu de <b>0,957 para 0,777</b>, abaixo da significância — porque o máximo esperado sob a hipótese nula subiu de 0,375 para 0,746. O seletor passeou pelo ruído: em 2018 escolheu uma configuração de baixa volatilidade que rendeu −7,2% num ano em que o CDI fez 6,4%.</p>
+      <p>A conclusão é desconfortável e é a razão do desenho atual: <b>com dez observações anuais não se ranqueia 256 candidatos</b>. Ampliar a busca não melhora o sistema, degrada o seletor. Por isso a configuração de cada perfil passou a ser <b>declarada e congelada antes do período</b>, com hash público, em vez de escolhida por procura. A busca aninhada permanece publicada como o experimento que mostrou o próprio limite.</p>
 
       <h2>5 · Benevente 1 e Benevente 2</h2>
-      <p><b>Benevente 1</b> é a regra anual publicada que define ativos e pesos-base. <b>Benevente 2</b> é a extensão de risco acompanhada em carteira-sombra desde 2026: conserva a mesma cesta, mas reduz temporariamente a exposição a ações quando a queda e a volatilidade do Ibovespa, medidas até o fechamento anterior, atingem estados de alerta.</p>
+      <p><b>Benevente 1</b> é a seleção anual declarada que define ativos e pesos-base, incluindo a fração da carteira mantida num fundo listado na B3 que segue o S&amp;P 500 em reais. <b>Benevente 2</b> acrescenta a camada de risco intranual: conserva a mesma cesta, mas reduz temporariamente a exposição às ações <i>brasileiras</i> quando a queda e a volatilidade do Ibovespa, medidas até o fechamento anterior, atingem estados de alerta. A perna global não é reduzida — ela é mantida justamente por não seguir o Ibovespa.</p>
+      <p>Desde a política congelada de 2026, cada uma existe em três perfis declarados. Os números por perfil estão nas páginas do <a href="./benevente-1.html">Benevente 1</a> e do <a href="./benevente-2.html">Benevente 2</a>, geradas a partir do registro e não digitadas. A tabela abaixo resume a troca que a camada representa:</p>
       <table class="paper-table">
-        <thead><tr><th>Versão</th><th>CAGR 2015–2025</th><th>Queda máxima</th><th>CAGR 2019–2025</th></tr></thead>
+        <thead><tr><th>Perfil</th><th>Queda máxima sem a camada</th><th>Com a camada</th><th>Custo em retorno</th></tr></thead>
         <tbody>
-          <tr><td>Benevente 1</td><td class="num">17,86%</td><td class="num">−47,8%</td><td class="num">17,95%</td></tr>
-          <tr class="highlight"><td>Benevente 2 · extensão retrospectiva de risco</td><td class="num">18,45%</td><td class="num">−28,7%</td><td class="num">18,03%</td></tr>
+          <tr><td>Conservador</td><td class="num">−16,7%</td><td class="num">−9,2%</td><td class="num">0,88 p.p.</td></tr>
+          <tr><td>Equilibrado</td><td class="num">−26,5%</td><td class="num">−17,9%</td><td class="num">0,86 p.p.</td></tr>
+          <tr class="highlight"><td>Arrojado</td><td class="num">−35,6%</td><td class="num">−28,9%</td><td class="num">0,45 p.p.</td></tr>
         </tbody>
       </table>
-      <p>Os parâmetros do Benevente 2 foram escolhidos em 2015–2018. Em 2019–2025, a diferença anual de retorno entre as versões não foi significativa (p = 0,964). A evidência principal é a redução da queda máxima de 47,8% para 28,7%, não alfa adicional.</p>
+      <p>Os parâmetros da camada foram escolhidos observando 2015–2018, depois das crises presentes na amostra. A evidência é <b>redução de queda</b>, não alfa adicional: numa janela mais curta a diferença de retorno entre as versões não foi significativa. Um detalhe que a tabela esconde: no perfil conservador a camada <i>piora</i> o Sharpe, porque o Sharpe mede volatilidade e o benefício está na cauda.</p>
       <div class="paper-callout warn"><b>Notícias e controle quantitativo são camadas diferentes</b>O teste histórico usa somente preço e volatilidade observados, com atraso de um pregão. O radar atual usa Gemini para resumir e classificar documentos oficiais e notícias a cada 12 horas, mas o alerta vai para revisão humana. Ele não muda pesos e não participa da rentabilidade histórica.</div>
 
       <h2>6 · O que foi tentado e não funcionou</h2>
-      <p>Cinco hipóteses foram testadas. Quatro não se sustentaram e a quinta produziu um ganho pequeno demais para ser afirmado. Aparecem aqui com o mesmo detalhe do resultado positivo.</p>
+      <p>Oito hipóteses foram testadas. Aparecem aqui com o mesmo detalhe do resultado positivo, porque um repositório que publica só o que deu certo não se distingue de um material de venda.</p>
 
-      <h3>6.1 Prever o regime do ano</h3>
+      <h3>6.1 Ampliar a busca de configurações</h3>
+      <p><b>Como foi testado:</b> a mesma busca aninhada da seção 4, sobre 256 candidatos em vez de 36, variando parcela em ações, número de emissores, fator, teto setorial e seletividade proporcional. Insumos, código e janela idênticos aos da grade original.</p>
+      <p><b>Resultado:</b> o desfecho aninhado caiu de 15,31% para 12,68% ao ano e o Sharpe deflacionado de 0,957 para 0,777. <b>Ampliar a busca degrada o seletor</b>, e foi o que motivou declarar a configuração em vez de procurá-la.</p>
+
+      <h3>6.2 Pesar as posições pelo inverso da volatilidade</h3>
+      <p><b>Como foi testado:</b> o sleeve de ações dimensionado por peso igual, por inverso da volatilidade de doze meses e pela mistura geométrica dos dois, contra a regra publicada de peso proporcional à confiança do fator. Oito configurações: os três perfis e cinco tamanhos de cesta.</p>
+      <p><b>Resultado:</b> a regra publicada venceu em <b>8 de 8</b>. O inverso da volatilidade comprou 0,95 ponto de queda máxima ao custo de 2,11 pontos de retorno ao ano, e piorou o pior ano justamente na cesta larga, onde deveria ajudar mais. <b>A hipótese foi rejeitada em todas as configurações</b> — e o dimensionamento deixou de ser suposição não testada.</p>
+
+      <h3>6.3 Dimensionar o risco pela volatilidade observada em janeiro</h3>
+      <p><b>Como foi testado:</b> uma meta de volatilidade anual reduzindo a exposição em ações na data da decisão, conforme a volatilidade do sleeve até ali.</p>
+      <p><b>Resultado:</b> cortou exposição em 5 de 13 anos, <b>sempre depois de um estresse e nunca antes de um</b>, e deixou a pior queda intacta — em janeiro de 2020 o mercado estava calmo, a camada não cortou nada, e a queda de março atingiu o livro cheio. Em 2016 cortou de 35% para 8,8% num ano em que a estratégia rendeu 35%. <b>Custo sem benefício</b>; foi removida em favor da camada intranual, que reage ao estresse observável.</p>
+
+      <h3>6.4 Prever o regime do ano</h3>
       <p><b>Como foi testado:</b> cinco indicadores disponíveis em janeiro, entre prêmio de lucro sobre o CDI, nível do CDI, retorno e volatilidade do mercado nos doze meses anteriores e distância do topo, foram usados para decidir se o ano seria de ações ou de caixa, ajustados em janela expansível.</p>
       <p><b>Resultado:</b> sobre 8 anos, o melhor preditor acertou 3 de 4 chamadas efetivas, com p de 0,31 contra cara-ou-coroa. O prêmio para quem acertasse todas era de 6,5 pontos percentuais ao ano. <b>Sem sinal, e sem poder estatístico para afirmar o contrário.</b></p>
 
-      <h3>6.2 Mudar a proporção entre ações e caixa com mais frequência</h3>
+      <h3>6.5 Mudar a proporção entre ações e caixa com mais frequência</h3>
       <p><b>Como foi testado:</b> para responder à objeção de poder, a mesma pergunta foi levada a 118 períodos mensais e 521 períodos semanais, com sete regras de alocação contínua em cada frequência, todas pré-declaradas e ajustadas walk-forward. Cada regra paga custo sobre o peso que move e, na variante após imposto, o imposto que o giro força a realizar.</p>
       <p><b>Resultado:</b> nenhuma das sete superou o peso estático de forma significante em nenhuma das duas frequências, e a de média-variância foi significativamente pior. O oráculo, que conhece o futuro, teria feito 72,8% ao ano no mensal e 137,1% no semanal contra 21,1% do estático. <b>O prêmio por acertar o tempo é enorme e nada que testamos o captura.</b></p>
 
-      <h3>6.3 Reselecionar a cesta com mais frequência</h3>
+      <h3>6.6 Reselecionar a cesta com mais frequência</h3>
       <p><b>Como foi testado:</b> pergunta diferente da anterior. Não a proporção, mas a própria cesta, retriada, reordenada e reotimizada. A regra, os limites, o universo e o painel foram mantidos idênticos; só as datas de decisão mudaram. Para isso o motor ganhou cadência configurável, e a porta de evidência passou a ler o universo datado mais recente até a data da decisão em vez de exigir coincidência exata, que descartava silenciosamente toda decisão fora de janeiro. O caminho anual publicado foi conferido contra o artefato existente e reproduz com diferença zero.</p>
       <table class="paper-table">
         <thead><tr><th>Cadência</th><th>Decisões</th><th>CAGR bruto</th><th>Após IR</th><th>Giro no ano</th></tr></thead>
@@ -101,7 +115,7 @@
       <p><b>Resultado:</b> pareando por ano-calendário e já após imposto, a trimestral fica 1,55 ponto abaixo da anual ao ano, com p de 0,376, e a mensal 3,27 pontos abaixo, com p de 0,306. Com onze anos pareados não dá para afirmar que atrapalha; dá para afirmar que <b>não há evidência de que ajude</b>.</p>
       <div class="paper-callout warn"><b>O motivo não é o que se imagina</b>A perda está no retorno bruto, que cai 4,66 pontos de anual para mensal antes de qualquer dedução. O custo de execução sobe só 0,08 ponto ao ano e o imposto modelado até diminui, porque cada revisão mensal realiza uma fatia menor do livro. Reordenar a cesta todo mês piora a escolha antes de encarecer a operação, porque qualidade, valor e momento se movem em horizonte anual e o giro desfaz posições antes da tese se realizar. Registramos que o modelo tributário subestima a conta do braço mensal, já que cobra imposto sobre o ganho do próprio período e não sobre o ganho acumulado da posição vendida. O viés favorece quem perdeu.</div>
 
-      <h3>6.4 Manter o que continua bom, em vez de refazer a cesta</h3>
+      <h3>6.7 Manter o que continua bom, em vez de refazer a cesta</h3>
       <p><b>Como foi testado:</b> a regra publicada faz um corte duro no ranking. Uma margem de permanência mantém o ativo enquanto ele segue elegível e permanece logo abaixo do corte. Isso aumenta a continuidade sem impedir saídas por deterioração.</p>
       <table class="paper-table">
         <thead><tr><th>Regra de permanência</th><th>CAGR</th><th>Sharpe do excesso</th><th>Retenção</th><th>Papéis de 1 ano</th></tr></thead>
@@ -113,7 +127,7 @@
       </table>
       <p><b>Por que a linha de 18,80% não virou a estratégia principal?</b> Porque ela foi identificada olhando o histórico completo e sua diferença para o corte original não foi significativa (p = 0,138). Promovê-la depois de observar o resultado seria escolher pelo passado. Quando a margem entra na escolha anual sem usar o ano avaliado, o CAGR é 18,61%, apenas 0,10 ponto acima do original. Por isso o Benevente 2 não foi reescrito com essa regra; a evidência útil é menor giro e maior continuidade, não retorno comprovadamente maior.</p>
 
-      <h3>6.5 Usar um modelo de linguagem como fonte de retorno</h3>
+      <h3>6.8 Usar um modelo de linguagem como fonte de retorno</h3>
       <p><b>Como foi testado:</b> quatro braços sobre 13 anos, mesmo universo elegível. <i>Nomeado</i>, em que o modelo vê os nomes das empresas e devolve um escore limitado que inclina o retorno esperado dentro do otimizador. <i>Anonimizado</i>, idêntico mas com as empresas identificadas apenas por números. <i>Determinístico</i>, controle sem modelo, ordenando pelo escore de fator pré-declarado. <i>Monolítico</i>, o contrafactual em que o modelo devolve pesos direto, sem otimizador e sem restrições.</p>
       <table class="paper-table">
         <thead><tr><th>Comparação</th><th>Diferença anual</th><th>p</th></tr></thead>
@@ -125,7 +139,7 @@
       </table>
       <p><b>Resultado:</b> três nulos. A comparação nomeado versus anonimizado é um teste de sensibilidade, não prova de descontaminação. Anonimizar o nome não elimina possível memória histórica do modelo nem transforma 13 anos em amostra independente. O modelo não agregou retorno: reproduziu o ranqueamento determinístico em vez de acrescentar julgamento. Manter o modelo longe dos pesos também não custou desempenho. O braço monolítico devolveu carteiras que não somavam um em 5 dos 13 anos, variando de 0,92 a 1,017, e omitiu 65 e 83 ativos elegíveis em 2021 e 2022. O otimizador garante uma alocação aritmeticamente válida sem precisar de conserto. O modelo se justifica por organizar e explicar decisões, não por gerá-las.</p>
 
-      <h3>6.6 Avaliar a explicação como explicação</h3>
+      <h3>6.9 Avaliar a explicação como explicação</h3>
       <p>Retorno da carteira não mede qualidade textual. A camada de linguagem recebe fatos já aprovados e é avaliada separadamente por fidelidade às fontes, completude dos fatores relevantes, cobertura de riscos materiais e ausência de números inventados. Qualquer número sem referência reprova a saída. Essas métricas têm protocolo definido, mas ainda não possuem amostra prospectiva suficiente para uma conclusão.</p>
 
       <h2>7 · Como é rodado</h2>
@@ -138,7 +152,9 @@
         <li>A janela avaliada é a mesma que serviu para desenvolver a regra. Onze anos avaliados não são onze anos de validação prospectiva.</li>
         <li>A página atual da B3 respondeu para 475 de 497 séries, mas não reproduziu integralmente os retornos publicados: sete de 54 comparações excederam 5 p.p. e duas não puderam ser feitas.</li>
         <li>Papéis sem cobertura de provedor recebem o rendimento mediano da seção transversal do ano. É aproximação, e os afetados estão no relatório de cobertura.</li>
-        <li>O Benevente 1 teve queda máxima de 47,8% durante a crise de 2020. O Benevente 2 reduziu a perda máxima retrospectiva para 28,7%; fora do episódio da Covid, a queda foi menor, mas a amostra não autoriza classificá-lo como conservador.</li>
+        <li>Nenhum perfil é conservador no sentido de não cair. Mesmo com a camada de risco, a queda máxima retrospectiva vai de 9% no perfil conservador a 29% no arrojado, e a camada foi desenhada depois das crises presentes na amostra.</li>
+        <li>Cerca de um terço do retorno da perna global na janela veio da desvalorização do real, não do mercado americano. É uma posição comprada em dólar sem proteção cambial, e num período de real forte a contribuição se inverte.</li>
+        <li>O teto de três emissores por setor é restrição de governança, não melhoria: onde ele age, custou 0,15 ponto ao ano e não melhorou o Sharpe em nenhuma configuração medida.</li>
         <li>Onze observações anuais são poucas. O Sharpe deflacionado corrige o viés de busca, não o tamanho da amostra.</li>
         <li>Uso comercial exige licença de dados, enquadramento regulatório, suitability e aprovação formal. Nada disso existe hoje.</li>
         <li>O Benevente 2 foi concebido depois da Covid-19 e ainda não tem validação prospectiva. O imposto intranual agora é estimado de forma agregada, mas não conciliado por ativo.</li>
