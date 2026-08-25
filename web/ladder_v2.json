@@ -1,0 +1,117 @@
+{
+  "policy": "benevente_profile_ladder_v2",
+  "registration_sha256": "fc5521f11d133520ae03b3413490418d01f140fb9fbc2b78ed9aa8e6ddd2cfdc",
+  "approved_by": "diegogallina1",
+  "registered_at": "2026-08-25T17:47:27.630302-03:00",
+  "confirmatory_sample_starts": "first B3 trading session of 2027",
+  "window": {
+    "first_decision_year": 2015,
+    "last_decision_year": 2025,
+    "first_session": "2015-01-05",
+    "last_session": "2025-12-30"
+  },
+  "profiles": {
+    "conservador": {
+      "declared": {
+        "maximum_equity_weight": 0.35,
+        "top_assets": 12,
+        "maximum_asset_weight": 0.046667,
+        "global_share_of_portfolio": 0.07
+      },
+      "benevente1": {
+        "cagr": 0.1338565719045557,
+        "cumulative_return": 2.982349184567724,
+        "annual_volatility": 0.07454283570358637,
+        "max_drawdown": -0.1669614768146387
+      },
+      "benevente2": {
+        "cagr": 0.1250873778032222,
+        "cumulative_return": 2.656358547585341,
+        "annual_volatility": 0.05840175108513378,
+        "max_drawdown": -0.09157090199409423
+      },
+      "average_positions": 12.0,
+      "average_sectors": 8.090909090909092,
+      "average_turnover": 0.4086346824323313,
+      "years_beating_cdi": 7,
+      "years": 11
+    },
+    "equilibrado": {
+      "declared": {
+        "maximum_equity_weight": 0.55,
+        "top_assets": 8,
+        "maximum_asset_weight": 0.11,
+        "global_share_of_portfolio": 0.11
+      },
+      "benevente1": {
+        "cagr": 0.16365702499024293,
+        "cumulative_return": 4.297548635859923,
+        "annual_volatility": 0.12700397725905324,
+        "max_drawdown": -0.26524271426960744
+      },
+      "benevente2": {
+        "cagr": 0.15513512134109408,
+        "cumulative_return": 3.886081135256811,
+        "annual_volatility": 0.10508380184044552,
+        "max_drawdown": -0.1786231422696749
+      },
+      "average_positions": 8.0,
+      "average_sectors": 5.454545454545454,
+      "average_turnover": 0.5892036949571916,
+      "years_beating_cdi": 7,
+      "years": 11
+    },
+    "arrojado": {
+      "declared": {
+        "maximum_equity_weight": 0.75,
+        "top_assets": 5,
+        "maximum_asset_weight": 0.24,
+        "global_share_of_portfolio": 0.15
+      },
+      "benevente1": {
+        "cagr": 0.20319053153265232,
+        "cumulative_return": 6.6502999219918415,
+        "annual_volatility": 0.19056215518300498,
+        "max_drawdown": -0.35635681815993403
+      },
+      "benevente2": {
+        "cagr": 0.19866922148746902,
+        "cumulative_return": 6.33994649117998,
+        "annual_volatility": 0.1694341099458304,
+        "max_drawdown": -0.28939041755135564
+      },
+      "average_positions": 5.0,
+      "average_sectors": 4.181818181818182,
+      "average_turnover": 0.7690634197857502,
+      "years_beating_cdi": 7,
+      "years": 11
+    }
+  },
+  "references": {
+    "CDI": {
+      "cagr": 0.09609571930908345,
+      "cumulative_return": 1.743678994014866,
+      "annual_volatility": 0.0024683267229642014,
+      "max_drawdown": 0.0
+    },
+    "Ibovespa": {
+      "cagr": 0.11332360599939251,
+      "cumulative_return": 2.257133756083864,
+      "annual_volatility": 0.23207907922290966,
+      "max_drawdown": -0.46954217243611507
+    },
+    "BOVA11": {
+      "cagr": 0.11834692558627391,
+      "cumulative_return": 2.4224887557684087,
+      "annual_volatility": 0.23595804645714633,
+      "max_drawdown": -0.47230667094452583
+    }
+  },
+  "global_sleeve": {
+    "instrument": "IVVB11",
+    "share_of_equity_budget": 0.2,
+    "currency_warning": "About a third of this instrument's return over 2015-2025 came from BRL depreciation, not from the American market. It is an unhedged long dollar position and must be described as one."
+  },
+  "overlay_applies_to": "domestic sleeve only",
+  "status": "Retrospectivo. A janela foi usada para desenvolver as próprias regras; a amostra confirmatória começa no primeiro pregão de 2027."
+}
