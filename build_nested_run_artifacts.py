@@ -41,17 +41,25 @@ def _configuration_limits(name: str) -> dict:
     """
     from research_configuration_search import ISSUER_CAP_SLACK, MAXIMUM_ISSUER_CAP
 
-    match = re.match(r"eq(\d+)_n(\d+)_(.+)", name)
+    match = re.match(r"eq(\d+)_(n|f)(\d+)(?:s(\d+))?_(.+)", name)
     if not match:
         return {}
     equity = int(match.group(1)) / 100
-    count = int(match.group(2))
-    return {
+    family, size, sector_limit, signal = match.group(2), int(match.group(3)), match.group(4), match.group(5)
+    limits = {
         "maximum_equity_weight": round(equity, 6),
-        "top_assets": count,
-        "maximum_asset_weight": round(min(MAXIMUM_ISSUER_CAP, equity / count * ISSUER_CAP_SLACK), 6),
-        "signal": match.group(3),
+        "signal": signal,
+        "maximum_names_per_sector": None if sector_limit is None else int(sector_limit),
     }
+    if family == "n":
+        return {**limits, "top_assets": size,
+                "maximum_asset_weight": round(min(MAXIMUM_ISSUER_CAP, equity / size * ISSUER_CAP_SLACK), 6)}
+    # The ``f`` family holds a share of the eligible universe, so the issuer
+    # ceiling follows the floor the search used, exactly as in the grid.
+    from research_configuration_search import SELECTIVITY_FLOOR
+
+    return {**limits, "top_assets_universe_fraction": size / 100, "top_assets_minimum": SELECTIVITY_FLOOR,
+            "maximum_asset_weight": round(min(MAXIMUM_ISSUER_CAP, equity / SELECTIVITY_FLOOR * ISSUER_CAP_SLACK), 6)}
 
 
 def stitch_annual(selection: pd.DataFrame, runs: dict[str, Path]) -> pd.DataFrame:

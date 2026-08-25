@@ -1,0 +1,9 @@
+{
+  "status": "retrospective_research_only",
+  "exposure_floor": 0.6,
+  "limitations": [
+    "Both layers were designed after the crises present in the sample.",
+    "Intra-year tax on the overlay's realised gains is not modelled.",
+    "A profile whose ladder budget disagrees with its registered risk spec is reported as not combinable."
+  ]
+}

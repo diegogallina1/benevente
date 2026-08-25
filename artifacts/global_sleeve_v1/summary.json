@@ -1,0 +1,19 @@
+{
+  "status": "retrospective_research_only",
+  "instrument": "IVVB11",
+  "first_decision_year": 2016,
+  "correlation": {
+    "correlacao_diaria": 0.06409767517891991,
+    "correlacao_anual": -0.5228808553790091,
+    "sessoes": 2722,
+    "anos": 11,
+    "retorno_anual_medio_sleeve_b3": 0.21799795964960894,
+    "retorno_anual_medio_global": 0.23118490473857012
+  },
+  "limitations": [
+    "The fund is declared policy, never selected; it has no CVM filing and no fundamental screen.",
+    "Its adjusted close carries the management fee; brokerage and spread on the sleeve use the engine's liquidity floor, which overstates its execution cost.",
+    "Unhedged: the series contains the BRL/USD move, which is part of the exposure being bought.",
+    "A public adjusted-close feed, with no primary reconciliation of its own."
+  ]
+}

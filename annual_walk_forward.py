@@ -14,6 +14,8 @@ from __future__ import annotations
 from dataclasses import asdict, dataclass, replace
 import argparse
 import json
+import re
+import unicodedata
 from pathlib import Path
 
 import pandas as pd
@@ -38,6 +40,53 @@ RISK_PROFILE_LIMITS: dict[str, dict[str, float | str]] = {
     "moderado": {"maximum_equity_weight": .55, "maximum_asset_weight": .12, "review_frequency": "anual"},
     "arrojado": {"maximum_equity_weight": .75, "maximum_asset_weight": .15, "review_frequency": "anual"},
 }
+
+# The CVM sector label is free text with two shapes that mean the same economic
+# exposure: the operating label and the holding company that controls it
+# ("Emp. Adm. Part. - Energia Elétrica").  A concentration limit that read them
+# as two different sectors would authorise exactly the concentration it exists
+# to prevent, so the prefix is stripped and the two abbreviated holding labels
+# below are mapped onto the operating label they abbreviate.
+_SECTOR_HOLDING_PREFIX = re.compile(r"^emp\s+adm\s+part\s*")
+_SECTOR_ABBREVIATION_ALIASES = {
+    "const civil mat const e decoracao": "construcao civil mat constr e decoracao",
+    "maqs equip veic e pecas": "maquinas equipamentos veiculos e pecas",
+}
+# "Sem Setor Principal" is the registry declining to classify the issuer.  It
+# is not a sector, and pooling every unclassified name into one bucket would
+# invent a grouping the source never asserted.
+_UNCLASSIFIED_SECTOR_LABELS = {"", "nan", "none", "sem setor principal"}
+
+
+def sector_group(value: object, fallback: str) -> str:
+    """Canonical concentration bucket for a dated CVM sector label.
+
+    ``fallback`` (the issuer id) becomes the bucket when the registry did not
+    classify the issuer, so an unclassified name never silently shares a cap
+    with an unrelated one.  Such names are counted in the decision record
+    instead of being assumed diversified.
+    """
+    text = unicodedata.normalize("NFKD", str(value if value is not None else ""))
+    text = "".join(character for character in text if character.isascii() and (character.isalnum() or character.isspace()))
+    text = " ".join(text.split()).lower()
+    text = _SECTOR_HOLDING_PREFIX.sub("", text).strip()
+    text = _SECTOR_ABBREVIATION_ALIASES.get(text, text)
+    return f"unclassified:{fallback}" if text in _UNCLASSIFIED_SECTOR_LABELS else text
+
+
+def is_unclassified_sector(group: str) -> bool:
+    return str(group).startswith("unclassified:")
+
+
+# How the equity sleeve is split among the names the factor already chose.
+# Selection and sizing are different questions: ``inverse_volatility`` still
+# owns exactly what the triple factor picked, it only refuses to put the same
+# money behind a name that moves twice as much. That is not the low-volatility
+# factor, which changes *which* names are owned.
+WEIGHTING_SCHEMES = ("score", "equal", "inverse_volatility", "inverse_volatility_score")
+# A name whose trailing year shows almost no movement is a data artefact, not a
+# riskless asset; without a floor its inverse would take the whole sleeve.
+MINIMUM_ANNUALISED_VOLATILITY = .05
 
 
 @dataclass(frozen=True)
@@ -74,6 +123,21 @@ class BrazilianTaxModel:
     @staticmethod
     def _share(value: float) -> float:
         return max(0.0, min(1.0, float(value)))
+
+    def equity_rate_for_sale(self, equity_sales_brl: float) -> float:
+        """Rate on an ordinary share sale of this size in one calendar month.
+
+        Brazilian law exempts the gain entirely when a person's ordinary share
+        sales in the month stay at or below the threshold, and taxes the whole
+        gain once they exceed it -- it is a cliff, not a deduction. The
+        consequence matters for cadence: a book small enough to sell under the
+        limit at every review pays nothing, and splitting the same annual sale
+        across more reviews is what puts it under the limit.
+
+        The exemption covers ordinary share sales only. ETF quotas, including a
+        global sleeve, are taxed regardless of size and must not be passed here.
+        """
+        return 0.0 if float(equity_sales_brl) <= self.monthly_sale_exemption_brl else self.equity_rate
 
     def annual_tax_brl(self, equity_gain_brl: float, equity_realised_share: float, equity_sold_brl: float,
                        fixed_income_gain_brl: float, fixed_income_redeemed_share: float) -> float:
@@ -220,6 +284,31 @@ class AnnualWalkForwardConfig:
     apply_profile_risk_layer: bool = False
     target_volatility: float | None = None
     minimum_equity_positions: int = 0
+    # Selectivity, not a fixed count. A book of twenty names was three quarters
+    # of everything that passed the 2016 screen and only a fifth of the 2025
+    # one, so a constant ``top_assets`` silently changes what the rule *is*
+    # across the sample. When this fraction is set the count is read from the
+    # eligible universe of that January, ``top_assets_minimum`` is the floor and
+    # ``top_assets`` becomes the ceiling.
+    top_assets_universe_fraction: float | None = None
+    top_assets_minimum: int = 5
+    # Ceiling on issuers drawn from one CVM sector. ``None`` reproduces the
+    # published rule, which had no sector limit at all.
+    maximum_names_per_sector: int | None = None
+    # How the equity sleeve is split among the selected names. ``score`` is the
+    # published rule: size proportional to factor confidence.
+    weighting: str = "score"
+    # A B3-listed global equity ETF held as a declared share of the equity
+    # budget. It has no CVM filing, so the factor screen can never reach it;
+    # it is owned because the policy says so, not because a signal chose it.
+    # ``None`` reproduces the published rule, which was entirely domestic.
+    global_sleeve_ticker: str | None = None
+    global_sleeve_fraction: float = 0.0
+    # Share of the profile's declared equity cap that the volatility target may
+    # never cut below. ``None`` keeps the registered spec, in which the target
+    # alone decided exposure and the cap sold to the investor was decorative.
+    # Observable stress is applied after the floor and may still go under it.
+    exposure_floor_fraction: float | None = None
 
     def __post_init__(self) -> None:
         if self.end_year <= self.start_year:
@@ -234,6 +323,33 @@ class AnnualWalkForwardConfig:
             raise ValueError(f"Unsupported risk profile '{self.risk_profile}'.")
         if self.minimum_equity_positions < 0:
             raise ValueError("minimum_equity_positions cannot be negative.")
+        if self.top_assets_universe_fraction is not None:
+            if not 0 < self.top_assets_universe_fraction <= 1:
+                raise ValueError("top_assets_universe_fraction must be between 0 (exclusive) and 1.")
+            if not 1 <= self.top_assets_minimum <= self.top_assets:
+                raise ValueError("top_assets_minimum must be between 1 and top_assets, which is the ceiling.")
+        if self.maximum_names_per_sector is not None and self.maximum_names_per_sector < 1:
+            raise ValueError("maximum_names_per_sector must be at least 1.")
+        if self.weighting not in WEIGHTING_SCHEMES:
+            raise ValueError(f"Unsupported weighting scheme '{self.weighting}'; expected one of {WEIGHTING_SCHEMES}.")
+        if self.exposure_floor_fraction is not None and not 0 <= self.exposure_floor_fraction <= 1:
+            raise ValueError("exposure_floor_fraction must be between 0 and 1.")
+        if not 0 <= self.global_sleeve_fraction <= 1:
+            raise ValueError("global_sleeve_fraction must be between 0 and 1.")
+        if self.global_sleeve_fraction > 0 and self.global_sleeve_ticker is None:
+            raise ValueError("A global sleeve fraction requires global_sleeve_ticker to name the instrument.")
+
+    def positions_for_universe(self, eligible_issuers: int) -> int:
+        """Holding count for one decision, from information known at that date.
+
+        The eligible count comes from the dated screen of the same January, so
+        this stays a point-in-time decision rather than a parameter fitted to
+        the sample.
+        """
+        if self.top_assets_universe_fraction is None:
+            return self.top_assets
+        scaled = round(self.top_assets_universe_fraction * max(0, int(eligible_issuers)))
+        return int(min(self.top_assets, max(self.top_assets_minimum, scaled)))
 
 
 def protocol_for_risk_profile(protocol: AnnualWalkForwardConfig, risk_profile: str | None) -> AnnualWalkForwardConfig:
@@ -266,7 +382,8 @@ def _decision_action(old: float, new: float, tolerance: float = 1e-6) -> str:
     return "not_held"
 
 
-def apply_annual_taxes(results: pd.DataFrame, tax_model: BrazilianTaxModel) -> pd.DataFrame:
+def apply_annual_taxes(results: pd.DataFrame, tax_model: BrazilianTaxModel,
+                       apply_monthly_exemption: bool = False) -> pd.DataFrame:
     """Charge Brazilian tax to the year whose gain the next review realises.
 
     A gain is only taxable once the position is sold, so the fraction realised
@@ -274,6 +391,12 @@ def apply_annual_taxes(results: pd.DataFrame, tax_model: BrazilianTaxModel) -> p
     *t + 1* actually turns over.  The last evaluated year is charged as a full
     liquidation, which is the conservative terminal assumption rather than an
     indefinite deferral that would flatter the series.
+
+    ``apply_monthly_exemption`` reads the size of each review's share sale from
+    ``opening_wealth_brl`` and applies the personal monthly exemption. It is off
+    by default because every published series was computed without it, and a
+    tax break that depends on the investor's balance is a property of a client,
+    not of the strategy.
     """
     frame = results.copy()
     for label, gain_column, cash_column, turnover_column, net_column in (
@@ -286,7 +409,14 @@ def apply_annual_taxes(results: pd.DataFrame, tax_model: BrazilianTaxModel) -> p
         # of the book that was actually sold.
         realised = (frame[turnover_column].shift(-1) / 2).clip(upper=1.0)
         realised = realised.fillna(1.0)
-        equity_tax = tax_model.equity_rate * frame[gain_column].clip(lower=0) * realised
+        if apply_monthly_exemption and "opening_wealth_brl" in frame:
+            equity_sales = frame.opening_wealth_brl * (1 - frame[cash_column]) * realised
+            rate = equity_sales.map(tax_model.equity_rate_for_sale)
+            frame[f"{label}equity_sales_brl"] = equity_sales
+            frame[f"{label}equity_rate_applied"] = rate
+        else:
+            rate = tax_model.equity_rate
+        equity_tax = rate * frame[gain_column].clip(lower=0) * realised
         cash_gain = frame[cash_column] * frame.cdi_net_return
         cash_tax = tax_model.fixed_income_rate * cash_gain.clip(lower=0) * realised
         frame[f"{label}realised_share_for_tax"] = realised
@@ -574,6 +704,7 @@ class AnnualWalkForwardEngine:
             if item.price_to_earnings is None or item.price_to_earnings <= 0:
                 reasons.append("positive_earnings")
             row = {**item.model_dump(), "eligible": not reasons, "rejection_reasons": ",".join(reasons),
+                   "sector_group": sector_group(item.sector, ticker),
                    "quality_signal": quality, "earnings_yield": None if item.price_to_earnings is None else 1 / item.price_to_earnings,
                    "momentum_12m": None, "factor_score": 0.0, "value_quality_score": 0.0, "selection_rank": None}
             if ticker in history.columns and len(history):
@@ -600,11 +731,57 @@ class AnnualWalkForwardEngine:
         ).drop(columns=["factor_score_scored", "value_quality_score_scored", "selection_rank_scored"])
 
     @staticmethod
-    def _confidence_weights(scores: pd.Series, total_equity: float, maximum_asset_weight: float) -> pd.Series:
-        """Allocate by factor confidence while respecting every issuer cap."""
+    def _sector_capped(ranked: pd.DataFrame, limit: int | None) -> pd.DataFrame:
+        """Drop rank-inferior names once their sector has filled its quota.
+
+        Rank order is preserved, so the cap only ever removes the *worse* of two
+        candidates that share an exposure. An issuer the registry left
+        unclassified holds a bucket of its own and therefore passes; the count
+        of those names is reported with the decision instead of being treated as
+        diversification that was never verified.
+        """
+        if limit is None or ranked.empty:
+            return ranked
+        used: dict[str, int] = {}
+        keep: list[bool] = []
+        for group in ranked.sector_group:
+            taken = used.get(group, 0)
+            allowed = taken < limit
+            if allowed:
+                used[group] = taken + 1
+            keep.append(allowed)
+        return ranked.loc[keep]
+
+    @staticmethod
+    def _raw_weights(scores: pd.Series, volatilities: pd.Series, scheme: str) -> pd.Series:
+        """Unnormalised sizing preference, before any cap is applied."""
+        if scheme == "score":
+            return scores - scores.min() + .25
+        if scheme == "equal":
+            return pd.Series(1.0, index=scores.index)
+        floored = volatilities.reindex(scores.index).astype(float)
+        # A missing trailing volatility must not become a large position by
+        # default, so it is treated as the noisiest name in the book.
+        floored = floored.fillna(floored.max()).clip(lower=MINIMUM_ANNUALISED_VOLATILITY)
+        inverse = 1 / floored
+        if scheme == "inverse_volatility":
+            return inverse
+        if scheme == "inverse_volatility_score":
+            # Geometric blend: conviction still tilts the book, but it tilts a
+            # risk-balanced book rather than a raw one.
+            confidence = scores - scores.min() + .25
+            return (inverse / inverse.sum() * (confidence / confidence.sum())) ** .5
+        raise ValueError(f"Unsupported weighting scheme '{scheme}'.")
+
+    @staticmethod
+    def _confidence_weights(scores: pd.Series, total_equity: float, maximum_asset_weight: float,
+                            volatilities: pd.Series | None = None, scheme: str = "score") -> pd.Series:
+        """Allocate by the declared sizing rule while respecting every issuer cap."""
         if scores.empty or total_equity <= 0:
             return pd.Series(dtype=float)
-        raw = scores - scores.min() + .25
+        if volatilities is None:
+            volatilities = pd.Series(1.0, index=scores.index)
+        raw = AnnualWalkForwardEngine._raw_weights(scores, volatilities, scheme)
         weights = raw / raw.sum() * total_equity
         # Water-fill any cap excess among the remaining names; a cap is never
         # relaxed merely to reach the requested equity allocation.
@@ -630,8 +807,14 @@ class AnnualWalkForwardEngine:
         ranked = (eligible.sort_values(["factor_score", "average_daily_value_brl", "ticker"], ascending=[False, False, True])
                   .drop_duplicates("issuer_id", keep="first")
                   .reset_index(drop=True))
+        # Selectivity is measured against every issuer that passed the dated
+        # screen, before the sector limit removes any of them; otherwise the
+        # limit would shrink the count and the count would shrink the book
+        # twice for the same reason.
+        count = protocol.positions_for_universe(len(ranked))
+        ranked = self._sector_capped(ranked, protocol.maximum_names_per_sector).reset_index(drop=True)
         if protocol.retention_buffer <= 0:
-            selected = ranked.head(protocol.top_assets)
+            selected = ranked.head(count)
         else:
             # Sem folga, um papel que continua excelente mas escorrega uma
             # posição é vendido inteiro, o que é a razão pela qual o livro gira
@@ -640,25 +823,45 @@ class AnnualWalkForwardEngine:
             # sobram são preenchidas pelo topo do ranking.
             held = {ticker for ticker, weight in current_weights.items()
                     if ticker != "TITULO_CDI" and float(weight) > 1e-6}
-            horizon = ranked.head(protocol.top_assets + protocol.retention_buffer)
+            horizon = ranked.head(count + protocol.retention_buffer)
             keep = horizon[horizon.ticker.isin(held)]
-            remaining = protocol.top_assets - len(keep)
+            remaining = count - len(keep)
             newcomers = ranked[~ranked.ticker.isin(keep.ticker)].head(max(0, remaining))
             selected = (pd.concat([keep, newcomers])
                         .sort_values("factor_score", ascending=False)
-                        .head(protocol.top_assets))
+                        .head(count))
         if selected.empty:
             raise ValueError("No eligible assets under the triple-factor point-in-time screen.")
-        attainable_equity = min(protocol.maximum_equity_weight, protocol.maximum_asset_weight * len(selected))
-        selected_weights = self._confidence_weights(selected.set_index("ticker").factor_score, attainable_equity, protocol.maximum_asset_weight)
+        # The global sleeve is carved out of the equity budget, not added on
+        # top of it: the profile's declared exposure to equities does not grow
+        # because part of it is now held abroad.
+        holds_global = (protocol.global_sleeve_ticker is not None and protocol.global_sleeve_fraction > 0
+                        and protocol.global_sleeve_ticker in history.columns)
+        global_weight = protocol.maximum_equity_weight * protocol.global_sleeve_fraction if holds_global else 0.0
+        local_budget = protocol.maximum_equity_weight - global_weight
+        attainable_equity = min(local_budget, protocol.maximum_asset_weight * len(selected))
+        # Trailing volatility comes from the same window the screen already
+        # read, which ends before the decision date; no later session is used.
+        trailing = history.reindex(columns=list(selected.ticker))
+        volatilities = trailing.std(ddof=1) * (252 ** .5)
+        selected_weights = self._confidence_weights(
+            selected.set_index("ticker").factor_score, attainable_equity, protocol.maximum_asset_weight,
+            volatilities=volatilities, scheme=protocol.weighting)
         weights = pd.Series(0.0, index=history.columns)
         weights.loc[selected_weights.index] = selected_weights
+        if holds_global:
+            weights[protocol.global_sleeve_ticker] = global_weight
         weights["TITULO_CDI"] = 1 - float(weights.drop(labels="TITULO_CDI").sum())
         liquidity = selected.set_index("ticker").average_daily_value_brl.to_dict()
         costs = ClearB3CostModel()
+        priced = list(selected_weights.index) + ([protocol.global_sleeve_ticker] if holds_global else [])
         estimated_cost = sum(
-            costs.estimate(wealth * abs(weights[ticker] - current_weights.get(ticker, 0.0)), liquidity[ticker]).total_brl
-            for ticker in selected_weights.index
+            costs.estimate(wealth * abs(weights[ticker] - current_weights.get(ticker, 0.0)),
+                           # The ETF carries no fundamental snapshot and so no
+                           # observed traded value; the engine's own liquidity
+                           # floor is assumed, which overstates its cost.
+                           liquidity.get(ticker, 1_000_000.0)).total_brl
+            for ticker in priced
         )
         return PortfolioProposal(decision, protocol.horizon_years, weights, screen, estimated_cost)
 
@@ -716,6 +919,16 @@ class AnnualWalkForwardEngine:
             known_snapshots = [item for item in known_snapshots if item.ticker in complete_tickers]
             if not known_snapshots:
                 continue
+            # The declared global sleeve is added *after* the snapshot filter,
+            # so it is priced and tradable but never enters the fundamental
+            # screen, the factor ranking or the neutral MVO comparator. Before
+            # the fund listed there is simply no column and the year runs
+            # entirely domestic, which is the honest treatment of a date.
+            if protocol.global_sleeve_ticker is not None and protocol.global_sleeve_fraction > 0:
+                global_column = _price_column_for_ticker(protocol.global_sleeve_ticker, prior_prices.columns)
+                if global_column is not None and prior_prices.loc[recent_sessions, global_column].notna().all():
+                    ticker_columns[protocol.global_sleeve_ticker] = global_column
+                    complete_tickers.append(protocol.global_sleeve_ticker)
             # Rename only the local history slice to the dated fundamental
             # identifiers. This prevents price-source syntax from changing the
             # selection universe or the audit trail.
@@ -801,11 +1014,15 @@ class AnnualWalkForwardEngine:
                 ranked_screen = ranked_screen.sort_values(
                     [rank_column, "ticker"], ascending=[rank_column != "value_quality_score", True]
                 )
+                sizing_spec = risk_profile_spec(protocol.risk_profile)
+                if protocol.exposure_floor_fraction is not None:
+                    sizing_spec = replace(sizing_spec,
+                                          minimum_equity_fraction_of_cap=protocol.exposure_floor_fraction)
                 target, risk_report = apply_annual_risk_policy(
                     target,
                     history.tail(protocol.minimum_history_days),
                     ranked_screen.ticker.astype(str).tolist(),
-                    protocol.risk_profile,
+                    sizing_spec,
                     decision_date=decision,
                 )
                 proposal = replace(proposal, weights=target)
@@ -860,7 +1077,20 @@ class AnnualWalkForwardEngine:
             mvo_equity_gain_rate = float((mvo_target.drop(labels="TITULO_CDI") *
                                           asset_growth.reindex(mvo_target.index).drop(labels="TITULO_CDI").fillna(1.0)).sum()) - mvo_equity_weight
             screen = proposal.screen.set_index("ticker")
+            # Concentration actually delivered, not the limit that was declared.
+            # A committee reviewing the book needs the realised spread and the
+            # share of it the registry never classified.
+            held_names = [ticker for ticker in active_columns
+                          if ticker != "TITULO_CDI" and float(target.get(ticker, 0.0)) > 1e-8]
+            groups_by_ticker = (proposal.screen.set_index("ticker").sector_group.to_dict()
+                                if "sector_group" in proposal.screen.columns else {})
+            held_groups = [groups_by_ticker.get(ticker, f"unclassified:{ticker}") for ticker in held_names]
+            sector_counts = pd.Series(held_groups).value_counts() if held_groups else pd.Series(dtype=int)
             yearly_rows.append({
+                "equity_positions": len(held_names),
+                "distinct_sectors": int(sum(not is_unclassified_sector(group) for group in sector_counts.index)),
+                "unclassified_sector_positions": int(sum(is_unclassified_sector(group) for group in held_groups)),
+                "largest_sector_positions": int(sector_counts.max()) if len(sector_counts) else 0,
                 "decision_year": year, "decision_date": decision.date().isoformat(),
                 "holding_end_exclusive": next_decision.date().isoformat(), "gross_return": gross_return,
                 "estimated_cost_brl": proposal.estimated_rebalance_cost_brl, "estimated_cost_rate": cost_rate,
@@ -892,6 +1122,9 @@ class AnnualWalkForwardEngine:
                     continue
                 if ticker == "TITULO_CDI":
                     reason = "defensive_residual_adjustment"
+                elif (protocol.global_sleeve_ticker is not None and ticker == protocol.global_sleeve_ticker
+                      and new > 1e-6):
+                    reason = "declared_global_sleeve_allocation"
                 elif ticker not in screen.index or not bool(screen.loc[ticker, "eligible"]):
                     reason = "removed_or_blocked_by_eligibility"
                 elif old <= 1e-6:
@@ -912,6 +1145,19 @@ class AnnualWalkForwardEngine:
                         rationale = "Defensive residual after equity, issuer and eligibility constraints."
                         score = None
                         eligible_status = True
+                    elif item is None:
+                        # A declared holding with no fundamental snapshot: the
+                        # global sleeve. It is recorded as not eligible because
+                        # it never faced the screen, which is the honest label.
+                        # Calling it eligible would imply a filing that does
+                        # not exist.
+                        rationale = ("Held as a declared policy allocation, not a screened selection. "
+                                     "The instrument has no CVM filing and never entered the factor ranking.")
+                        score = None
+                        eligible_status = False
+                        twelve_month_return = float((1 + history[ticker].tail(252)).prod() - 1)
+                        trailing_volatility = float(history[ticker].tail(252).std(ddof=1) * (252 ** .5))
+                        selected_signal = None
                     else:
                         score = float(item.value_quality_score)
                         eligible_status = bool(item.eligible)

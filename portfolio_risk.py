@@ -25,6 +25,14 @@ class RiskProfileSpec:
     maximum_asset_weight: float
     minimum_equity_positions: int = 5
     minimum_position_weight: float = 0.02
+    # Share of ``maximum_equity_weight`` the volatility target may never cut
+    # below.  Zero reproduces the published behaviour, in which the target
+    # alone decided the exposure and the declared cap was decorative: measured
+    # over 2015-2025 the three profiles held 54%, 65% and 78% of their own caps
+    # on average, so an investor who chose "arrojado" was not in the profile
+    # they were sold.  The floor binds the target only; observable stress may
+    # still cut below it, which is the one mechanism that did reduce drawdown.
+    minimum_equity_fraction_of_cap: float = 0.0
     alert_multiplier: float = 0.70
     severe_multiplier: float = 0.40
     maximum_drawdown_tolerance: float = 0.25
@@ -48,6 +56,11 @@ PROFILE_SPECS: dict[str, RiskProfileSpec] = {
     ),
 }
 PROFILE_ALIASES = {"moderado": "equilibrado", "moderate": "equilibrado", "conservative": "conservador", "aggressive": "arrojado"}
+
+
+def resolve_profile_spec(profile: "str | RiskProfileSpec") -> RiskProfileSpec:
+    """Accept a registered profile name or an explicitly declared spec."""
+    return profile if isinstance(profile, RiskProfileSpec) else risk_profile_spec(profile)
 
 
 def risk_profile_spec(name: str) -> RiskProfileSpec:
@@ -136,11 +149,11 @@ def apply_annual_risk_policy(
     target: pd.Series,
     trailing_returns: pd.DataFrame,
     ranked_eligible: list[str],
-    profile: str,
+    profile: str | RiskProfileSpec,
     decision_date: pd.Timestamp | None = None,
 ) -> tuple[pd.Series, dict]:
     """Apply diversification, target volatility and observable stress sizing."""
-    spec = risk_profile_spec(profile)
+    spec = resolve_profile_spec(profile)
     history = trailing_returns.copy().sort_index()
     if decision_date is not None and isinstance(history.index, pd.DatetimeIndex):
         if len(history) and history.index.max() >= pd.Timestamp(decision_date):
@@ -168,7 +181,14 @@ def apply_annual_risk_policy(
         "alerta": spec.alert_multiplier,
         "severo": spec.severe_multiplier,
     }[state]
-    effective_budget = min(base_budget, volatility_budget) * state_multiplier
+    # The volatility target may reduce the sleeve, but not below the share of
+    # the declared cap the profile promised to keep invested.  Stress is
+    # applied afterwards and is deliberately allowed to go under the floor:
+    # a floor that also blocked the crisis response would remove the only
+    # layer that measurably reduced drawdown.
+    volatility_limited = max(min(base_budget, volatility_budget),
+                             min(base_budget, spec.minimum_equity_fraction_of_cap * spec.maximum_equity_weight))
+    effective_budget = volatility_limited * state_multiplier
     # Scaling is one-way: the risk layer may reduce a selected budget but may
     # not manufacture extra equity exposure to improve a historical result.
     adjusted = diversified.copy()
@@ -179,7 +199,8 @@ def apply_annual_risk_policy(
     report = {
         **asdict(spec),
         "base_equity_weight": base_budget,
-        "volatility_limited_equity_weight": min(base_budget, volatility_budget),
+        "volatility_limited_equity_weight": volatility_limited,
+        "exposure_floor": spec.minimum_equity_fraction_of_cap * spec.maximum_equity_weight,
         "effective_equity_weight": effective_budget,
         "estimated_volatility_before": estimated_before,
         "estimated_volatility_after": estimated_after,
