@@ -289,14 +289,14 @@ def map_portfolio(positions: list[Position], target: dict, *,
         custo = excesso * TRADE_COST
         notas = []
         if not pos.tax_computable:
-            notas.append(f"ganho e imposto não apurados: {pos.cost_quality.value}")
+            notas.append("imposto ainda não calculado: falta informar quanto você pagou")
         if ganho > 0 and mes_isento and pos.bucket is Bucket.ACAO:
             notas.append("isento pela regra dos vinte mil no mês, se nada mais for vendido")
         # Prejuízo fora do escopo não abate nada aqui: a cesta dele não se
         # encontra com a de ações. Dizer o contrário seria prometer um crédito
         # que a lei não dá.
         if ganho < 0 and pos.bucket is not Bucket.FORA_DO_ESCOPO:
-            notas.append("prejuízo realizado: abate o ganho das outras vendas da mesma cesta")
+            notas.append("prejuízo realizado: abate o ganho das outras vendas do mesmo tipo")
         vendas.append((pos, ganho, excesso))
         if not pos.liquid:
             notas.append("posição sem liquidez diária: a saída depende do vencimento ou do secundário")
@@ -307,7 +307,7 @@ def map_portfolio(positions: list[Position], target: dict, *,
             motivo = "fora do escopo da política"
             notas.append("regime tributário próprio: o imposto desta venda não é apurado aqui")
         else:
-            motivo = "não está na cesta do perfil" if vender_tudo else "acima do peso declarado"
+            motivo = "não faz parte da carteira do perfil" if vender_tudo else "acima do peso declarado"
         moves.append(Move(
             ticker, "vender" if vender_tudo else "reduzir",
             pos.market_value_brl, alvo_brl, motivo,
@@ -321,7 +321,7 @@ def map_portfolio(positions: list[Position], target: dict, *,
                           round(alvo_brl * TRADE_COST, 2)))
     if alvo_global > 0 and not any(p.bucket is Bucket.FUNDO_GLOBAL for p in positions):
         moves.append(Move(GLOBAL_TICKER, "comprar", 0.0, alvo_global * total,
-                          "perna global declarada pela política",
+                          "fatia em bolsa dos EUA, declarada pela política",
                           round(alvo_global * total * TRADE_COST, 2)))
 
     # A apuração é por cesta, não por venda: só depois de somar ganhos e
@@ -379,10 +379,9 @@ def map_portfolio(positions: list[Position], target: dict, *,
             for m in sorted(moves, key=lambda x: (x.action != "vender", -abs(x.delta_brl)))
         ],
         "honesty": (
-            "O custo deste plano inclui o imposto que a venda realiza, que é o número que costuma "
-            "faltar. E ele não estima em quanto tempo a mudança 'se paga': isso exigiria projetar "
-            "retorno futuro, e a calibração publicada mostra que projeções desse tipo erram na "
-            "direção de quem as faz."),
+            "O custo inclui o imposto que a venda realiza, que é o número que costuma faltar. "
+            "E não dizemos em quanto tempo a mudança se paga: isso exigiria prever retorno, e "
+            "projeções assim erram a favor de quem as faz."),
     }
 
 
@@ -473,9 +472,9 @@ def adapt_portfolio(positions: list[Position], target: dict, *,
         ganho = _realised_gain(pos, excesso) if pos.tax_computable else 0.0
         vendas.append((pos, ganho, excesso))
         if not pos.tax_computable:
-            notas = [f"ganho e imposto não apurados: {pos.cost_quality.value}"]
+            notas = ["imposto ainda não calculado: falta informar quanto você pagou"]
         elif ganho < 0:
-            notas = ["prejuízo realizado: abate o ganho das outras vendas da mesma cesta"]
+            notas = ["prejuízo realizado: abate o ganho das outras vendas do mesmo tipo"]
         else:
             notas = []
         moves.append(Move(ticker, "reduzir", pos.market_value_brl, alvo_brl, motivo,
@@ -563,11 +562,10 @@ def adapt_portfolio(positions: list[Position], target: dict, *,
             for m in sorted(moves, key=lambda x: (x.action == "manter", -abs(x.delta_brl)))
         ],
         "honesty": (
-            "Este caminho aplica a camada de proteção sobre a seleção que já existe. O retorno "
-            "publicado pela Benevente foi medido com seleção e proteção juntas, e não descreve "
-            "esta carteira: não há medição do que a proteção sozinha teria feito sobre uma cesta "
-            "escolhida por terceiro. O que se pode afirmar é o que a camada faz — reduzir "
-            "exposição nos estados declarados —, não quanto ela teria rendido aqui."),
+            "Aqui os seus ativos ficam e ganham a proteção nas quedas. O retorno que a "
+            "Benevente publica foi medido escolhendo os ativos e protegendo, junto, então ele "
+            "não descreve esta carteira. Dá para dizer o que a proteção faz — reduzir a "
+            "exposição quando o mercado cai —, não quanto ela renderia aqui."),
     }
 
 

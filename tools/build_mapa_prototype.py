@@ -122,7 +122,19 @@ section { margin-bottom: 3rem; }
 .seguranca li { border-bottom: 1px solid var(--line); padding: .75rem 0;
                 font-size: .875rem; line-height: 1.43; color: var(--fg-2); }
 .seguranca b { color: var(--fg); font-weight: 600; }
-.cols { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
+details { margin-top: 1.5rem; border-top: 1px solid var(--line); }
+details > summary { cursor: pointer; list-style: none; padding: .875rem 0;
+                    font-size: .875rem; color: var(--acao); min-height: 2.75rem;
+                    display: flex; align-items: center; justify-content: space-between;
+                    gap: 1rem; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::after { content: "+"; font-family: "IBM Plex Mono", monospace;
+                           font-size: 1.125rem; color: var(--fg-3); }
+details[open] > summary::after { content: "–"; }
+details > summary:focus-visible { outline: 2px solid var(--acao); outline-offset: -2px; }
+details > summary b { color: var(--fg); font-weight: 600; }
+
+.cols { display: grid; gap: 1.5rem; margin-top: 0; }
 .cols ul { margin: .5rem 0 0; padding: 0; list-style: none; }
 .cols li { font-size: .875rem; line-height: 1.43; color: var(--fg-2);
            padding: .5rem 0 .5rem .875rem; border-left: 2px solid var(--line); }
@@ -315,10 +327,13 @@ footer a { color: var(--acao); }
       <div class="big num" id="chegou-tit"></div>
       <p id="chegou-txt"></p>
     </div>
-    <div class="cols">
-      <div><p class="label">O que a B3 manda</p><ul id="vem"></ul></div>
-      <div><p class="label">O que a B3 não manda</p><ul id="nvem" class="nao"></ul></div>
-    </div>
+    <details>
+      <summary><span><b>O que vem e o que não vem da B3</b></span></summary>
+      <div class="cols">
+        <div><p class="label">Vem</p><ul id="vem"></ul></div>
+        <div><p class="label">Não vem</p><ul id="nvem" class="nao"></ul></div>
+      </div>
+    </details>
     <div class="aviso erro" id="lacuna"></div>
   </div>
 </section>
@@ -337,7 +352,7 @@ footer a { color: var(--acao); }
 
 <section id="mapa" class="hidden">
   <h2>Sua carteira hoje</h2>
-  <p class="lede">Cada linha carrega de onde veio: extrato da B3, Open Finance ou
+  <p class="lede">Cada posição mostra de onde o dado veio: extrato da B3, Open Finance ou
      lançamento manual.</p>
   <div class="painel">
     <div class="big num" id="aderencia"></div>
@@ -349,7 +364,7 @@ footer a { color: var(--acao); }
     <div class="legenda">
       <span><i style="background:var(--btn)"></i>ações</span>
       <span><i style="background:var(--line-strong)"></i>renda fixa e caixa</span>
-      <span><i style="background:var(--erro)"></i>fora do escopo</span>
+      <span><i style="background:var(--erro)"></i>fora da estratégia</span>
     </div>
   </div>
   <div class="aviso" id="fgc"></div>
@@ -357,15 +372,19 @@ footer a { color: var(--acao); }
 
 <section id="planos-sec" class="hidden">
   <h2>Dois planos</h2>
-  <p class="lede">Um aplica o método inteiro e paga o imposto agora. O outro quase não
-     custa e aplica metade. A escolha é sua, e as duas ficam registradas.</p>
+  <p class="lede">Um troca os seus ativos pela seleção da política e protege nas quedas.
+     O outro mantém os seus ativos e só protege. A escolha é sua, e as duas ficam
+     registradas.</p>
   <div class="planos" id="planos"></div>
 </section>
 
 <section id="razao-sec" class="hidden">
   <h2 id="razao-h"></h2>
   <p class="lede" id="razao-lede"></p>
-  <div class="razao" id="razao"></div>
+  <details id="razao-det">
+    <summary><span id="razao-resumo"></span></summary>
+    <div class="razao" id="razao"></div>
+  </details>
   <div class="conta" id="conta"></div>
   <div class="acoes">
     <button class="btn" type="button">Baixar o dossiê do plano</button>
@@ -711,8 +730,7 @@ function planos(perfil, a, b) {
         " do patrimônio</small>"),
       el("dl", null,
         "<dt>Movimenta</dt><dd class='num'>" + BRL(m.turnover_brl) + "</dd>" +
-        "<dt>Imposto</dt><dd class='num'>" + BRL(m.transition_tax_brl) + "</dd>" +
-        "<dt>Do método</dt><dd>" + m.modules.length + " de 2 módulos</dd>"));
+        "<dt>Imposto</dt><dd class='num'>" + BRL(m.transition_tax_brl) + "</dd>"));
     // Em vez de um "a partir de" que ninguém decifra, a falta é dita por
     // extenso: o que falta, de quanto é, e por quê.
     if (!m.tax_is_complete) {
@@ -751,6 +769,12 @@ function razao(perfil, chave, rolar) {
   const grupos = [["vender", "Sai"], ["reduzir", "Reduz"], ["comprar", "Entra"], ["manter", "Fica"]];
   const host = $("razao");
   host.innerHTML = "";
+  const plural = { vender: "saem", reduzir: "diminuem", comprar: "entram", manter: "ficam" };
+  const contagem = grupos
+    .map(([a]) => [plural[a], m.moves.filter(x => x.action === a).length])
+    .filter(([, n]) => n > 0);
+  $("razao-resumo").innerHTML = "<b>" + contagem.reduce((s, [, n]) => s + n, 0) +
+    " ativos</b> · " + contagem.map(([rot, n]) => n + " " + rot).join(", ");
   grupos.forEach(([acao, titulo]) => {
     const linhas = m.moves.filter(x => x.action === acao);
     if (!linhas.length) return;
@@ -774,16 +798,16 @@ function razao(perfil, chave, rolar) {
   let html = "<div><span>Execução</span><span class='num'>" +
     BRL(m.transition_cost_brl) + "</span></div>";
   Object.entries(m.tax_by_bucket).forEach(([cesta, d]) => {
-    const nome = { renda_variavel: "Renda variável", renda_fixa: "Renda fixa",
-                   fora_do_escopo: "Fora do escopo" }[cesta] || cesta;
+    const nome = { renda_variavel: "Ações e fundos", renda_fixa: "Renda fixa",
+                   fora_do_escopo: "Fora da estratégia" }[cesta] || cesta;
     // Prejuízo não é base de imposto, é crédito — mas só dentro da própria
     // cesta. O prejuízo de cripto não abate imposto de ação, e prometer isso
     // aqui contradiria a regra que o módulo implementa três telas atrás.
     const rotulo = d.realised_gain_brl >= 0
       ? nome + " · imposto sobre " + BRL(d.realised_gain_brl) + " de ganho"
       : cesta === "fora_do_escopo"
-        ? nome + " · prejuízo de " + BRL(-d.realised_gain_brl) + ", de regime próprio"
-        : nome + " · prejuízo de " + BRL(-d.realised_gain_brl) + ", que vira crédito nesta cesta";
+        ? nome + " · prejuízo de " + BRL(-d.realised_gain_brl) + ", que se apura à parte"
+        : nome + " · prejuízo de " + BRL(-d.realised_gain_brl) + ", que vira crédito neste tipo";
     html += "<div><span>" + rotulo + "</span><span class='num'>" + BRL(d.tax_brl) + "</span></div>";
   });
   if (!m.tax_is_complete) {
@@ -795,15 +819,15 @@ function razao(perfil, chave, rolar) {
   html += "<div class='total'><span>" +
     (m.tax_is_complete ? "Total, pago uma vez" : "Calculado até aqui, pago uma vez") +
     "</span><span class='num'>" + BRL(m.transition_total_brl) + "</span></div>";
-  html += "<p>O imposto é apurado por cesta, ao custo médio: ganhos e prejuízos se compensam " +
-    "dentro da cesta e nunca entre cestas." +
+  html += "<p>O imposto é calculado por tipo de investimento, pelo preço médio: ganhos e " +
+    "prejuízos se compensam dentro do mesmo tipo e nunca entre tipos diferentes." +
     (m.exempt_month_assumed && (m.tax_by_bucket.renda_variavel || {}).realised_gain_brl > 0
       ? " O imposto sobre ações fica em zero porque o total vendido no mês cabe na isenção de " +
         "R$ 20 mil — se houver outra venda no mesmo mês, ela deixa de valer."
       : "") +
     (m.tax_by_bucket.fora_do_escopo
-      ? " O zero na cesta fora do escopo não é isenção: é uma conta que não é feita aqui, " +
-        "porque cripto tem regime próprio."
+      ? " O zero em Fora da estratégia não é isenção: é uma conta que não é feita aqui, " +
+        "porque cripto tem regras próprias."
       : "") +
     " O outro plano custaria " + BRL(outro.transition_total_brl) + ".</p>";
   conta.innerHTML = html;

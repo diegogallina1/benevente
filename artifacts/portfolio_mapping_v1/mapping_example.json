@@ -251,12 +251,12 @@
         "from_brl": 180000,
         "to_brl": 0.0,
         "delta_brl": -180000.0,
-        "reason": "não está na cesta do perfil",
+        "reason": "não faz parte da carteira do perfil",
         "trade_cost_brl": 180.0,
         "realised_gain_brl": 0.0,
         "tax_brl": 0.0,
         "notes": [
-          "ganho e imposto não apurados: reconstruído só em parte: há posição anterior a 01/11/2019"
+          "imposto ainda não calculado: falta informar quanto você pagou"
         ]
       },
       {
@@ -265,12 +265,12 @@
         "from_brl": 25000,
         "to_brl": 0.0,
         "delta_brl": -25000.0,
-        "reason": "não está na cesta do perfil",
+        "reason": "não faz parte da carteira do perfil",
         "trade_cost_brl": 25.0,
         "realised_gain_brl": -167000.0,
         "tax_brl": 0.0,
         "notes": [
-          "prejuízo realizado: abate o ganho das outras vendas da mesma cesta"
+          "prejuízo realizado: abate o ganho das outras vendas do mesmo tipo"
         ]
       },
       {
@@ -293,7 +293,7 @@
         "from_brl": 0.0,
         "to_brl": 77000.0,
         "delta_brl": 77000.0,
-        "reason": "perna global declarada pela política",
+        "reason": "fatia em bolsa dos EUA, declarada pela política",
         "trade_cost_brl": 77.0,
         "realised_gain_brl": 0.0,
         "tax_brl": 0.0,
@@ -396,7 +396,7 @@
         "notes": []
       }
     ],
-    "honesty": "O custo deste plano inclui o imposto que a venda realiza, que é o número que costuma faltar. E ele não estima em quanto tempo a mudança 'se paga': isso exigiria projetar retorno futuro, e a calibração publicada mostra que projeções desse tipo erram na direção de quem as faz."
+    "honesty": "O custo inclui o imposto que a venda realiza, que é o número que costuma faltar. E não dizemos em quanto tempo a mudança se paga: isso exigiria prever retorno, e projeções assim erram a favor de quem as faz."
   },
   "alternative": {
     "path": "adaptar",
@@ -476,7 +476,7 @@
         "realised_gain_brl": 0.0,
         "tax_brl": 0.0,
         "notes": [
-          "ganho e imposto não apurados: reconstruído só em parte: há posição anterior a 01/11/2019"
+          "imposto ainda não calculado: falta informar quanto você pagou"
         ]
       },
       {
@@ -542,6 +542,6 @@
         "notes": []
       }
     ],
-    "honesty": "Este caminho aplica a camada de proteção sobre a seleção que já existe. O retorno publicado pela Benevente foi medido com seleção e proteção juntas, e não descreve esta carteira: não há medição do que a proteção sozinha teria feito sobre uma cesta escolhida por terceiro. O que se pode afirmar é o que a camada faz — reduzir exposição nos estados declarados —, não quanto ela teria rendido aqui."
+    "honesty": "Aqui os seus ativos ficam e ganham a proteção nas quedas. O retorno que a Benevente publica foi medido escolhendo os ativos e protegendo, junto, então ele não descreve esta carteira. Dá para dizer o que a proteção faz — reduzir a exposição quando o mercado cai —, não quanto ela renderia aqui."
   }
 }

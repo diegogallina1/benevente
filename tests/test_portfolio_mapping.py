@@ -69,7 +69,11 @@ def test_o_mapa_nao_projeta_retorno() -> None:
     texto = str(mapa).lower()
     for proibido in ("payback", "retorno_esperado", "expected_return", "breakeven"):
         assert proibido not in texto
-    assert "projetar retorno futuro" in mapa["honesty"]
+    # A propriedade, não a frase: o texto recusa dizer em quanto tempo se paga e
+    # nomeia previsão de retorno como o motivo. Fixar a redação faria uma melhora
+    # de texto parecer uma quebra de regra.
+    honesty = mapa["honesty"].lower()
+    assert "se paga" in honesty and "retorno" in honesty
 
 
 def test_posicao_abaixo_do_peso_e_completada() -> None:

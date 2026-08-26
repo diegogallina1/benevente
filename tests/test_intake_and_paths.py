@@ -104,7 +104,7 @@ def test_adaptar_nunca_pode_alegar_o_historico_publicado():
 
 def test_adaptar_nao_vende_nada_por_estar_fora_da_cesta():
     mapa = adapt_portfolio(carteira(), ALVO)
-    assert not any(m["reason"] == "não está na cesta do perfil" for m in mapa["moves"])
+    assert not any(m["reason"] == "não faz parte da carteira do perfil" for m in mapa["moves"])
     assert all(m["action"] in ("manter", "reduzir") for m in mapa["moves"])
 
 
@@ -198,3 +198,21 @@ def test_a_tela_nunca_publica_o_historico_no_caminho_que_nao_o_tem():
     texto = pagina.read_text(encoding="utf-8")
     assert '"path":"adaptar","path_label":"Manter a carteira e aplicar a proteção",' \
            '"modules":["Módulo 2 — Proteção"],"track_record_applies":false' in texto
+
+
+def test_o_app_e_o_site_dizem_a_mesma_coisa():
+    """Números iguais, e o app sem vocabulário que só o site ensina.
+
+    As duas superfícies nasceram dos mesmos artefatos, mas nada obriga elas a
+    continuarem de acordo — e a primeira divergência nunca é numérica, é de
+    linguagem.
+    """
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+    from tools.verify_app_matches_site import checar
+
+    resultados = checar()
+    ruins = [texto for ok, texto in resultados if not ok]
+    assert not ruins, "divergência entre o app e o site:\n  " + "\n  ".join(ruins)
+    assert len(resultados) >= 20

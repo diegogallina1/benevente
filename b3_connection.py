@@ -189,32 +189,31 @@ def reconstruir_custo(ticker: str, quantidade_atual: float,
                  f"desde {relevantes[0].data:%d/%m/%Y}")
 
 
-#: O que a conexão entrega e o que não entrega, como dado e não como prosa —
-#: para a tela, o dossiê e a documentação lerem a mesma coisa.
+#: O que a conexão entrega e o que não entrega, em português de quem investe.
+#: Esta constante é o que se diz ao cliente, e por isso não fala em endpoint,
+#: ISIN ou regime depositado — essas palavras estão em docs/desenho_conexao_b3.md,
+#: que é onde quem implementa precisa delas. Despejar a especificação da API na
+#: tela não é transparência, é transferir para o cliente o trabalho de traduzir.
 COBERTURA = {
     "entrega": [
-        "Renda variável depositada na B3: ações, ETFs, BDRs, FIIs — quantidade e valor",
-        "Tesouro Direto: quantidade e valor",
-        "Negociações (compras e vendas) desde 01/11/2019",
-        "Eventos corporativos provisionados",
-        "Empréstimo de ativos e derivativos",
+        "Ações, ETFs, BDRs e fundos imobiliários que você tem na B3",
+        "Tesouro Direto",
+        "Suas compras e vendas desde 01/11/2019",
     ],
     "entrega_pela_metade": [
-        "Renda fixa de balcão: só quantidade, ISIN, data de aquisição e vencimento — "
-        "sem valor de mercado e sem custo",
-        "Renda fixa: apenas o regime depositado e o registrado com Selo Certifica",
+        "CDB, LCI, LCA e afins: quantidade e vencimento, sem valor e sem preço de compra",
     ],
     "nao_entrega": [
-        "Preço médio ou custo de aquisição: não existe endpoint para isso",
-        "Qualquer dado anterior a 01/11/2019",
-        "Ativos fora da B3: fundos não registrados, previdência, cripto, conta no exterior",
-        "Imóveis, participações societárias e o que nunca passou por custódia",
+        "Por quanto você comprou: a B3 não guarda esse dado",
+        "Qualquer coisa anterior a 01/11/2019",
+        "O que está fora da B3: previdência, cripto, conta no exterior",
+        "Imóveis e participação em empresa",
     ],
     "condicoes": [
-        "A API é contratada com a B3; o ambiente de certificação é livre, o de produção não",
-        "O investidor autoriza dentro da área logada da B3 e revoga lá, sem passar por nós",
-        "Dados de D-1, publicados a partir das 8h, uma consulta por investidor por dia",
-        "SLA de disponibilidade de 97% ao mês: a carteira pode simplesmente não chegar",
+        "A leitura depende de contrato com a B3; o ambiente de testes é livre, o de produção não",
+        "Você autoriza dentro do site da B3 e desliga lá, sem passar por nós",
+        "Os dados são do dia anterior, publicados a partir das 8h, uma vez por dia",
+        "A B3 garante 97% de disponibilidade no mês: a carteira pode não chegar num dia",
     ],
 }
 

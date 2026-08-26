@@ -109,8 +109,13 @@ def test_o_relatorio_de_lacunas_nomeia_o_que_falta():
 
 
 def test_a_cobertura_declara_que_nao_ha_preco_medio():
-    """Se algum dia houver endpoint de custo, este teste deve ser o primeiro a cair."""
-    assert any("Preço médio" in item for item in COBERTURA["nao_entrega"])
+    """Se algum dia houver endpoint de custo, este teste deve ser o primeiro a cair.
+
+    Casa pelo sentido e não pela frase: o texto é voltado ao cliente e pode ser
+    reescrito, mas a ausência do preço de compra tem de continuar declarada.
+    """
+    dito = " ".join(COBERTURA["nao_entrega"]).lower()
+    assert "por quanto você comprou" in dito or "preço médio" in dito
 
 
 # --- o mapa diante de um custo que não sustenta conta ---------------------
@@ -138,7 +143,7 @@ def test_o_ganho_de_uma_posicao_de_custo_parcial_nao_e_publicado():
     mapa = map_portfolio(carteira(Qualidade.PARCIAL), ALVO)
     wege = next(m for m in mapa["moves"] if m["ticker"] == "WEGE3")
     assert wege["realised_gain_brl"] == 0.0
-    assert any("não apurados" in n for n in wege["notes"])
+    assert any("ainda não calculado" in n for n in wege["notes"])
 
 
 def test_com_custo_reconstruido_o_imposto_fecha():
