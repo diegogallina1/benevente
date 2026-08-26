@@ -54,7 +54,7 @@ def sanitize_core_properties(path: Path) -> None:
                 values = {
                     f"{{{dc_namespace}}}creator": BTECH_AUTHOR,
                     f"{{{core_namespace}}}lastModifiedBy": BTECH_AUTHOR,
-                    f"{{{dc_namespace}}}title": "Benevente Wealth System",
+                    f"{{{dc_namespace}}}title": "Benevente",
                     f"{{{dc_namespace}}}subject": "Manuscrito tecnológico BTech 2026",
                     f"{{{dc_namespace}}}language": "pt-BR",
                 }
@@ -97,7 +97,8 @@ def sanitize_core_properties(path: Path) -> None:
 
 TABLE_TITLES = (
     "Camadas do artefato e respectivas saídas auditáveis",
-    "Diagnóstico retrospectivo da carteira e dos comparadores entre 2015 e 2025",
+    "Diagnóstico retrospectivo dos três perfis declarados entre 2015 e 2025",
+    "Diagnóstico retrospectivo da série de desenvolvimento e dos comparadores entre 2015 e 2025",
     "Exposição anual a séries com proventos imputados",
     "Incerteza do excesso de retorno em reamostragem pareada",
     "Estatísticas de correção por múltiplas tentativas",
@@ -287,7 +288,7 @@ def add_figure(document: Document, figure_number: int) -> None:
     shape = paragraph.add_run().add_picture(str(BTECH_ARCHITECTURE), width=Cm(15.5))
     description = "Fluxo do Benevente: dados B3 e CVM passam por validação, seleção quantitativa, alocação e revisão humana; o modelo de linguagem apenas explica fatos aprovados; o dossiê reúne todo o registro."
     shape._inline.docPr.set("descr", description)
-    shape._inline.docPr.set("title", "Arquitetura auditável do Benevente Wealth System")
+    shape._inline.docPr.set("title", "Arquitetura auditável do Benevente")
 
     number = document.add_paragraph()
     number.paragraph_format.first_line_indent = Cm(0)
