@@ -30,7 +30,7 @@
     <main class="shell paper-page">
       <p class="version-kicker">DOCUMENTAÇÃO PÚBLICA</p>
       <h1>Como isso é feito, o que foi tentado e o que falhou.</h1>
-      <p class="paper-lede">Esta página descreve de onde vêm os dados, como a cesta anual é escolhida e como o Benevente 2 reduz o risco durante o ano. Não é oferta de investimento nem promessa de desempenho.</p>
+      <p class="paper-lede">Esta página descreve de onde vêm os dados, como a cesta anual é escolhida e como o módulo de proteção reduz o risco durante o ano. Não é oferta de investimento nem promessa de desempenho.</p>
 
       <div class="paper-callout"><b>Princípio central</b>Nenhuma decisão pode usar informação que não existia na data em que foi tomada. Todo o resto do método é consequência disso.</div>
 
@@ -70,9 +70,9 @@
       <p>Isso resolvia o problema de <i>ler o holdout</i>, mas não o de <b>buscar</b>. Em 2026 a mesma busca foi rodada sobre uma grade ampliada, de 36 para 256 candidatos, com insumos, código e janela idênticos. O resultado inverteu a expectativa: o desfecho aninhado caiu de <b>15,31% para 12,68% ao ano</b>, e o Sharpe deflacionado caiu de <b>0,957 para 0,777</b>, abaixo da significância — porque o máximo esperado sob a hipótese nula subiu de 0,375 para 0,746. O seletor passeou pelo ruído: em 2018 escolheu uma configuração de baixa volatilidade que rendeu −7,2% num ano em que o CDI fez 6,4%.</p>
       <p>A conclusão é desconfortável e é a razão do desenho atual: <b>com dez observações anuais não se ranqueia 256 candidatos</b>. Ampliar a busca não melhora o sistema, degrada o seletor. Por isso a configuração de cada perfil passou a ser <b>declarada e congelada antes do período</b>, com hash público, em vez de escolhida por procura. A busca aninhada permanece publicada como o experimento que mostrou o próprio limite.</p>
 
-      <h2>5 · Benevente 1 e Benevente 2</h2>
-      <p><b>Benevente 1</b> é a seleção anual declarada que define ativos e pesos-base, incluindo a fração da carteira mantida num fundo listado na B3 que segue o S&amp;P 500 em reais. <b>Benevente 2</b> acrescenta a camada de risco intranual: conserva a mesma cesta, mas reduz temporariamente a exposição às ações <i>brasileiras</i> quando a queda e a volatilidade do Ibovespa, medidas até o fechamento anterior, atingem estados de alerta. A perna global não é reduzida — ela é mantida justamente por não seguir o Ibovespa.</p>
-      <p>Desde a política congelada de 2026, cada uma existe em três perfis declarados. Os números por perfil estão nas páginas do <a href="./versoes.html#selecao">Benevente 1</a> e do <a href="./versoes.html#protecao">Benevente 2</a>, geradas a partir do registro e não digitadas. A tabela abaixo resume a troca que a camada representa:</p>
+      <h2>5 · Os dois módulos</h2>
+      <p>O <b>módulo de seleção</b> é a regra anual declarada que define ativos e pesos-base, incluindo a fração da carteira mantida num fundo listado na B3 que segue o S&amp;P 500 em reais. O <b>módulo de proteção</b> acrescenta a camada de risco intranual: conserva a mesma cesta, mas reduz temporariamente a exposição às ações <i>brasileiras</i> quando a queda e a volatilidade do Ibovespa, medidas até o fechamento anterior, atingem estados de alerta. A perna global não é reduzida — ela é mantida justamente por não seguir o Ibovespa.</p>
+      <p>Desde a política congelada de 2026, cada uma existe em três perfis declarados. Os números por perfil estão nas seções de <a href="./versoes.html#selecao">seleção</a> e de <a href="./versoes.html#protecao">proteção</a>, geradas a partir do registro e não digitadas. Nos registros e manuscritos, os dois módulos aparecem como Benevente 1 e Benevente 2. A tabela abaixo resume a troca que a camada representa:</p>
       <table class="paper-table">
         <thead><tr><th>Perfil</th><th>Queda máxima sem a camada</th><th>Com a camada</th><th>Custo em retorno</th></tr></thead>
         <tbody>
