@@ -29,6 +29,20 @@ Antes de enviar, os autores devem confirmar no sistema do congresso:
 5. arquivo editável solicitado pela plataforma.
 6. endereços públicos do sistema e do repositório presentes no manuscrito.
 
+## Terceiro manuscrito — Declared Beats Searched (rascunho novo)
+
+- Fonte em `paper/declared_over_searched_2026.md`, em inglês, alvo IEEE CiFer 2027.
+- Tese: a seleção aninhada tem um limite de capacidade no número de candidatos;
+  36 → 256 candidatos, com insumos idênticos, custou 2,63 p.p. ao ano e derrubou
+  o Sharpe deflacionado de 0,957 para 0,777. A resposta é declarar e congelar.
+- Todos os números são verificados por máquina: `tools/verify_published_numbers.py`
+  compara cada afirmação do manuscrito e do site com os artefatos versionados e
+  sai com erro se qualquer uma divergir.
+- Pendências dos autores: metadados, conversão a `IEEEtran`, ajuste de extensão.
+- Os dois manuscritos originais descrevem a regra da busca aninhada, que foi
+  substituída; antes de qualquer submissão deles, decidir entre atualizá-los ou
+  acrescentar um parágrafo reconhecendo o resultado posterior.
+
 ## IEEE CiFer 2027
 
 Destino de submissão: IEEE Symposium on Computational Intelligence for

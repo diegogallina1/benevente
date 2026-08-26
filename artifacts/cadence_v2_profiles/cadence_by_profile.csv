@@ -1,0 +1,13 @@
+perfil,cadencia,meses,top_assets,cagr_liquido,vs_anual_pp,anos
+conservador,anual,12,12,0.125874,0.0,11
+conservador,semestral,6,12,0.127184,0.1309,11
+conservador,trimestral,3,12,0.126135,0.026,11
+conservador,mensal,1,12,0.116046,-0.9828,11
+equilibrado,anual,12,8,0.153106,0.0,11
+equilibrado,semestral,6,8,0.155416,0.231,11
+equilibrado,trimestral,3,8,0.143537,-0.9569,11
+equilibrado,mensal,1,8,0.130108,-2.2998,11
+arrojado,anual,12,5,0.192311,0.0,11
+arrojado,semestral,6,5,0.189032,-0.3279,11
+arrojado,trimestral,3,5,0.163324,-2.8986,11
+arrojado,mensal,1,5,0.132827,-5.9484,11
