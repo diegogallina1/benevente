@@ -36,7 +36,13 @@ const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL
 // Os três perfis declarados, pelo nome com que as séries chegam. Serve de
 // discriminador em toda parte que precise separar política de referência.
 const PROFILE_SERIES = ["Conservador", "Equilibrado", "Arrojado"];
-const colors = { "Conservador":"#7fc0b4", "Equilibrado":"#20a486", "Arrojado":"#0f766e", "Benevente":"#0f766e", "Benevente 1":"#0f766e", "Benevente 2":"#20a486", "Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490" };
+// O caixa é a série que não é perfil nem mercado. Descobri-la em vez de fixá-la
+// pelo nome é o que impede que a próxima política renomeie o instrumento e
+// apague o resumo da home sem que nenhum teste perceba.
+const MARKET_SERIES = ["Ibovespa", "BOVA11"];
+const cashSeriesName = names =>
+  names.find(name => !PROFILE_SERIES.includes(name) && !MARKET_SERIES.includes(name));
+const colors = { "Conservador":"#7fc0b4", "Equilibrado":"#20a486", "Arrojado":"#0f766e", "Benevente":"#0f766e", "Benevente 1":"#0f766e", "Benevente 2":"#20a486", "Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "Tesouro Selic":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490" };
 // Any string that reaches innerHTML has to be escaped, including strings the
 // user typed into the compare box and the name of a file they imported. Nothing
 // here is persisted or shared, so the exposure is to the person's own browser
@@ -444,7 +450,7 @@ function renderWealthCards(period) {
   // Um cartão por série plotada: os três perfis declarados e as referências.
   // O cartão de estratégia única morreu junto com a estratégia única.
   const note = { "Conservador": "35% em ações · 12 emissores", "Equilibrado": "55% em ações · 8 emissores",
-                 "Arrojado": "75% em ações · 5 emissores", "CDI": "Custo de oportunidade", "Ibovespa": "Mercado brasileiro" };
+                 "Arrojado": "75% em ações · 5 emissores", "Tesouro Selic": "Custo de oportunidade do caixa", "Ibovespa": "Mercado brasileiro" };
   const kind = name => note[name]?.includes("emissores") ? "primary" : "benchmark";
   const cards = Object.entries(data.series).map(([name, values], index) => {
     const first = values.find(Number.isFinite), last = values.at(-1);
@@ -639,7 +645,7 @@ function renderComparison(period) {
     "Conservador": "Com proteção · 35% em ações, 12 emissores",
     "Equilibrado": "Com proteção · 55% em ações, 8 emissores",
     "Arrojado": "Com proteção · 75% em ações, 5 emissores",
-    "CDI": "Rendimento do caixa",
+    "Tesouro Selic": "Caixa: Tesouro Selic, líquido de custódia",
     "Ibovespa": "Índice de retorno total da B3",
   };
   const baseRows = plottedNames.map(name => {
@@ -650,9 +656,10 @@ function renderComparison(period) {
   // uma vez: um ajuste de texto ("Política declarada" → "Com proteção") esvaziou
   // este filtro e a home passou a descrever a política aposentada.
   const ranked = baseRows.filter(([name]) => PROFILE_SERIES.includes(name));
-  const cash = baseRows.find(([name]) => name === "CDI");
+  const cashName = cashSeriesName(baseRows.map(([name]) => name));
+  const cash = baseRows.find(([name]) => name === cashName);
   document.querySelector("#comparison-summary").textContent = ranked.length && cash
-    ? `Na janela escolhida: ${ranked.map(([name, stats]) => `${name} ${plainPct(stats.cumulative)}`).join("; ")}. CDI ${plainPct(cash[1].cumulative)}. Retorno e queda sobem juntos — a escada é a escolha, não o número isolado.`
+    ? `Na janela escolhida: ${ranked.map(([name, stats]) => `${name} ${plainPct(stats.cumulative)}`).join("; ")}. ${cashName} ${plainPct(cash[1].cumulative)}. Retorno e queda sobem juntos — a escada é a escolha, não o número isolado.`
     : "Selecione uma janela para comparar os perfis declarados.";
   const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => {
     const metrics = metricsForSeries(values, profileDataset(period).dates);
@@ -802,7 +809,7 @@ function renderModel(step) { const detail=document.querySelector("#model-detail"
 document.querySelectorAll(".model-step").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".model-step").forEach(item=>item.classList.remove("active"));button.classList.add("active");renderModel(button.dataset.step)}));
 
 renderModel("optimizer");
-Promise.all([fetch("./annual_research.json"), fetch("./fund_presets.json"), fetch("./data_contract.json").catch(() => null), fetch("./ladder_v2.json").catch(() => null)]).then(async ([research, fundPresets, contractResponse, ladderResponse]) => {
+Promise.all([fetch("./annual_research_home.json"), fetch("./fund_presets.json"), fetch("./data_contract.json").catch(() => null), fetch("./ladder_v2.json").catch(() => null)]).then(async ([research, fundPresets, contractResponse, ladderResponse]) => {
   if (!research.ok || !fundPresets.ok) throw new Error("research unavailable");
   researchData = await research.json(); fundPresetsData = await fundPresets.json();
   // The chart used to plot the retired single-strategy series because there

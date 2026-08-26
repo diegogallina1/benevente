@@ -259,3 +259,65 @@ def test_home_summary_selects_profiles_by_name_not_by_copy() -> None:
     # E o texto de reserva da política aposentada não pode existir para ser exibido.
     for retired in ("acumulado. Venceu o CDI em", "e para o MVO é"):
         assert retired not in source, retired
+
+
+def test_home_bundle_stays_in_sync_with_the_full_archive() -> None:
+    """Um recorte que envelhece sozinho é pior que o arquivo grande.
+
+    A home passou a consumir um pacote derivado, com um terço do peso. O ganho
+    só é honesto se o recorte não puder divergir da fonte: se alguém regerar o
+    arquivo completo e esquecer deste, o número servido à página inicial fica
+    velho sem nenhum sinal. Este teste é esse sinal.
+    """
+    import subprocess
+    import sys
+
+    slim = json.loads((ROOT / "web" / "annual_research_home.json").read_text(encoding="utf-8"))
+    full = json.loads((ROOT / "web" / "annual_research.json").read_text(encoding="utf-8"))
+    for section in ("annual", "monthly_curve"):
+        assert slim[section] == full[section], f"{section} divergiu do arquivo completo"
+    for field, value in slim["meta"].items():
+        if field in ("derived_from", "bundle_note"):
+            continue
+        assert full["meta"][field] == value, f"meta.{field} divergiu"
+
+    before = (ROOT / "web" / "annual_research_home.json").read_bytes()
+    subprocess.run([sys.executable, str(ROOT / "tools" / "build_home_bundle.py")],
+                   cwd=ROOT, check=True, capture_output=True)
+    assert (ROOT / "web" / "annual_research_home.json").read_bytes() == before, (
+        "Rode tools/build_home_bundle.py: o recorte publicado não é o que a fonte produz.")
+
+
+def test_the_home_does_not_download_what_it_never_renders() -> None:
+    """O peso da página é uma decisão de projeto, não um acidente.
+
+    A home chegou a baixar 249 KB de séries diárias para exibir três números que
+    já vinham num resumo de 1,3 KB, e 94 KB de razão de decisões que o seu
+    próprio renderizador descarta. Nenhum dos dois aparecia em pixel algum.
+    """
+    home = (ROOT / "web" / "index.html").read_text(encoding="utf-8")
+    app = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
+    carteira = (ROOT / "web" / "carteira2026.js").read_text(encoding="utf-8")
+    assert "annual_research_home.json" in app
+    assert '"./annual_research.json"' not in app
+    assert "live_performance_" not in carteira, "a home voltou a baixar as séries diárias inteiras"
+    assert "live_profiles_2026.json" in carteira
+    assert "carteira2026.js" in home
+
+
+def test_the_home_finds_the_cash_series_instead_of_naming_it() -> None:
+    """A v3 renomeou a série de caixa e o resumo da home sumiu em silêncio.
+
+    A tabela e a nota continuaram corretas, porque não dependiam da constante;
+    só o resumo procurava literalmente "CDI" e, não achando, imprimia o texto de
+    reserva. Nenhum teste percebeu porque o texto de reserva é uma frase válida.
+    Descobrir a série pelo que ela não é — nem perfil, nem mercado — sobrevive à
+    próxima política que renomear o instrumento.
+    """
+    app = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
+    assert "const cashSeriesName = names =>" in app
+    assert 'baseRows.find(([name]) => name === "CDI")' not in app
+    evidence = json.loads((ROOT / "web" / "ladder_v2.json").read_text(encoding="utf-8"))
+    series = list(evidence["monthly_curve"]["series"])
+    caixa = [s for s in series if s not in ("Conservador", "Equilibrado", "Arrojado", "Ibovespa", "BOVA11")]
+    assert len(caixa) == 1, f"a heurística do caixa precisa de exatamente uma sobra: {series}"

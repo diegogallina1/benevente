@@ -18,19 +18,21 @@
     return response.json();
   };
 
+  // O resumo diário já traz retorno e data de cada perfil em 1,3 KB. Buscar as
+  // séries completas para mostrar três números custava 249 KB — quase metade do
+  // peso da página — e nenhum deles aparecia na tela.
   Promise.all([
     load("live_profiles_2026.json"),
-    ...Object.keys(LABELS).map(p => load(`live_performance_${p}.json`)),
     ...Object.keys(LABELS).map(p => load(`current_decision_2026_${p}.json`)),
   ]).then(([summary, ...rest]) => {
     const perfis = Object.keys(LABELS);
-    const live = Object.fromEntries(perfis.map((p, i) => [p, rest[i]]));
-    const books = Object.fromEntries(perfis.map((p, i) => [p, rest[perfis.length + i]]));
+    const live = summary.profiles;
+    const books = Object.fromEntries(perfis.map((p, i) => [p, rest[i]]));
 
     host.innerHTML = `<div class="carteira-2026-grid">${perfis.map(p => {
       const l = live[p], b = books[p];
       const acoes = b.holdings.filter(h => h.ticker !== "IVVB11");
-      const retorno = l.summary.portfolio_return;
+      const retorno = l.portfolio_return;
       const nomes = acoes.map(h => escapeHtml(h.ticker)).join(" · ");
       return `<article class="carteira-2026-card">
         <header><b>${LABELS[p]}</b><small>${pct(b.declared.maximum_equity_weight, 0)} em ações · ${acoes.length} emissores</small></header>
