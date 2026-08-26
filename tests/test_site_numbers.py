@@ -239,3 +239,21 @@ def test_no_page_reintroduces_a_discarded_name(page: str) -> None:
     """
     for name, reason in RETIRED_NAMES.items():
         assert name not in PAGES[page], f"{page} reintroduz '{name}' ({reason})"
+
+
+def test_home_summary_selects_profiles_by_name_not_by_copy() -> None:
+    """Um ajuste de texto já apagou os três perfis do resumo da home.
+
+    O filtro que separava política de referência comparava o *rótulo* exibido
+    ("Política declarada · …"); quando o rótulo virou "Com proteção · …" o
+    filtro passou a não casar com nada e a home caiu num texto de reserva que
+    descrevia a política aposentada — 509,8% acumulado e o MVO — ao lado das
+    curvas dos três perfis. O discriminador agora é o nome da série.
+    """
+    source = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
+    assert 'const PROFILE_SERIES = ["Conservador", "Equilibrado", "Arrojado"]' in source
+    assert "PROFILE_SERIES.includes(name)" in source
+    assert 'noteFor[name]?.startsWith(' not in source
+    # E o texto de reserva da política aposentada não pode existir para ser exibido.
+    for retired in ("acumulado. Venceu o CDI em", "e para o MVO é"):
+        assert retired not in source, retired

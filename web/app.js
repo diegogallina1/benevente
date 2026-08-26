@@ -33,6 +33,9 @@ let chartZoom = 1;
 let chartFocus = null;
 let chartScale = "linear";
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+// Os três perfis declarados, pelo nome com que as séries chegam. Serve de
+// discriminador em toda parte que precise separar política de referência.
+const PROFILE_SERIES = ["Conservador", "Equilibrado", "Arrojado"];
 const colors = { "Conservador":"#7fc0b4", "Equilibrado":"#20a486", "Arrojado":"#0f766e", "Benevente":"#0f766e", "Benevente 1":"#0f766e", "Benevente 2":"#20a486", "Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490" };
 // Any string that reaches innerHTML has to be escaped, including strings the
 // user typed into the compare box and the name of a file they imported. Nothing
@@ -638,17 +641,19 @@ function renderComparison(period) {
     "Arrojado": "Com proteção · 75% em ações, 5 emissores",
     "CDI": "Rendimento do caixa",
     "Ibovespa": "Índice de retorno total da B3",
-    "MVO de referência": "Otimização neutra independente",
   };
   const baseRows = plottedNames.map(name => {
     const stats = metricsForSeries(plotted.series[name], plotted.dates);
     return stats ? [name, stats, noteFor[name] || "Série do gráfico"] : null;
   }).filter(Boolean);
-  const ranked = baseRows.filter(([name]) => noteFor[name]?.startsWith("Política"));
+  // O discriminador é o nome do perfil, não a cópia ao lado dele. Já quebrou
+  // uma vez: um ajuste de texto ("Política declarada" → "Com proteção") esvaziou
+  // este filtro e a home passou a descrever a política aposentada.
+  const ranked = baseRows.filter(([name]) => PROFILE_SERIES.includes(name));
   const cash = baseRows.find(([name]) => name === "CDI");
   document.querySelector("#comparison-summary").textContent = ranked.length && cash
     ? `Na janela escolhida: ${ranked.map(([name, stats]) => `${name} ${plainPct(stats.cumulative)}`).join("; ")}. CDI ${plainPct(cash[1].cumulative)}. Retorno e queda sobem juntos — a escada é a escolha, não o número isolado.`
-    : `Benevente 1 ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
+    : "Selecione uma janela para comparar os perfis declarados.";
   const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => {
     const metrics = metricsForSeries(values, profileDataset(period).dates);
     const firstAvailable = values.findIndex(value => Number.isFinite(Number(value)));
@@ -662,7 +667,7 @@ function renderComparison(period) {
     : "";
   document.querySelector("#research-note").textContent = ranked.length
     ? `As três curvas são políticas declaradas e congeladas antes do período, com a camada de risco intranual aplicada.${spread} A janela também desenvolveu as próprias regras, então descreve a amostra; a avaliação prospectiva começa na decisão de janeiro de 2027, e a carteira de 2026 segue a política anterior.`
-    : `Na janela escolhida, a diferença do Benevente 1 para o CDI é ${pct(versusCdi)} e para o MVO é ${pct(versusMvo)}.`;
+    : "As curvas exibidas são políticas declaradas e congeladas antes do período; a janela descreve a amostra de desenvolvimento.";
   renderCurveToggles(period); renderLineChart(period); renderWealthCards(period);
 }
 

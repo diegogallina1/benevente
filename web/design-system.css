@@ -154,7 +154,16 @@ h1, h2, h3, h4,
 .policy-split thead th { font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft, #5b6f7c); }
 .policy-split tr:last-child td { border-bottom: 0; }
 .policy-split-wrap > p { margin: .5rem 0 0; font-size: .78rem; color: var(--ink-soft, #5b6f7c); max-width: 640px; }
-@media (max-width: 680px) { .policy-split-wrap { overflow-x: auto; } .policy-split { min-width: 520px; } }
+/* A tabela tem quatro colunas e a mais importante é a última. Forçar largura
+   mínima empurrava "com proteção" e "queda" para fora da tela, deixando visível
+   justamente a coluna que menos interessa. No estreito o detalhe do perfil sai
+   e as quatro colunas cabem. */
+@media (max-width: 680px) {
+  .policy-split-wrap { overflow-x: auto; }
+  .policy-split { min-width: 0; font-size: .76rem; }
+  .policy-split th, .policy-split td { padding: .5rem .35rem; }
+  .split-detail { display: none; }
+}
 .pilot-form { margin-top: 1.4rem; max-width: 720px; display: grid; gap: .8rem; }
 .pilot-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
 .pilot-form label { display: grid; gap: .3rem; font-size: .78rem; font-weight: 700; color: var(--ink-soft, #5b6f7c); }
