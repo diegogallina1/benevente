@@ -57,23 +57,27 @@
 
       <h2>4 · How the published rule was chosen</h2>
       <p>This is the part that most backtests get wrong, and it was wrong here first. A grid of candidate rules was evaluated, the best was published, and its rank improved from 57th on the declared training criterion to 1st on the holdout — which is only possible if the holdout was read. Nothing downstream of that choice is out of sample.</p>
-      <p>The current protocol is nested. For decision year <i>t</i>, the configuration is ranked using only years that had already closed, by Sharpe of the excess return over cash; year <i>t</i> is then evaluated once. Changing configuration is charged a full-turnover rebalance, because in a real book it means liquidating one portfolio to buy another.</p>
-      <p>Three quantities are published alongside every result: the nested outcome, the full-sample winner, and the difference between them.</p>
+      <p>The next correction was a nested protocol. For decision year <i>t</i>, the configuration was ranked using only years that had already closed, by Sharpe of the excess return over cash; year <i>t</i> was then evaluated once. Changing configuration was charged a full-turnover rebalance, because in a real book it means liquidating one portfolio to buy another. Three quantities were published alongside every result: the nested outcome, the full-sample winner, and the difference between them — the hindsight premium, 0.65 points a year over 36 configurations.</p>
+      <p>That fixed reading the holdout. It did not fix <i>searching</i>. In 2026 the same procedure was run over a wider grid — 256 candidates instead of 36, on identical inputs, code and window — and the result inverted the expectation. The nested outcome fell from 15.31% to 12.68% a year, and the deflated Sharpe fell from 0.957 to 0.777, below significance, because the expected maximum Sharpe under the null rose from 0.375 to 0.746. The selector wandered into noise: for 2018 it chose a low-volatility configuration that returned −7.2% in a year when cash returned 6.4%.</p>
       <div class="paper-metrics">
-        <div class="paper-metric"><span>Hindsight premium</span><b>0.65 pp</b><small>per year, between the full-sample winner and the nested choice, over 36 configurations</small></div>
-        <div class="paper-metric"><span>Deflated Sharpe</span><b>0.986</b><small>36 trials, 11 annual observations</small></div>
+        <div class="paper-metric"><span>Cost of widening the search</span><b>−2.63 pp</b><small>per year, 36 → 256 candidates, identical inputs and window</small></div>
+        <div class="paper-metric"><span>Deflated Sharpe</span><b>0.957 → 0.777</b><small>significant at 95% before widening, not after</small></div>
         <div class="paper-metric"><span>Tactical allocation</span><b>0 of 7</b><small>predictive rules beat the static weight over 118 months</small></div>
       </div>
+      <p>Ten annual observations cannot rank 256 candidates. Widening the search does not improve the system; it degrades the selector. Each profile's configuration is therefore <b>declared and frozen before the period</b>, with a public hash, rather than chosen by search. The nested search remains published as the experiment that established its own limit.</p>
       <h3>4.1 Does deciding more often help?</h3>
       <p>A distinct question from the one above, and the one most readers ask first: not whether the equity share should move more often, but whether the basket itself should be reselected more often. Holding the rule, the limits and the panel fixed and varying only the decision dates, annual reselection compounded at 18.58% before costs, quarterly at 16.37% and monthly at 13.92%. Paired by calendar year and measured after tax, quarterly trails the annual decision by 1.55 percentage points a year (p = 0.376) and monthly by 3.27 (p = 0.306). Eleven paired years cannot support the stronger claim. This sample provides no evidence that more frequent decisions help, but it does not reject a benefit in other periods, markets or signal families.</p>
       <p>The mechanism is not the one usually assumed. The loss sits in the gross return, which falls 4.66 points from annual to monthly before any deduction; execution cost rises by only 0.08 points a year, and modelled tax actually falls, because each monthly review realises a smaller slice of the book. Reselecting monthly degrades the selection before it raises the bill. The tax model understates the monthly arm's liability, since it charges tax on each period's own gain rather than on the accumulated gain of the position actually sold — a bias in favour of the arm that lost anyway.</p>
       <p>The last figure is a separate study. Perfect monthly timing of the equity-versus-cash split would have been worth roughly 50 percentage points a year, so the prize is real; none of seven predictive rules, fitted walk-forward on observable state, captured any of it, across three training-window lengths.</p>
 
       <h2>5 · Everything that was tried</h2>
-      <p>Four hypotheses were tested against the published protocol. None survived. They are listed together because a reader assessing a method needs the failure inventory as much as the result, and because each one closes a specific objection that would otherwise remain open.</p>
+      <p>Seven hypotheses were tested against the published protocol. None survived. They are listed together because a reader assessing a method needs the failure inventory as much as the result, and because each one closes a specific objection that would otherwise remain open.</p>
       <table class="paper-table">
         <thead><tr><th>Hypothesis</th><th>How it was tested</th><th>Outcome</th></tr></thead>
         <tbody>
+          <tr><td>A wider search finds a better rule</td><td>The same nested procedure over 256 candidates instead of 36, identical inputs and window</td><td>−2.63 points a year; deflated Sharpe 0.957 → 0.777, below significance.</td></tr>
+          <tr><td>Positions should be sized by inverse volatility</td><td>Equal, inverse-volatility and geometric-blend sizing against the published confidence weighting, over 8 configurations</td><td>The published rule won 8 of 8. Inverse volatility bought 0.95 points of drawdown for 2.11 points of return.</td></tr>
+          <tr><td>Risk can be sized from volatility observed in January</td><td>An annual volatility target scaling the equity sleeve at the decision date</td><td>Cut exposure in 5 of 13 years, always <i>after</i> a stress and never before one, and left the worst drawdown untouched.</td></tr>
           <tr><td>The year's regime can be forecast</td><td>Five January-observable predictors, expanding window, 8 years</td><td>Best predictor 3 of 4 live calls, p = 0.31. No signal.</td></tr>
           <tr><td>The equity share should move more often</td><td>Seven continuous rules, 118 monthly and 521 weekly periods</td><td>None beat the static weight; mean-variance was significantly worse.</td></tr>
           <tr><td>The basket should be reselected more often</td><td>Same rule and limits, cadence varied to quarterly and monthly</td><td>−1.55 and −3.27 points a year after tax, p = 0.38 and 0.31.</td></tr>
@@ -107,18 +111,20 @@
 
       <h2>7 · Published strategies</h2>
       <table class="paper-table">
-        <thead><tr><th>Series</th><th>CAGR 2015–2025</th><th>Years won</th><th>Max drawdown</th></tr></thead>
+        <thead><tr><th>Declared profile</th><th>Equity</th><th>Issuers</th><th>CAGR 2015–2025</th><th>Max drawdown</th></tr></thead>
         <tbody>
-          <tr class="highlight"><td>Benevente 2, risk-overlay shadow extension</td><td class="num">18.45%</td><td class="num">Not applicable</td><td class="num">−28.7%</td></tr>
-          <tr><td>Benevente 1, annual selection</td><td class="num">17.86%</td><td class="num">Not applicable</td><td class="num">−47.8%</td></tr>
-          <tr><td>Benevente 1, after annual tax model</td><td class="num">16.03%</td><td class="num">Not applicable</td><td class="num">Not calculated</td></tr>
-          <tr><td>Ibovespa (total-return index)</td><td class="num">11.77%</td><td class="num">7 of 11</td><td class="num">−47.0%</td></tr>
-          <tr><td>Neutral MVO, same universe</td><td class="num">7.83%</td><td class="num">10 of 11</td><td class="num">−61.15%</td></tr>
-          <tr><td>Cash (CDI)</td><td class="num">9.61%</td><td class="num">6 of 11</td><td class="num">0%</td></tr>
+          <tr><td>Conservative, annual selection only</td><td class="num">35%</td><td class="num">12</td><td class="num">13.39%</td><td class="num">−16.70%</td></tr>
+          <tr class="highlight"><td>Conservative, with the risk overlay</td><td class="num">35%</td><td class="num">12</td><td class="num">12.51%</td><td class="num">−9.16%</td></tr>
+          <tr><td>Balanced, annual selection only</td><td class="num">55%</td><td class="num">8</td><td class="num">16.37%</td><td class="num">−26.52%</td></tr>
+          <tr class="highlight"><td>Balanced, with the risk overlay</td><td class="num">55%</td><td class="num">8</td><td class="num">15.51%</td><td class="num">−17.86%</td></tr>
+          <tr><td>Aggressive, annual selection only</td><td class="num">75%</td><td class="num">5</td><td class="num">20.32%</td><td class="num">−35.64%</td></tr>
+          <tr class="highlight"><td>Aggressive, with the risk overlay</td><td class="num">75%</td><td class="num">5</td><td class="num">19.87%</td><td class="num">−28.94%</td></tr>
+          <tr><td>Ibovespa (total-return index)</td><td class="num">—</td><td class="num">—</td><td class="num">11.33%</td><td class="num">−46.95%</td></tr>
+          <tr><td>Cash (CDI)</td><td class="num">—</td><td class="num">—</td><td class="num">9.61%</td><td class="num">0%</td></tr>
         </tbody>
       </table>
-      <p>The annual selection wins seven of eleven years against the Ibovespa and exceeds cash and an independently computed neutral optimisation over the same eligible universe. Benevente 2 keeps that basket and changes only the equity exposure after observable stress. Retrospectively it raised CAGR to 18.45% and reduced maximum drawdown from 47.8% to 28.7%. For BRL 100,000, an aggregate estimate puts incremental intrayear tax at BRL 2,195 and terminal wealth after that incremental tax at BRL 634,531. This estimate is not tax-lot reconciliation.</p>
-      <p>The evaluation window is also the window that ranked the configurations, so it describes the sample. The 2026 allocation predates the registered versions and remains a shadow portfolio. Prospective evaluation starts with a later annual decision made under a registered version that is not changed after outcomes are observed.</p>
+      <p>There is no single Benevente number. Each profile declares an equity budget, an issuer count and a fifth of that budget in the global sleeve, and each pair of rows shows what the intra-year overlay costs and returns. Every profile beat cash in 8 of 11 years, and the risk ordering holds: the one that returned more also fell further. The overlay reduces drawdown by 6.7 to 8.6 points for under one point of annual return — a far better trade than inverse-volatility sizing, which bought 0.95 points of drawdown for 2.11 points of return.</p>
+      <p>The evaluation window is also the window that developed the rule, so it describes the sample. The 2026 allocation predates the registered version and remains a shadow portfolio under the policy that decided it. Prospective evaluation starts with the January 2027 decision, made under a registered version that is not changed after outcomes are observed.</p>
 
       <div id="live-portfolio"></div>
 
@@ -130,7 +136,9 @@
         <li>Eleven annual evaluations for the strategy and thirteen for the model experiment. Every test is underpowered; effect sizes are reported with p-values rather than as findings.</li>
         <li>Corporate actions for the delisted tail rest on a detector whose precision and recall are published but imperfect; distributions for issuers no provider still serves are imputed from the cross-section and flagged per ticker.</li>
         <li>The named--anonymised gap cannot certify temporal purity. Identity may be inferred from fundamentals and pretrained memory is unobservable.</li>
-        <li>Coverage is Brazil only. Partial-year monitoring uses exchange closing prices and excludes distributions until corporate events are reconciled against primary records.</li>
+        <li>Coverage is no longer Brazil only: a declared sleeve holds a B3-listed fund tracking the S&amp;P 500 in reais. Roughly a third of that fund's return over the window came from currency depreciation rather than the American market, so the sleeve is an unhedged long dollar position and must be read as one. Partial-year monitoring uses exchange closing prices and excludes distributions until corporate events are reconciled against primary records.</li>
+        <li>The sector limit of three issuers is a governance constraint, not a performance improvement. Where it binds it cost 0.15 points a year and improved the excess Sharpe in none of the twenty configurations affected.</li>
+        <li>Choosing between the two ways of combining the risk overlay with the global sleeve was itself a selection over two candidates, and is declared as such in the frozen registration rather than presented as the only option considered.</li>
       </ul>
 
       <p class="paper-foot">Benevente Quant AI · reproducible research. Figures on this page are read from the same files the engine writes. This is not investment advice, an offer, or a promise of return. Historical results describe the sample, not the future.</p>

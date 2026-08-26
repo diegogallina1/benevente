@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="O que o Benevente não sabe: limitações de dados, de método e de alcance, reunidas numa página citável." />
+    <title>Limitações · Benevente</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./versions.css" />
+    <link rel="stylesheet" href="./paper.css?v=20260824" />
+    <link rel="stylesheet" href="./site-polish.css" />
+    <link rel="stylesheet" href="./design-system.css?v=20260824" />
+    <link rel="stylesheet" href="./ladder.css?v=20260825" />
+  </head>
+  <body class="version-page">
+    <header class="version-nav shell">
+      <a class="brand" href="./"><span class="brand-mark">B</span><span>Benevente</span></a>
+      <nav aria-label="Navegação"><a class="strategy-tab" href="./benevente-1.html">Benevente 1</a><a class="strategy-tab" href="./benevente-2.html">Benevente 2</a><a href="./metodo.html">Método</a><a class="version-back" href="./">Página inicial</a></nav>
+    </header>
+
+    <main class="paper-page">
+      <p class="version-kicker">LIMITAÇÕES</p>
+      <h1>O que este sistema não sabe.</h1>
+      <p class="paper-lede">As limitações estavam corretas e espalhadas por três páginas, o que na prática significava que ninguém as lia inteiras. Estão todas aqui, numa página que pode ser citada e linkada de qualquer proposta. Se algum número em qualquer outra página parecer forte demais, o motivo provavelmente está nesta.</p>
+
+      <h2>1 · A limitação que engloba as outras</h2>
+      <p><b>A janela usada para medir é a mesma que foi usada para desenvolver a regra.</b> Fatores, grade de candidatos, restrições e a própria decisão de declarar em vez de buscar foram todos escolhidos olhando 2015–2025. Nenhum recálculo histórico desfaz isso.</p>
+      <p>Só anos posteriores ao registro congelado testam a regra de forma prospectiva. A amostra confirmatória começa no <b data-ladder-seal="confirmatory">primeiro pregão de 2027</b> e exige pelo menos três decisões anuais completas antes de qualquer afirmação de desempenho. Até lá, todo número publicado descreve a amostra, não o futuro.</p>
+      <p>Onze observações anuais também são poucas para quase qualquer teste. Efeitos são reportados com o p correspondente, e a maioria não é significativa isoladamente — o que sustenta uma conclusão costuma ser a consistência do sinal entre configurações, não a magnitude de nenhuma delas.</p>
+
+      <h2>2 · Dados</h2>
+      <ul>
+        <li>O painel de preços é reconstruído do COTAHIST da B3, que preserva empresas deslistadas — mas ações societárias da cauda deslistada dependem de um detector cuja precisão e cobertura são publicadas e imperfeitas.</li>
+        <li>Papéis sem cobertura de provedor recebem o rendimento mediano da seção transversal do ano. É aproximação declarada, e os afetados estão no relatório de cobertura.</li>
+        <li>A página pública de proventos da B3 respondeu para 475 de 497 séries, e a auditoria comparou 54 observações: sete excederam cinco pontos percentuais de diferença e duas não puderam ser feitas. O painel segue classificado como pesquisa, sem selo de reconciliação institucional.</li>
+        <li>O portal aberto da CVM tem DFP desde 2010 e ITR desde 2011. Um estudo fundamentalista começando antes disso exigiria outra fonte; o sistema não preenche o vazio com informação posterior.</li>
+        <li>A perna global usa preço de fechamento ajustado de fonte pública, sem reconciliação primária própria.</li>
+      </ul>
+
+      <h2>3 · Método</h2>
+      <ul>
+        <li><b>A busca foi abandonada porque piorava o resultado.</b> Ampliar a grade de 36 para 256 candidatos, com insumos e janela idênticos, custou 2,63 pontos percentuais ao ano e derrubou o Sharpe deflacionado de 0,957 para 0,777. Isso não valida a configuração declarada — apenas mostra que procurar mais não era o caminho.</li>
+        <li><b>Escolher entre duas variantes ainda é escolher.</b> A forma de combinar a camada de risco com a perna global foi decidida comparando duas alternativas. São duas tentativas, declaradas como tal no registro, e não uma opção única inevitável.</li>
+        <li><b>As camadas de risco foram desenhadas depois das crises da amostra.</b> A camada intranual reage com uma sessão de atraso e não previu a Covid-19. Seu resultado em 2020 não é evidência prospectiva.</li>
+        <li><b>O teto de três emissores por setor não melhora o desempenho.</b> Onde ele age, custou 0,15 ponto ao ano e não melhorou o Sharpe em nenhuma das configurações medidas. Ele existe para impedir uma aposta setorial que ninguém declarou.</li>
+        <li><b>A cesta larga não protege de queda de mercado.</b> Ela reduz o risco de um nome isolado. O pior ano não melhorou ao passar de cinco para catorze emissores.</li>
+        <li>O imposto sobre o ganho que a camada intranual realiza dentro do ano ainda não é modelado.</li>
+      </ul>
+
+      <h2>4 · Alcance</h2>
+      <ul>
+        <li><b>A perna global é uma posição em dólar.</b> Cerca de um terço do retorno do fundo na janela veio da desvalorização do real, não do mercado americano: sua correlação diária com o câmbio é 0,49, quase tão alta quanto com o próprio índice. Num período de real forte, a diversificação permanece e a contribuição de retorno se inverte.</li>
+        <li>Apenas um fundo global tem histórico suficiente para a janela avaliada. Os outros dois candidatos listaram em 2021 e não poderiam informar uma decisão de 2016.</li>
+        <li>Nenhum perfil é conservador no sentido de não cair. Mesmo com a camada de risco, a queda máxima retrospectiva vai de 9% no perfil conservador a 29% no arrojado.</li>
+        <li>A carteira-sombra de 2026 foi decidida sob a política anterior e continua sendo dela. Ela não foi reescrita para parecer que seguiu a política atual.</li>
+        <li>O custo estimado inclui corretagem, emolumentos, deslizamento e imposto modelado, mas não substitui conciliação com nota de corretagem.</li>
+      </ul>
+
+      <h2>5 · O que o sistema não faz</h2>
+      <ul>
+        <li>Não emite recomendação autônoma, não transmite ordens e não promete superar CDI, Ibovespa ou qualquer referência.</li>
+        <li>O modelo de linguagem não escolhe ativos nem calcula pesos. Ele lê um dossiê já selado e transforma fatos aprovados em tese, riscos e perguntas para revisão humana. Desligá-lo não altera nenhum peso da carteira.</li>
+        <li>Não há projeção de patrimônio futuro em nenhuma página, e não haverá.</li>
+      </ul>
+
+      <p class="paper-foot">Esta página é permanente e citável. Se alguma proposta, apresentação ou material derivado do Benevente não vier acompanhado dela, está incompleto. Resultados históricos descrevem a amostra, não o futuro.</p>
+    </main>
+    <script src="./ladder.js?v=20260825"></script>
+    <script src="./paper.js?v=20260824"></script>
+  </body>
+</html>
