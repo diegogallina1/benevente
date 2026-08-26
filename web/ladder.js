@@ -156,11 +156,13 @@
         <label>Decisão de <select data-year>${years.map(year =>
           `<option value="${year}"${year === activeYear ? " selected" : ""}>${year}</option>`).join("")}</select></label>
       </div>
-      <div class="alpha-split">
-        <span style="width:${(block.domestic_equity * 100).toFixed(2)}%">Ações BR ${pct(block.domestic_equity, 0)}</span>
-        <span style="width:${(block.global_sleeve * 100).toFixed(2)}%">S&amp;P 500 ${pct(block.global_sleeve, 0)}</span>
-        <span style="width:${(block.cash * 100).toFixed(2)}%">CDI ${pct(block.cash, 0)}</span>
-      </div>
+      <div class="alpha-split">${[
+        ["Ações BR", block.domestic_equity], ["S&amp;P 500", block.global_sleeve], ["CDI", block.cash],
+      ].map(([name, share]) => {
+        const short = pct(share, 0);
+        const full = share < 0.1 ? short : `${name} ${short}`;
+        return `<span style="width:${(share * 100).toFixed(2)}%" title="${name.replace("&amp;", "&")} ${short}"><i class="sf">${full}</i><i class="ss">${short}</i></span>`;
+      }).join("")}</div>
       <p class="ladder-note" style="margin:.2rem 0 .8rem">A fatia <b>S&amp;P 500</b> é a perna global declarada: um quinto do orçamento de ações num fundo listado na B3 que segue o S&amp;P 500 em reais (IVVB11), definido pela política — nunca selecionado pelo fator. O restante em <b>CDI</b> é o caixa remunerado do perfil.</p><div class="ladder-wrap"><table class="ladder-table alpha-table">
         <caption>${LABELS[activeProfile]} · decisão de ${block.decision_date} · ${block.positions.length} emissores</caption>
         <thead><tr>
