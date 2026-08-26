@@ -201,10 +201,32 @@ def _advance_risk_state(state: int, calmer_days: int, tradable: int) -> tuple[in
     return state, 0
 
 
+def _desired_equity(base: float, state: int, config: dict[str, Any],
+                    multipliers: tuple[float, float] | None) -> float:
+    """A exposição-alvo de um estado, na forma que a política declara.
+
+    O livro herdado da regra anterior expressa a camada como teto: no alerta a
+    parcela em ações não passa de 50%. A escada declarada expressa como
+    multiplicador por perfil: no alerta o conservador vai a 55% do próprio alvo,
+    o arrojado a 85%. Não são a mesma regra e não podem compartilhar constante —
+    aplicar o teto de 50% a um livro de 44% simplesmente não faz nada, e o
+    acompanhamento diria estar protegido sem ter cortado um real.
+    """
+    if state == 0:
+        return base
+    if multipliers is not None:
+        return base * (multipliers[0] if state == 1 else multipliers[1])
+    cap = config["alert_equity_cap"] if state == 1 else config["severe_equity_cap"]
+    return min(base, cap)
+
+
 def apply_benevente2_overlay(
-    rows: list[dict[str, Any]], base_equity_weight: float
+    rows: list[dict[str, Any]], base_equity_weight: float,
+    config: dict[str, Any] | None = None,
+    multipliers: tuple[float, float] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Aplica a política registrada usando somente o fechamento anterior."""
+    config = config or B2_CONFIG
 
     states: list[int] = []
     raw_states: list[int] = []
@@ -217,21 +239,21 @@ def apply_benevente2_overlay(
         market = float(row["ibovespa_price"])
         market_returns.append(0.0 if previous_market is None else market / previous_market - 1.0)
         previous_market = market
-        window_start = max(0, index - B2_CONFIG["peak_window"] + 1)
+        window_start = max(0, index - config["peak_window"] + 1)
         peak = max(float(item["ibovespa_price"]) for item in rows[window_start : index + 1])
         drawdown = market / peak - 1.0
         volatility = None
-        if index + 1 >= B2_CONFIG["volatility_window"]:
+        if index + 1 >= config["volatility_window"]:
             volatility = _sample_volatility(
-                market_returns[index - B2_CONFIG["volatility_window"] + 1 : index + 1]
+                market_returns[index - config["volatility_window"] + 1 : index + 1]
             )
         raw = 0
-        if drawdown <= -B2_CONFIG["alert_drawdown"] or (
-            volatility is not None and volatility >= B2_CONFIG["alert_volatility"]
+        if drawdown <= -config["alert_drawdown"] or (
+            volatility is not None and volatility >= config["alert_volatility"]
         ):
             raw = 1
-        if drawdown <= -B2_CONFIG["severe_drawdown"] or (
-            volatility is not None and volatility >= B2_CONFIG["severe_volatility"]
+        if drawdown <= -config["severe_drawdown"] or (
+            volatility is not None and volatility >= config["severe_volatility"]
         ):
             raw = 2
         raw_states.append(raw)
@@ -251,24 +273,21 @@ def apply_benevente2_overlay(
             evidence_drawdown = evidence.get("market_drawdown")
             evidence_volatility = evidence.get("market_volatility")
             if evidence_drawdown is not None:
-                if evidence_drawdown <= -B2_CONFIG["severe_drawdown"]:
+                if evidence_drawdown <= -config["severe_drawdown"]:
                     trigger.append("queda severa")
-                elif evidence_drawdown <= -B2_CONFIG["alert_drawdown"]:
+                elif evidence_drawdown <= -config["alert_drawdown"]:
                     trigger.append("queda de alerta")
             if evidence_volatility is not None:
-                if evidence_volatility >= B2_CONFIG["severe_volatility"]:
+                if evidence_volatility >= config["severe_volatility"]:
                     trigger.append("volatilidade severa")
-                elif evidence_volatility >= B2_CONFIG["alert_volatility"]:
+                elif evidence_volatility >= config["alert_volatility"]:
                     trigger.append("volatilidade de alerta")
             decisions.append({
                 "effective_on": row["date"],
                 "observed_on": evidence["date"] if index else None,
                 "from_state": previous_state if index else None,
                 "to_state": state,
-                "target_equity_weight": (
-                    base_equity_weight if state == 0 else
-                    min(base_equity_weight, B2_CONFIG["alert_equity_cap"] if state == 1 else B2_CONFIG["severe_equity_cap"])
-                ),
+                "target_equity_weight": _desired_equity(base_equity_weight, state, config, multipliers),
                 "observed_market_drawdown": evidence_drawdown,
                 "observed_market_volatility": evidence_volatility,
                 "reason": " e ".join(trigger) if trigger else ("início do ciclo" if index == 0 else "recuperação após dez pregões mais calmos"),
@@ -281,13 +300,9 @@ def apply_benevente2_overlay(
     total_turnover = 0.0
     for index, row in enumerate(rows):
         state = states[index]
-        desired_equity = base_equity_weight
-        if state == 1:
-            desired_equity = min(desired_equity, B2_CONFIG["alert_equity_cap"])
-        elif state == 2:
-            desired_equity = min(desired_equity, B2_CONFIG["severe_equity_cap"])
+        desired_equity = _desired_equity(base_equity_weight, state, config, multipliers)
         turnover = abs(desired_equity - previous_equity) if index else 0.0
-        cost = turnover * B2_CONFIG["cost_bps"] / 10_000.0
+        cost = turnover * config["cost_bps"] / 10_000.0
         b1_return = float(row["portfolio"]) / previous_b1 - 1.0 if index else 0.0
         cdi_return = float(row["cdi"]) / previous_cdi - 1.0 if index else 0.0
         multiplier = desired_equity / base_equity_weight if base_equity_weight else 0.0
@@ -305,9 +320,9 @@ def apply_benevente2_overlay(
     next_state, next_calmer_days = _advance_risk_state(state, calmer_days, raw_states[-1])
     next_equity = base_equity_weight
     if next_state == 1:
-        next_equity = min(next_equity, B2_CONFIG["alert_equity_cap"])
+        next_equity = min(next_equity, config["alert_equity_cap"])
     elif next_state == 2:
-        next_equity = min(next_equity, B2_CONFIG["severe_equity_cap"])
+        next_equity = min(next_equity, config["severe_equity_cap"])
     return rows, {
         "configuration": B2_CONFIG,
         "current_risk_state": labels[states[-1]],
@@ -411,7 +426,16 @@ def build_live_document(
             }
         )
 
-    series, b2 = apply_benevente2_overlay(series, equity_weight)
+    # Se a decisão declara a camada, ela manda. Sem isso o monitor aplicaria as
+    # constantes do livro anterior a um livro que segue outra política.
+    overlay = decision.get("overlay") or {}
+    config = {**B2_CONFIG, **(overlay.get("config") or {})}
+    multipliers = overlay.get("multipliers")
+    multipliers = (float(multipliers[0]), float(multipliers[1])) if multipliers else None
+    series, b2 = apply_benevente2_overlay(series, equity_weight, config, multipliers)
+    b2["configuration"] = config
+    if multipliers:
+        b2["profile_multipliers"] = {"alerta": multipliers[0], "severo": multipliers[1]}
     b1_target = target_allocation(holdings, equity_weight, equity_weight, exempt)
     b2_target = target_allocation(
         holdings, equity_weight, float(b2["next_session_equity_weight"]), exempt

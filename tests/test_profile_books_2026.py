@@ -84,3 +84,33 @@ def test_a_home_carrega_a_carteira_do_ano(livros) -> None:
     # E vem depois do resultado retrospectivo, não antes: o leitor precisa saber
     # o que a política é antes de ver o que ela está fazendo agora.
     assert home.index('id="resultado"') < home.index('id="carteira-2026"')
+
+
+def test_a_camada_aplicada_e_a_camada_registrada(livros, acompanhamento) -> None:
+    """O monitor tinha as constantes do livro anterior e ninguém percebeu.
+
+    A regra aposentada expressa a camada como teto — no alerta, ações não passam
+    de 50%. A escada declarada expressa como multiplicador por perfil. Aplicar o
+    teto de 50% a um livro de 44% não corta nada: o acompanhamento publicava
+    "estado alerta" com a exposição intacta, dizendo estar protegido sem ter
+    vendido um real. Os dois números abaixo são a diferença entre descrever a
+    política e executá-la.
+    """
+    from portfolio_risk import risk_profile_spec
+
+    esperado = REGISTRO["intrayear_overlay"]["config"]
+    for perfil, doc in acompanhamento.items():
+        camada = doc["benevente2_overlay"]
+        for chave, valor in esperado.items():
+            assert camada["configuration"][chave] == pytest.approx(valor), f"{perfil}.{chave}"
+        spec = risk_profile_spec(perfil)
+        assert camada["profile_multipliers"]["alerta"] == pytest.approx(spec.alert_multiplier)
+        assert camada["profile_multipliers"]["severo"] == pytest.approx(spec.severe_multiplier)
+
+        # E a exposição publicada tem que ser o alvo vezes o multiplicador do
+        # estado, não um teto que por acaso não morde.
+        acoes = sum(h["weight"] for h in livros[perfil]["holdings"] if h["ticker"] != "IVVB11")
+        fator = {"normal": 1.0, "alerta": spec.alert_multiplier, "severo": spec.severe_multiplier}
+        estado = camada["current_risk_state"]
+        assert camada["current_equity_weight"] == pytest.approx(acoes * fator[estado], abs=1e-6), (
+            f"{perfil}: exposição publicada não é o alvo vezes o multiplicador de '{estado}'")

@@ -31,8 +31,18 @@ GLOBAL_TICKER = "IVVB11"
 PROFILES = ("conservador", "equilibrado", "arrojado")
 
 
+def overlay_for(profile: str, registration: dict) -> tuple[dict, list[float]]:
+    """Gatilhos e ação da camada, lidos do registro congelado."""
+    from portfolio_risk import risk_profile_spec
+    spec = risk_profile_spec(profile)
+    return registration["intrayear_overlay"]["config"], [spec.alert_multiplier, spec.severe_multiplier]
+
+
 def decision_document(book: dict, source: dict) -> dict:
     """O livro de um perfil no formato que o monitor consome."""
+    registration = json.loads(
+        (ROOT / "data" / "benevente_profile_ladder_v3_registration.json").read_text(encoding="utf-8"))
+    overlay_config, multipliers = overlay_for(book["profile"], registration)
     holdings = [{"ticker": p["ticker"], "weight": p["weight"],
                  "score": p.get("score"),
                  "why": "Aprovado na triagem datada e classificado por qualidade, "
@@ -59,6 +69,10 @@ def decision_document(book: dict, source: dict) -> dict:
         "holdings": holdings,
         "cdi_weight": book["cash"],
         "overlay_exempt": [GLOBAL_TICKER],
+        # A camada vem do registro, não das constantes do monitor: a escada
+        # declarada corta por multiplicador de perfil, e o livro anterior cortava
+        # por teto fixo. Confundir os dois publica proteção que não aconteceu.
+        "overlay": {"config": overlay_config, "multipliers": multipliers},
         "universe": source["universe"],
         "honesty": source["honesty"],
         "limitations": source["limitations"],

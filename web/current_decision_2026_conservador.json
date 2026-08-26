@@ -108,6 +108,22 @@
   "overlay_exempt": [
     "IVVB11"
   ],
+  "overlay": {
+    "config": {
+      "alert_drawdown": 0.1,
+      "severe_drawdown": 0.2,
+      "alert_volatility": 0.3,
+      "severe_volatility": 0.5,
+      "recovery_days": 10,
+      "cost_bps": 10.0,
+      "volatility_window": 20,
+      "peak_window": 126
+    },
+    "multipliers": [
+      0.55,
+      0.25
+    ]
+  },
   "universe": {
     "all_instruments": 1424,
     "equities_at_decision": 361,
