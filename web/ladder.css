@@ -185,6 +185,21 @@
 }
 .alpha-entered { background: var(--surface-mint, #dff7ec); color: var(--brand-green, #0b8377); }
 .alpha-exited { background: #f9e9e9; color: #8f2f2f; }
+.alpha-policy { background: #e9eef5; color: #3d5a78; }
+.alpha-policy-row th[scope="row"], .alpha-policy-row td { color: var(--ink-soft, #5b6f7c); }
+.alpha-policy-row { border-top: 2px solid var(--hairline-strong, #bccfc9); }
+.dossier-line { margin: .8rem 0 .2rem; }
+.dossier-download {
+  display: inline-block;
+  padding: .55rem .95rem;
+  border-radius: 8px;
+  background: var(--brand-green, #0b8377);
+  color: #fff;
+  font-size: .8rem;
+  font-weight: 750;
+  text-decoration: none;
+}
+.dossier-download:hover { background: #096e63; }
 
 /* O retorno seguinte é o único número que a decisão não podia usar, então ele
    fica visualmente separado em vez de alinhado com o que era observável. */
