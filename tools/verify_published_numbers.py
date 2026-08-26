@@ -221,8 +221,9 @@ def main() -> int:
     btech = (ROOT / "paper/fucape_btech_2026.md").read_text(encoding="utf-8")
     cifer = (ROOT / "paper/ieee_cifer_2027.tex").read_text(encoding="utf-8")
     novo = (ROOT / "paper/declared_over_searched_2026.md").read_text(encoding="utf-8")
-    check("BTech carrega o resultado posterior (256, 2,63 pp, 0,777, fc5521f1)",
-          all(x in btech for x in ("256 candidatos", "2,63 pontos percentuais", "0,777", "fc5521f1")))
+    check("BTech carrega os dois resultados posteriores (256, 2,63 pp, 0,777, caixa real, hash v3)",
+          all(x in btech for x in ("256 candidatos", "2,63 pontos percentuais", "0,777",
+                                   "ca2476d4", "4.1.2", "12,34%", "9,36%")))
     check("BTech: oito hipóteses rejeitadas, não cinco",
           "Oito hipóteses foram testadas" in btech and "Cinco hipóteses foram testadas" not in btech)
     check("CiFer: regra aninhada como registro do período, não como vigente",
