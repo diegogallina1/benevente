@@ -122,8 +122,16 @@ def live_checks(base: str, result: Result) -> None:
     import urllib.error
     import urllib.request
 
+    # The edge rejects the default ``Python-urllib`` agent with 403, which made
+    # every live check fail against a perfectly healthy deployment -- a false
+    # alarm that reads exactly like an outage and could motivate rolling back a
+    # good release. The checker identifies itself honestly rather than
+    # impersonating a browser: it is the site owner's own monitoring.
+    agent = "benevente-predeploy-check/1.0 (+https://benevente.dgo.fi)"
+
     def request(path: str, method: str = "GET", headers: dict | None = None) -> tuple[int, dict]:
-        req = urllib.request.Request(f"{base.rstrip('/')}{path}", method=method, headers=headers or {})
+        req = urllib.request.Request(f"{base.rstrip('/')}{path}", method=method,
+                                     headers={"User-Agent": agent, **(headers or {})})
         try:
             with urllib.request.urlopen(req, timeout=60) as response:
                 return response.status, {key.lower(): value for key, value in response.headers.items()}
