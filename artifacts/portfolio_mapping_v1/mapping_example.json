@@ -200,10 +200,32 @@
       {
         "ticker": "WEGE3",
         "sale_brl": 180000.0,
+        "sale_fraction": 1.0,
+        "bucket": "renda_variavel",
         "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
       }
     ],
     "unpriced_sale_brl": 180000.0,
+    "pending_resolution": {
+      "positions": [
+        {
+          "ticker": "WEGE3",
+          "sale_brl": 180000.0,
+          "sale_fraction": 1.0,
+          "bucket": "renda_variavel",
+          "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+        }
+      ],
+      "buckets": {
+        "renda_variavel": {
+          "other_gain_brl": -167000.0,
+          "rate": 0.15,
+          "exempt_month": false,
+          "carried_loss_brl": 0.0
+        }
+      },
+      "fixed_brl": 567.0
+    },
     "tax_by_bucket": {
       "fora_do_escopo": {
         "realised_gain_brl": -9000.0,
@@ -407,10 +429,32 @@
       {
         "ticker": "WEGE3",
         "sale_brl": 14000.0,
+        "sale_fraction": 0.077778,
+        "bucket": "renda_variavel",
         "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
       }
     ],
     "unpriced_sale_brl": 14000.0,
+    "pending_resolution": {
+      "positions": [
+        {
+          "ticker": "WEGE3",
+          "sale_brl": 14000.0,
+          "sale_fraction": 0.077778,
+          "bucket": "renda_variavel",
+          "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+        }
+      ],
+      "buckets": {
+        "renda_variavel": {
+          "other_gain_brl": 0.0,
+          "rate": 0.15,
+          "exempt_month": true,
+          "carried_loss_brl": 0.0
+        }
+      },
+      "fixed_brl": 14.0
+    },
     "tax_by_bucket": {},
     "fgc_breaches": {
       "Beta": 310000.0

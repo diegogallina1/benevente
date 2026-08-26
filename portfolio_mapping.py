@@ -156,6 +156,11 @@ def _apura(vendas: list[tuple[Position, float, float]], exempt_month: bool,
     apuraveis = [(p, g) for p, g, _ in vendas if p.tax_computable]
     pendentes = [{"ticker": p.ticker.removesuffix(".SA"),
                   "sale_brl": round(v, 2),
+                  # Fração da posição que está saindo: o cliente informa quanto
+                  # pagou pela posição inteira, e o ganho é ao custo médio.
+                  "sale_fraction": round(v / p.market_value_brl, 6)
+                  if p.market_value_brl > 0 else 0.0,
+                  "bucket": TAX_BUCKETS[p.bucket],
                   "cost_quality": p.cost_quality.value}
                  for p, _, v in vendas if not p.tax_computable]
 
@@ -166,6 +171,37 @@ def _apura(vendas: list[tuple[Position, float, float]], exempt_month: bool,
     prazo = min((p.days_held for p, _ in apuraveis
                  if TAX_BUCKETS[p.bucket] == "renda_fixa"), default=400)
     return por_cesta, _settle(por_cesta, exempt_month, prazo, carried_loss_brl), pendentes
+
+
+def _resolucao(pendentes: list, por_cesta: dict, imposto: dict, custo_execucao: float,
+               exempt_month: bool, carried_loss_brl: float, prazo: int = 400) -> dict:
+    """O que a tela precisa para fechar a conta quando o custo chegar.
+
+    A tentação seria reescrever a apuração em JavaScript para o campo responder
+    na hora. Duas implementações da mesma regra divergem — e divergem em
+    silêncio, porque as duas continuam plausíveis. Então o módulo entrega os
+    parâmetros e a tela faz só a aritmética final, com um teste comparando o
+    resultado dela com o desta função em vários valores de custo.
+    """
+    if not pendentes:
+        return {}
+    cestas_pendentes = {p["bucket"] for p in pendentes}
+    return {
+        "positions": pendentes,
+        "buckets": {
+            cesta: {
+                "other_gain_brl": round(por_cesta.get(cesta, 0.0), 2),
+                "rate": (EQUITY_TAX_RATE if cesta == "renda_variavel"
+                         else 0.0 if cesta == "fora_do_escopo" else income_tax_rate(prazo)),
+                "exempt_month": bool(exempt_month) and cesta == "renda_variavel",
+                "carried_loss_brl": round(carried_loss_brl, 2) if cesta == "renda_variavel" else 0.0,
+            } for cesta in sorted(cestas_pendentes)
+        },
+        # Tudo que não muda quando o custo informado muda: execução mais o
+        # imposto das cestas que não têm pendência.
+        "fixed_brl": round(custo_execucao + sum(v for k, v in imposto.items()
+                                                if k not in cestas_pendentes), 2),
+    }
 
 
 def map_portfolio(positions: list[Position], target: dict, *,
@@ -327,6 +363,8 @@ def map_portfolio(positions: list[Position], target: dict, *,
         # este número, "imposto parcial" não tem tamanho, e um total pequeno ao
         # lado de uma ressalva pequena é lido como total pequeno.
         "unpriced_sale_brl": round(sum(p["sale_brl"] for p in sem_custo), 2),
+        "pending_resolution": _resolucao(sem_custo, por_cesta, imposto_por_cesta,
+                                         custo_total, mes_isento, carried_loss_brl),
         "tax_by_bucket": {k: {"realised_gain_brl": round(v, 2),
                               "tax_brl": round(imposto_por_cesta.get(k, 0.0), 2)}
                           for k, v in sorted(por_cesta.items())},
@@ -509,6 +547,8 @@ def adapt_portfolio(positions: list[Position], target: dict, *,
         # este número, "imposto parcial" não tem tamanho, e um total pequeno ao
         # lado de uma ressalva pequena é lido como total pequeno.
         "unpriced_sale_brl": round(sum(p["sale_brl"] for p in sem_custo), 2),
+        "pending_resolution": _resolucao(sem_custo, por_cesta, imposto_por_cesta,
+                                         custo_total, mes_isento, carried_loss_brl),
         "tax_by_bucket": {k: {"realised_gain_brl": round(v, 2),
                               "tax_brl": round(imposto_por_cesta.get(k, 0.0), 2)}
                           for k, v in sorted(por_cesta.items())},

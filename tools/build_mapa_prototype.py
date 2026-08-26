@@ -133,6 +133,25 @@ section { margin-bottom: 3rem; }
 .painel .big { font-size: 1.75rem; line-height: 1.29; font-weight: 400; }
 .painel p { margin: .5rem 0 0; color: var(--fg-2); font-size: .875rem; line-height: 1.43; }
 
+/* Campo do Carbon: fundo de camada, só borda inferior, altura de 48px. */
+.informar { margin-top: 1rem; }
+.informar label { display: block; font-size: .75rem; letter-spacing: .32px;
+                  color: var(--fg-2); margin-bottom: .5rem; }
+.campo { display: flex; flex-wrap: wrap; gap: .5rem; }
+.campo input { font: inherit; font-family: "IBM Plex Mono", monospace; font-size: 1rem;
+               flex: 1 1 10rem; min-width: 0; min-height: 3rem; padding: 0 1rem;
+               color: var(--fg); background: var(--layer); border: 0; border-radius: 0;
+               border-bottom: 1px solid var(--line-strong); }
+.campo input:focus { outline: 2px solid var(--btn); outline-offset: -2px; }
+.campo input[aria-invalid="true"] { border-bottom: 2px solid var(--erro); }
+.campo .btn { flex: 0 0 auto; width: auto; min-width: 9rem; padding: .875rem 1rem; }
+.informar .ajuda { font-size: .75rem; line-height: 1.34; color: var(--fg-3); margin: .5rem 0 0; }
+.informar .ajuda.ruim { color: var(--erro); }
+.resolvido { border-left: 3px solid var(--ok); background: var(--ok-fraco);
+             padding: 1rem; margin-top: 1.5rem; font-size: .875rem; line-height: 1.43; }
+.resolvido p { margin: 0; color: var(--fg-2); }
+.resolvido b { color: var(--fg); font-weight: 600; }
+
 .aviso { border-left: 3px solid var(--aviso); background: var(--aviso-fraco);
          padding: 1rem; margin-top: 1.5rem; font-size: .875rem; line-height: 1.43; }
 .aviso.erro { border-left-color: var(--erro); background: var(--erro-fraco); }
@@ -437,17 +456,136 @@ $("conectar").onclick = () => {
   const alerta = $("lacuna");
   if (!pendentes.length) alerta.style.display = "none";
   else {
-    const [ticker] = pendentes[0];
+    const [ticker, dados] = pendentes[0];
+    const jaSabe = (b3.cost_basis[ticker] || {}).valor_brl || 0;
     alerta.innerHTML = "<p><b>Falta saber por quanto você comprou " + ticker + ".</b> " +
       "Essa compra é anterior a " + b3.base_starts.split("-").reverse().join("/") +
       ", então não está no histórico que a B3 manda. Sem esse número não dá para calcular " +
       "o imposto dessa venda — e ele não é chutado aqui, porque um imposto chutado tem a " +
-      "mesma cara de um imposto calculado. A nota de corretagem antiga resolve.</p>";
+      "mesma cara de um imposto calculado.</p>";
+    alerta.append(campoDeCusto(ticker, jaSabe));
   }
   mostra("perguntas");
   etapa(1);
   $("perguntas").scrollIntoView({ behavior: "smooth", block: "start" });
 };
+
+/* --- o custo informado pelo cliente --- */
+// A aritmética abaixo é transcrição literal de resolver(), em
+// tests/test_b3_connection.py, que é comparada com o módulo de verdade em
+// vários valores de custo. Reescrever a apuração inteira aqui criaria duas
+// implementações da mesma regra, e elas divergem em silêncio porque as duas
+// continuam plausíveis sozinhas. A tela faz só a aritmética final.
+const custosInformados = {};
+let perfilAtual = null, planoAtual = null;
+
+// Aceita "180.000,50" e "180000,50"; um ponto seguido de uma ou duas casas é
+// lido como decimal, porque é assim que muita gente digita.
+function leValor(txt) {
+  const limpo = String(txt).replace(/[^\d.,-]/g, "");
+  if (!limpo) return NaN;
+  const decimal = limpo.includes(",")
+    ? limpo.replace(/\./g, "").replace(",", ".")
+    : (/^\d+\.\d{1,2}$/.test(limpo) ? limpo : limpo.replace(/\./g, ""));
+  return parseFloat(decimal);
+}
+
+function campoDeCusto(ticker, jaSabe) {
+  const caixa = el("div", "informar");
+  const anterior = custosInformados[ticker];
+  caixa.innerHTML =
+    "<label for='custo'>Quanto você pagou, ao todo, pela sua posição em " + ticker + "?</label>" +
+    "<div class='campo'><input id='custo' type='text' inputmode='decimal' autocomplete='off' " +
+    "placeholder='R$ 0,00' aria-describedby='custo-ajuda'>" +
+    "<button class='btn' type='button' id='custo-ok'>Informar</button></div>" +
+    "<p class='ajuda' id='custo-ajuda'>Some tudo que pagou pela posição, em todas as compras. " +
+    (jaSabe > 0 ? "Das compras que a B3 mandou já sabemos " + BRL(jaSabe) + "; falta somar as " +
+                  "anteriores. " : "") +
+    "O valor está na sua declaração de imposto de renda ou nas notas de corretagem.</p>";
+  const campo = caixa.querySelector("#custo");
+  // Campo de dinheiro devolve centavo: 1.000,5 é um valor que ninguém digitou.
+  if (anterior !== undefined) campo.value = anterior.toLocaleString("pt-BR",
+    anterior % 1 ? { minimumFractionDigits: 2 } : {});
+  caixa.querySelector("#custo-ok").onclick = () => informar(ticker, jaSabe);
+  campo.onkeydown = e => { if (e.key === "Enter") informar(ticker, jaSabe); };
+  return caixa;
+}
+
+function informar(ticker, jaSabe) {
+  const campo = $("custo"), ajuda = $("custo-ajuda");
+  const valor = leValor(campo.value);
+  if (!isFinite(valor) || valor < 0) {
+    campo.setAttribute("aria-invalid", "true");
+    ajuda.className = "ajuda ruim";
+    ajuda.textContent = "Informe um valor em reais, como 180.000,00.";
+    campo.focus();
+    return;
+  }
+  custosInformados[ticker] = valor;
+  const alerta = $("lacuna");
+  alerta.className = "resolvido";
+  alerta.innerHTML = "<p><b>" + ticker + ": " + BRL(valor) + " informados.</b> " +
+    "O imposto fecha, e os dois planos abaixo já estão com ele. O valor foi declarado por " +
+    "você e não conferido contra nota de corretagem.</p>";
+  // Um dígito a mais muda o imposto em ordem de grandeza, e quem digitou errado
+  // precisa de caminho de volta — sem ele, o único recerto é recarregar a página.
+  const trocar = el("button", "link", "Corrigir o valor");
+  trocar.type = "button";
+  trocar.onclick = () => {
+    alerta.className = "aviso erro";
+    alerta.innerHTML = "<p><b>Corrigindo o custo de " + ticker + ".</b> O valor anterior era " +
+      BRL(valor) + ".</p>";
+    alerta.append(campoDeCusto(ticker, jaSabe));
+    $("custo").focus();
+  };
+  alerta.append(trocar);
+  if (perfilAtual) render(perfilAtual);
+}
+
+function resolvido(m) {
+  const r = m.pending_resolution;
+  if (!r || !r.positions || !r.positions.length) return m;
+  if (r.positions.some(p => !(p.ticker in custosInformados))) return m;
+
+  let total = r.fixed_brl;
+  const impostoDaCesta = {}, ganhoDaCesta = {};
+  Object.entries(r.buckets).forEach(([cesta, cfg]) => {
+    let ganho = cfg.other_gain_brl;
+    r.positions.forEach(p => {
+      if (p.bucket === cesta) ganho += p.sale_brl - custosInformados[p.ticker] * p.sale_fraction;
+    });
+    ganho -= cfg.carried_loss_brl;
+    const imposto = (ganho > 0 && cesta !== "fora_do_escopo" && !cfg.exempt_month)
+      ? ganho * cfg.rate : 0;
+    ganhoDaCesta[cesta] = ganho + cfg.carried_loss_brl;
+    impostoDaCesta[cesta] = imposto;
+    total += imposto;
+  });
+
+  const cestas = Object.assign({}, m.tax_by_bucket);
+  Object.keys(impostoDaCesta).forEach(c => {
+    cestas[c] = { realised_gain_brl: ganhoDaCesta[c], tax_brl: impostoDaCesta[c] };
+  });
+  const moves = m.moves.map(x => {
+    if (!(x.ticker in custosInformados) || x.action === "manter") return x;
+    const p = r.positions.find(q => q.ticker === x.ticker);
+    if (!p) return x;
+    return Object.assign({}, x, {
+      realised_gain_brl: p.sale_brl - custosInformados[x.ticker] * p.sale_fraction,
+      notes: ["custo informado por você, não conferido contra nota de corretagem"],
+    });
+  });
+  return Object.assign({}, m, {
+    transition_tax_brl: total - m.transition_cost_brl,
+    transition_total_brl: total,
+    transition_cost_pct: total / m.total_brl,
+    tax_is_complete: true,
+    positions_without_cost_basis: [],
+    unpriced_sale_brl: 0,
+    tax_by_bucket: cestas,
+    moves: moves,
+  });
+}
 
 /* --- perguntas --- */
 const escolha = DADOS.questionnaire.questions.filter(q => q.kind === "escolha");
@@ -507,14 +645,16 @@ function avaliar() {
                    : "nenhuma resposta impôs teto abaixo do máximo") +
     ". A pior queda já medida neste perfil foi de <b class='num neg'>" + PCT(pior) + "</b>.";
   etapa(2);
+  if (perfilAtual !== perfil) planoAtual = null;
   render(perfil);
 }
 
 /* --- mapa --- */
 function render(perfil) {
-  const p = DADOS.profiles[perfil], a = p.adequar, b = p.adaptar;
+  perfilAtual = perfil;
+  const p = DADOS.profiles[perfil];
+  const a = resolvido(p.adequar), b = resolvido(p.adaptar);
   mostra("mapa", "planos-sec");
-  esconde("razao-sec");
 
   $("aderencia").textContent = PCT(a.alignment) + " já serve";
   $("aderencia-txt").textContent =
@@ -591,16 +731,18 @@ function planos(perfil, a, b) {
     d.onclick = () => {
       host.querySelectorAll(".plano").forEach(x => x.setAttribute("aria-pressed", "false"));
       d.setAttribute("aria-pressed", "true");
-      razao(perfil, chave);
+      planoAtual = chave;
+      razao(perfil, chave, true);
     };
     host.append(d);
+    if (planoAtual === chave) { d.setAttribute("aria-pressed", "true"); razao(perfil, chave, false); }
   });
 }
 
 /* --- o que muda no plano escolhido --- */
-function razao(perfil, chave) {
-  const m = DADOS.profiles[perfil][chave];
-  const outro = DADOS.profiles[perfil][chave === "adequar" ? "adaptar" : "adequar"];
+function razao(perfil, chave, rolar) {
+  const m = resolvido(DADOS.profiles[perfil][chave]);
+  const outro = resolvido(DADOS.profiles[perfil][chave === "adequar" ? "adaptar" : "adequar"]);
   mostra("razao-sec");
   etapa(3);
   $("razao-h").textContent = m.path_label;
@@ -665,7 +807,7 @@ function razao(perfil, chave) {
       : "") +
     " O outro plano custaria " + BRL(outro.transition_total_brl) + ".</p>";
   conta.innerHTML = html;
-  $("razao-sec").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (rolar) $("razao-sec").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 </script>
 """

@@ -163,3 +163,61 @@ def test_o_custo_do_plano_incompleto_e_menor_que_o_completo():
     completo = map_portfolio(carteira(Qualidade.RECONSTRUIDO), ALVO)
     assert parcial["transition_total_brl"] < completo["transition_total_brl"]
     assert parcial["tax_is_complete"] is False and completo["tax_is_complete"] is True
+
+
+# --- o campo que informa o custo que falta -------------------------------
+
+def resolver(resolucao: dict, custos: dict[str, float]) -> float:
+    """A aritmética que a tela faz quando o custo é informado.
+
+    Escrita aqui em Python e transcrita literalmente para o JavaScript do
+    protótipo. O teste abaixo compara o resultado dela com o do módulo de
+    verdade em vários valores de custo: é o que impede as duas implementações
+    de divergirem em silêncio, cada uma continuando plausível sozinha.
+    """
+    total = resolucao["fixed_brl"]
+    for cesta, cfg in resolucao["buckets"].items():
+        ganho = cfg["other_gain_brl"]
+        for p in resolucao["positions"]:
+            if p["bucket"] == cesta:
+                ganho += p["sale_brl"] - custos[p["ticker"]] * p["sale_fraction"]
+        ganho -= cfg["carried_loss_brl"]
+        if ganho <= 0 or cesta == "fora_do_escopo" or cfg["exempt_month"]:
+            continue
+        total += ganho * cfg["rate"]
+    return total
+
+
+@pytest.mark.parametrize("custo", [0, 38_000, 90_000, 150_000, 200_000, 400_000])
+@pytest.mark.parametrize("fn", [map_portfolio, adapt_portfolio])
+def test_a_conta_da_tela_bate_com_a_do_modulo(fn, custo):
+    """Informar o custo pela tela tem de dar o mesmo que o módulo calcularia."""
+    pendente = fn(carteira(Qualidade.PARCIAL), ALVO)
+    previsto = resolver(pendente["pending_resolution"], {"WEGE3": custo})
+
+    informado = fn([p if p.ticker != "WEGE3" else
+                    Position("WEGE3", Bucket.ACAO, 200_000, custo, Source.B3_INVESTIDOR,
+                             cost_quality=Qualidade.DECLARADO)
+                    for p in carteira(Qualidade.PARCIAL)], ALVO)
+    assert informado["tax_is_complete"] is True
+    assert previsto == pytest.approx(informado["transition_total_brl"], abs=0.02)
+
+
+def test_sem_pendencia_nao_ha_o_que_resolver():
+    assert map_portfolio(carteira(Qualidade.RECONSTRUIDO), ALVO)["pending_resolution"] == {}
+
+
+def test_a_resolucao_separa_o_que_nao_depende_do_custo():
+    """fixed_brl é execução mais imposto das cestas sem pendência."""
+    mapa = map_portfolio(carteira(Qualidade.PARCIAL), ALVO)
+    r = mapa["pending_resolution"]
+    assert r["fixed_brl"] >= mapa["transition_cost_brl"]
+    assert [p["ticker"] for p in r["positions"]] == ["WEGE3"]
+    assert set(r["buckets"]) == {"renda_variavel"}
+
+
+def test_a_fracao_vendida_e_o_que_liga_custo_da_posicao_a_ganho_da_venda():
+    inteira = map_portfolio(carteira(Qualidade.PARCIAL), ALVO)["pending_resolution"]
+    parcial = adapt_portfolio(carteira(Qualidade.PARCIAL), ALVO)["pending_resolution"]
+    assert inteira["positions"][0]["sale_fraction"] == 1.0
+    assert 0 < parcial["positions"][0]["sale_fraction"] < 1.0
