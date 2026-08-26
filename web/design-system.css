@@ -181,6 +181,32 @@ h1, h2, h3, h4,
 /* A linha de ações não tinha margem superior nenhuma: encostava no bloco de
    cima (o herói mostrava os botões colados nos cartões CALCULA/EXPLICA/DECIDE).
    A folga vive aqui, uma vez, em vez de um style inline por ocorrência. */
+/* A quebra dura deixava "ação" sozinha numa linha em boa parte das larguras.
+   Sem ela, o navegador distribui as linhas de forma equilibrada e o título
+   respira igual em qualquer tela. */
+.hero h1 { text-wrap: balance; }
+
+/* Em telas estreitas a navegação das páginas internas escondia todos os links
+   menos o da página atual — o visitante chegava em /versoes pelo celular e
+   ficava sem saída, enquanto a home mostrava as cinco abas. Mesma
+   especificidade da regra que escondia, e depois dela no cascata. */
+@media (max-width: 800px) {
+  .version-nav { height: auto; flex-direction: column; align-items: flex-start; gap: .6rem; padding-block: .85rem; }
+  .version-nav nav { display: flex; flex-wrap: wrap; width: 100%; gap: .35rem; }
+  .version-nav nav a:not([aria-current="page"]):not(.version-back) { display: inline-block; }
+}
+@media (max-width: 680px) {
+  .version-nav nav { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; }
+  .version-nav nav a,
+  .version-nav nav a:not([aria-current="page"]):not(.version-back) {
+    display: block;
+    text-align: center;
+    border: 1px solid var(--hairline, #dbe4e8);
+    border-radius: 8px;
+  }
+  .version-nav nav a[aria-current="page"] { border-color: transparent; }
+}
+
 .hero-actions { margin-top: 1.75rem; }
 
 /* Sem a seta, o link precisa de outro sinal de que é clicável. Um sublinhado
