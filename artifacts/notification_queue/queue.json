@@ -1,0 +1,164 @@
+{
+  "phase": "0_dry_run",
+  "delivery": "desligada: nenhum item desta fila foi ou será enviado nesta fase",
+  "design": "docs/desenho_bot_whatsapp.md",
+  "templates": {
+    "camada_mudou": {
+      "categoria": "utilitaria",
+      "texto": "Benevente · {perfil}: a camada de proteção passou de {de} para {para} em {data}. Exposição em ações vai de {exposicao_antes} para {exposicao_depois} no próximo pregão. Motivo observado: {motivo}. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "campos": [
+        "perfil",
+        "de",
+        "para",
+        "data",
+        "exposicao_antes",
+        "exposicao_depois",
+        "motivo"
+      ]
+    },
+    "decisao_anual": {
+      "categoria": "utilitaria",
+      "texto": "Benevente · {perfil}: a decisão de {data} está disponível, com {emissores} emissores e {acoes} em ações. O dossiê completo está no site. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "campos": [
+        "perfil",
+        "data",
+        "emissores",
+        "acoes"
+      ]
+    },
+    "radar_revisao": {
+      "categoria": "utilitaria",
+      "texto": "Benevente · radar: {quantidade} item(ns) sobre {tickers} marcado(s) para revisão humana em {data}. O radar não altera pesos e não participa do sinal de proteção.",
+      "campos": [
+        "quantidade",
+        "tickers",
+        "data"
+      ]
+    }
+  },
+  "items": [
+    {
+      "key": "camada:conservador:2026-05-14:1",
+      "template": "camada_mudou",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Conservador",
+        "de": "normal",
+        "para": "alerta",
+        "data": "14/05/2026",
+        "exposicao_antes": "28,0%",
+        "exposicao_depois": "15,4%",
+        "motivo": "queda de alerta"
+      },
+      "preview": "Benevente · Conservador: a camada de proteção passou de normal para alerta em 14/05/2026. Exposição em ações vai de 28,0% para 15,4% no próximo pregão. Motivo observado: queda de alerta. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "live_performance_conservador.json",
+        "sha256": "0edbe5676c1d9f5678bb9ba6f5d1b685b93ceea4b213b7c82abca2d5b12f279f"
+      },
+      "previous_record_sha256": null,
+      "state": "queued_dry_run",
+      "record_sha256": "23f42882a2eaec027986262c88639e883c96c26d2f238da635be0fd076e2c2c0"
+    },
+    {
+      "key": "camada:equilibrado:2026-05-14:1",
+      "template": "camada_mudou",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Equilibrado",
+        "de": "normal",
+        "para": "alerta",
+        "data": "14/05/2026",
+        "exposicao_antes": "44,0%",
+        "exposicao_depois": "30,8%",
+        "motivo": "queda de alerta"
+      },
+      "preview": "Benevente · Equilibrado: a camada de proteção passou de normal para alerta em 14/05/2026. Exposição em ações vai de 44,0% para 30,8% no próximo pregão. Motivo observado: queda de alerta. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "live_performance_equilibrado.json",
+        "sha256": "cec4ec12b4a01245c82d502f677ae0879c3f05d4193bc36dde04315e8d26c1f9"
+      },
+      "previous_record_sha256": "23f42882a2eaec027986262c88639e883c96c26d2f238da635be0fd076e2c2c0",
+      "state": "queued_dry_run",
+      "record_sha256": "ffac665f4491b1edca2a4faa592d77b6335803a73044d1e2a33cc2dbbbd2a671"
+    },
+    {
+      "key": "camada:arrojado:2026-05-14:1",
+      "template": "camada_mudou",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Arrojado",
+        "de": "normal",
+        "para": "alerta",
+        "data": "14/05/2026",
+        "exposicao_antes": "60,0%",
+        "exposicao_depois": "51,0%",
+        "motivo": "queda de alerta"
+      },
+      "preview": "Benevente · Arrojado: a camada de proteção passou de normal para alerta em 14/05/2026. Exposição em ações vai de 60,0% para 51,0% no próximo pregão. Motivo observado: queda de alerta. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "live_performance_arrojado.json",
+        "sha256": "f0ff458596f812fb4782d9feeca9e254e3b3be12397a68d3dbf5474ec80f5f74"
+      },
+      "previous_record_sha256": "ffac665f4491b1edca2a4faa592d77b6335803a73044d1e2a33cc2dbbbd2a671",
+      "state": "queued_dry_run",
+      "record_sha256": "211bb445b601302f4c6576c9b90d4ad2e67cc97404699e43f4e510ddaad89873"
+    },
+    {
+      "key": "decisao:conservador:2026-01-02",
+      "template": "decisao_anual",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Conservador",
+        "data": "02/01/2026",
+        "emissores": "12",
+        "acoes": "28,0%"
+      },
+      "preview": "Benevente · Conservador: a decisão de 02/01/2026 está disponível, com 12 emissores e 28,0% em ações. O dossiê completo está no site. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "current_decision_2026_conservador.json",
+        "sha256": "55c2466ca7896af394b766f317b379d489e2b98281c4c9f6e7ec8934f35a19cb"
+      },
+      "previous_record_sha256": "211bb445b601302f4c6576c9b90d4ad2e67cc97404699e43f4e510ddaad89873",
+      "state": "queued_dry_run",
+      "record_sha256": "7a5e64d43c12891a84760e1cf589183578fd2ef19c5e7f8f206392f2f5c11852"
+    },
+    {
+      "key": "decisao:equilibrado:2026-01-02",
+      "template": "decisao_anual",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Equilibrado",
+        "data": "02/01/2026",
+        "emissores": "8",
+        "acoes": "44,0%"
+      },
+      "preview": "Benevente · Equilibrado: a decisão de 02/01/2026 está disponível, com 8 emissores e 44,0% em ações. O dossiê completo está no site. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "current_decision_2026_equilibrado.json",
+        "sha256": "c006b569c3e3134ab02a62cc0ee8e11b74be1b9e828a87ece07e4da8483db36a"
+      },
+      "previous_record_sha256": "7a5e64d43c12891a84760e1cf589183578fd2ef19c5e7f8f206392f2f5c11852",
+      "state": "queued_dry_run",
+      "record_sha256": "dd5e7c1678f24af4148f3369b1422900d00d7cf59cff148acb87ac6598908097"
+    },
+    {
+      "key": "decisao:arrojado:2026-01-02",
+      "template": "decisao_anual",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Arrojado",
+        "data": "02/01/2026",
+        "emissores": "5",
+        "acoes": "60,0%"
+      },
+      "preview": "Benevente · Arrojado: a decisão de 02/01/2026 está disponível, com 5 emissores e 60,0% em ações. O dossiê completo está no site. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "current_decision_2026_arrojado.json",
+        "sha256": "068297f26f873294c35ee550b0661b01bc2aada2199ade08876d01217f919e9e"
+      },
+      "previous_record_sha256": "dd5e7c1678f24af4148f3369b1422900d00d7cf59cff148acb87ac6598908097",
+      "state": "queued_dry_run",
+      "record_sha256": "b804d04aad7d68b78ab2c604e067ee0c4feda905fb66d1521afee1a541c95744"
+    }
+  ]
+}

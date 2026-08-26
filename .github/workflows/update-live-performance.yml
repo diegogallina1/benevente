@@ -36,12 +36,13 @@ jobs:
         run: |
           python tools/update_live_performance.py
           PYTHONPATH=tools python tools/update_profile_books.py
-          python -m pytest tests/test_live_performance.py tests/test_profile_books_2026.py -q
+          python tools/notify_queue.py
+          python -m pytest tests/test_live_performance.py tests/test_profile_books_2026.py tests/test_notify_queue.py -q
 
       - name: Publicar somente quando houver novo dado
         shell: bash
         run: |
-          tracked="web/live_performance.json web/live_profiles_2026.json"
+          tracked="web/live_performance.json web/live_profiles_2026.json artifacts/notification_queue/queue.json"
           for perfil in conservador equilibrado arrojado; do
             tracked="$tracked web/live_performance_${perfil}.json web/current_decision_2026_${perfil}.json"
           done
