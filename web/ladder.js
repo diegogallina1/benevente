@@ -152,16 +152,19 @@
     // A fatia global e o caixa são parte da mesma decisão: sem estas linhas a
     // tabela soma menos que 100% e o leitor pergunta onde está o resto.
     const previous = (data.profiles[activeProfile] || []).find(item => Number(item.decision_year) === Number(block.decision_year) - 1);
-    const staticRow = (label, desc, value, prev) => `<tr class="alpha-policy-row">
+    const dash = value => value === null || value === undefined ? "—" : pct(value, 1);
+    const staticRow = (label, desc, value, prev, stats) => `<tr class="alpha-policy-row">
         <th scope="row">${label}</th>
         <td>${prev === undefined ? "—" : pct(prev)}</td>
         <td>${pct(value)}</td>
         <td><span class="alpha-action alpha-policy">${desc}</span></td>
-        <td>—</td><td>—</td><td>—</td>
-        <td class="alpha-after">—</td>
+        <td>—</td>
+        <td>${dash(stats?.trailing_12m)}</td>
+        <td>${dash(stats?.trailing_vol)}</td>
+        <td class="alpha-after">${dash(stats?.realised_next_year)}</td>
       </tr>`;
-    const policyRows = staticRow("IVVB11", "declarado", block.global_sleeve, previous?.global_sleeve)
-      + staticRow("CDI", "caixa", block.cash, previous?.cash);
+    const policyRows = staticRow("IVVB11", "declarado", block.global_sleeve, previous?.global_sleeve, block.global_row)
+      + staticRow("CDI", "caixa", block.cash, previous?.cash, block.cash_row);
 
     host.innerHTML = `
       <div class="alpha-controls">

@@ -12,6 +12,16 @@
       {
         "decision_year": 2015,
         "decision_date": "2015-01-02",
+        "global_row": {
+          "trailing_12m": null,
+          "trailing_vol": null,
+          "realised_next_year": 0.4894
+        },
+        "cash_row": {
+          "trailing_12m": 0.1058,
+          "trailing_vol": 0.0009,
+          "realised_next_year": 0.1325
+        },
         "positions": [
           {
             "ticker": "CIEL3.SA",
@@ -154,6 +164,16 @@
       {
         "decision_year": 2016,
         "decision_date": "2016-01-04",
+        "global_row": {
+          "trailing_12m": 0.4881,
+          "trailing_vol": 0.2182,
+          "realised_next_year": -0.0538
+        },
+        "cash_row": {
+          "trailing_12m": 0.1305,
+          "trailing_vol": 0.0013,
+          "realised_next_year": 0.14
+        },
         "positions": [
           {
             "ticker": "SMLE3.SA",
@@ -296,6 +316,16 @@
       {
         "decision_year": 2017,
         "decision_date": "2017-01-02",
+        "global_row": {
+          "trailing_12m": -0.0351,
+          "trailing_vol": 0.2035,
+          "realised_next_year": 0.1714
+        },
+        "cash_row": {
+          "trailing_12m": 0.1358,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.099
+        },
         "positions": [
           {
             "ticker": "CMIG4.SA",
@@ -438,6 +468,16 @@
       {
         "decision_year": 2018,
         "decision_date": "2018-01-02",
+        "global_row": {
+          "trailing_12m": 0.2131,
+          "trailing_vol": 0.1557,
+          "realised_next_year": 0.0912
+        },
+        "cash_row": {
+          "trailing_12m": 0.0951,
+          "trailing_vol": 0.0016,
+          "realised_next_year": 0.0642
+        },
         "positions": [
           {
             "ticker": "MGLU3.SA",
@@ -580,6 +620,16 @@
       {
         "decision_year": 2019,
         "decision_date": "2019-01-02",
+        "global_row": {
+          "trailing_12m": 0.0699,
+          "trailing_vol": 0.1948,
+          "realised_next_year": 0.3987
+        },
+        "cash_row": {
+          "trailing_12m": 0.0625,
+          "trailing_vol": 0.0007,
+          "realised_next_year": 0.0595
+        },
         "positions": [
           {
             "ticker": "BRSR6.SA",
@@ -722,6 +772,16 @@
       {
         "decision_year": 2020,
         "decision_date": "2020-01-02",
+        "global_row": {
+          "trailing_12m": 0.3969,
+          "trailing_vol": 0.1572,
+          "realised_next_year": 0.4993
+        },
+        "cash_row": {
+          "trailing_12m": 0.058,
+          "trailing_vol": 0.0006,
+          "realised_next_year": 0.0275
+        },
         "positions": [
           {
             "ticker": "AZUL4.SA",
@@ -864,6 +924,16 @@
       {
         "decision_year": 2021,
         "decision_date": "2021-01-04",
+        "global_row": {
+          "trailing_12m": 0.4892,
+          "trailing_vol": 0.3301,
+          "realised_next_year": 0.4089
+        },
+        "cash_row": {
+          "trailing_12m": 0.0264,
+          "trailing_vol": 0.0006,
+          "realised_next_year": 0.0445
+        },
         "positions": [
           {
             "ticker": "BBSE3.SA",
@@ -1006,6 +1076,16 @@
       {
         "decision_year": 2022,
         "decision_date": "2022-01-03",
+        "global_row": {
+          "trailing_12m": 0.4487,
+          "trailing_vol": 0.1801,
+          "realised_next_year": -0.234
+        },
+        "cash_row": {
+          "trailing_12m": 0.0441,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.1241
+        },
         "positions": [
           {
             "ticker": "FHER3.SA",
@@ -1148,6 +1228,16 @@
       {
         "decision_year": 2023,
         "decision_date": "2023-01-02",
+        "global_row": {
+          "trailing_12m": -0.2359,
+          "trailing_vol": 0.2458,
+          "realised_next_year": 0.1385
+        },
+        "cash_row": {
+          "trailing_12m": 0.1233,
+          "trailing_vol": 0.0013,
+          "realised_next_year": 0.1303
+        },
         "positions": [
           {
             "ticker": "KEPL3.SA",
@@ -1290,6 +1380,16 @@
       {
         "decision_year": 2024,
         "decision_date": "2024-01-02",
+        "global_row": {
+          "trailing_12m": 0.1826,
+          "trailing_vol": 0.1535,
+          "realised_next_year": 0.5566
+        },
+        "cash_row": {
+          "trailing_12m": 0.1332,
+          "trailing_vol": 0.0007,
+          "realised_next_year": 0.1088
+        },
         "positions": [
           {
             "ticker": "CURY3.SA",
@@ -1432,6 +1532,16 @@
       {
         "decision_year": 2025,
         "decision_date": "2025-01-02",
+        "global_row": {
+          "trailing_12m": 0.565,
+          "trailing_vol": 0.1436,
+          "realised_next_year": 0.0522
+        },
+        "cash_row": {
+          "trailing_12m": 0.1097,
+          "trailing_vol": 0.0009,
+          "realised_next_year": 0.1421
+        },
         "positions": [
           {
             "ticker": "CURY3.SA",
@@ -1576,6 +1686,16 @@
       {
         "decision_year": 2015,
         "decision_date": "2015-01-02",
+        "global_row": {
+          "trailing_12m": null,
+          "trailing_vol": null,
+          "realised_next_year": 0.4894
+        },
+        "cash_row": {
+          "trailing_12m": 0.1058,
+          "trailing_vol": 0.0009,
+          "realised_next_year": 0.1325
+        },
         "positions": [
           {
             "ticker": "CIEL3.SA",
@@ -1674,6 +1794,16 @@
       {
         "decision_year": 2016,
         "decision_date": "2016-01-04",
+        "global_row": {
+          "trailing_12m": 0.4881,
+          "trailing_vol": 0.2182,
+          "realised_next_year": -0.0538
+        },
+        "cash_row": {
+          "trailing_12m": 0.1305,
+          "trailing_vol": 0.0013,
+          "realised_next_year": 0.14
+        },
         "positions": [
           {
             "ticker": "BRSR6.SA",
@@ -1772,6 +1902,16 @@
       {
         "decision_year": 2017,
         "decision_date": "2017-01-02",
+        "global_row": {
+          "trailing_12m": -0.0351,
+          "trailing_vol": 0.2035,
+          "realised_next_year": 0.1714
+        },
+        "cash_row": {
+          "trailing_12m": 0.1358,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.099
+        },
         "positions": [
           {
             "ticker": "CMIG4.SA",
@@ -1870,6 +2010,16 @@
       {
         "decision_year": 2018,
         "decision_date": "2018-01-02",
+        "global_row": {
+          "trailing_12m": 0.2131,
+          "trailing_vol": 0.1557,
+          "realised_next_year": 0.0912
+        },
+        "cash_row": {
+          "trailing_12m": 0.0951,
+          "trailing_vol": 0.0016,
+          "realised_next_year": 0.0642
+        },
         "positions": [
           {
             "ticker": "MGLU3.SA",
@@ -1968,6 +2118,16 @@
       {
         "decision_year": 2019,
         "decision_date": "2019-01-02",
+        "global_row": {
+          "trailing_12m": 0.0699,
+          "trailing_vol": 0.1948,
+          "realised_next_year": 0.3987
+        },
+        "cash_row": {
+          "trailing_12m": 0.0625,
+          "trailing_vol": 0.0007,
+          "realised_next_year": 0.0595
+        },
         "positions": [
           {
             "ticker": "MGLU3.SA",
@@ -2066,6 +2226,16 @@
       {
         "decision_year": 2020,
         "decision_date": "2020-01-02",
+        "global_row": {
+          "trailing_12m": 0.3969,
+          "trailing_vol": 0.1572,
+          "realised_next_year": 0.4993
+        },
+        "cash_row": {
+          "trailing_12m": 0.058,
+          "trailing_vol": 0.0006,
+          "realised_next_year": 0.0275
+        },
         "positions": [
           {
             "ticker": "AZUL4.SA",
@@ -2164,6 +2334,16 @@
       {
         "decision_year": 2021,
         "decision_date": "2021-01-04",
+        "global_row": {
+          "trailing_12m": 0.4892,
+          "trailing_vol": 0.3301,
+          "realised_next_year": 0.4089
+        },
+        "cash_row": {
+          "trailing_12m": 0.0264,
+          "trailing_vol": 0.0006,
+          "realised_next_year": 0.0445
+        },
         "positions": [
           {
             "ticker": "MRFG3.SA",
@@ -2262,6 +2442,16 @@
       {
         "decision_year": 2022,
         "decision_date": "2022-01-03",
+        "global_row": {
+          "trailing_12m": 0.4487,
+          "trailing_vol": 0.1801,
+          "realised_next_year": -0.234
+        },
+        "cash_row": {
+          "trailing_12m": 0.0441,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.1241
+        },
         "positions": [
           {
             "ticker": "FHER3.SA",
@@ -2360,6 +2550,16 @@
       {
         "decision_year": 2023,
         "decision_date": "2023-01-02",
+        "global_row": {
+          "trailing_12m": -0.2359,
+          "trailing_vol": 0.2458,
+          "realised_next_year": 0.1385
+        },
+        "cash_row": {
+          "trailing_12m": 0.1233,
+          "trailing_vol": 0.0013,
+          "realised_next_year": 0.1303
+        },
         "positions": [
           {
             "ticker": "VIVA3.SA",
@@ -2458,6 +2658,16 @@
       {
         "decision_year": 2024,
         "decision_date": "2024-01-02",
+        "global_row": {
+          "trailing_12m": 0.1826,
+          "trailing_vol": 0.1535,
+          "realised_next_year": 0.5566
+        },
+        "cash_row": {
+          "trailing_12m": 0.1332,
+          "trailing_vol": 0.0007,
+          "realised_next_year": 0.1088
+        },
         "positions": [
           {
             "ticker": "CURY3.SA",
@@ -2556,6 +2766,16 @@
       {
         "decision_year": 2025,
         "decision_date": "2025-01-02",
+        "global_row": {
+          "trailing_12m": 0.565,
+          "trailing_vol": 0.1436,
+          "realised_next_year": 0.0522
+        },
+        "cash_row": {
+          "trailing_12m": 0.1097,
+          "trailing_vol": 0.0009,
+          "realised_next_year": 0.1421
+        },
         "positions": [
           {
             "ticker": "CURY3.SA",
@@ -2656,6 +2876,16 @@
       {
         "decision_year": 2015,
         "decision_date": "2015-01-02",
+        "global_row": {
+          "trailing_12m": null,
+          "trailing_vol": null,
+          "realised_next_year": 0.4894
+        },
+        "cash_row": {
+          "trailing_12m": 0.1058,
+          "trailing_vol": 0.0009,
+          "realised_next_year": 0.1325
+        },
         "positions": [
           {
             "ticker": "CIEL3.SA",
@@ -2721,6 +2951,16 @@
       {
         "decision_year": 2016,
         "decision_date": "2016-01-04",
+        "global_row": {
+          "trailing_12m": 0.4881,
+          "trailing_vol": 0.2182,
+          "realised_next_year": -0.0538
+        },
+        "cash_row": {
+          "trailing_12m": 0.1305,
+          "trailing_vol": 0.0013,
+          "realised_next_year": 0.14
+        },
         "positions": [
           {
             "ticker": "SMLE3.SA",
@@ -2786,6 +3026,16 @@
       {
         "decision_year": 2017,
         "decision_date": "2017-01-02",
+        "global_row": {
+          "trailing_12m": -0.0351,
+          "trailing_vol": 0.2035,
+          "realised_next_year": 0.1714
+        },
+        "cash_row": {
+          "trailing_12m": 0.1358,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.099
+        },
         "positions": [
           {
             "ticker": "CMIG4.SA",
@@ -2851,6 +3101,16 @@
       {
         "decision_year": 2018,
         "decision_date": "2018-01-02",
+        "global_row": {
+          "trailing_12m": 0.2131,
+          "trailing_vol": 0.1557,
+          "realised_next_year": 0.0912
+        },
+        "cash_row": {
+          "trailing_12m": 0.0951,
+          "trailing_vol": 0.0016,
+          "realised_next_year": 0.0642
+        },
         "positions": [
           {
             "ticker": "MGLU3.SA",
@@ -2916,6 +3176,16 @@
       {
         "decision_year": 2019,
         "decision_date": "2019-01-02",
+        "global_row": {
+          "trailing_12m": 0.0699,
+          "trailing_vol": 0.1948,
+          "realised_next_year": 0.3987
+        },
+        "cash_row": {
+          "trailing_12m": 0.0625,
+          "trailing_vol": 0.0007,
+          "realised_next_year": 0.0595
+        },
         "positions": [
           {
             "ticker": "MGLU3.SA",
@@ -2981,6 +3251,16 @@
       {
         "decision_year": 2020,
         "decision_date": "2020-01-02",
+        "global_row": {
+          "trailing_12m": 0.3969,
+          "trailing_vol": 0.1572,
+          "realised_next_year": 0.4993
+        },
+        "cash_row": {
+          "trailing_12m": 0.058,
+          "trailing_vol": 0.0006,
+          "realised_next_year": 0.0275
+        },
         "positions": [
           {
             "ticker": "AZUL4.SA",
@@ -3046,6 +3326,16 @@
       {
         "decision_year": 2021,
         "decision_date": "2021-01-04",
+        "global_row": {
+          "trailing_12m": 0.4892,
+          "trailing_vol": 0.3301,
+          "realised_next_year": 0.4089
+        },
+        "cash_row": {
+          "trailing_12m": 0.0264,
+          "trailing_vol": 0.0006,
+          "realised_next_year": 0.0445
+        },
         "positions": [
           {
             "ticker": "TASA4.SA",
@@ -3111,6 +3401,16 @@
       {
         "decision_year": 2022,
         "decision_date": "2022-01-03",
+        "global_row": {
+          "trailing_12m": 0.4487,
+          "trailing_vol": 0.1801,
+          "realised_next_year": -0.234
+        },
+        "cash_row": {
+          "trailing_12m": 0.0441,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.1241
+        },
         "positions": [
           {
             "ticker": "FHER3.SA",
@@ -3176,6 +3476,16 @@
       {
         "decision_year": 2023,
         "decision_date": "2023-01-02",
+        "global_row": {
+          "trailing_12m": -0.2359,
+          "trailing_vol": 0.2458,
+          "realised_next_year": 0.1385
+        },
+        "cash_row": {
+          "trailing_12m": 0.1233,
+          "trailing_vol": 0.0013,
+          "realised_next_year": 0.1303
+        },
         "positions": [
           {
             "ticker": "VIVA3.SA",
@@ -3241,6 +3551,16 @@
       {
         "decision_year": 2024,
         "decision_date": "2024-01-02",
+        "global_row": {
+          "trailing_12m": 0.1826,
+          "trailing_vol": 0.1535,
+          "realised_next_year": 0.5566
+        },
+        "cash_row": {
+          "trailing_12m": 0.1332,
+          "trailing_vol": 0.0007,
+          "realised_next_year": 0.1088
+        },
         "positions": [
           {
             "ticker": "VIVA3.SA",
@@ -3306,6 +3626,16 @@
       {
         "decision_year": 2025,
         "decision_date": "2025-01-02",
+        "global_row": {
+          "trailing_12m": 0.565,
+          "trailing_vol": 0.1436,
+          "realised_next_year": 0.0522
+        },
+        "cash_row": {
+          "trailing_12m": 0.1097,
+          "trailing_vol": 0.0009,
+          "realised_next_year": 0.1421
+        },
         "positions": [
           {
             "ticker": "VIVA3.SA",

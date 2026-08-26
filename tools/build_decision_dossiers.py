@@ -203,8 +203,10 @@ def build_dossier(profile: str, block: dict, ladder: dict, registration: dict) -
     result = annual_result(ladder["monthly_curve"], LABELS[profile], year)
     cdi = annual_result(ladder["monthly_curve"], "CDI", year)
     ibov = annual_result(ladder["monthly_curve"], "Ibovespa", year)
+    global_row = block.get("global_row") or {}
     add_table(document, ["Série", f"Resultado do ciclo {year}"],
               [[f"Perfil {label} (com proteção)", pct(result)],
+               ["Perna global (IVVB11)", pct(global_row.get("realised_next_year"))],
                ["CDI", pct(cdi)],
                ["Ibovespa (retorno total)", pct(ibov)]],
               widths=[9.0, 7.6])

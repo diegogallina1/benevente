@@ -71,7 +71,34 @@ def _reference(curve: pd.DataFrame, column: str) -> dict:
     return _metrics(level.pct_change().dropna(), level.index.to_series())
 
 
-def _composition(holdings: pd.DataFrame, results: pd.DataFrame, global_share: float) -> list[dict]:
+def _policy_row_stats(level: pd.Series, decision: pd.Timestamp, next_decision: pd.Timestamp | None) -> dict:
+    """O que a fatia declarada tinha de observável na data, e o que rendeu depois.
+
+    O leitor perguntou, com razão, por que IVVB11 e CDI apareciam sem retorno:
+    a fatia não é pontuada pelo fator, mas negocia todos os dias. O retorno de
+    doze meses e a volatilidade usam apenas sessões anteriores à decisão; o
+    realizado usa a mesma janela decisão-a-decisão das ações. Quando o
+    instrumento ainda não tinha um ano completo de histórico (IVVB11 em 2015),
+    os campos observáveis ficam nulos em vez de fingir uma janela cheia.
+    """
+    level = level.dropna()
+    before = level[level.index <= decision]
+    trailing_12m = trailing_vol = None
+    if len(before) >= 200:
+        window = before.iloc[-253:]
+        trailing_12m = round(float(window.iloc[-1] / window.iloc[0] - 1), 4)
+        trailing_vol = round(float(window.pct_change().dropna().std(ddof=1) * math.sqrt(252)), 4)
+    realised = None
+    after = level[level.index >= decision]
+    if len(after) > 1:
+        end = after[after.index <= next_decision] if next_decision is not None else after
+        if len(end) > 1:
+            realised = round(float(end.iloc[-1] / end.iloc[0] - 1), 4)
+    return {"trailing_12m": trailing_12m, "trailing_vol": trailing_vol, "realised_next_year": realised}
+
+
+def _composition(holdings: pd.DataFrame, results: pd.DataFrame, global_share: float,
+                 panel: pd.DataFrame) -> list[dict]:
     """Every position of every decision, with what was known when it was taken.
 
     A profile is only auditable if a reader can see what it held, how much, why
@@ -99,9 +126,15 @@ def _composition(holdings: pd.DataFrame, results: pd.DataFrame, global_share: fl
                                   else round(float(item.realised_next_year_return), 4),
         } for item in block.itertuples()]
         domestic = sum(row["weight"] for row in rows)
+        decision = pd.Timestamp(block.decision_date.iloc[0])
+        following = equity[equity.decision_year.eq(year + 1)]
+        next_decision = (pd.Timestamp(following.decision_date.iloc[0])
+                         if len(following) else None)
         years.append({
             "decision_year": int(year),
             "decision_date": str(block.decision_date.iloc[0]),
+            "global_row": _policy_row_stats(panel["IVVB11"], decision, next_decision),
+            "cash_row": _policy_row_stats(panel["TITULO_CDI"], decision, next_decision),
             "positions": sorted(rows, key=lambda row: -row["weight"]),
             "domestic_equity": round(domestic, 6),
             "global_sleeve": round(global_share, 6),
@@ -181,7 +214,7 @@ def build(start_year: int, end_year: int) -> dict:
         fund = panel[GLOBAL_TICKER].reindex(daily.date).pct_change().fillna(0.0).reset_index(drop=True)
         share = float(LADDER_V2[profile]["maximum_equity_weight"]) * GLOBAL_FRACTION
 
-        holdings_by_profile[profile] = _composition(holdings, results, share)
+        holdings_by_profile[profile] = _composition(holdings, results, share, panel)
         benevente1 = _annual_rebalanced_blend(daily.strategy_daily_return, fund, daily.decision_year, share)
         benevente2 = _annual_rebalanced_blend(overlaid.protected_return, fund, daily.decision_year, share)
         tracks[LABELS[profile]] = benevente2
