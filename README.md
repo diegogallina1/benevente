@@ -3,9 +3,19 @@
 **Benevente Quant AI** é o framework acadêmico de pesquisa. **Benevente Wealth
 System** é a camada B2B de governança e explicação dessa pesquisa. O núcleo
 publicado é uma seleção multifatorial anual, orientada por fundamentos: qualidade,
-valor e momento ordenam o universo elegível; uma busca aninhada escolhe, usando
-somente anos já encerrados, a configuração de fatores, número de posições e
-parcela em ações; o CDI recebe o saldo.
+valor e momento ordenam o universo elegível. A configuração de cada perfil —
+parcela em ações, número de posições, teto por setor e fração no exterior — é
+**declarada e congelada antes do período**, com hash público; o CDI recebe o
+saldo.
+
+A configuração deixou de ser buscada em 2026. A busca aninhada que a escolhia foi
+rodada sobre uma grade ampliada, de 36 para 256 candidatos, com insumos, código e
+janela idênticos: o desfecho caiu de 15,31% para 12,68% ao ano e o Sharpe
+deflacionado de 0,957 para 0,777, abaixo da significância. Com dez observações
+anuais não se ranqueia 256 candidatos. A política vigente é
+`benevente_profile_ladder_v2`, descrita em
+[`docs/protocolo_escada_v2.md`](docs/protocolo_escada_v2.md) e congelada em
+`data/benevente_profile_ladder_v2_registration.json`.
 
 O MVO não é o Benevente. Ele é um comparador quantitativo independente e um
 alocador experimental. O modelo de linguagem também não escolhe ativos nem
@@ -19,11 +29,16 @@ pessoa responsável.
 ## Estado da evidência
 
 **Toda a série 2015–2025 é amostra de desenvolvimento, não validação
-prospectiva.** A busca aninhada avaliou 36 configurações. Em cada janeiro, a
-configuração foi ranqueada pelo Sharpe do excesso sobre CDI nos anos anteriores;
-o ano seguinte só foi usado depois para avaliação. Mesmo assim, fatores, grade e
-restrições foram desenvolvidos com essa janela. Nenhum recálculo histórico desfaz
-isso; só anos posteriores ao registro congelado testam a regra prospectivamente.
+prospectiva.** Fatores, restrições, grade de candidatos e a própria decisão de
+declarar em vez de buscar foram todos escolhidos olhando essa janela. Nenhum
+recálculo histórico desfaz isso; só anos posteriores ao registro congelado
+testam a regra prospectivamente, e a amostra confirmatória começa no primeiro
+pregão de 2027.
+
+Sete hipóteses foram testadas e rejeitadas, publicadas com o mesmo detalhe dos
+resultados positivos — inclusive a de que ampliar a busca *piorava* o sistema.
+A lista completa das limitações está em
+[`web/limitacoes.html`](web/limitacoes.html) e nos protocolos em `docs/`.
 
 Números honestos do período, contra referências independentes, estão em
 `artifacts/audit_evidence/`. A verificação estatística das 73 tentativas está em
@@ -109,10 +124,17 @@ python build_market_benchmarks.py
 # 3. Fundamentos CVM com solvência derivada
 python build_full_b3_cvm_fundamentals.py --universe data/b3_historical_universes.csv --mapping data/b3_historical_cvm_ticker_map.csv --start-year 2013 --end-year 2025 --output data/fundamentals_b3_cvm_full_2013_2025_v2.csv --coverage-report artifacts/fundamentals_b3_cvm_full_coverage_v2.csv
 
-# 4. Walk-forward anual, um perfil por vez
-python run_nested_configuration_search.py
+# 4. Busca aninhada que produz artifacts/configuration_search_2012/
+#    ATENÇÃO: rodar com outra família de insumos não falha, apenas devolve
+#    outro resultado. Se a primeira linha de configuration_annual_returns.csv
+#    não for 2012, os insumos estão errados. Ver docs/reproducao_configuration_search.md
+python research_configuration_search.py --prices data/prices_b3_total_return_full_2010_2025.csv --total-return-manifest data/prices_b3_total_return_full_2010_2025_manifest.json --fundamentals data/fundamentals_b3_cvm_full_2012_2025.csv --universe data/b3_historical_universes_2012_2025.csv --mapping data/b3_historical_cvm_ticker_map_2012_2025.csv --benchmarks data/benchmarks_market_2010_2025.csv --start-year 2011 --end-year 2026 --equity-budgets 0.55,0.75,0.95 --asset-counts 5,8,12 --factors value_quality,triple_factor,momentum_12m,low_volatility --output artifacts/configuration_search_2012
 python build_release_manifest.py
 python build_release_manifest.py --verify
+
+# 5. Política vigente: a escada declarada, sem busca
+python build_global_etf_panel.py
+python profile_ladder_v2.py --run
 
 # 5. Placar honesto e verificação estatística
 python build_audit_evidence.py --results artifacts/v2_mvo_moderado/annual_results.csv --output artifacts/audit_evidence
@@ -176,19 +198,30 @@ com registros B3/CVM ou um provedor licenciado.
 O núcleo combina qualidade primária (ROIC ou ROE), *earnings yield* e momento de
 12 meses, sempre com informação conhecida no janeiro da decisão. Ausência de
 uma métrica secundária de dívida não exclui, por si só, uma empresa; liquidez,
-lucro positivo e qualidade continuam obrigatórios. As 36 configurações variam
-a combinação fatorial, a quantidade de posições e a parcela em ações. Em cada
-ano, apenas o histórico anterior pode escolher a configuração.
+lucro positivo e qualidade continuam obrigatórios.
+
+A configuração não é buscada: cada perfil declara a sua em
+`benevente_profile_ladder_v2`, congelada antes do período. Além da parcela em
+ações e do número de posições, ela fixa um teto de três emissores por setor da
+CVM e um quinto do orçamento de ações num fundo listado na B3 que segue o
+S&P 500 em reais — exposição declarada, nunca selecionada, já que não tem
+registro na CVM e a triagem por fator não a alcança.
 
 ```powershell
-python run_nested_configuration_search.py
+python profile_ladder_v2.py --run
 ```
 
-Os perfis conservador, equilibrado e arrojado pertencem à política de uso do
-Wealth System. Eles não geram três históricos publicados artificialmente. O
-histórico canônico é uma única regra de pesquisa; qualquer adaptação por perfil
-deve ser pré-registrada e avaliada separadamente antes de receber uma alegação de
-desempenho.
+| Perfil | Ações | Emissores | Global | CAGR 2015–2025 | Queda máxima |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Conservador | 35% | 12 | 7% | 12,51% | −9,16% |
+| Equilibrado | 55% | 8 | 11% | 15,51% | −17,86% |
+| Arrojado | 75% | 5 | 15% | 19,87% | −28,94% |
+
+Números com a camada de risco intranual, sobre a janela que desenvolveu as
+próprias regras. Sem ela, o CAGR sobe cerca de um ponto e a queda máxima piora
+entre 7 e 8 pontos em cada perfil. A amostra confirmatória começa no primeiro
+pregão de 2027 e exige três decisões anuais completas antes de qualquer
+alegação de desempenho prospectivo.
 
 Em especial, consulte `annual_holdings.csv` como a lâmina anual de decisão:
 para cada ativo mantido ela contém peso anterior/novo, ação (entrada, manutenção,
@@ -214,18 +247,27 @@ registro em `artifacts/preregistration/`.
 
 O que o período mostra, com referências independentes e após custos:
 
-| Referência | CAGR da carteira | CAGR da referência | Anos vencidos |
-| --- | --- | --- | --- |
-| CDI | 17,86% | 9,61% | 6 de 11 |
-| MVO de referência | 17,86% | 7,83% | 10 de 11 |
-| Ibovespa | 17,86% | 11,77% | 7 de 11 |
-| BOVA11 (investível) | 17,86% | 11,72% | 7 de 11 |
-| CDI após IR | 16,03% | 7,94% | 6 de 11 |
+Os números da busca aninhada aposentada — CAGR de 17,86% contra 9,61% do CDI,
+com queda máxima de 47,8% — continuam reprodutíveis em
+`artifacts/configuration_search_2012/` e descrevem a regra que foi substituída.
+Eles não descrevem nenhuma política vigente.
 
-Na amostra, a carteira supera as quatro referências no CAGR. Isso não autoriza
-uma promessa: a queda máxima diária foi de 47,8%, a janela foi usada no
-desenvolvimento e há somente onze observações anuais. O resultado após imposto
-é uma simulação tributária, não uma declaração individual.
+O que a política vigente mostra no mesmo período, contra referências
+independentes e após custos modelados:
+
+| Série | CAGR | Queda máxima | Anos batendo o CDI |
+| --- | ---: | ---: | ---: |
+| Conservador | 12,51% | −9,16% | 8 de 11 |
+| Equilibrado | 15,51% | −17,86% | 8 de 11 |
+| Arrojado | 19,87% | −28,94% | 8 de 11 |
+| CDI | 9,61% | 0% | — |
+| Ibovespa | 11,33% | −46,95% | — |
+
+Na amostra, os três perfis superam CDI e Ibovespa no CAGR, e a ordenação de
+risco se mantém: quem rendeu mais caiu mais. Isso não autoriza uma promessa —
+a janela foi usada no desenvolvimento, há somente onze observações anuais, e
+cerca de um terço do retorno da perna global veio da desvalorização do real e
+não do mercado americano.
 
 ### Benevente 1 e Benevente 2
 
@@ -366,16 +408,37 @@ ou proposta investível.
 quando algo regride, então **encadeie com `&&` em vez de rodar solto** — assim o
 deploy não acontece se a verificação falhar.
 
+O projeto na Vercel tem `web` como diretório raiz, então **não** se roda o CLI
+de dentro de `web/` — ele procuraria `web/web`. E rodar da raiz do repositório
+falha com `EPERM`: o CLI percorre a árvore inteira antes de aplicar o
+`.vercelignore` e esbarra nos diretórios de scratch dos testes. O caminho que
+funciona é uma cópia limpa contendo só `web/` e o vínculo do projeto:
+
 ```powershell
-python predeploy_security_check.py; if ($?) { cd web; npx.cmd vercel --prod --yes; cd .. }
+python predeploy_security_check.py
+if ($?) {
+  $stage = Join-Path $env:TEMP "benevente-deploy-$(Get-Date -Format yyyyMMddHHmmss)"
+  New-Item -ItemType Directory -Force $stage | Out-Null
+  Copy-Item -Recurse web "$stage\web"
+  Copy-Item .vercelignore $stage -ErrorAction SilentlyContinue
+  New-Item -ItemType Directory -Force "$stage\.vercel" | Out-Null
+  Copy-Item .vercel\project.json "$stage\.vercel\"
+  Push-Location $stage; npx.cmd vercel --prod --yes; Pop-Location
+}
 ```
 
 E confirme no ambiente publicado, porque o que vale é o cabeçalho que chega ao
 navegador, não o que está no arquivo de configuração:
 
 ```powershell
-python predeploy_security_check.py --live-only --url https://benevente-wealth-system.vercel.app
+python predeploy_security_check.py --live-only --url https://benevente.dgo.fi
 ```
+
+O verificador se identifica com um `User-Agent` próprio. A borda rejeita o
+agente padrão do `urllib` com 403, e sem essa identificação o modo publicado
+acusa oito falhas contra um deploy perfeitamente saudável — um alarme falso
+indistinguível de site fora do ar, que já quase motivou um rollback
+desnecessário.
 
 O modo estático confere que nenhuma variável de servidor é alcançável pelo
 cliente, que nenhum `.env` real está versionado, que cada função tem limite de
