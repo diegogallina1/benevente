@@ -240,6 +240,7 @@ def build(start_year: int, end_year: int) -> dict:
         },
         "registration_sha256": registration["registration_sha256"],
         "approved_by": registration["approved_by"],
+        "approved_by_display": "Diego Gallina",
         "registered_at": registration["registered_at"],
         "confirmatory_sample_starts": registration["confirmatory_sample_starts"],
         "window": window,

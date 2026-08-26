@@ -49,7 +49,7 @@
     const field = node.dataset.ladderSeal;
     const values = {
       sha: String(data.registration_sha256 || "").slice(0, 16),
-      approved: data.approved_by || "—",
+      approved: data.approved_by_display || data.approved_by || "—",
       window: `${data.window.first_decision_year}–${data.window.last_decision_year}`,
       confirmatory: confirmatory(data.confirmatory_sample_starts),
     };
@@ -149,6 +149,20 @@
         <td class="alpha-after">${pct(row.realised_next_year, 1)}</td>
       </tr>`).join("");
 
+    // A fatia global e o caixa são parte da mesma decisão: sem estas linhas a
+    // tabela soma menos que 100% e o leitor pergunta onde está o resto.
+    const previous = (data.profiles[activeProfile] || []).find(item => Number(item.decision_year) === Number(block.decision_year) - 1);
+    const staticRow = (label, desc, value, prev) => `<tr class="alpha-policy-row">
+        <th scope="row">${label}</th>
+        <td>${prev === undefined ? "—" : pct(prev)}</td>
+        <td>${pct(value)}</td>
+        <td><span class="alpha-action alpha-policy">${desc}</span></td>
+        <td>—</td><td>—</td><td>—</td>
+        <td class="alpha-after">—</td>
+      </tr>`;
+    const policyRows = staticRow("IVVB11", "declarado", block.global_sleeve, previous?.global_sleeve)
+      + staticRow("CDI", "caixa", block.cash, previous?.cash);
+
     host.innerHTML = `
       <div class="alpha-controls">
         <div role="group" aria-label="Perfil">${Object.keys(LABELS).map(key =>
@@ -170,7 +184,7 @@
           <th scope="col">Score</th><th scope="col">12m antes</th><th scope="col">Vol. 12m</th>
           <th scope="col">Retorno seguinte</th>
         </tr></thead>
-        <tbody>${rows}</tbody>
+        <tbody>${rows}${policyRows}</tbody>
       </table></div>
       <p class="ladder-note">Peso anterior mostra como a posição mudou em relação ao janeiro anterior; ação diz o que a decisão fez. Score, retorno e volatilidade de doze meses eram observáveis na data da decisão.
       <b>Retorno seguinte</b> é o que aconteceu depois e está separado de propósito: é o único número que a

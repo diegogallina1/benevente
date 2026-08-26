@@ -447,7 +447,9 @@ function renderWealthCards(period) {
     const first = values.find(Number.isFinite), last = values.at(-1);
     if (!Number.isFinite(first) || !Number.isFinite(last)) return "";
     const factor = last / first, final = capital * factor, gain = final - capital;
-    return `<article class="wealth-card ${kind(name)}" style="--series-color:${seriesColor(name, index)}"><header><b>${escapeHtml(name)}</b><small>${escapeHtml(note[name] || "Série do gráfico")}</small></header><strong>${money.format(final)}</strong><div class="wealth-card-foot"><span>${factor.toLocaleString("pt-BR", {minimumFractionDigits: 1, maximumFractionDigits: 1})}x o valor aplicado</span><span class="${gain >= 0 ? "up" : "down"}">${gain >= 0 ? "+" : "−"}${money.format(Math.abs(gain))}</span></div></article>`;
+    const finalStr = money.format(final);
+    const sizeClass = finalStr.length > 14 ? " num-xl" : finalStr.length > 11 ? " num-lg" : "";
+    return `<article class="wealth-card ${kind(name)}" style="--series-color:${seriesColor(name, index)}"><header><b>${escapeHtml(name)}</b><small>${escapeHtml(note[name] || "Série do gráfico")}</small></header><strong class="wealth-value${sizeClass}">${finalStr}</strong><div class="wealth-card-foot"><span>${factor.toLocaleString("pt-BR", {minimumFractionDigits: 1, maximumFractionDigits: 1})}x o valor aplicado</span><span class="${gain >= 0 ? "up" : "down"}">${gain >= 0 ? "+" : "−"}${money.format(Math.abs(gain))}</span></div></article>`;
   }).join("");
   const start = data.dates[0], finish = data.dates.at(-1);
   host.innerHTML = `<p class="wealth-cards-lede">O mesmo capital, aplicado em ${formatDateBr(start)} e mantido até ${formatDateBr(finish)}, sem aportes, em cada política declarada.</p><div class="wealth-cards-grid">${cards}</div>`;
