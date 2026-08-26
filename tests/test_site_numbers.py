@@ -127,10 +127,9 @@ def test_the_ladder_ordering_holds_in_the_published_numbers() -> None:
 
 
 def test_pages_that_show_the_ladder_load_the_data_and_the_seal() -> None:
-    for page in ("benevente-1.html", "benevente-2.html"):
-        source = PAGES[page]
-        assert "ladder.js" in source and "ladder.css" in source, page
-        assert "data-ladder-seal" in source, page
+    source = PAGES["versoes.html"]
+    assert "ladder.js" in source and "ladder.css" in source
+    assert "data-ladder-seal" in source
 
 
 def test_every_page_reaches_the_limitations() -> None:
@@ -138,7 +137,9 @@ def test_every_page_reaches_the_limitations() -> None:
     for page, source in PAGES.items():
         if page in {"limitacoes.html"}:
             continue
-        if not re.search(r"\d,\d{2}%", source):
+        # Vírgula OU ponto decimal: a página de evidência é em inglês e escapou
+        # da primeira versão deste teste exatamente por isso.
+        if not re.search(r"\d[,.]\d{1,2}\s*(?:%|pp)", source):
             continue
         assert "limitacoes" in source, f"{page} publica números e não linka as limitações"
 

@@ -46,39 +46,33 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     # seletor de versão na entrada era pedir ao leitor frio que escolhesse entre
     # módulos internos antes de saber o que o produto faz.
     assert "data-dossier-strategy" not in home
-    for name, mode in (("benevente-1.html", "b1"), ("benevente-2.html", "b2")):
-        source = (ROOT / "web" / name).read_text(encoding="utf-8")
-        assert f'data-strategy-decisions="{mode}"' in source, name
+    unified = (ROOT / "web" / "versoes.html").read_text(encoding="utf-8")
+    for mode in ("b1", "b2"):
+        assert f'data-strategy-decisions="{mode}"' in unified, mode
 
 
 def test_benevente_2_has_direct_benchmarks_and_shared_design_system() -> None:
     pages = [ROOT / "web" / name for name in (
-        "index.html", "benevente-1.html", "benevente-2.html", "metodo.html", "btech.html", "quant-ai.html"
+        "index.html", "versoes.html", "metodo.html", "para-escritorios.html", "quant-ai.html"
     )]
     for path in pages:
         source = path.read_text(encoding="utf-8")
         assert "Plus+Jakarta+Sans" in source, path
         assert "DM+Mono" not in source, path
         assert "design-system.css" in source, path
-    benevente2 = (ROOT / "web" / "benevente-2.html").read_text(encoding="utf-8")
-    benevente1 = (ROOT / "web" / "benevente-1.html").read_text(encoding="utf-8")
-    assert "Experimento retrospectivo" not in benevente2
-    # A single Benevente 2 number set against the index stopped existing when the
-    # policy became three declared profiles. Both pages must carry the ladder and
-    # the seal that says which frozen policy they describe, and must not restate
-    # the retired single-strategy metrics.
-    assert 'data-ladder="benevente2"' in benevente2
-    assert 'data-ladder="benevente1"' in benevente1
-    assert "Benevente 2, Ibovespa e CDI na mesma janela" not in benevente2
-    for page, source in (("benevente-1", benevente1), ("benevente-2", benevente2)):
-        assert "data-ladder-seal" in source, page
-        assert "ladder.js" in source and "ladder.css" in source, page
-        assert 'data-version-metric="b1-cagr"' not in source, page
-        assert 'data-version-metric="b2-cagr"' not in source, page
-    # The 2026 shadow book was decided under the previous policy and says so;
-    # restating it as the new one would be the retroactive revision the project
-    # exists to prevent.
-    assert "política anterior" in benevente1
+    # The two version pages were consolidated into one tab; the old URLs stay as
+    # redirects so external links keep landing somewhere sensible.
+    unified = (ROOT / "web" / "versoes.html").read_text(encoding="utf-8")
+    for name in ("benevente-1.html", "benevente-2.html"):
+        redirect = (ROOT / "web" / name).read_text(encoding="utf-8")
+        assert "versoes.html" in redirect and "http-equiv=\"refresh\"" in redirect, name
+    assert (ROOT / "web" / "btech.html").read_text(encoding="utf-8").count("para-escritorios.html") >= 1
+    assert 'data-ladder="benevente1"' in unified and 'data-ladder="benevente2"' in unified
+    assert "data-ladder-seal" in unified
+    assert 'data-version-metric="b1-cagr"' not in unified
+    assert 'data-version-metric="b2-cagr"' not in unified
+    # The 2026 shadow book was decided under the previous policy and says so.
+    assert "política anterior" in unified
 
 
 def test_site_data_contract_matches_canonical_sources() -> None:

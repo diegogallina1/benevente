@@ -157,17 +157,15 @@ def test_published_document_has_a_verifiable_contract() -> None:
 
 
 def test_strategy_pages_share_the_same_live_structure() -> None:
-    first = (ROOT / "web" / "benevente-1.html").read_text(encoding="utf-8")
-    second = (ROOT / "web" / "benevente-2.html").read_text(encoding="utf-8")
-    for source, mode in ((first, "b1"), (second, "b2")):
-        assert 'class="strategy-tab"' in source
-        assert f'data-live-strategy="{mode}"' in source
-        assert "CARTEIRA-SOMBRA 2026" in source
-        # The cache parameter is derived from the file's content. Pinning a
-        # literal here would break on every legitimate edit and would teach the
-        # next reader to update the test instead of looking at what changed.
-        assert re.search(r'src="\./paper\.js\?v=[0-9a-f]{10}"', source)
-        assert f'data-strategy-decisions="{mode}"' in source
-        assert "COMO REPLICAR" in source
-    assert "data-event-radar" in second
-    assert re.search(r'src="\./event-radar\.js\?v=[0-9a-f]{10}"', second)
+    unified = (ROOT / "web" / "versoes.html").read_text(encoding="utf-8")
+    assert 'class="strategy-tab"' in unified
+    assert "CARTEIRA-SOMBRA 2026" in unified
+    assert 'data-live-strategy="b2"' in unified
+    for mode in ("b1", "b2"):
+        assert f'data-strategy-decisions="{mode}"' in unified, mode
+    # The cache parameter is derived from the file's content. Pinning a literal
+    # here would break on every legitimate edit and would teach the next reader
+    # to update the test instead of looking at what changed.
+    assert re.search(r'src="\./paper\.js\?v=[0-9a-f]{10}"', unified)
+    assert "data-event-radar" in unified
+    assert re.search(r'src="\./event-radar\.js\?v=[0-9a-f]{10}"', unified)

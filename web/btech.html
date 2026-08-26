@@ -2,91 +2,11 @@
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Benevente: software B2B de governança de decisão de carteira para gestores e consultores do Espírito Santo." />
-    <title>Benevente · o produto de governança</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css?v=43727a5856" />
-    <link rel="stylesheet" href="./commercial.css?v=6c9172f724" />
-    <link rel="stylesheet" href="./paper.css?v=53e5e97e39" />
-    <link rel="stylesheet" href="./site-polish.css?v=39e348ecd6" />
-    <link rel="stylesheet" href="./design-system.css?v=ad0571623f" />
+    <meta http-equiv="refresh" content="0; url=./para-escritorios.html" />
+    <link rel="canonical" href="./para-escritorios.html" />
+    <title>Produto · movido</title>
   </head>
   <body>
-    <nav class="paper-nav shell">
-      <a href="./">Benevente</a>
-      <a href="./quant-ai">Evidência</a>
-      <a href="./btech" class="current">Produto</a>
-      <a href="./metodo">Método</a>
-      <a href="./limitacoes">Limitações</a>
-    </nav>
-    <p class="page-stage shell"><strong>Protótipo de pesquisa.</strong> A política vigente declara três perfis, congelados antes do período. O Benevente 1 é a seleção anual; o Benevente 2 acrescenta a camada de risco intranual. O desempenho de 2015–2025 é diagnóstico retrospectivo, não validação prospectiva.</p>
-    <main class="shell paper-page">
-      <p class="eyebrow"><span></span> Benevente · protótipo B2B de governança</p>
-      <h1>Decisão de carteira com trilha, para quem responde por ela.</h1>
-      <p class="paper-lede">O Benevente é um protótipo de pesquisa e governança para escritórios de investimento, consultorias de valores mobiliários e estruturas de gestão patrimonial. Ele propõe uma carteira por regra determinística, registra os motivos e exige revisão humana. Um piloto no Espírito Santo poderá medir utilidade, demanda e disposição a pagar; nenhum efeito regional é presumido.</p>
-
-      <h2>O problema operacional</h2>
-      <p>Um escritório que recomenda carteira precisa responder três perguntas quando questionado, meses depois: quais dados existiam na data, qual regra foi aplicada, e quem aprovou. Planilha não responde nenhuma das três. Plataforma de terceiro responde a segunda de forma opaca.</p>
-      <div class="paper-callout"><b>O que o sistema entrega</b>Cada decisão sai com a política aplicada, os fundamentos CVM com data de recebimento, o histórico de preços arquivado, a tela de elegibilidade com o motivo de cada reprovação, os pesos, as ordens propostas com lote e participação no volume, e o custo estimado. Tudo com SHA-256 do arquivo que gerou o número.</div>
-
-      <h2>Governança, não automação</h2>
-      <ul>
-        <li><b>Aprovação humana obrigatória.</b> O sistema propõe. Nenhuma ordem é transmitida, nem pode ser.</li>
-        <li><b>Papel delimitado da IA.</b> O modelo organiza tese e riscos a partir de fatos já aprovados. Ele não define peso, não altera limite e não aprova ativo. Isso é uma restrição da arquitetura, não uma promessa.</li>
-        <li><b>Conciliação pós-operação.</b> A nota de corretagem é confrontada linha a linha com a ordem proposta.</li>
-        <li><b>Participação no volume.</b> Uma ordem que passe de 5% do volume médio diário do papel falha em vez de ser enviada.</li>
-        <li><b>Limites explícitos.</b> Teto de renda variável, teto por emissor e reserva em CDI ficam na política, versionados antes da seleção.</li>
-      </ul>
-
-      <h2>O diferencial que não dá para copiar rápido</h2>
-      <p>A pesquisa preserva a origem dos dados, testa integridade, inclui empresas deslistadas, modela custos pela liquidez e mede quanto a escolha posterior de uma regra inflaria o resultado. A busca que produzia esse prêmio foi abandonada em 2026: ampliada de 36 para 256 candidatos, com insumos e janela idênticos, ela passou a render 2,63 pontos percentuais a menos por ano e derrubou o Sharpe deflacionado de 0,957 para 0,777, abaixo da significância. A configuração de cada perfil passou a ser declarada e congelada antes do período.</p>
-      <div class="paper-callout warn"><b>Valor que o piloto precisa testar</b>O diferencial proposto é revelar quanto da curva depende de escolhas retrospectivas e preservar o caminho completo da decisão. Isso permanece uma hipótese comercial até que usuários reais meçam tempo, completude, compreensão e disposição a pagar.</div>
-
-      <h2>Decidir mais vezes por ano compensa?</h2>
-      <p>Testamos, mantendo a regra, os limites e o painel idênticos e variando apenas as datas de decisão. A reseleção anual rendeu 18,58% ao ano antes de custos, a trimestral 16,37% e a mensal 13,92%. Pareando por ano-calendário e já após imposto, a trimestral fica 1,55 ponto percentual abaixo da anual ao ano, com p de 0,376, e a mensal 3,27 pontos abaixo, com p de 0,306. Com onze anos pareados não dá para afirmar que decidir mais vezes atrapalha. Nesta amostra não houve evidência a favor da frequência maior, sem excluir a possibilidade de benefício em outros períodos, mercados ou famílias de sinal.</p>
-      <div class="paper-callout warn"><b>Onde apareceu a diferença</b>A perda está no retorno bruto, que cai 4,66 pontos de anual para mensal antes de qualquer dedução. O custo de execução sobe só 0,08 ponto ao ano e o imposto modelado até diminui. O padrão é compatível com a hipótese de que o giro mensal desfaça posições antes de a tese amadurecer, mas esta amostra não identifica esse mecanismo de forma causal.</div>
-
-      <h2>Resultado da carteira publicada</h2>
-      <table class="paper-table">
-        <thead><tr><th>Perfil declarado</th><th>Ações</th><th>CAGR 2015–2025</th><th>Queda máxima</th></tr></thead>
-        <tbody>
-          <tr><td>Conservador, só a seleção anual</td><td class="num">35%</td><td class="num">13,39%</td><td class="num">−16,70%</td></tr>
-          <tr class="highlight"><td>Conservador, com a camada de risco</td><td class="num">35%</td><td class="num">12,51%</td><td class="num">−9,16%</td></tr>
-          <tr class="highlight"><td>Equilibrado, com a camada de risco</td><td class="num">55%</td><td class="num">15,51%</td><td class="num">−17,86%</td></tr>
-          <tr class="highlight"><td>Arrojado, com a camada de risco</td><td class="num">75%</td><td class="num">19,87%</td><td class="num">−28,94%</td></tr>
-          <tr><td>Ibovespa, índice de retorno total</td><td class="num">—</td><td class="num">11,33%</td><td class="num">−46,95%</td></tr>
-          <tr><td>CDI</td><td class="num">—</td><td class="num">9,61%</td><td class="num">0%</td></tr>
-        </tbody>
-      </table>
-      <p>Não existe um número único do Benevente: são três políticas declaradas, e cada uma carrega um risco diferente. Os três perfis superam CDI e Ibovespa no CAGR da amostra, batem o CDI em oito dos onze anos, e a ordenação de risco se mantém — quem rendeu mais caiu mais. A camada de risco devolve entre 6,7 e 8,6 pontos de queda máxima por menos de um ponto de retorno ao ano. Como o período que produziu esses números também participou do desenvolvimento, o resultado descreve a amostra e não prevê o futuro; a amostra confirmatória começa no primeiro pregão de 2027.</p>
-
-      <div id="live-portfolio"></div>
-
-      <h2>O que foi tentado e não funcionou</h2>
-      <p>Sete hipóteses foram testadas contra o protocolo publicado e nenhuma se sustentou. Elas estão aqui porque um método que só relata acertos não pode ser verificado, e porque cada uma fecha uma objeção que um comprador cético levantaria.</p>
-      <table class="paper-table">
-        <thead><tr><th>Hipótese</th><th>Como foi testada</th><th>Resultado</th></tr></thead>
-        <tbody>
-          <tr><td>Dá para prever o regime do ano</td><td>Cinco indicadores de janeiro, janela expansível, 8 anos</td><td>3 de 4 chamadas, p = 0,31. Sem sinal.</td></tr>
-          <tr><td>A parcela em ações deve mudar mais vezes</td><td>Sete regras contínuas, 118 períodos mensais e 521 semanais</td><td>Nenhuma superou o peso estático; uma foi pior.</td></tr>
-          <tr><td>A cesta deve ser reselecionada mais vezes</td><td>Mesma regra e limites, cadência trimestral e mensal</td><td>−1,55 e −3,27 pontos ao ano após IR, p = 0,38 e 0,31.</td></tr>
-          <tr><td>Um modelo de linguagem agrega retorno</td><td>Quatro braços em 13 anos, com controle determinístico</td><td>Três nulos. O modelo reproduz o ranking determinístico.</td></tr>
-        </tbody>
-      </table>
-      <p>Duas dessas são reportadas como "sem evidência de benefício", não como "provadamente pior", e a diferença não é cosmética: onze anos pareados não rejeitam a hipótese de nenhuma diferença, então a afirmação honesta é a mais fraca, mesmo com todos os pontos estimados apontando para o mesmo lado.</p>
-      <div class="paper-callout"><b>O que pode ser conferido</b>O protótipo mostra o que funcionou, o que falhou, o teste aplicado e o p-valor observado. Essa transparência sustenta a governança auditável, mas não substitui o piloto nem comprova adoção. Ver o <a href="./metodo.html">método completo</a>.</div>
-
-      <h2>Onde isso está e o que falta</h2>
-      <p>O que existe hoje é o método, a evidência de onze anos avaliados e o registro congelado com o hash de cada arquivo de entrada, versionado para que a data fique carimbada por terceiro. O que não existe: licença de dados para uso comercial, enquadramento regulatório, suitability, integração com custódia e validação prospectiva. A janela avaliada é a mesma que serviu para desenvolver a regra, então descreve a amostra e não prevê o futuro. Transformar isso em serviço é a etapa seguinte e ainda não foi cumprida.</p>
-
-      <h2>Para quem</h2>
-      <p>Multi-family offices, consultores de valores mobiliários e assessorias que já têm o cliente e precisam do processo, não de mais uma recomendação. Uso comercial, suitability e gestão discricionária exigem estrutura regulatória e contratual própria; este sistema é apoio à decisão e trilha de auditoria, não aconselhamento individual.</p>
-
-      <p class="paper-foot">Benevente · Espírito Santo. Fontes: CVM (ITR/DFP e informe diário), B3 (COTAHIST) e Banco Central (série SGS 12). Os retornos exibidos são retrospectivos, incorporam custos modelados e dados parcialmente imputados, e não constituem recomendação, promessa de rentabilidade nem evidência de superioridade futura.</p>
-    </main>
-    <script src="./paper.js?v=2f54908341"></script>
+    <p>Esta página foi consolidada. Continue em <a href="./para-escritorios.html">Para escritórios</a>.</p>
   </body>
 </html>
