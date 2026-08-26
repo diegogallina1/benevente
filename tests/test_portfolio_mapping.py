@@ -70,3 +70,29 @@ def test_o_mapa_nao_projeta_retorno() -> None:
     for proibido in ("payback", "retorno_esperado", "expected_return", "breakeven"):
         assert proibido not in texto
     assert "projetar retorno futuro" in mapa["honesty"]
+
+
+def test_posicao_abaixo_do_peso_e_completada() -> None:
+    """Um mapa que só vende entrega uma carteira sistematicamente magra.
+
+    A primeira versão tratava qualquer não-excesso como "manter": uma posição
+    com metade do peso alvo ficava como estava, e a carteira final chegava
+    abaixo do orçamento declarado sem que nada avisasse.
+    """
+    carteira = [pos("AAAA3", Bucket.ACAO, 10_000, 8_000),   # alvo é 30% de 100k
+                pos("Caixa", Bucket.CAIXA, 90_000, 90_000)]
+    mapa = map_portfolio(carteira, ALVO)
+    linha = [m for m in mapa["moves"] if m["ticker"] == "AAAA3"][0]
+    assert linha["action"] == "comprar"
+    assert linha["to_brl"] == pytest.approx(30_000)
+    assert linha["reason"] == "abaixo do peso declarado"
+
+
+def test_a_carteira_final_fecha_no_orcamento_declarado() -> None:
+    """Somados, os destinos precisam bater com o alvo — senão o mapa não chega lá."""
+    carteira = [pos("ZZZZ3", Bucket.ACAO, 60_000, 30_000),
+                pos("Caixa", Bucket.CAIXA, 40_000, 40_000)]
+    mapa = map_portfolio(carteira, ALVO)
+    destino_acoes = sum(m["to_brl"] for m in mapa["moves"]
+                        if m["ticker"] in ALVO["positions"])
+    assert destino_acoes == pytest.approx(sum(ALVO["positions"].values()) * mapa["total_brl"])

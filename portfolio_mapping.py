@@ -167,7 +167,18 @@ def map_portfolio(positions: list[Position], target: dict, *,
 
         excesso = pos.market_value_brl - alvo_brl
         aderente += min(pos.market_value_brl, alvo_brl)
-        if excesso <= max(1.0, total * 1e-4):
+        tolerancia = max(1.0, total * 1e-4)
+
+        # Uma posição abaixo do alvo precisa ser completada. A primeira versão
+        # tratava qualquer não-excesso como "manter" e entregava uma carteira
+        # sistematicamente abaixo do peso declarado — o oposto do que um mapa
+        # que existe para chegar ao alvo deve fazer.
+        if excesso < -tolerancia:
+            moves.append(Move(ticker, "comprar", pos.market_value_brl, alvo_brl,
+                              "abaixo do peso declarado",
+                              round(abs(excesso) * TRADE_COST, 2)))
+            continue
+        if excesso <= tolerancia:
             moves.append(Move(ticker, "manter", pos.market_value_brl, pos.market_value_brl,
                               "já está no peso do perfil" if alvo_brl > 0 else "posição nula"))
             continue

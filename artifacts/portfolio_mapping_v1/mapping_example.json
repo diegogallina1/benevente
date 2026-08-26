@@ -6,11 +6,11 @@
   "mapping": {
     "total_brl": 700000,
     "alignment": 0.6771,
-    "turnover_brl": 271235.0,
-    "transition_cost_brl": 542.47,
+    "turnover_brl": 283500.0,
+    "transition_cost_brl": 567.0,
     "transition_tax_brl": 11250.0,
-    "transition_total_brl": 11792.47,
-    "transition_cost_pct": 0.01685,
+    "transition_total_brl": 11817.0,
+    "transition_cost_pct": 0.01688,
     "exempt_month_assumed": false,
     "tax_by_bucket": {
       "fora_do_escopo": {
@@ -120,6 +120,18 @@
         "notes": []
       },
       {
+        "ticker": "CURY3",
+        "action": "comprar",
+        "from_brl": 44000,
+        "to_brl": 68530.0,
+        "delta_brl": 24530.0,
+        "reason": "abaixo do peso declarado",
+        "trade_cost_brl": 24.53,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
         "ticker": "LEVE3",
         "action": "comprar",
         "from_brl": 0.0,
@@ -163,18 +175,6 @@
         "delta_brl": 11162.2,
         "reason": "entra pela seleção do perfil",
         "trade_cost_brl": 11.16,
-        "realised_gain_brl": 0.0,
-        "tax_brl": 0.0,
-        "notes": []
-      },
-      {
-        "ticker": "CURY3",
-        "action": "manter",
-        "from_brl": 44000,
-        "to_brl": 44000,
-        "delta_brl": 0,
-        "reason": "já está no peso do perfil",
-        "trade_cost_brl": 0.0,
         "realised_gain_brl": 0.0,
         "tax_brl": 0.0,
         "notes": []
