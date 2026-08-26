@@ -99,3 +99,87 @@
       <p class="ladder-note">Média observada: ${spread}. Nenhum setor da CVM ultrapassa três emissores.</p>`;
   });
 })();
+
+/* Explorador de composição do Benevente Alpha.
+ *
+ * Uma escada só é auditável se o leitor puder ver o que cada perfil carregou,
+ * quanto, por que entrou e o que aconteceu depois. O retorno realizado fica numa
+ * coluna à parte de propósito: é o único número que a decisão não podia ter
+ * usado, e misturá-lo com o score e o retorno de doze meses — que eram
+ * observáveis em janeiro — apagaria justamente a fronteira que o método defende.
+ */
+(async function () {
+  const hosts = document.querySelectorAll("[data-alpha-composition]");
+  if (!hosts.length) return;
+
+  const pct = (value, digits = 2) => Number.isFinite(Number(value))
+    ? `${(Number(value) * 100).toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits })}%`
+    : "—";
+  const LABELS = { conservador: "Conservador", equilibrado: "Equilibrado", arrojado: "Arrojado" };
+  const ACTIONS = {
+    entered: "entrou", maintained: "mantido", increased: "aumentou",
+    reduced: "reduziu", exited: "saiu", not_held: "fora",
+  };
+
+  let data;
+  try {
+    const response = await fetch("./alpha_composition.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("indisponível");
+    data = await response.json();
+  } catch (_) {
+    hosts.forEach(host => { host.textContent = "A composição auditável não pôde ser carregada agora."; });
+    return;
+  }
+
+  const years = data.profiles.conservador.map(item => item.decision_year).sort((a, b) => b - a);
+  let activeProfile = "equilibrado";
+  let activeYear = years[0];
+
+  const render = host => {
+    const block = (data.profiles[activeProfile] || []).find(item => item.decision_year === activeYear);
+    if (!block) { host.textContent = "Sem decisão registrada para esta combinação."; return; }
+    const rows = block.positions.map(row => `<tr>
+        <th scope="row">${row.ticker.replace(".SA", "")}</th>
+        <td>${pct(row.weight)}</td>
+        <td><span class="alpha-action alpha-${row.action}">${ACTIONS[row.action] || row.action}</span></td>
+        <td>${row.score === null ? "—" : row.score.toLocaleString("pt-BR", { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</td>
+        <td>${pct(row.trailing_12m, 1)}</td>
+        <td>${pct(row.trailing_vol, 1)}</td>
+        <td class="alpha-after">${pct(row.realised_next_year, 1)}</td>
+      </tr>`).join("");
+
+    host.innerHTML = `
+      <div class="alpha-controls">
+        <div role="group" aria-label="Perfil">${Object.keys(LABELS).map(key =>
+          `<button type="button" data-profile="${key}" class="${key === activeProfile ? "on" : ""}">${LABELS[key]}</button>`).join("")}</div>
+        <label>Decisão de <select data-year>${years.map(year =>
+          `<option value="${year}"${year === activeYear ? " selected" : ""}>${year}</option>`).join("")}</select></label>
+      </div>
+      <div class="alpha-split">
+        <span style="width:${(block.domestic_equity * 100).toFixed(2)}%">Ações BR ${pct(block.domestic_equity, 0)}</span>
+        <span style="width:${(block.global_sleeve * 100).toFixed(2)}%">Global ${pct(block.global_sleeve, 0)}</span>
+        <span style="width:${(block.cash * 100).toFixed(2)}%">CDI ${pct(block.cash, 0)}</span>
+      </div>
+      <div class="ladder-wrap"><table class="ladder-table alpha-table">
+        <caption>${LABELS[activeProfile]} · decisão de ${block.decision_date} · ${block.positions.length} emissores</caption>
+        <thead><tr>
+          <th scope="col">Emissor</th><th scope="col">Peso</th><th scope="col">Ação</th>
+          <th scope="col">Score</th><th scope="col">12m antes</th><th scope="col">Vol. 12m</th>
+          <th scope="col">Retorno seguinte</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+      <p class="ladder-note">As quatro primeiras colunas eram observáveis em janeiro, na data da decisão.
+      <b>Retorno seguinte</b> é o que aconteceu depois e está separado de propósito: é o único número que a
+      decisão não podia ter usado.</p>`;
+
+    host.querySelectorAll("[data-profile]").forEach(button => {
+      button.addEventListener("click", () => { activeProfile = button.dataset.profile; render(host); });
+    });
+    host.querySelector("[data-year]")?.addEventListener("change", event => {
+      activeYear = Number(event.target.value); render(host);
+    });
+  };
+
+  hosts.forEach(render);
+})();

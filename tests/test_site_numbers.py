@@ -141,3 +141,55 @@ def test_every_page_reaches_the_limitations() -> None:
         if not re.search(r"\d,\d{2}%", source):
             continue
         assert "limitacoes" in source, f"{page} publica números e não linka as limitações"
+
+
+COMPOSITION = json.loads((WEB / "alpha_composition.json").read_text(encoding="utf-8"))
+
+
+def test_the_current_model_is_named_and_its_lineage_is_stated() -> None:
+    """Benevente 1 and 2 stay registered; Alpha names what is live today."""
+    assert EVIDENCE["public_name"] == "Benevente Alpha"
+    assert COMPOSITION["public_name"] == EVIDENCE["public_name"]
+    assert set(EVIDENCE["lineage"]) == {"Benevente 1", "Benevente 2", "Benevente Alpha"}
+    # Renaming must not touch the frozen registration: the seal is what makes
+    # the registration worth having, and a name is not a policy.
+    assert "public_name" not in REGISTRATION
+    assert COMPOSITION["registration_sha256"] == REGISTRATION["registration_sha256"]
+
+
+@pytest.mark.parametrize("name", sorted(COMPOSITION["profiles"]))
+def test_each_profile_composition_adds_up_to_its_declared_budget(name: str) -> None:
+    declared = REGISTRATION["profiles"][name]
+    for year in COMPOSITION["profiles"][name]:
+        parts = year["domestic_equity"] + year["global_sleeve"] + year["cash"]
+        assert parts == pytest.approx(1.0, abs=1e-6), f"{name} {year['decision_year']} não soma 1"
+        assert year["global_sleeve"] == pytest.approx(declared["global_share_of_portfolio"], abs=1e-6)
+        assert len(year["positions"]) <= declared["top_assets"], (
+            f"{name} {year['decision_year']} carrega {len(year['positions'])} emissores, "
+            f"acima dos {declared['top_assets']} declarados"
+        )
+        total = sum(row["weight"] for row in year["positions"])
+        assert total == pytest.approx(year["domestic_equity"], abs=1e-6)
+
+
+@pytest.mark.parametrize("name", sorted(COMPOSITION["profiles"]))
+def test_no_position_exceeds_the_declared_issuer_cap(name: str) -> None:
+    cap = REGISTRATION["profiles"][name]["maximum_asset_weight"]
+    for year in COMPOSITION["profiles"][name]:
+        # The weight published here is already net of the global sleeve, so the
+        # cap is compared on the same basis the engine applied it.
+        scale = 1 - year["global_sleeve"]
+        for row in year["positions"]:
+            assert row["weight"] / scale <= cap + 1e-6, (
+                f"{name} {year['decision_year']}: {row['ticker']} em {row['weight'] / scale:.4f} "
+                f"acima do teto de {cap}"
+            )
+
+
+def test_what_the_decision_could_not_know_is_kept_apart() -> None:
+    """The realised return must exist as its own field, never folded into score."""
+    for name, years in COMPOSITION["profiles"].items():
+        for year in years:
+            for row in year["positions"]:
+                assert "realised_next_year" in row, f"{name}: falta o retorno realizado"
+                assert {"score", "trailing_12m", "trailing_vol"} <= set(row), name

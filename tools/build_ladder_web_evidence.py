@@ -26,6 +26,7 @@ from research_global_sleeve import GLOBAL_TICKER, build_global_engine
 from research_ladder_v2 import _annual_rebalanced_blend, _daily
 
 ROOT = Path(__file__).resolve().parents[1]
+PUBLIC_NAME = "Benevente Alpha"
 REGISTRATION = ROOT / "data" / "benevente_profile_ladder_v2_registration.json"
 BENCHMARKS = ROOT / "data" / "benchmarks_market_2011_2025.csv"
 
@@ -64,6 +65,45 @@ def _reference(curve: pd.DataFrame, column: str) -> dict:
     if len(level) < 2:
         return {}
     return _metrics(level.pct_change().dropna(), level.index.to_series())
+
+
+def _composition(holdings: pd.DataFrame, results: pd.DataFrame, global_share: float) -> list[dict]:
+    """Every position of every decision, with what was known when it was taken.
+
+    A profile is only auditable if a reader can see what it held, how much, why
+    it entered and what happened afterwards. The score, the trailing return and
+    the trailing volatility are the values observable at the decision date; the
+    realised return is deliberately kept in a separate field, because it is the
+    one number the decision could not have used.
+    """
+    equity = holdings[holdings.ticker.ne("TITULO_CDI")]
+    targets = results.set_index("decision_year").target_equity_weight
+    years = []
+    for year, block in equity.groupby("decision_year"):
+        rows = [{
+            "ticker": str(item.ticker),
+            "weight": round(float(item.weight) * (1 - global_share), 6),
+            "action": str(item.decision_action),
+            "score": None if pd.isna(item.value_quality_score) else round(float(item.value_quality_score), 4),
+            "trailing_12m": None if pd.isna(item.trailing_12m_return_at_decision)
+                            else round(float(item.trailing_12m_return_at_decision), 4),
+            "trailing_vol": None if pd.isna(item.trailing_12m_volatility_at_decision)
+                            else round(float(item.trailing_12m_volatility_at_decision), 4),
+            "eligible": bool(item.eligible_at_decision),
+            "realised_next_year": None if pd.isna(item.realised_next_year_return)
+                                  else round(float(item.realised_next_year_return), 4),
+        } for item in block.itertuples()]
+        domestic = sum(row["weight"] for row in rows)
+        years.append({
+            "decision_year": int(year),
+            "decision_date": str(block.decision_date.iloc[0]),
+            "positions": sorted(rows, key=lambda row: -row["weight"]),
+            "domestic_equity": round(domestic, 6),
+            "global_sleeve": round(global_share, 6),
+            "cash": round(1 - domestic - global_share, 6),
+            "declared_equity": round(float(targets.get(year, float("nan"))) * (1 - global_share) + global_share, 6),
+        })
+    return years
 
 
 def _years_beating_cash(track: pd.Series, daily: pd.DataFrame) -> dict:
@@ -124,10 +164,11 @@ def build(start_year: int, end_year: int) -> dict:
     references: dict = {}
     window = {}
     tracks: dict[str, pd.Series] = {}
+    holdings_by_profile: dict[str, list] = {}
     curve_dates = None
     for profile in LADDER_V2:
         protocol = domestic_protocol(profile, start_year, end_year)
-        results, _, _ = engine.run(protocol)
+        results, _, holdings = engine.run(protocol)
         results = apply_annual_taxes(results, tax)
         daily = _daily(engine, results)
         overlaid = apply_profile_overlay(
@@ -135,6 +176,7 @@ def build(start_year: int, end_year: int) -> dict:
         fund = panel[GLOBAL_TICKER].reindex(daily.date).pct_change().fillna(0.0).reset_index(drop=True)
         share = float(LADDER_V2[profile]["maximum_equity_weight"]) * GLOBAL_FRACTION
 
+        holdings_by_profile[profile] = _composition(holdings, results, share)
         benevente1 = _annual_rebalanced_blend(daily.strategy_daily_return, fund, daily.decision_year, share)
         benevente2 = _annual_rebalanced_blend(overlaid.protected_return, fund, daily.decision_year, share)
         tracks[LABELS[profile]] = benevente2
@@ -181,6 +223,16 @@ def build(start_year: int, end_year: int) -> dict:
 
     return {
         "policy": registration["policy"],
+        # Nome público do modelo vigente. O registro congelado não é tocado:
+        # renomear não muda política, e alterá-lo quebraria o selo que dá sentido
+        # ao registro. Benevente 1 e 2 continuam sendo as versões registradas e
+        # descrevem as camadas de que o Alpha é feito.
+        "public_name": PUBLIC_NAME,
+        "lineage": {
+            "Benevente 1": "seleção anual declarada, com a perna global",
+            "Benevente 2": "acrescenta a camada de risco intranual",
+            PUBLIC_NAME: "os dois acima, em três perfis declarados e congelados",
+        },
         "registration_sha256": registration["registration_sha256"],
         "approved_by": registration["approved_by"],
         "registered_at": registration["registered_at"],
@@ -189,6 +241,7 @@ def build(start_year: int, end_year: int) -> dict:
         "profiles": profiles,
         "references": references,
         "monthly_curve": _monthly_curve(curve_dates, tracks),
+        "composition": holdings_by_profile,
         "global_sleeve": {
             "instrument": registration["global_sleeve"]["instrument"],
             "share_of_equity_budget": registration["global_sleeve"]["share_of_equity_budget"],
@@ -207,8 +260,16 @@ def main() -> None:
     parser.add_argument("--end-year", type=int, default=2026)
     args = parser.parse_args()
     payload = build(args.start_year, args.end_year)
+    composition = payload.pop("composition")
     target = ROOT / args.output
     target.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    # A composição vai num arquivo próprio: são centenas de posições e a página
+    # da escada não precisa carregá-las para desenhar a tabela de topo.
+    (ROOT / "web" / "alpha_composition.json").write_text(
+        json.dumps({"public_name": payload["public_name"],
+                    "registration_sha256": payload["registration_sha256"],
+                    "window": payload["window"],
+                    "profiles": composition}, indent=2, ensure_ascii=False), encoding="utf-8")
     print(f"escrito {args.output} · janela {payload['window']['first_decision_year']}"
           f"–{payload['window']['last_decision_year']}")
     for name, item in payload["profiles"].items():

@@ -102,3 +102,85 @@
   font-size: .95em;
   word-break: break-all;
 }
+
+/* Explorador de composição do Benevente Alpha. */
+.alpha-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem 1.2rem;
+  align-items: center;
+  margin-bottom: .85rem;
+}
+.alpha-controls [role="group"] { display: flex; gap: .35rem; flex-wrap: wrap; }
+.alpha-controls button {
+  font: inherit;
+  font-size: .8rem;
+  font-weight: 600;
+  padding: .38rem .8rem;
+  min-height: 2.25rem;
+  border-radius: 999px;
+  border: 1px solid var(--hairline-strong, #bccfc9);
+  background: var(--surface, #fff);
+  color: var(--ink-soft, #5b6f7c);
+  cursor: pointer;
+}
+.alpha-controls button.on {
+  border-color: var(--brand-green, #0b8377);
+  background: var(--surface-mint, #dff7ec);
+  color: var(--brand-green, #0b8377);
+}
+.alpha-controls label { font-size: .8rem; color: var(--ink-soft, #5b6f7c); }
+.alpha-controls select {
+  font: inherit;
+  font-size: .8rem;
+  margin-left: .35rem;
+  padding: .3rem .5rem;
+  min-height: 2.25rem;
+  border-radius: 8px;
+  border: 1px solid var(--hairline-strong, #bccfc9);
+  background: var(--surface, #fff);
+  color: var(--ink-strong, #0d2b3f);
+}
+
+/* A divisão da carteira antes da lista: a proporção é a primeira coisa que
+   um revisor confere, e ela some numa tabela de pesos individuais. */
+.alpha-split {
+  display: flex;
+  height: 30px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: .9rem;
+  border: 1px solid var(--hairline, #d9e4e0);
+}
+.alpha-split span {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .68rem;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.alpha-split span:nth-child(1) { background: #0b8377; }
+.alpha-split span:nth-child(2) { background: #4a7fa5; }
+.alpha-split span:nth-child(3) { background: #a8bfc4; color: #0d2b3f; }
+
+.alpha-table th[scope="row"] { font-family: var(--mono, monospace); font-weight: 700; }
+.alpha-action {
+  font-size: .68rem;
+  font-weight: 700;
+  padding: .1rem .4rem;
+  border-radius: 4px;
+  background: var(--surface-sunk, #e8f0ed);
+  color: var(--ink-soft, #5b6f7c);
+}
+.alpha-entered { background: var(--surface-mint, #dff7ec); color: var(--brand-green, #0b8377); }
+.alpha-exited { background: #f9e9e9; color: #8f2f2f; }
+
+/* O retorno seguinte é o único número que a decisão não podia usar, então ele
+   fica visualmente separado em vez de alinhado com o que era observável. */
+.alpha-after {
+  border-left: 2px solid var(--hairline-strong, #bccfc9);
+  color: var(--ink-soft, #5b6f7c);
+}
