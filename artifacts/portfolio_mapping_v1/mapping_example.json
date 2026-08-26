@@ -191,18 +191,27 @@
     "alignment": 0.6771,
     "turnover_brl": 283500.0,
     "transition_cost_brl": 567.0,
-    "transition_tax_brl": 11250.0,
-    "transition_total_brl": 11817.0,
-    "transition_cost_pct": 0.01688,
+    "transition_tax_brl": 0.0,
+    "transition_total_brl": 567.0,
+    "transition_cost_pct": 0.00081,
     "exempt_month_assumed": false,
+    "tax_is_complete": false,
+    "positions_without_cost_basis": [
+      {
+        "ticker": "WEGE3",
+        "sale_brl": 180000.0,
+        "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+      }
+    ],
+    "unpriced_sale_brl": 180000.0,
     "tax_by_bucket": {
       "fora_do_escopo": {
         "realised_gain_brl": -9000.0,
         "tax_brl": 0.0
       },
       "renda_variavel": {
-        "realised_gain_brl": 75000.0,
-        "tax_brl": 11250.0
+        "realised_gain_brl": -167000.0,
+        "tax_brl": 0.0
       }
     },
     "fgc_breaches": {
@@ -222,9 +231,11 @@
         "delta_brl": -180000.0,
         "reason": "não está na cesta do perfil",
         "trade_cost_brl": 180.0,
-        "realised_gain_brl": 140000.0,
+        "realised_gain_brl": 0.0,
         "tax_brl": 0.0,
-        "notes": []
+        "notes": [
+          "ganho e imposto não apurados: reconstruído só em parte: há posição anterior a 01/11/2019"
+        ]
       },
       {
         "ticker": "MGLU3",
@@ -234,7 +245,7 @@
         "delta_brl": -25000.0,
         "reason": "não está na cesta do perfil",
         "trade_cost_brl": 25.0,
-        "realised_gain_brl": -65000.0,
+        "realised_gain_brl": -167000.0,
         "tax_brl": 0.0,
         "notes": [
           "prejuízo realizado: abate o ganho das outras vendas da mesma cesta"
@@ -382,21 +393,25 @@
     "equity_below_budget": true,
     "issuer_cap": 0.2371,
     "issuer_cap_rule": "dobro do peso médio dos emissores que o cliente já tem; limite escolhido para este caminho, não medido no histórico",
-    "unrealised_loss_kept_brl": 65000,
+    "unrealised_loss_kept_brl": 167000,
     "tax_left_on_table_brl": 0.0,
     "out_of_scope_brl": 21000,
     "turnover_brl": 7000.0,
     "transition_cost_brl": 14.0,
-    "transition_tax_brl": 0.0,
+    "transition_tax_brl": 0,
     "transition_total_brl": 14.0,
     "transition_cost_pct": 2e-05,
     "exempt_month_assumed": true,
-    "tax_by_bucket": {
-      "renda_variavel": {
-        "realised_gain_brl": 10888.89,
-        "tax_brl": 0.0
+    "tax_is_complete": false,
+    "positions_without_cost_basis": [
+      {
+        "ticker": "WEGE3",
+        "sale_brl": 14000.0,
+        "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
       }
-    },
+    ],
+    "unpriced_sale_brl": 14000.0,
+    "tax_by_bucket": {},
     "fgc_breaches": {
       "Beta": 310000.0
     },
@@ -414,9 +429,11 @@
         "delta_brl": -14000.0,
         "reason": "teto de concentração por emissor",
         "trade_cost_brl": 14.0,
-        "realised_gain_brl": 10888.89,
+        "realised_gain_brl": 0.0,
         "tax_brl": 0.0,
-        "notes": []
+        "notes": [
+          "ganho e imposto não apurados: reconstruído só em parte: há posição anterior a 01/11/2019"
+        ]
       },
       {
         "ticker": "CDB Banco Beta",

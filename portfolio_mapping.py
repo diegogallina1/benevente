@@ -29,6 +29,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 import json
 
+from b3_connection import Qualidade
 from fixed_income_catalog import FGC_PER_CONGLOMERATE_BRL, income_tax_rate
 
 EQUITY_TAX_RATE = 0.15
@@ -62,10 +63,19 @@ class Position:
     conglomerate: str | None = None
     days_held: int = 400
     liquid: bool = True
+    #: De onde veio o custo. A conexão com a B3 não entrega preço médio — ele é
+    #: reconstruído das negociações, e a base dela começa em 01/11/2019. Uma
+    #: posição mais antiga chega sem custo defensável, e o imposto dela não pode
+    #: ser somado como se fosse medido.
+    cost_quality: Qualidade = Qualidade.DECLARADO
 
     @property
     def unrealised_gain_brl(self) -> float:
         return self.market_value_brl - self.cost_basis_brl
+
+    @property
+    def tax_computable(self) -> bool:
+        return self.cost_quality.apura_imposto
 
 
 @dataclass
@@ -129,6 +139,35 @@ def _settle(gains: dict, exempt_month: bool, days_held: int,
     return imposto
 
 
+def _apura(vendas: list[tuple[Position, float, float]], exempt_month: bool,
+           carried_loss_brl: float) -> tuple[dict, dict, list]:
+    """Separa o que dá para apurar do que não dá, e só então calcula.
+
+    Uma posição sem custo defensável não entra na soma. A tentação é estimar o
+    custo para fechar a conta, mas o imposto estimado se parece com o medido,
+    aparece na mesma linha e leva à mesma decisão de vender. Fica de fora e
+    aparece nomeado.
+
+    ``vendas`` traz ``(posição, ganho, valor vendido)``. O valor vendido importa
+    porque a lacuna tem o tamanho do que está saindo, não o da posição inteira:
+    um plano que reduz catorze mil reais de uma posição de cento e oitenta mil
+    não tem cento e oitenta mil de imposto pendente.
+    """
+    apuraveis = [(p, g) for p, g, _ in vendas if p.tax_computable]
+    pendentes = [{"ticker": p.ticker.removesuffix(".SA"),
+                  "sale_brl": round(v, 2),
+                  "cost_quality": p.cost_quality.value}
+                 for p, _, v in vendas if not p.tax_computable]
+
+    por_cesta: dict[str, float] = {}
+    for pos, ganho in apuraveis:
+        cesta = TAX_BUCKETS[pos.bucket]
+        por_cesta[cesta] = por_cesta.get(cesta, 0.0) + ganho
+    prazo = min((p.days_held for p, _ in apuraveis
+                 if TAX_BUCKETS[p.bucket] == "renda_fixa"), default=400)
+    return por_cesta, _settle(por_cesta, exempt_month, prazo, carried_loss_brl), pendentes
+
+
 def map_portfolio(positions: list[Position], target: dict, *,
                   monthly_stock_sales_brl: float = 0.0,
                   carried_loss_brl: float = 0.0,
@@ -165,7 +204,7 @@ def map_portfolio(positions: list[Position], target: dict, *,
     mes_isento = vendas_acoes <= 20_000.0
 
     moves: list[Move] = []
-    vendas: list[tuple[Position, float]] = []
+    vendas: list[tuple[Position, float, float]] = []
     aderente = 0.0
 
     for ticker, pos in sorted(atual.items()):
@@ -207,9 +246,14 @@ def map_portfolio(positions: list[Position], target: dict, *,
             continue
 
         vender_tudo = alvo_brl <= 0
-        ganho = _realised_gain(pos, excesso)
+        # Com custo parcial, market_value menos cost_basis não é o ganho: é o
+        # ganho que existiria se o custo conhecido fosse o custo todo. Publicar
+        # esse número seria inventar, e ele é grande justamente onde mais engana.
+        ganho = _realised_gain(pos, excesso) if pos.tax_computable else 0.0
         custo = excesso * TRADE_COST
         notas = []
+        if not pos.tax_computable:
+            notas.append(f"ganho e imposto não apurados: {pos.cost_quality.value}")
         if ganho > 0 and mes_isento and pos.bucket is Bucket.ACAO:
             notas.append("isento pela regra dos vinte mil no mês, se nada mais for vendido")
         # Prejuízo fora do escopo não abate nada aqui: a cesta dele não se
@@ -217,7 +261,7 @@ def map_portfolio(positions: list[Position], target: dict, *,
         # que a lei não dá.
         if ganho < 0 and pos.bucket is not Bucket.FORA_DO_ESCOPO:
             notas.append("prejuízo realizado: abate o ganho das outras vendas da mesma cesta")
-        vendas.append((pos, ganho))
+        vendas.append((pos, ganho, excesso))
         if not pos.liquid:
             notas.append("posição sem liquidez diária: a saída depende do vencimento ou do secundário")
         # "Não está na cesta" só cabe em ativo que a política avalia. Dizer isso
@@ -248,12 +292,7 @@ def map_portfolio(positions: list[Position], target: dict, *,
     # prejuízos é que a alíquota tem sobre o que incidir. O imposto é do
     # conjunto, e rateá-lo por movimento inventaria uma precisão que a lei não
     # tem — cada linha mostra o ganho que realizou, o total aparece no fechamento.
-    por_cesta: dict[str, float] = {}
-    for pos, ganho in vendas:
-        cesta = TAX_BUCKETS[pos.bucket]
-        por_cesta[cesta] = por_cesta.get(cesta, 0.0) + ganho
-    prazo = min((p.days_held for p, _ in vendas if TAX_BUCKETS[p.bucket] == "renda_fixa"), default=400)
-    imposto_por_cesta = _settle(por_cesta, mes_isento, prazo, carried_loss_brl)
+    por_cesta, imposto_por_cesta, sem_custo = _apura(vendas, mes_isento, carried_loss_brl)
 
     custo_total = sum(m.trade_cost_brl for m in moves)
     imposto_total = sum(imposto_por_cesta.values())
@@ -280,6 +319,14 @@ def map_portfolio(positions: list[Position], target: dict, *,
         "transition_total_brl": round(custo_total + imposto_total, 2),
         "transition_cost_pct": round((custo_total + imposto_total) / total, 5),
         "exempt_month_assumed": mes_isento,
+        # Um imposto parcial precisa dizer que é parcial na mesma estrutura em
+        # que é publicado. Deixar isso para uma nota de rodapé é como não dizer.
+        "tax_is_complete": not sem_custo,
+        "positions_without_cost_basis": sem_custo,
+        # Quanto está sendo vendido sem que o imposto possa ser apurado. Sem
+        # este número, "imposto parcial" não tem tamanho, e um total pequeno ao
+        # lado de uma ressalva pequena é lido como total pequeno.
+        "unpriced_sale_brl": round(sum(p["sale_brl"] for p in sem_custo), 2),
         "tax_by_bucket": {k: {"realised_gain_brl": round(v, 2),
                               "tax_brl": round(imposto_por_cesta.get(k, 0.0), 2)}
                           for k, v in sorted(por_cesta.items())},
@@ -348,7 +395,7 @@ def adapt_portfolio(positions: list[Position], target: dict, *,
     teto_emissor = (2.0 * exposicao / len(variavel)) if variavel else 1.0
 
     moves: list[Move] = []
-    vendas: list[tuple[Position, float]] = []
+    vendas: list[tuple[Position, float, float]] = []
     # Corte proporcional para caber no orçamento: sem o Módulo 1 não existe
     # critério para dizer qual emissor é pior, então nenhum é escolhido.
     corte = max(0.0, (exposicao - orcamento_acoes) / exposicao) if exposicao > orcamento_acoes else 0.0
@@ -385,22 +432,22 @@ def adapt_portfolio(positions: list[Position], target: dict, *,
                                      f"permanece por decisão do cliente"]))
             continue
 
-        ganho = _realised_gain(pos, excesso)
-        vendas.append((pos, ganho))
+        ganho = _realised_gain(pos, excesso) if pos.tax_computable else 0.0
+        vendas.append((pos, ganho, excesso))
+        if not pos.tax_computable:
+            notas = [f"ganho e imposto não apurados: {pos.cost_quality.value}"]
+        elif ganho < 0:
+            notas = ["prejuízo realizado: abate o ganho das outras vendas da mesma cesta"]
+        else:
+            notas = []
         moves.append(Move(ticker, "reduzir", pos.market_value_brl, alvo_brl, motivo,
-                          round(excesso * TRADE_COST, 2), round(ganho, 2), 0.0,
-                          ["prejuízo realizado: abate o ganho das outras vendas da mesma cesta"]
-                          if ganho < 0 else []))
+                          round(excesso * TRADE_COST, 2), round(ganho, 2), 0.0, notas))
 
     vendas_acoes = monthly_stock_sales_brl + sum(
         m.from_brl - m.to_brl for m in moves if m.action == "reduzir")
     mes_isento = vendas_acoes <= 20_000.0
 
-    por_cesta: dict[str, float] = {}
-    for pos, ganho in vendas:
-        cesta = TAX_BUCKETS[pos.bucket]
-        por_cesta[cesta] = por_cesta.get(cesta, 0.0) + ganho
-    imposto_por_cesta = _settle(por_cesta, mes_isento, 400, carried_loss_brl)
+    por_cesta, imposto_por_cesta, sem_custo = _apura(vendas, mes_isento, carried_loss_brl)
 
     custo_total = sum(m.trade_cost_brl for m in moves)
     imposto_total = sum(imposto_por_cesta.values())
@@ -454,6 +501,14 @@ def adapt_portfolio(positions: list[Position], target: dict, *,
         "transition_total_brl": round(custo_total + imposto_total, 2),
         "transition_cost_pct": round((custo_total + imposto_total) / total, 5),
         "exempt_month_assumed": mes_isento,
+        # Um imposto parcial precisa dizer que é parcial na mesma estrutura em
+        # que é publicado. Deixar isso para uma nota de rodapé é como não dizer.
+        "tax_is_complete": not sem_custo,
+        "positions_without_cost_basis": sem_custo,
+        # Quanto está sendo vendido sem que o imposto possa ser apurado. Sem
+        # este número, "imposto parcial" não tem tamanho, e um total pequeno ao
+        # lado de uma ressalva pequena é lido como total pequeno.
+        "unpriced_sale_brl": round(sum(p["sale_brl"] for p in sem_custo), 2),
         "tax_by_bucket": {k: {"realised_gain_brl": round(v, 2),
                               "tax_brl": round(imposto_por_cesta.get(k, 0.0), 2)}
                           for k, v in sorted(por_cesta.items())},

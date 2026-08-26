@@ -13,6 +13,7 @@ import json
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "artifacts" / "portfolio_mapping_v1" / "mapping_by_profile.json"
+CONEXAO = ROOT / "artifacts" / "b3_connection_v1" / "connection_example.json"
 OUT = ROOT / "docs" / "desenho_tela_mapa.html"
 
 PERFIL_LABEL = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
@@ -59,8 +60,21 @@ body {
 .hidden { display: none; }
 
 header { border-bottom: 1px solid var(--line); padding-bottom: 1.25rem; margin-bottom: 2rem; }
+.topo { display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+        margin-bottom: .45rem; }
 .eyebrow { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
-           color: var(--muted); font-weight: 600; margin: 0 0 .45rem; }
+           color: var(--muted); font-weight: 600; margin: 0; }
+.tema { font: inherit; font-size: .78rem; font-weight: 600; color: var(--muted);
+        background: var(--panel); border: 1px solid var(--line); border-radius: 999px;
+        min-height: 2.75rem; padding: .35rem .85rem; cursor: pointer; display: flex;
+        align-items: center; gap: .4rem; white-space: nowrap; }
+.tema:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* --- conexão --- */
+.cols { display: grid; gap: 1.25rem; margin-top: 1.5rem; }
+.cols ul { margin: 0; padding-left: 1.1rem; font-size: .84rem; color: var(--muted); }
+.cols li { margin-bottom: .35rem; }
+.cols ul.nao li::marker { color: var(--down); }
 h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; margin: 0 0 .4rem;
      text-wrap: balance; }
 header p { margin: 0; color: var(--muted); font-size: .92rem; }
@@ -83,7 +97,11 @@ h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 .
 .opt[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent);
                             color: var(--accent); font-weight: 600; }
 .cap { font-size: .85rem; color: var(--muted); margin: 1rem 0 0; }
-.cap b { color: var(--ink); font-weight: 600; }
+/* :not(.neg) porque "b" qualificado por classe vence ".neg" na cascata, e sem
+   isso a pior queda medida aparece na cor do texto comum — o único número da
+   frase que precisa ser vermelho. */
+.cap b:not(.neg) { color: var(--ink); font-weight: 600; }
+.cap b.neg { font-weight: 600; }
 /* Respondido, o formulário vira uma linha. No celular, deixá-lo aberto obriga a
    rolar por tudo que já foi respondido para chegar ao resultado. */
 .chips { margin: 0 0 .5rem; font-size: .88rem; color: var(--ink); }
@@ -177,6 +195,7 @@ footer code { font-family: "DM Mono", monospace; font-size: .95em; }
   .barrow { display: grid; grid-template-columns: 4.5rem 1fr; gap: .8rem; align-items: center; }
   .barrow > span { text-align: right; margin-bottom: 0; }
   .doors { grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .cols { grid-template-columns: 1fr 1fr; gap: 1.75rem; }
   .row .why { grid-column: 1; }
   .cta { flex-direction: row; align-items: center; flex-wrap: wrap; }
   .btn { width: auto; }
@@ -196,13 +215,36 @@ footer code { font-family: "DM Mono", monospace; font-size: .95em; }
 
 <div class="wrap">
 <header>
-  <p class="eyebrow">Benevente · protótipo</p>
+  <div class="topo">
+    <p class="eyebrow">Benevente · protótipo</p>
+    <button class="tema" type="button" id="tema" aria-label="Alternar tema claro e escuro">
+      <span aria-hidden="true" id="tema-icone">◐</span><span id="tema-txt">Tema</span>
+    </button>
+  </div>
   <h1>Plano de carteira</h1>
-  <p>Quatro perguntas definem o seu perfil. Depois você vê quanto da sua carteira já serve
-     e escolhe entre dois planos.</p>
+  <p>Conecte a sua conta da B3, responda quatro perguntas e veja quanto da sua carteira
+     já serve. No fim, dois planos.</p>
 </header>
 
-<section id="perguntas">
+<section id="conexao">
+  <h2>Conectar a B3</h2>
+  <p class="lede">A autorização acontece dentro do site da B3, com o login dela. Nunca vemos
+     nem guardamos a sua senha, e você desfaz quando quiser, lá mesmo.</p>
+  <button class="btn" type="button" id="conectar">Conectar minha conta da B3</button>
+  <div id="chegou" class="hidden">
+    <div class="verdict">
+      <div class="big" id="chegou-tit"></div>
+      <p id="chegou-txt"></p>
+    </div>
+    <div class="cols">
+      <div><p class="grp">O que chega</p><ul id="vem"></ul></div>
+      <div><p class="grp">O que não chega</p><ul id="nvem" class="nao"></ul></div>
+    </div>
+    <div class="alert" id="lacuna"></div>
+  </div>
+</section>
+
+<section id="perguntas" class="hidden">
   <h2>Quatro perguntas</h2>
   <p class="lede">Sem pontuação: cada resposta impõe um limite e vale o mais apertado. Por isso
      dá sempre para apontar qual resposta decidiu.</p>
@@ -274,6 +316,71 @@ const el = (tag, cls, html) => {
   if (cls) n.className = cls;
   if (html !== undefined) n.innerHTML = html;
   return n;
+};
+
+/* --- tema --- */
+// Sem escolha salva a página segue o sistema, que é o certo por padrão. A
+// escolha explícita carimba data-theme e ganha das duas media queries.
+const temaBtn = document.getElementById("tema");
+const guardado = (() => { try { return localStorage.getItem("tema"); } catch (e) { return null; } })();
+const escuroDoSistema = () => matchMedia("(prefers-color-scheme: dark)").matches;
+function aplicaTema(valor) {
+  if (valor) document.documentElement.setAttribute("data-theme", valor);
+  else document.documentElement.removeAttribute("data-theme");
+  const escuro = valor ? valor === "dark" : escuroDoSistema();
+  document.getElementById("tema-icone").textContent = escuro ? "☾" : "☀";
+  document.getElementById("tema-txt").textContent = escuro ? "Escuro" : "Claro";
+  temaBtn.setAttribute("aria-pressed", String(escuro));
+}
+aplicaTema(guardado);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+  if (!document.documentElement.hasAttribute("data-theme")) aplicaTema(null);
+});
+temaBtn.onclick = () => {
+  const escuro = document.documentElement.getAttribute("data-theme")
+    ? document.documentElement.getAttribute("data-theme") === "dark" : escuroDoSistema();
+  const novo = escuro ? "light" : "dark";
+  aplicaTema(novo);
+  try { localStorage.setItem("tema", novo); } catch (e) { /* janela anônima: segue sem salvar */ }
+};
+
+/* --- conexão com a B3 --- */
+const b3 = DADOS.b3;
+document.getElementById("conectar").onclick = () => {
+  const caixa = document.getElementById("chegou");
+  caixa.classList.remove("hidden");
+  document.getElementById("conectar").textContent = "Conta conectada";
+  document.getElementById("conectar").disabled = true;
+
+  const total = Object.keys(b3.cost_basis).length;
+  const ok = b3.gaps.com_custo_defensavel;
+  document.getElementById("chegou-tit").textContent =
+    ok + " de " + total + " posições com custo confirmado";
+  document.getElementById("chegou-txt").textContent =
+    "A B3 entrega a posição, mas não entrega o preço médio: não existe esse dado nas APIs " +
+    "dela. O custo é reconstruído das suas negociações, e a base começa em " +
+    b3.base_starts.split("-").reverse().join("/") + ".";
+
+  const lista = (id, itens) => {
+    const ul = document.getElementById(id);
+    ul.innerHTML = "";
+    itens.forEach(t => ul.append(el("li", null, t)));
+  };
+  lista("vem", b3.coverage.entrega);
+  lista("nvem", b3.coverage.nao_entrega.concat(b3.coverage.entrega_pela_metade));
+
+  const alerta = document.getElementById("lacuna");
+  const pendentes = Object.entries(b3.gaps.pendentes);
+  if (!pendentes.length) { alerta.style.display = "none"; }
+  else {
+    const [ticker, dados] = pendentes[0];
+    alerta.innerHTML = "<p><b>Falta o custo de " + ticker + ".</b> " + dados.observacao +
+      ". Sem esse número o imposto do plano fica incompleto — e ele não é estimado aqui, " +
+      "porque um imposto estimado se parece com um imposto medido e leva à mesma decisão " +
+      "de vender. Você pode informá-lo depois, com a nota de corretagem antiga.</p>";
+  }
+  document.getElementById("perguntas").classList.remove("hidden");
+  document.getElementById("perguntas").scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
 /* --- perguntas --- */
@@ -392,13 +499,16 @@ function portas(perfil, a, b) {
     d.setAttribute("aria-pressed", "false");
     d.append(
       el("h3", null, m.path_label),
-      // "0,00% do patrimônio" lê como erro de formatação, não como "quase nada".
-      el("div", "cost num", BRL(m.transition_total_brl) +
+      // Com imposto incompleto o número é piso, não total, e precisa dizer isso
+      // onde é lido — não numa nota adiante.
+      el("div", "cost num", (m.tax_is_complete ? "" : "a partir de ") +
+        BRL(m.transition_total_brl) +
         "<small>custo hoje · " + (m.transition_cost_pct < 0.0001
           ? "menos de 0,01%" : PCT(m.transition_cost_pct, 2)) + " do patrimônio</small>"),
       el("dl", null,
         "<dt>Movimenta</dt><dd class='num'>" + BRL(m.turnover_brl) + "</dd>" +
-        "<dt>Imposto</dt><dd class='num'>" + BRL(m.transition_tax_brl) + "</dd>" +
+        "<dt>Imposto</dt><dd class='num'>" + BRL(m.transition_tax_brl) +
+        (m.tax_is_complete ? "" : " <span class='neg'>+ falta</span>") + "</dd>" +
         "<dt>Módulos</dt><dd>" + m.modules.length + " de 2</dd>"),
       el("div", "flag " + (m.track_record_applies ? "ok" : "no"),
         m.track_record_applies
@@ -451,11 +561,26 @@ function razao(perfil, chave) {
   Object.entries(m.tax_by_bucket).forEach(([cesta, d]) => {
     const nome = { renda_variavel: "Renda variável", renda_fixa: "Renda fixa",
                    fora_do_escopo: "Fora do escopo" }[cesta] || cesta;
-    html += "<div><span>" + nome + " · imposto sobre " + BRL(d.realised_gain_brl) +
-      " apurados</span><span class='num'>" + BRL(d.tax_brl) + "</span></div>";
+    // Prejuízo não é base de imposto, é crédito — mas só dentro da própria
+    // cesta. O prejuízo de cripto não abate imposto de ação, e prometer isso
+    // aqui contradiria a regra que o módulo implementa três telas atrás.
+    const rotulo = d.realised_gain_brl >= 0
+      ? nome + " · imposto sobre " + BRL(d.realised_gain_brl) + " de ganho"
+      : cesta === "fora_do_escopo"
+        ? nome + " · prejuízo de " + BRL(-d.realised_gain_brl) + ", de regime próprio"
+        : nome + " · prejuízo de " + BRL(-d.realised_gain_brl) +
+          ", que vira crédito nesta cesta";
+    html += "<div><span>" + rotulo + "</span><span class='num'>" +
+      BRL(d.tax_brl) + "</span></div>";
   });
-  html += "<div class='tot'><span>Total, pago uma vez</span><span class='num'>" +
-    BRL(m.transition_total_brl) + "</span></div>";
+  if (!m.tax_is_complete) {
+    html += "<div><span class='neg'>" + m.positions_without_cost_basis.map(p => p.ticker).join(", ") +
+      " · " + BRL(m.unpriced_sale_brl) + " vendidos sem custo apurável</span>" +
+      "<span class='num neg'>não apurado</span></div>";
+  }
+  html += "<div class='tot'><span>" +
+    (m.tax_is_complete ? "Total, pago uma vez" : "Apurado até aqui — piso, não total") +
+    "</span><span class='num'>" + BRL(m.transition_total_brl) + "</span></div>";
   // Todo zero na coluna de imposto precisa dizer por que é zero. Sem isso, a
   // isenção mensal e uma conta não feita ficam com a mesma aparência.
   const ganhoRV = (m.tax_by_bucket.renda_variavel || {}).realised_gain_brl || 0;
@@ -479,10 +604,15 @@ function razao(perfil, chave) {
 
 def main() -> None:
     dados = json.loads(SOURCE.read_text(encoding="utf-8"))
+    conexao = json.loads(CONEXAO.read_text(encoding="utf-8"))
     magro = {
         "questionnaire": dados["questionnaire"],
         "profiles": {nome: {"adequar": p["adequar"], "adaptar": p["adaptar"]}
                      for nome, p in dados["profiles"].items()},
+        "b3": {"base_starts": conexao["base_starts"], "coverage": conexao["coverage"],
+               "consent": {k: v for k, v in conexao["consent"].items()
+                           if k in ("escopo", "revogavel_em", "credencial_armazenada")},
+               "cost_basis": conexao["cost_basis"], "gaps": conexao["gaps"]},
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(HTML.replace("__DADOS__", json.dumps(magro, ensure_ascii=False,

@@ -82,12 +82,29 @@ def build(payload: dict, cliente: str, escolha: str, registro: dict) -> Document
     para(document, f"Plano escolhido: {escolhido['path_label']}.", size=10, bold=True,
          space_after=8)
 
-    _caixa(document, "O QUE ISSO CUSTA, E É PAGO AGORA",
-           f"{brl(escolhido['transition_total_brl'])}, ou {pct(escolhido['transition_cost_pct'], 2)} "
-           f"do patrimônio: {brl(escolhido['transition_cost_brl'])} de execução e "
+    completo = escolhido.get("tax_is_complete", True)
+    _caixa(document,
+           "O QUE ISSO CUSTA, E É PAGO AGORA" if completo
+           else "O QUE ISSO CUSTA — PISO, NÃO TOTAL",
+           ("" if completo else "A partir de ")
+           + f"{brl(escolhido['transition_total_brl'])}, ou "
+           f"{pct(escolhido['transition_cost_pct'], 2)} do patrimônio: "
+           f"{brl(escolhido['transition_cost_brl'])} de execução e "
            f"{brl(escolhido['transition_tax_brl'])} de imposto que a venda realiza. Uma vez, no "
            f"momento da mudança. Este documento não estima em quanto tempo isso se recupera — "
            f"fazê-lo exigiria projetar retorno futuro.", "FBF2E2")
+
+    if not completo:
+        para(document, "", size=4, space_after=2)
+        _caixa(document, "O IMPOSTO ACIMA ESTÁ INCOMPLETO",
+               f"{brl(escolhido['unpriced_sale_brl'])} estão sendo vendidos sem custo de "
+               f"aquisição apurável: "
+               + "; ".join(f"{p['ticker']} ({p['cost_quality']})"
+                           for p in escolhido["positions_without_cost_basis"])
+               + ". A B3 não fornece preço médio, e a base dela começa em 01/11/2019: posição "
+                 "mais antiga chega sem as compras que a formaram. O valor não foi estimado de "
+                 "propósito — um imposto estimado tem a mesma aparência de um medido e leva à "
+                 "mesma decisão de vender. A nota de corretagem antiga fecha a conta.", "F6E9E4")
 
     if not escolhido["track_record_applies"]:
         para(document, "", size=4, space_after=2)
@@ -145,7 +162,12 @@ def build(payload: dict, cliente: str, escolha: str, registro: dict) -> Document
     if escolhido.get("carried_loss_brl"):
         custo.append(["Prejuízo acumulado informado, abatido na apuração",
                       brl(escolhido["carried_loss_brl"])])
-    custo.append(["Total", brl(escolhido["transition_total_brl"])])
+    if not completo:
+        custo.append([", ".join(p["ticker"] for p in escolhido["positions_without_cost_basis"])
+                      + f": {brl(escolhido['unpriced_sale_brl'])} vendidos sem custo apurável",
+                      "não apurado"])
+    custo.append(["Total" if completo else "Apurado até aqui (piso)",
+                  brl(escolhido["transition_total_brl"])])
     add_table(document, ["Item", "Valor"], custo, widths=[11.6, 5.0])
     nota = ("Apurado por cesta de compensação, ao custo médio: ganhos e prejuízos se encontram "
             "dentro da cesta e nunca entre cestas. A isenção mensal de R$ 20 mil para ações à "
@@ -196,6 +218,9 @@ def build(payload: dict, cliente: str, escolha: str, registro: dict) -> Document
         "A política que define o destino é retrospectiva na janela em que foi medida; a amostra "
         "confirmatória começa no primeiro pregão de 2027.",
     ]
+    if not completo:
+        limitacoes.insert(0, "O imposto é parcial e o total é piso: há posição sem custo de "
+                             "aquisição apurável, e a diferença não foi estimada.")
     if escolhido.get("issuer_cap_rule"):
         limitacoes.insert(1, f"O teto de concentração deste plano é {pct(escolhido['issuer_cap'])} "
                              f"por emissor: {escolhido['issuer_cap_rule']}.")

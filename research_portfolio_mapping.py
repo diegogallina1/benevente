@@ -13,6 +13,7 @@ from __future__ import annotations
 from pathlib import Path
 import json
 
+from b3_connection import Qualidade
 from client_intake import Intake, as_json
 from portfolio_mapping import Bucket, Position, Source, adapt_portfolio, map_portfolio
 
@@ -25,20 +26,33 @@ def brl(valor: float) -> str:
 
 
 def carteira_exemplo() -> list[Position]:
-    """Carteira sintética de demonstração, com os casos que importam."""
+    """Carteira sintética de demonstração, com os casos que importam.
+
+    A qualidade do custo de cada linha veio de research_b3_connection.py, que
+    reconstrói o que a API da B3 permite reconstruir. A WEGE3 é o caso real e
+    incômodo: comprada antes de 01/11/2019, chega com dois terços da posição sem
+    nenhuma compra que a explique.
+    """
     return [
         # já está na cesta do perfil, e no peso
-        Position("CURY3", Bucket.ACAO, 44_000, 20_000, Source.B3_INVESTIDOR),
-        # está na cesta, mas muito acima do peso, com ganho grande
-        Position("WEGE3", Bucket.ACAO, 180_000, 40_000, Source.B3_INVESTIDOR),
+        Position("CURY3", Bucket.ACAO, 44_000, 23_050, Source.B3_INVESTIDOR,
+                 cost_quality=Qualidade.RECONSTRUIDO),
+        # está na cesta, muito acima do peso e com ganho grande — mas o custo só
+        # cobre um terço, então o imposto dela não é apurável
+        Position("WEGE3", Bucket.ACAO, 180_000, 38_000, Source.B3_INVESTIDOR,
+                 cost_quality=Qualidade.PARCIAL),
         # não está na cesta e tem prejuízo — a venda gera crédito
-        Position("MGLU3", Bucket.ACAO, 25_000, 90_000, Source.B3_INVESTIDOR),
-        # renda fixa concentrada acima do teto do FGC
+        Position("MGLU3", Bucket.ACAO, 25_000, 192_000, Source.B3_INVESTIDOR,
+                 cost_quality=Qualidade.RECONSTRUIDO),
+        # renda fixa de balcão: a B3 não manda valor nem custo, veio do escritório
         Position("CDB Banco Beta", Bucket.RENDA_FIXA, 310_000, 300_000,
-                 Source.OPEN_FINANCE, conglomerate="Beta", days_held=500, liquid=False),
-        Position("Tesouro Selic", Bucket.CAIXA, 120_000, 118_000, Source.B3_INVESTIDOR),
-        # ativo fora do escopo da política
-        Position("Cripto", Bucket.FORA_DO_ESCOPO, 21_000, 30_000, Source.MANUAL),
+                 Source.OPEN_FINANCE, conglomerate="Beta", days_held=500, liquid=False,
+                 cost_quality=Qualidade.DECLARADO),
+        Position("Tesouro Selic", Bucket.CAIXA, 120_000, 118_000, Source.B3_INVESTIDOR,
+                 cost_quality=Qualidade.RECONSTRUIDO),
+        # ativo fora do escopo: nunca passou pela B3
+        Position("Cripto", Bucket.FORA_DO_ESCOPO, 21_000, 30_000, Source.MANUAL,
+                 cost_quality=Qualidade.DECLARADO),
     ]
 
 
@@ -55,9 +69,14 @@ def _resumo(nome: str, mapa: dict) -> None:
     print(f"  módulos aplicados:  {', '.join(mapa['modules'])}")
     print(f"  giro necessário:    R$ {mapa['turnover_brl']:,.0f}")
     print(f"  execução:           R$ {mapa['transition_cost_brl']:,.0f}")
-    print(f"  imposto realizado:  R$ {mapa['transition_tax_brl']:,.0f}")
+    print(f"  imposto apurado:    R$ {mapa['transition_tax_brl']:,.0f}")
+    if not mapa["tax_is_complete"]:
+        print(f"  INCOMPLETO:         R$ {mapa['unpriced_sale_brl']:,.0f} vendidos sem custo "
+              f"apurável (" + ", ".join(p["ticker"]
+                                        for p in mapa["positions_without_cost_basis"]) + ")")
     print(f"  custo da mudança:   R$ {mapa['transition_total_brl']:,.0f} "
-          f"({mapa['transition_cost_pct']:.2%} do patrimônio)")
+          f"({mapa['transition_cost_pct']:.2%} do patrimônio)"
+          + ("" if mapa["tax_is_complete"] else "  — piso, não total"))
     print(f"  histórico publicado descreve esta carteira: "
           f"{'sim' if mapa['track_record_applies'] else 'NÃO'}")
 
