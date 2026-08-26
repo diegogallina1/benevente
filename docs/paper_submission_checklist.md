@@ -11,7 +11,7 @@ Este documento separa o que está fechado no repositório do que depende de aç�
 
 ## BTech 2026
 
-- **Fontes atualizadas em 25/08/2026** com o resultado posterior (Seção 4.1.1 no BTech; abstract e seção de escolha de regra no CiFer). Os arquivos finais em outputs/ (.docx/.pdf/.tex) foram gerados da versão anterior e precisam ser regenerados com tools/build_article_documents.py antes de qualquer envio.
+- **Fontes atualizadas em 25/08/2026** com o resultado posterior (Seção 4.1.1 no BTech; abstract e seção de escolha de regra no CiFer). Os arquivos finais em outputs/ (.docx/.pdf/.tex e o suplemento anônimo) foram regenerados em 26/08/2026 a partir das fontes atualizadas (tools/build_article_documents.py + tools/build_ieee_anonymous_supplement.py; PDF IEEE compilado com Tectonic 0.17.0, PDF BTech exportado do .docx via LibreOffice) e conferidos por extração de texto: Seção 4.1.1, 256 candidatos, DSR 0,777 e a frase de contrato presentes em ambos.
 
 - Manuscrito identificado em português, conforme o template oficial.
 - Entre 6.000 e 8.000 palavras, incluindo referências.
