@@ -190,7 +190,7 @@
         </tr></thead>
         <tbody>${rows}${policyRows}</tbody>
       </table></div>
-      <p class="dossier-line"><a class="dossier-download" href="./dossiers/dossie_${activeProfile}_${activeYear}.pdf" target="_blank" rel="noopener">Baixar o dossiê desta decisão (PDF) ↧</a></p>
+      <p class="dossier-line"><a class="dossier-download" href="./dossiers/dossie_${activeProfile}_${activeYear}.pdf" target="_blank" rel="noopener">Baixar o dossiê desta decisão (PDF)</a></p>
       <p class="ladder-note">Peso anterior mostra como a posição mudou em relação ao janeiro anterior; ação diz o que a decisão fez. Score, retorno e volatilidade de doze meses eram observáveis na data da decisão.
       <b>Retorno seguinte</b> é o que aconteceu depois e está separado de propósito: é o único número que a
       decisão não podia ter usado.</p>`;

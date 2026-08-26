@@ -147,10 +147,13 @@ h1, h2, h3, h4,
 /* O valor terminal cresce com o capital do slider; acima de onze dígitos a
    fonte cede antes de o número estourar a borda do cartão. */
 .wealth-card strong.wealth-value { letter-spacing: -.02em; }
-.policy-split-wrap { margin: 1.1rem 0 0; }
+/* O cabeçalho da seção é uma grade de duas colunas; sem ocupar a linha
+   inteira, a tabela caía na coluna estreita, os nomes dos perfis quebravam em
+   três linhas e sobrava um vão morto ao lado dela. */
+.policy-split-wrap { grid-column: 1 / -1; margin: 1.4rem 0 0; }
 .policy-split { width: 100%; max-width: 640px; border-collapse: collapse; background: #fff; border: 1px solid var(--hairline, #dbe4e8); font-size: .82rem; }
 .policy-split th, .policy-split td { padding: .55rem .8rem; text-align: right; border-bottom: 1px solid var(--hairline, #dbe4e8); }
-.policy-split th:first-child, .policy-split td:first-child { text-align: left; }
+.policy-split th:first-child, .policy-split td:first-child { text-align: left; white-space: nowrap; }
 .policy-split thead th { font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft, #5b6f7c); }
 .policy-split tr:last-child td { border-bottom: 0; }
 .policy-split-wrap > p { margin: .5rem 0 0; font-size: .78rem; color: var(--ink-soft, #5b6f7c); max-width: 640px; }
@@ -179,6 +182,40 @@ h1, h2, h3, h4,
    cima (o herói mostrava os botões colados nos cartões CALCULA/EXPLICA/DECIDE).
    A folga vive aqui, uma vez, em vez de um style inline por ocorrência. */
 .hero-actions { margin-top: 1.75rem; }
+
+/* Sem a seta, o link precisa de outro sinal de que é clicável. Um sublinhado
+   fino, deslocado do texto, que ganha peso e cor no hover: o gesto de jornal,
+   não o de painel de aplicativo. */
+.text-link,
+.hero-performance-foot a,
+.version-next a,
+.paper-foot + p a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .28em;
+  text-decoration-color: color-mix(in srgb, currentColor 32%, transparent);
+  transition: text-decoration-color .18s ease, color .18s ease;
+}
+.text-link:hover,
+.hero-performance-foot a:hover,
+.version-next a:hover {
+  text-decoration-color: currentColor;
+  color: var(--brand-green, #0b8377);
+}
+.version-gateway-card > b {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: .3em;
+  text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+  transition: text-decoration-color .18s ease;
+}
+.version-gateway-card:hover > b { text-decoration-color: currentColor; }
+
+/* O botão primário carregava uma sombra colorida forte, que é o acabamento de
+   interface de produto. Uma sombra curta e neutra assenta melhor no papel. */
+.button-primary { box-shadow: 0 2px 10px rgba(12, 60, 55, .12); }
+.button-primary:hover { box-shadow: 0 4px 16px rgba(12, 60, 55, .18); }
+.button { transition: box-shadow .18s ease, background-color .18s ease, border-color .18s ease; }
 .version-gateway-head + .hero-actions { margin-top: 1.25rem; }
 .quick-composition { margin-top: .9rem; font-size: .82rem; color: var(--ink-soft, #5b6f7c); }
 .quick-composition a { color: var(--brand-green, #0b8377); font-weight: 750; text-decoration: none; }
@@ -229,7 +266,22 @@ h1, h2, h3, h4,
 .version-metric strong, .evidence-card strong { font-family: var(--sans); }
 .model-section, .comparison, .lab-section, .evidence-board, .research-disclosure { padding-top: clamp(2.75rem, 4.5vw, 4.5rem); padding-bottom: clamp(2.75rem, 4.5vw, 4.5rem); }
 .version-gateway { padding-top: 3.5rem; padding-bottom: 4rem; }
-.version-gateway-card { min-height: 13.5rem; }
+/* O link do cartão era absoluto num offset fixo do rodapé: quando o parágrafo
+   crescia, o texto passava por baixo dele e as duas linhas se sobrepunham
+   (visível no cartão "Veja o produto de governança"). Coluna flex com o link
+   empurrado pelo auto-margin: o cartão cresce com o conteúdo e nada encosta. */
+.version-gateway-card {
+  min-height: 13.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.version-gateway-card > p { flex: 0 1 auto; }
+.version-gateway-card > b {
+  position: static;
+  margin-top: auto;
+  padding-top: 1.4rem;
+}
 
 @media (max-width: 980px) {
   .hero { grid-template-columns: 1fr; }

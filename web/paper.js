@@ -169,7 +169,7 @@ async function renderLivePortfolio(host, data, decision) {
   }).join("");
   const isVersionPage = host.hasAttribute("data-live-portfolio");
   host.innerHTML = `<div class="paper-portfolio live-portfolio-card">
-    <div class="live-card-head"><div><span class="live-status">${status}</span><h3>${copy.title[mode]}</h3><p>${copy.subtitle[mode]} Decisão de ${date(data.decision_date)}, dados até ${date(data.through)}.</p></div><a class="live-version-tab" href="./benevente-${mode === "b2" ? "1" : "2"}.html">Ver ${mode === "b2" ? copy.b1 : copy.b2} →</a></div>
+    <div class="live-card-head"><div><span class="live-status">${status}</span><h3>${copy.title[mode]}</h3><p>${copy.subtitle[mode]} Decisão de ${date(data.decision_date)}, dados até ${date(data.through)}.</p></div><a class="live-version-tab" href="./benevente-${mode === "b2" ? "1" : "2"}.html">Ver ${mode === "b2" ? copy.b1 : copy.b2}</a></div>
     <div class="paper-metrics live-metrics">
       <div class="paper-metric${data.summary[summaryKey] < 0 ? " negative" : ""}"><span>${copy.return}</span><b>${pct(data.summary[summaryKey])}</b><small>${mode === "b2" ? status : copy.current}</small></div>
       <div class="paper-metric"><span>${copy.value}</span><b>${money(100000 * (1 + data.summary[summaryKey]))}</b><small>capital inicial ${money(data.initial_capital_brl)}</small></div>
