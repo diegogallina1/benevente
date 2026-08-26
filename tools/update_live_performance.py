@@ -158,20 +158,31 @@ def _sample_volatility(returns: list[float]) -> float | None:
 
 
 def target_allocation(
-    holdings: list[dict[str, Any]], base_equity_weight: float, target_equity_weight: float
+    holdings: list[dict[str, Any]], base_equity_weight: float, target_equity_weight: float,
+    exempt: tuple[str, ...] = ()
 ) -> list[dict[str, Any]]:
-    """Escala a cesta proporcionalmente e fecha o livro em 100% com CDI."""
+    """Escala a cesta proporcionalmente e fecha o livro em 100% com CDI.
 
+    ``exempt`` lista instrumentos que a camada de proteção não toca. A política
+    declarada isenta a perna global: o sinal de estresse é calculado sobre o
+    Ibovespa, e cortar o fundo que existe justamente por não seguir o Ibovespa
+    venderia o único ativo ao qual o sinal não se aplica. Sem esta lista, a
+    camada escalaria tudo por igual e o livro publicado deixaria de ser o que o
+    registro declara.
+    """
     if base_equity_weight <= 0 or not 0 <= target_equity_weight <= 1:
         raise LiveDataError("Exposição-alvo inválida")
     rows = [
         {
             "ticker": str(item["ticker"]),
-            "weight": round(float(item["weight"]) / base_equity_weight * target_equity_weight, 12),
+            "weight": round(
+                float(item["weight"]) if str(item["ticker"]) in exempt
+                else float(item["weight"]) / base_equity_weight * target_equity_weight, 12),
         }
         for item in holdings
     ]
-    rows.append({"ticker": "CDI", "weight": round(1.0 - target_equity_weight, 12)})
+    rows.append({"ticker": "CDI",
+                 "weight": round(1.0 - sum(row["weight"] for row in rows), 12)})
     difference = 1.0 - sum(row["weight"] for row in rows)
     rows[-1]["weight"] = round(rows[-1]["weight"] + difference, 12)
     if not math.isclose(sum(row["weight"] for row in rows), 1.0, abs_tol=1e-9):
@@ -327,9 +338,13 @@ def build_live_document(
     if not holdings:
         raise LiveDataError("A decisão não contém ativos")
     decision_date = str(decision["decision_date"])
-    equity_weight = sum(float(item["weight"]) for item in holdings)
+    # A camada de proteção só move a parcela doméstica; a perna global entra no
+    # livro, é marcada a mercado como qualquer outra posição, mas não é cortada.
+    exempt = tuple(str(t) for t in decision.get("overlay_exempt", ()))
+    exempt_weight = sum(float(i["weight"]) for i in holdings if str(i["ticker"]) in exempt)
+    equity_weight = sum(float(item["weight"]) for item in holdings) - exempt_weight
     cdi_weight = float(decision["cdi_weight"])
-    if not math.isclose(equity_weight + cdi_weight, 1.0, abs_tol=1e-8):
+    if not math.isclose(equity_weight + exempt_weight + cdi_weight, 1.0, abs_tol=1e-8):
         raise LiveDataError("Os pesos da decisão não somam 100%")
 
     required = [str(item["ticker"]) for item in holdings] + ["BOVA11", "IBOVESPA"]
@@ -397,9 +412,9 @@ def build_live_document(
         )
 
     series, b2 = apply_benevente2_overlay(series, equity_weight)
-    b1_target = target_allocation(holdings, equity_weight, equity_weight)
+    b1_target = target_allocation(holdings, equity_weight, equity_weight, exempt)
     b2_target = target_allocation(
-        holdings, equity_weight, float(b2["next_session_equity_weight"])
+        holdings, equity_weight, float(b2["next_session_equity_weight"]), exempt
     )
     b1_by_ticker = {row["ticker"]: row["weight"] for row in b1_target}
     for row in b2_target:
@@ -409,7 +424,7 @@ def build_live_document(
         row["amount_for_brl_100k"] = round(row["weight"] * 100_000.0, 2)
     for decision_row in b2["risk_decisions"]:
         decision_row["target_allocation"] = target_allocation(
-            holdings, equity_weight, float(decision_row["target_equity_weight"])
+            holdings, equity_weight, float(decision_row["target_equity_weight"]), exempt
         )
     last = series[-1]
     equity_last = sum(row["weight"] * (1.0 + row["total_return"]) for row in holding_rows)

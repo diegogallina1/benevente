@@ -35,17 +35,22 @@ jobs:
       - name: Atualizar séries e validar contrato
         run: |
           python tools/update_live_performance.py
-          python -m pytest tests/test_live_performance.py -q
+          PYTHONPATH=tools python tools/update_profile_books.py
+          python -m pytest tests/test_live_performance.py tests/test_profile_books_2026.py -q
 
       - name: Publicar somente quando houver novo dado
         shell: bash
         run: |
-          if git diff --quiet -- web/live_performance.json; then
+          tracked="web/live_performance.json web/live_profiles_2026.json"
+          for perfil in conservador equilibrado arrojado; do
+            tracked="$tracked web/live_performance_${perfil}.json web/current_decision_2026_${perfil}.json"
+          done
+          if git diff --quiet -- $tracked; then
             echo "Nenhuma nova observação de mercado."
             exit 0
           fi
           git config user.name "diegogallina1"
           git config user.email "214411949+diegogallina1@users.noreply.github.com"
-          git add web/live_performance.json
+          git add $tracked
           git commit -m "Atualiza acompanhamento corrente de 2026 [skip ci]"
           git push

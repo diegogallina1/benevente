@@ -1,0 +1,196 @@
+{
+  "decision_date": "2026-01-02",
+  "status": "reconstrucao_sob_politica_congelada",
+  "policy": "benevente_profile_ladder_v3",
+  "registration_sha256": "ca2476d4d5ce8dac3796bd20aceefd5437ba7b71fc9e126f2493f6f0beba563b",
+  "approved_by": "Diego Gallina",
+  "honesty": "A política é declarada e foi congelada antes desta execução, então aplicá-la a uma data passada não escolhe nada: orçamento, número de nomes, tetos e fatores já estavam assinados. A amostra confirmatória continua começando no primeiro pregão de 2027 — este livro é reconstrução, não validação prospectiva.",
+  "universe": {
+    "all_instruments": 1424,
+    "equities_at_decision": 361,
+    "identifier_bridge_accepted": 311,
+    "liquid_equities_examined": 138,
+    "fundamental_snapshots": 115,
+    "screened_with_complete_price_history": 115
+  },
+  "books": {
+    "conservador": {
+      "profile": "conservador",
+      "declared": {
+        "maximum_equity_weight": 0.35,
+        "top_assets": 12,
+        "maximum_asset_weight": 0.046667,
+        "global_share_of_portfolio": 0.07
+      },
+      "positions": [
+        {
+          "ticker": "CURY3",
+          "weight": 0.0434,
+          "score": 2.207
+        },
+        {
+          "ticker": "VIVA3",
+          "weight": 0.0434,
+          "score": 4.0746
+        },
+        {
+          "ticker": "CMIN3",
+          "weight": 0.0434,
+          "score": 1.7596
+        },
+        {
+          "ticker": "BBSE3",
+          "weight": 0.03892,
+          "score": 1.1462
+        },
+        {
+          "ticker": "LEVE3",
+          "weight": 0.022432,
+          "score": 0.6955
+        },
+        {
+          "ticker": "PLPL3",
+          "weight": 0.016877,
+          "score": 0.5436
+        },
+        {
+          "ticker": "COGN3",
+          "weight": 0.015319,
+          "score": 0.501
+        },
+        {
+          "ticker": "TEND3",
+          "weight": 0.013842,
+          "score": 0.4606
+        },
+        {
+          "ticker": "TFCO4",
+          "weight": 0.01276,
+          "score": 0.4311
+        },
+        {
+          "ticker": "ECOR3",
+          "weight": 0.010263,
+          "score": 0.3628
+        },
+        {
+          "ticker": "RDOR3",
+          "weight": 0.01024,
+          "score": 0.3622
+        },
+        {
+          "ticker": "B3SA3",
+          "weight": 0.009145,
+          "score": 0.3323
+        }
+      ],
+      "domestic_equity": 0.279998,
+      "global_sleeve": 0.07,
+      "global_instrument": "IVVB11",
+      "cash": 0.650002,
+      "issuers": 12
+    },
+    "equilibrado": {
+      "profile": "equilibrado",
+      "declared": {
+        "maximum_equity_weight": 0.55,
+        "top_assets": 8,
+        "maximum_asset_weight": 0.11,
+        "global_share_of_portfolio": 0.11
+      },
+      "positions": [
+        {
+          "ticker": "CURY3",
+          "weight": 0.0979,
+          "score": 2.207
+        },
+        {
+          "ticker": "VIVA3",
+          "weight": 0.0979,
+          "score": 4.0746
+        },
+        {
+          "ticker": "CMIN3",
+          "weight": 0.0979,
+          "score": 1.7596
+        },
+        {
+          "ticker": "BBSE3",
+          "weight": 0.059672,
+          "score": 1.1462
+        },
+        {
+          "ticker": "LEVE3",
+          "weight": 0.030924,
+          "score": 0.6955
+        },
+        {
+          "ticker": "PLPL3",
+          "weight": 0.021238,
+          "score": 0.5436
+        },
+        {
+          "ticker": "COGN3",
+          "weight": 0.01852,
+          "score": 0.501
+        },
+        {
+          "ticker": "TEND3",
+          "weight": 0.015946,
+          "score": 0.4606
+        }
+      ],
+      "domestic_equity": 0.44,
+      "global_sleeve": 0.11,
+      "global_instrument": "IVVB11",
+      "cash": 0.45,
+      "issuers": 8
+    },
+    "arrojado": {
+      "profile": "arrojado",
+      "declared": {
+        "maximum_equity_weight": 0.75,
+        "top_assets": 5,
+        "maximum_asset_weight": 0.24,
+        "global_share_of_portfolio": 0.15
+      },
+      "positions": [
+        {
+          "ticker": "VIVA3",
+          "weight": 0.204,
+          "score": 4.0746
+        },
+        {
+          "ticker": "CURY3",
+          "weight": 0.17325,
+          "score": 2.207
+        },
+        {
+          "ticker": "CMIN3",
+          "weight": 0.129244,
+          "score": 1.7596
+        },
+        {
+          "ticker": "BBSE3",
+          "weight": 0.068918,
+          "score": 1.1462
+        },
+        {
+          "ticker": "LEVE3",
+          "weight": 0.024588,
+          "score": 0.6955
+        }
+      ],
+      "domestic_equity": 0.6,
+      "global_sleeve": 0.15,
+      "global_instrument": "IVVB11",
+      "cash": 0.25,
+      "issuers": 5
+    }
+  },
+  "limitations": [
+    "Não é recomendação individual nem ordem de compra.",
+    "O acompanhamento usa preço de fechamento da B3 sem ajuste de proventos: o retorno parcial subestima ações que pagaram dividendos no período.",
+    "A seleção exige ponte B3/CVM auditada e fundamentos comparáveis; emissores sem os dois ficam fora da triagem e isso está no arquivo de cobertura."
+  ]
+}

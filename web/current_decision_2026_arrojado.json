@@ -1,0 +1,76 @@
+{
+  "decision_date": "2026-01-02",
+  "profile": "arrojado",
+  "status": "reconstrucao_sob_politica_congelada",
+  "policy": "benevente_profile_ladder_v3",
+  "registration_sha256": "ca2476d4d5ce8dac3796bd20aceefd5437ba7b71fc9e126f2493f6f0beba563b",
+  "approved_by": "Diego Gallina",
+  "declared": {
+    "maximum_equity_weight": 0.75,
+    "top_assets": 5,
+    "maximum_asset_weight": 0.24,
+    "global_share_of_portfolio": 0.15
+  },
+  "holdings": [
+    {
+      "ticker": "VIVA3",
+      "weight": 0.204,
+      "score": 4.0746,
+      "why": "Aprovado na triagem datada e classificado por qualidade, lucro sobre preço e momento de doze meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "CURY3",
+      "weight": 0.17325,
+      "score": 2.207,
+      "why": "Aprovado na triagem datada e classificado por qualidade, lucro sobre preço e momento de doze meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "CMIN3",
+      "weight": 0.129244,
+      "score": 1.7596,
+      "why": "Aprovado na triagem datada e classificado por qualidade, lucro sobre preço e momento de doze meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "BBSE3",
+      "weight": 0.068918,
+      "score": 1.1462,
+      "why": "Aprovado na triagem datada e classificado por qualidade, lucro sobre preço e momento de doze meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "LEVE3",
+      "weight": 0.024588,
+      "score": 0.6955,
+      "why": "Aprovado na triagem datada e classificado por qualidade, lucro sobre preço e momento de doze meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "IVVB11",
+      "weight": 0.15,
+      "score": null,
+      "why": "Perna global declarada pela política: um quinto do orçamento de ações num fundo listado na B3 que segue o S&P 500 em reais. Nunca selecionada pelo fator.",
+      "risk": "Posição em dólar sem proteção cambial: em período de real forte a contribuição de retorno se inverte."
+    }
+  ],
+  "cdi_weight": 0.25,
+  "overlay_exempt": [
+    "IVVB11"
+  ],
+  "universe": {
+    "all_instruments": 1424,
+    "equities_at_decision": 361,
+    "identifier_bridge_accepted": 311,
+    "liquid_equities_examined": 138,
+    "fundamental_snapshots": 115,
+    "screened_with_complete_price_history": 115
+  },
+  "honesty": "A política é declarada e foi congelada antes desta execução, então aplicá-la a uma data passada não escolhe nada: orçamento, número de nomes, tetos e fatores já estavam assinados. A amostra confirmatória continua começando no primeiro pregão de 2027 — este livro é reconstrução, não validação prospectiva.",
+  "limitations": [
+    "Não é recomendação individual nem ordem de compra.",
+    "O acompanhamento usa preço de fechamento da B3 sem ajuste de proventos: o retorno parcial subestima ações que pagaram dividendos no período.",
+    "A seleção exige ponte B3/CVM auditada e fundamentos comparáveis; emissores sem os dois ficam fora da triagem e isso está no arquivo de cobertura."
+  ]
+}

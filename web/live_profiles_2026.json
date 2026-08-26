@@ -1,0 +1,30 @@
+{
+  "decision_date": "2026-01-02",
+  "policy": "benevente_profile_ladder_v3",
+  "registration_sha256": "ca2476d4d5ce8dac3796bd20aceefd5437ba7b71fc9e126f2493f6f0beba563b",
+  "approved_by": "Diego Gallina",
+  "honesty": "A política é declarada e foi congelada antes desta execução, então aplicá-la a uma data passada não escolhe nada: orçamento, número de nomes, tetos e fatores já estavam assinados. A amostra confirmatória continua começando no primeiro pregão de 2027 — este livro é reconstrução, não validação prospectiva.",
+  "profiles": {
+    "conservador": {
+      "through": "2026-08-24",
+      "portfolio_return": 0.0511015718,
+      "equity_weight": 0.35,
+      "issuers": 12,
+      "record_sha256": "72a4fd268801866032f96f2a150d88277f93b20862632e49990f0a630120428a"
+    },
+    "equilibrado": {
+      "through": "2026-08-24",
+      "portfolio_return": 0.0358051625,
+      "equity_weight": 0.55,
+      "issuers": 8,
+      "record_sha256": "161143f0fb27cacbaec9ddac48a9e5d62557c8199f53872262398c612f494142"
+    },
+    "arrojado": {
+      "through": "2026-08-24",
+      "portfolio_return": 0.0034340012,
+      "equity_weight": 0.75,
+      "issuers": 5,
+      "record_sha256": "b4e4359e825541a9dbb71953a22ed4fef2999ba596045940fcb72a1d64e50c9e"
+    }
+  }
+}
