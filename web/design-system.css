@@ -175,6 +175,11 @@ h1, h2, h3, h4,
 .pilot-form-foot { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
 #demo-form-response { margin: 0; font-size: .82rem; color: var(--ink-soft, #5b6f7c); }
 .pilot-note { margin-top: .9rem; font-size: .78rem; color: var(--ink-soft, #5b6f7c); max-width: 720px; }
+/* A linha de ações não tinha margem superior nenhuma: encostava no bloco de
+   cima (o herói mostrava os botões colados nos cartões CALCULA/EXPLICA/DECIDE).
+   A folga vive aqui, uma vez, em vez de um style inline por ocorrência. */
+.hero-actions { margin-top: 1.75rem; }
+.version-gateway-head + .hero-actions { margin-top: 1.25rem; }
 .quick-composition { margin-top: .9rem; font-size: .82rem; color: var(--ink-soft, #5b6f7c); }
 .quick-composition a { color: var(--brand-green, #0b8377); font-weight: 750; text-decoration: none; }
 .quick-composition a:hover { text-decoration: underline; }

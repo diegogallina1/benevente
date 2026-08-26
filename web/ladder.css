@@ -188,7 +188,7 @@
 .alpha-policy { background: #e9eef5; color: #3d5a78; }
 .alpha-policy-row th[scope="row"], .alpha-policy-row td { color: var(--ink-soft, #5b6f7c); }
 .alpha-policy-row { border-top: 2px solid var(--hairline-strong, #bccfc9); }
-.dossier-line { margin: .8rem 0 .2rem; }
+.dossier-line { margin: 1.4rem 0 .3rem; }
 .dossier-download {
   display: inline-block;
   padding: .55rem .95rem;
