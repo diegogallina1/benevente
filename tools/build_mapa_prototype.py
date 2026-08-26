@@ -21,192 +21,240 @@ PERFIL_LABEL = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arr
 HTML = """<title>Plano de carteira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
-/* Escrito a partir da tela pequena: as regras de base valem para o celular e
-   só crescem em telas maiores. O contrário — desenhar no monitor e depois
-   apertar — é o que produz alvo de toque de trinta pixels e tabela que sangra
-   para fora da margem. */
+/* Tokens do IBM Carbon Design System v11 (Apache 2.0), lidos do pacote
+   @carbon/themes 11.79.0: tema White para o claro, Gray 100 para o escuro.
+   Tipografia IBM Plex Sans e IBM Plex Mono, do próprio sistema.
+
+   Duas decisões vêm do Carbon e valem a pena nomear. Canto reto em tudo, sem
+   raio nenhum: é a assinatura do sistema e o contrário do arredondado que hoje
+   marca praticamente toda interface gerada. E aviso com barra de 3px à esquerda
+   em vez de ícone, que informa a gravidade sem pedir atenção.
+
+   Escrito a partir da tela pequena: as regras de base valem para o celular e só
+   crescem depois. O contrário — desenhar no monitor e apertar — é o que produz
+   alvo de toque de trinta pixels e tabela que sangra para fora da margem. */
 :root {
-  --ground: #FBFBF9;  --panel: #FFFFFF;   --ink: #15191D;    --muted: #67707A;
-  --line: #E1E2DE;    --accent: #0B6B63;  --accent-soft: #E6F0EE;
-  --down: #B23A30;    --down-soft: #F7EAE8; --warn: #8A6A1F; --warn-soft: #FAF2DF;
-  --shadow: 0 1px 2px rgba(20,25,30,.05);
+  --bg: #ffffff;         --layer: #f4f4f4;      --layer-2: #ffffff;
+  --line: #c6c6c6;       --line-strong: #8d8d8d;
+  --fg: #161616;         --fg-2: #525252;       --fg-3: #6f6f6f;
+  --on-color: #ffffff;
+  --acao: #0f62fe;       --acao-fraco: #edf5ff;   --btn: #0f62fe;
+  --erro: #da1e28;       --erro-fraco: #fff1f1;
+  --aviso: #f1c21b;      --aviso-fraco: #fcf4d6;
+  --ok: #24a148;         --ok-fraco: #defbe6;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --ground: #101315; --panel: #171B1E;  --ink: #E7EAEC;    --muted: #949CA4;
-    --line: #262B2F;   --accent: #4FBFB2; --accent-soft: #16302E;
-    --down: #E4776A;   --down-soft: #2E1D1B; --warn: #D8B45E; --warn-soft: #2C2415;
-    --shadow: none;
+    --bg: #161616;       --layer: #262626;      --layer-2: #393939;
+    --line: #525252;     --line-strong: #6f6f6f;
+    --fg: #f4f4f4;       --fg-2: #c6c6c6;       --fg-3: #a8a8a8;
+    --on-color: #ffffff;
+    --acao: #78a9ff;     --acao-fraco: #002d9c;   --btn: #0f62fe;
+    --erro: #fa4d56;     --erro-fraco: #520408;
+    --aviso: #f1c21b;    --aviso-fraco: #483700;
+    --ok: #42be65;       --ok-fraco: #022d0d;
   }
 }
 :root[data-theme="dark"] {
-  --ground: #101315; --panel: #171B1E;  --ink: #E7EAEC;    --muted: #949CA4;
-  --line: #262B2F;   --accent: #4FBFB2; --accent-soft: #16302E;
-  --down: #E4776A;   --down-soft: #2E1D1B; --warn: #D8B45E; --warn-soft: #2C2415;
-  --shadow: none;
+  --bg: #161616;         --layer: #262626;      --layer-2: #393939;
+  --line: #525252;       --line-strong: #6f6f6f;
+  --fg: #f4f4f4;         --fg-2: #c6c6c6;       --fg-3: #a8a8a8;
+  --on-color: #ffffff;
+  --acao: #78a9ff;       --acao-fraco: #002d9c;   --btn: #0f62fe;
+  --erro: #fa4d56;       --erro-fraco: #520408;
+  --aviso: #f1c21b;      --aviso-fraco: #483700;
+  --ok: #42be65;         --ok-fraco: #022d0d;
 }
+
 * { box-sizing: border-box; }
 body {
-  margin: 0; background: var(--ground); color: var(--ink);
-  font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
-  font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased;
-  overflow-wrap: break-word;
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  font-size: 1rem; line-height: 1.5; letter-spacing: 0;
+  -webkit-font-smoothing: antialiased; overflow-wrap: break-word;
 }
-.wrap { max-width: 40rem; margin: 0 auto; padding: 1.75rem 1.15rem 4rem; }
-.num { font-family: "DM Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
-.neg { color: var(--down); }
+.wrap { max-width: 42rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+.num { font-family: "IBM Plex Mono", ui-monospace, monospace;
+       font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.neg { color: var(--erro); }
 .hidden { display: none; }
+::selection { background: var(--btn); color: var(--on-color); }
 
-header { border-bottom: 1px solid var(--line); padding-bottom: 1.25rem; margin-bottom: 2rem; }
-.topo { display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-        margin-bottom: .45rem; }
-.eyebrow { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
-           color: var(--muted); font-weight: 600; margin: 0; }
-.tema { font: inherit; font-size: .78rem; font-weight: 600; color: var(--muted);
-        background: var(--panel); border: 1px solid var(--line); border-radius: 999px;
-        min-height: 2.75rem; padding: .35rem .85rem; cursor: pointer; display: flex;
-        align-items: center; gap: .4rem; white-space: nowrap; }
-.tema:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* Tipografia na escala do Carbon: label-01, body-01, body-02, heading-03/04. */
+.label { font-size: .75rem; line-height: 1.34; letter-spacing: .32px;
+         color: var(--fg-3); font-weight: 400; margin: 0; }
+h1 { font-size: 1.75rem; line-height: 1.29; font-weight: 400; letter-spacing: 0;
+     margin: 0 0 .5rem; text-wrap: balance; }
+h2 { font-size: 1.25rem; line-height: 1.4; font-weight: 400; margin: 0 0 .25rem; }
+h3 { font-size: 1rem; line-height: 1.5; font-weight: 600; margin: 0; }
+.lede { color: var(--fg-2); font-size: .875rem; line-height: 1.43; margin: 0 0 1.5rem; }
+
+header { padding-bottom: 1.5rem; margin-bottom: 1.5rem;
+         border-bottom: 1px solid var(--line); }
+.topo { display: flex; align-items: center; justify-content: space-between;
+        gap: 1rem; margin-bottom: 1rem; }
+.marca { font-size: .875rem; font-weight: 600; letter-spacing: .16px; margin: 0; }
+.marca span { color: var(--fg-3); font-weight: 400; }
+header p:last-child { margin: 0; color: var(--fg-2); font-size: .875rem; line-height: 1.43; }
+
+.tema { font: inherit; font-size: .75rem; letter-spacing: .32px; color: var(--fg-2);
+        background: none; border: 1px solid var(--line); border-radius: 0;
+        min-height: 2.75rem; padding: 0 .75rem; cursor: pointer;
+        display: flex; align-items: center; gap: .5rem; white-space: nowrap; }
+.tema:focus-visible { outline: 2px solid var(--acao); outline-offset: -2px; }
+
+/* Indicador de etapa: régua no topo de cada item, como no Carbon. Serve para
+   responder "quanto falta", que é a pergunta que faz alguém abandonar. */
+.etapas { display: grid; grid-template-columns: repeat(3, 1fr); gap: .25rem;
+          list-style: none; margin: 0 0 2.5rem; padding: 0; }
+.etapas li { border-top: 2px solid var(--line); padding-top: .5rem;
+             font-size: .75rem; letter-spacing: .32px; color: var(--fg-3); }
+.etapas li[data-on="1"] { border-top-color: var(--acao); color: var(--fg); font-weight: 600; }
+.etapas b { display: block; font-weight: inherit; }
+
+section { margin-bottom: 3rem; }
 
 /* --- conexão --- */
-.cols { display: grid; gap: 1.25rem; margin-top: 1.5rem; }
-.cols ul { margin: 0; padding-left: 1.1rem; font-size: .84rem; color: var(--muted); }
-.cols li { margin-bottom: .35rem; }
-.cols ul.nao li::marker { color: var(--down); }
-h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; margin: 0 0 .4rem;
-     text-wrap: balance; }
-header p { margin: 0; color: var(--muted); font-size: .92rem; }
+.seguranca { list-style: none; margin: 0 0 1.5rem; padding: 0;
+             border-top: 1px solid var(--line); }
+.seguranca li { border-bottom: 1px solid var(--line); padding: .75rem 0;
+                font-size: .875rem; line-height: 1.43; color: var(--fg-2); }
+.seguranca b { color: var(--fg); font-weight: 600; }
+.cols { display: grid; gap: 1.5rem; margin-top: 1.5rem; }
+.cols ul { margin: .5rem 0 0; padding: 0; list-style: none; }
+.cols li { font-size: .875rem; line-height: 1.43; color: var(--fg-2);
+           padding: .5rem 0 .5rem .875rem; border-left: 2px solid var(--line); }
+.cols .nao li { border-left-color: var(--erro); }
 
-section { margin-bottom: 2.5rem; }
-h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 .3rem; }
-.lede { color: var(--muted); font-size: .88rem; margin: 0 0 1.25rem; }
+/* --- painéis --- */
+.painel { background: var(--layer); padding: 1.25rem 1rem; }
+.painel .big { font-size: 1.75rem; line-height: 1.29; font-weight: 400; }
+.painel p { margin: .5rem 0 0; color: var(--fg-2); font-size: .875rem; line-height: 1.43; }
+
+.aviso { border-left: 3px solid var(--aviso); background: var(--aviso-fraco);
+         padding: 1rem; margin-top: 1.5rem; font-size: .875rem; line-height: 1.43; }
+.aviso.erro { border-left-color: var(--erro); background: var(--erro-fraco); }
+.aviso p { margin: 0; color: var(--fg-2); }
+.aviso b { color: var(--fg); font-weight: 600; }
+
+.barras { margin-top: 1.5rem; }
+.barra-linha { margin-bottom: 1rem; }
+.barra-linha > span { display: block; font-size: .75rem; letter-spacing: .32px;
+                      color: var(--fg-3); margin-bottom: .375rem; }
+.legenda { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; margin-top: .75rem;
+           font-size: .75rem; letter-spacing: .32px; color: var(--fg-3); }
+.legenda i { display: inline-block; width: .75rem; height: .75rem;
+             margin-right: .375rem; vertical-align: -1px; }
 
 /* --- perguntas --- */
-.q { border-top: 1px solid var(--line); padding: 1.15rem 0; }
-.q:first-of-type { border-top: none; padding-top: .25rem; }
-.q > p { margin: 0 0 .2rem; font-weight: 600; font-size: 1rem; text-wrap: pretty; }
-.q .help { color: var(--muted); font-size: .84rem; margin: 0 0 .85rem; }
-.opts { display: flex; flex-direction: column; gap: .5rem; }
-.opt { font: inherit; font-size: .92rem; text-align: left; cursor: pointer;
-       min-height: 2.75rem; padding: .7rem 1rem;
-       border: 1px solid var(--line); border-radius: 10px; background: var(--panel);
-       color: var(--ink); transition: border-color .12s, background .12s; }
-.opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.opt[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent);
-                            color: var(--accent); font-weight: 600; }
-.cap { font-size: .85rem; color: var(--muted); margin: 1rem 0 0; }
-/* :not(.neg) porque "b" qualificado por classe vence ".neg" na cascata, e sem
-   isso a pior queda medida aparece na cor do texto comum — o único número da
-   frase que precisa ser vermelho. */
-.cap b:not(.neg) { color: var(--ink); font-weight: 600; }
-.cap b.neg { font-weight: 600; }
-/* Respondido, o formulário vira uma linha. No celular, deixá-lo aberto obriga a
-   rolar por tudo que já foi respondido para chegar ao resultado. */
-.chips { margin: 0 0 .5rem; font-size: .88rem; color: var(--ink); }
-.chips span + span::before { content: " · "; color: var(--muted); }
-.link { font: inherit; font-size: .85rem; font-weight: 600; color: var(--accent);
-        background: none; border: 0; padding: .6rem 0; min-height: 2.75rem; cursor: pointer;
-        text-decoration: underline; text-underline-offset: 3px; }
-.link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.q { padding: 1.25rem 0; border-top: 1px solid var(--line); }
+.q:first-of-type { border-top: none; padding-top: 0; }
+.q > p { margin: 0 0 .25rem; font-size: 1rem; font-weight: 600; text-wrap: pretty; }
+.q .help { color: var(--fg-2); font-size: .875rem; line-height: 1.43; margin: 0 0 1rem; }
+.opts { display: flex; flex-direction: column; gap: 1px; background: var(--line); }
+.opt { font: inherit; font-size: .875rem; text-align: left; cursor: pointer;
+       min-height: 3rem; padding: .75rem 1rem; border: 0; border-radius: 0;
+       background: var(--layer); color: var(--fg);
+       transition: background .11s, box-shadow .11s; }
+.opt:focus-visible { outline: 2px solid var(--acao); outline-offset: -2px; }
+.opt[aria-pressed="true"] { background: var(--btn); color: var(--on-color); font-weight: 600; }
 
-/* --- resultado --- */
-.verdict { background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
-           padding: 1.1rem 1.2rem; box-shadow: var(--shadow); }
-.verdict .big { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; }
-.verdict p { margin: .35rem 0 0; color: var(--muted); font-size: .86rem; }
+.resumo { border-top: 1px solid var(--line); padding-top: 1rem; }
+.chips { margin: 0 0 .25rem; font-size: .875rem; }
+.chips span + span::before { content: " · "; color: var(--fg-3); }
+.link { font: inherit; font-size: .875rem; color: var(--acao); background: none;
+        border: 0; padding: .625rem 0; min-height: 2.75rem; cursor: pointer;
+        text-decoration: underline; text-underline-offset: 2px; }
+.link:focus-visible { outline: 2px solid var(--acao); outline-offset: 2px; }
+.veredito { font-size: .875rem; line-height: 1.43; color: var(--fg-2); margin: 1.5rem 0 0; }
+.veredito b { color: var(--fg); font-weight: 600; }
+.veredito b.neg { color: var(--erro); }
 
-.bars { margin: 1.5rem 0 0; }
-.barrow { margin-bottom: .85rem; }
-.barrow > span { display: block; font-size: .78rem; color: var(--muted); margin-bottom: .3rem; }
-.legend { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin-top: .75rem;
-          font-size: .78rem; color: var(--muted); }
-.legend i { display: inline-block; width: .65rem; height: .65rem; border-radius: 2px;
-            margin-right: .35rem; vertical-align: -1px; }
-
-.alert { margin-top: 1.35rem; background: var(--warn-soft); border-radius: 10px;
-         padding: .9rem 1.05rem; font-size: .86rem; }
-.alert b { color: var(--ink); }
-.alert p { margin: 0; color: var(--muted); }
-
-/* --- as duas escolhas --- */
-.doors { display: grid; gap: .85rem; }
-.door { text-align: left; font: inherit; cursor: pointer; background: var(--panel);
-        border: 1px solid var(--line); border-radius: 12px; padding: 1.05rem 1.15rem;
-        color: var(--ink); display: flex; flex-direction: column; gap: .55rem;
-        transition: border-color .12s, box-shadow .12s; box-shadow: var(--shadow); }
-.door:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.door[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
-.door h3 { margin: 0; font-size: 1rem; font-weight: 700; letter-spacing: -.01em; }
-.door .cost { font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; }
-.door .cost small { display: block; font-size: .76rem; font-weight: 500; color: var(--muted);
-                    letter-spacing: 0; line-height: 1.35; }
-.door dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: .3rem .7rem;
-           font-size: .84rem; }
-.door dt { color: var(--muted); } .door dd { margin: 0; text-align: right; }
-.flag { font-size: .8rem; border-radius: 7px; padding: .5rem .7rem; margin-top: auto;
-        line-height: 1.4; }
-.flag.ok { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
-.flag.no { background: var(--down-soft); color: var(--down); font-weight: 600; }
+/* --- os dois planos --- */
+.planos { display: grid; gap: 1rem; }
+.plano { text-align: left; font: inherit; cursor: pointer; color: var(--fg);
+         background: var(--layer); border: 0; border-radius: 0;
+         border-left: 3px solid transparent; padding: 1.25rem 1rem;
+         display: flex; flex-direction: column; gap: .75rem;
+         transition: background .11s, border-color .11s; }
+.plano:focus-visible { outline: 2px solid var(--acao); outline-offset: -2px; }
+.plano[aria-pressed="true"] { border-left-color: var(--acao); background: var(--acao-fraco); }
+.plano .custo { font-size: 2rem; line-height: 1.2; font-weight: 400; }
+.plano .custo small { display: block; font-size: .75rem; letter-spacing: .32px;
+                      color: var(--fg-3); margin-top: .25rem; }
+.plano dl { margin: 0; display: grid; grid-template-columns: auto 1fr;
+            gap: .375rem .75rem; font-size: .875rem; }
+.plano dt { color: var(--fg-2); } .plano dd { margin: 0; text-align: right; }
+.falta { border-left: 3px solid var(--erro); background: var(--bg); padding: .75rem;
+         font-size: .8125rem; line-height: 1.4; color: var(--fg-2); }
+.falta b { display: block; color: var(--erro); font-weight: 600; margin-bottom: .125rem; }
+.selo { font-size: .8125rem; line-height: 1.4; padding: .625rem .75rem; margin-top: auto;
+        border-left: 3px solid var(--ok); background: var(--ok-fraco); color: var(--fg); }
+.selo.nao { border-left-color: var(--erro); background: var(--erro-fraco); }
 
 /* --- o que muda --- */
-.ledger { margin-top: 1.75rem; }
-.grp { font-size: .72rem; letter-spacing: .09em; text-transform: uppercase; color: var(--muted);
-       font-weight: 700; margin: 1.35rem 0 .4rem; }
-.grp:first-child { margin-top: 0; }
-.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .2rem .9rem;
-       padding: .7rem 0; border-top: 1px solid var(--line); align-items: baseline; }
-.row b { font-weight: 600; font-size: .95rem; }
-.row .why { grid-column: 1 / -1; color: var(--muted); font-size: .8rem; }
-.row .val { grid-column: 2; grid-row: 1; text-align: right; font-size: .95rem;
-            white-space: nowrap; }
-.row .val small { display: block; color: var(--muted); font-size: .74rem; }
+.razao { margin-top: 1.5rem; }
+.grupo { font-size: .75rem; letter-spacing: .32px; color: var(--fg-3);
+         margin: 1.5rem 0 0; padding-bottom: .5rem; border-bottom: 1px solid var(--line); }
+.grupo:first-child { margin-top: 0; }
+.linha { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .125rem 1rem;
+         padding: .75rem 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.linha b { font-weight: 600; font-size: .875rem; }
+.linha .porque { grid-column: 1 / -1; color: var(--fg-3); font-size: .8125rem;
+                 line-height: 1.4; }
+.linha .val { grid-column: 2; grid-row: 1; text-align: right; font-size: .875rem;
+              white-space: nowrap; }
+.linha .val small { display: block; color: var(--fg-3); font-size: .75rem; }
 
-.bill { margin-top: 1.75rem; border: 1px solid var(--line); border-radius: 12px;
-        background: var(--panel); padding: 1rem 1.15rem; box-shadow: var(--shadow); }
-.bill div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .1rem .9rem;
-            padding: .55rem 0; font-size: .88rem; }
-.bill div + div { border-top: 1px solid var(--line); }
-.bill div span:last-child { margin-left: auto; }
-.bill .tot { font-weight: 700; }
-.bill p { margin: .85rem 0 0; font-size: .8rem; color: var(--muted); }
+.conta { margin-top: 1.5rem; background: var(--layer); padding: .25rem 1rem 1rem; }
+.conta div { display: flex; flex-wrap: wrap; justify-content: space-between;
+             gap: .125rem 1rem; padding: .75rem 0; font-size: .875rem;
+             border-bottom: 1px solid var(--line); line-height: 1.43; }
+.conta div span:last-child { margin-left: auto; }
+.conta .total { font-weight: 600; border-bottom: 0; }
+.conta p { margin: 1rem 0 0; font-size: .8125rem; line-height: 1.4; color: var(--fg-3); }
 
-.cta { margin-top: 1.5rem; display: flex; flex-direction: column; gap: .7rem; }
-.btn { font: inherit; font-size: .95rem; font-weight: 600; cursor: pointer; border-radius: 10px;
-       min-height: 2.9rem; padding: .75rem 1.15rem; width: 100%;
-       border: 1px solid var(--accent); background: var(--accent); color: var(--ground); }
-.btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
-.cta span { font-size: .82rem; color: var(--muted); }
+/* Botão do Carbon: retangular, texto à esquerda, altura de 48px. */
+.acoes { margin-top: 1.5rem; display: flex; flex-direction: column; gap: .75rem; }
+.btn { font: inherit; font-size: .875rem; text-align: left; cursor: pointer;
+       border: 0; border-radius: 0; min-height: 3rem; padding: .875rem 4rem .875rem 1rem;
+       background: var(--btn); color: var(--on-color); width: 100%;
+       transition: background .11s; }
+.btn:focus-visible { outline: 2px solid var(--acao); outline-offset: -4px;
+                     box-shadow: inset 0 0 0 1px var(--on-color); }
+.btn:disabled { background: var(--layer-2); color: var(--fg-3); cursor: default; }
+.acoes span { font-size: .8125rem; line-height: 1.4; color: var(--fg-3); }
 
-footer { border-top: 1px solid var(--line); margin-top: 2.5rem; padding-top: 1.15rem;
-         font-size: .8rem; color: var(--muted); }
-footer p { margin: 0 0 .6rem; }
-footer code { font-family: "DM Mono", monospace; font-size: .95em; }
+footer { border-top: 1px solid var(--line); margin-top: 3rem; padding-top: 1.5rem;
+         font-size: .8125rem; line-height: 1.4; color: var(--fg-3); }
+footer p { margin: 0 0 .75rem; }
+footer code { font-family: "IBM Plex Mono", monospace; font-size: .95em; }
+footer a { color: var(--acao); }
 
-/* Só a partir do tablet o layout ganha colunas. Até lá tudo empilha, que é
-   como a tela é de fato usada. */
-@media (min-width: 40rem) {
-  .wrap { padding: 2.75rem 1.5rem 5rem; }
-  h1 { font-size: 1.85rem; }
-  header p, .lede, footer p { max-width: 56ch; }
-  .opts { flex-direction: row; flex-wrap: wrap; }
-  .opt { padding: .6rem 1rem; font-size: .88rem; border-radius: 999px; }
-  .barrow { display: grid; grid-template-columns: 4.5rem 1fr; gap: .8rem; align-items: center; }
-  .barrow > span { text-align: right; margin-bottom: 0; }
-  .doors { grid-template-columns: 1fr 1fr; gap: 1rem; }
-  .cols { grid-template-columns: 1fr 1fr; gap: 1.75rem; }
-  .row .why { grid-column: 1; }
-  .cta { flex-direction: row; align-items: center; flex-wrap: wrap; }
-  .btn { width: auto; }
+@media (min-width: 42rem) {
+  .wrap { padding: 3rem 1.5rem 5rem; }
+  h1 { font-size: 2.625rem; line-height: 1.199; }
+  .lede, header p:last-child, footer p { max-width: 58ch; }
+  .cols { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .planos { grid-template-columns: 1fr 1fr; }
+  .barra-linha { display: grid; grid-template-columns: 5rem 1fr; gap: 1rem;
+                 align-items: center; }
+  .barra-linha > span { text-align: right; margin-bottom: 0; }
+  .linha .porque { grid-column: 1; }
+  .acoes { flex-direction: row; align-items: center; flex-wrap: wrap; }
+  .btn { width: auto; min-width: 14rem; }
 }
-/* Encolher o alvo de toque é decisão sobre o ponteiro, não sobre a largura: um
-   tablet é largo e continua sendo dedo. Só onde existe mouse os controles
-   ficam compactos e ganham estado de hover. */
 @media (hover: hover) and (pointer: fine) {
-  .opt, .link { min-height: 0; }
-  .btn { min-height: 0; padding: .65rem 1.15rem; }
-  .opt:hover, .door:hover { border-color: var(--accent); }
+  /* Encolher alvo de toque é decisão sobre o ponteiro, não sobre a largura: um
+     tablet é largo e continua sendo dedo. */
+  .tema { min-height: 2rem; } .link { min-height: 0; }
+  .opt:hover { background: var(--layer-2); }
+  .opt[aria-pressed="true"]:hover { background: var(--btn); }
+  .plano:hover { background: var(--layer-2); }
+  .btn:hover:not(:disabled) { filter: brightness(1.12); }
+  .tema:hover { border-color: var(--line-strong); color: var(--fg); }
 }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; scroll-behavior: auto !important; }
@@ -216,79 +264,91 @@ footer code { font-family: "DM Mono", monospace; font-size: .95em; }
 <div class="wrap">
 <header>
   <div class="topo">
-    <p class="eyebrow">Benevente · protótipo</p>
+    <p class="marca">Benevente <span>· protótipo</span></p>
     <button class="tema" type="button" id="tema" aria-label="Alternar tema claro e escuro">
-      <span aria-hidden="true" id="tema-icone">◐</span><span id="tema-txt">Tema</span>
+      <span aria-hidden="true" id="tema-icone"></span><span id="tema-txt">Tema</span>
     </button>
   </div>
   <h1>Plano de carteira</h1>
   <p>Conecte a sua conta da B3, responda quatro perguntas e veja quanto da sua carteira
-     já serve. No fim, dois planos.</p>
+     já serve. No fim, dois planos com custos bem diferentes.</p>
 </header>
+
+<ol class="etapas" id="etapas">
+  <li data-on="1"><b>1</b>Conectar</li>
+  <li><b>2</b>Perguntas</li>
+  <li><b>3</b>Seu plano</li>
+</ol>
 
 <section id="conexao">
   <h2>Conectar a B3</h2>
-  <p class="lede">A autorização acontece dentro do site da B3, com o login dela. Nunca vemos
-     nem guardamos a sua senha, e você desfaz quando quiser, lá mesmo.</p>
+  <p class="lede">Sua carteira vem direto da B3, com a sua autorização.</p>
+  <ul class="seguranca">
+    <li><b>Você entra no site da B3, não aqui.</b> A autorização acontece lá dentro,
+        com o login da própria B3.</li>
+    <li><b>A sua senha não passa por nós.</b> Nunca a vemos e nunca a guardamos.</li>
+    <li><b>Você desliga quando quiser.</b> Em investidor.b3.com.br, na sua conta, em
+        Segurança, Aplicativos e Sites.</li>
+  </ul>
   <button class="btn" type="button" id="conectar">Conectar minha conta da B3</button>
   <div id="chegou" class="hidden">
-    <div class="verdict">
-      <div class="big" id="chegou-tit"></div>
+    <div class="painel">
+      <div class="big num" id="chegou-tit"></div>
       <p id="chegou-txt"></p>
     </div>
     <div class="cols">
-      <div><p class="grp">O que chega</p><ul id="vem"></ul></div>
-      <div><p class="grp">O que não chega</p><ul id="nvem" class="nao"></ul></div>
+      <div><p class="label">O que a B3 manda</p><ul id="vem"></ul></div>
+      <div><p class="label">O que a B3 não manda</p><ul id="nvem" class="nao"></ul></div>
     </div>
-    <div class="alert" id="lacuna"></div>
+    <div class="aviso erro" id="lacuna"></div>
   </div>
 </section>
 
 <section id="perguntas" class="hidden">
   <h2>Quatro perguntas</h2>
-  <p class="lede">Sem pontuação: cada resposta impõe um limite e vale o mais apertado. Por isso
-     dá sempre para apontar qual resposta decidiu.</p>
+  <p class="lede">Sem pontuação: cada resposta impõe um limite e vale o mais apertado.
+     Assim dá sempre para apontar qual resposta decidiu.</p>
   <div id="qs"></div>
-  <div id="resumo" class="hidden">
+  <div id="resumo" class="resumo hidden">
     <p class="chips" id="chips"></p>
     <button class="link" type="button" id="alterar">Alterar respostas</button>
   </div>
-  <p class="cap" id="veredito"></p>
+  <p class="veredito" id="veredito"></p>
 </section>
 
 <section id="mapa" class="hidden">
   <h2>Sua carteira hoje</h2>
-  <p class="lede">Lida do extrato da B3, do Open Finance e do que foi lançado à mão. Cada linha
-     carrega de onde veio.</p>
-  <div class="verdict">
+  <p class="lede">Cada linha carrega de onde veio: extrato da B3, Open Finance ou
+     lançamento manual.</p>
+  <div class="painel">
     <div class="big num" id="aderencia"></div>
     <p id="aderencia-txt"></p>
   </div>
-  <div class="bars">
-    <div class="barrow"><span>hoje</span><div id="bar-hoje"></div></div>
-    <div class="barrow"><span>seu perfil</span><div id="bar-alvo"></div></div>
-    <div class="legend">
-      <span><i style="background:var(--accent)"></i>ações</span>
-      <span><i style="background:var(--muted)"></i>renda fixa e caixa</span>
-      <span><i style="background:var(--down)"></i>fora do escopo</span>
+  <div class="barras">
+    <div class="barra-linha"><span>hoje</span><div id="bar-hoje"></div></div>
+    <div class="barra-linha"><span>seu perfil</span><div id="bar-alvo"></div></div>
+    <div class="legenda">
+      <span><i style="background:var(--btn)"></i>ações</span>
+      <span><i style="background:var(--line-strong)"></i>renda fixa e caixa</span>
+      <span><i style="background:var(--erro)"></i>fora do escopo</span>
     </div>
   </div>
-  <div class="alert" id="fgc"></div>
+  <div class="aviso" id="fgc"></div>
 </section>
 
-<section id="portas" class="hidden">
+<section id="planos-sec" class="hidden">
   <h2>Dois planos</h2>
-  <p class="lede">Um aplica o método inteiro e paga o imposto agora. O outro quase não custa e
-     aplica metade. A escolha é sua, e as duas ficam registradas.</p>
-  <div class="doors" id="doors"></div>
+  <p class="lede">Um aplica o método inteiro e paga o imposto agora. O outro quase não
+     custa e aplica metade. A escolha é sua, e as duas ficam registradas.</p>
+  <div class="planos" id="planos"></div>
 </section>
 
-<section id="razao" class="hidden">
+<section id="razao-sec" class="hidden">
   <h2 id="razao-h"></h2>
   <p class="lede" id="razao-lede"></p>
-  <div class="ledger" id="ledger"></div>
-  <div class="bill" id="bill"></div>
-  <div class="cta">
+  <div class="razao" id="razao"></div>
+  <div class="conta" id="conta"></div>
+  <div class="acoes">
     <button class="btn" type="button">Baixar o dossiê do plano</button>
     <span>PDF com as contas, o plano que você não escolheu e o campo de assinatura.</span>
   </div>
@@ -296,10 +356,12 @@ footer code { font-family: "DM Mono", monospace; font-size: .95em; }
 
 <footer>
   <p><b>Protótipo.</b> A carteira é sintética. Os números vêm de
-     <code>portfolio_mapping.py</code> e o perfil, de <code>client_intake.py</code>. Nenhuma ordem
-     é transmitida por esta tela.</p>
-  <p>O custo aparece antes do benefício de propósito. E nenhuma tela deste projeto promete
+     <code>portfolio_mapping.py</code>, o perfil de <code>client_intake.py</code> e a leitura
+     da B3 de <code>b3_connection.py</code>. Nenhuma ordem é transmitida por esta tela.</p>
+  <p>O custo aparece antes do benefício de propósito, e nenhuma tela deste projeto promete
      patrimônio futuro: o que a Benevente publica é o quanto a própria régua erra.</p>
+  <p>Desenho sobre o <a href="https://carbondesignsystem.com/">IBM Carbon Design System</a>
+     (Apache 2.0), com IBM Plex Sans e IBM Plex Mono.</p>
 </footer>
 </div>
 
@@ -309,27 +371,31 @@ const BRL = v => "R$ " + Math.round(v).toLocaleString("pt-BR");
 const PCT = (v, c = 1) => (v * 100).toFixed(c).replace(".", ",") + "%";
 const RANK = { conservador: 0, equilibrado: 1, arrojado: 2 };
 const respostas = {};
-let caminho = null;
 
+const $ = id => document.getElementById(id);
 const el = (tag, cls, html) => {
   const n = document.createElement(tag);
   if (cls) n.className = cls;
   if (html !== undefined) n.innerHTML = html;
   return n;
 };
+const mostra = (...ids) => ids.forEach(i => $(i).classList.remove("hidden"));
+const esconde = (...ids) => ids.forEach(i => $(i).classList.add("hidden"));
+const etapa = n => [...$("etapas").children].forEach((li, i) =>
+  i <= n ? li.setAttribute("data-on", "1") : li.removeAttribute("data-on"));
 
 /* --- tema --- */
 // Sem escolha salva a página segue o sistema, que é o certo por padrão. A
 // escolha explícita carimba data-theme e ganha das duas media queries.
-const temaBtn = document.getElementById("tema");
+const temaBtn = $("tema");
 const guardado = (() => { try { return localStorage.getItem("tema"); } catch (e) { return null; } })();
 const escuroDoSistema = () => matchMedia("(prefers-color-scheme: dark)").matches;
 function aplicaTema(valor) {
   if (valor) document.documentElement.setAttribute("data-theme", valor);
   else document.documentElement.removeAttribute("data-theme");
   const escuro = valor ? valor === "dark" : escuroDoSistema();
-  document.getElementById("tema-icone").textContent = escuro ? "☾" : "☀";
-  document.getElementById("tema-txt").textContent = escuro ? "Escuro" : "Claro";
+  $("tema-icone").textContent = escuro ? "☾" : "☀";
+  $("tema-txt").textContent = escuro ? "Escuro" : "Claro";
   temaBtn.setAttribute("aria-pressed", String(escuro));
 }
 aplicaTema(guardado);
@@ -337,55 +403,55 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
   if (!document.documentElement.hasAttribute("data-theme")) aplicaTema(null);
 });
 temaBtn.onclick = () => {
-  const escuro = document.documentElement.getAttribute("data-theme")
-    ? document.documentElement.getAttribute("data-theme") === "dark" : escuroDoSistema();
-  const novo = escuro ? "light" : "dark";
+  const atual = document.documentElement.getAttribute("data-theme");
+  const novo = (atual ? atual === "dark" : escuroDoSistema()) ? "light" : "dark";
   aplicaTema(novo);
   try { localStorage.setItem("tema", novo); } catch (e) { /* janela anônima: segue sem salvar */ }
 };
 
 /* --- conexão com a B3 --- */
 const b3 = DADOS.b3;
-document.getElementById("conectar").onclick = () => {
-  const caixa = document.getElementById("chegou");
-  caixa.classList.remove("hidden");
-  document.getElementById("conectar").textContent = "Conta conectada";
-  document.getElementById("conectar").disabled = true;
+const pendentes = Object.entries(b3.gaps.pendentes);
+const nomesPendentes = pendentes.map(([t]) => t).join(", ");
+
+$("conectar").onclick = () => {
+  mostra("chegou");
+  $("conectar").textContent = "Conta conectada";
+  $("conectar").disabled = true;
 
   const total = Object.keys(b3.cost_basis).length;
-  const ok = b3.gaps.com_custo_defensavel;
-  document.getElementById("chegou-tit").textContent =
-    ok + " de " + total + " posições com custo confirmado";
-  document.getElementById("chegou-txt").textContent =
-    "A B3 entrega a posição, mas não entrega o preço médio: não existe esse dado nas APIs " +
-    "dela. O custo é reconstruído das suas negociações, e a base começa em " +
-    b3.base_starts.split("-").reverse().join("/") + ".";
+  $("chegou-tit").textContent = b3.gaps.com_custo_defensavel + " de " + total +
+    " posições completas";
+  $("chegou-txt").textContent =
+    "A B3 manda o que você tem, mas não manda por quanto você comprou — esse dado não " +
+    "existe nas APIs dela. Ele é remontado a partir das suas negociações, e o histórico " +
+    "começa em " + b3.base_starts.split("-").reverse().join("/") + ".";
 
   const lista = (id, itens) => {
-    const ul = document.getElementById(id);
-    ul.innerHTML = "";
+    const ul = $(id); ul.innerHTML = "";
     itens.forEach(t => ul.append(el("li", null, t)));
   };
   lista("vem", b3.coverage.entrega);
   lista("nvem", b3.coverage.nao_entrega.concat(b3.coverage.entrega_pela_metade));
 
-  const alerta = document.getElementById("lacuna");
-  const pendentes = Object.entries(b3.gaps.pendentes);
-  if (!pendentes.length) { alerta.style.display = "none"; }
+  const alerta = $("lacuna");
+  if (!pendentes.length) alerta.style.display = "none";
   else {
-    const [ticker, dados] = pendentes[0];
-    alerta.innerHTML = "<p><b>Falta o custo de " + ticker + ".</b> " + dados.observacao +
-      ". Sem esse número o imposto do plano fica incompleto — e ele não é estimado aqui, " +
-      "porque um imposto estimado se parece com um imposto medido e leva à mesma decisão " +
-      "de vender. Você pode informá-lo depois, com a nota de corretagem antiga.</p>";
+    const [ticker] = pendentes[0];
+    alerta.innerHTML = "<p><b>Falta saber por quanto você comprou " + ticker + ".</b> " +
+      "Essa compra é anterior a " + b3.base_starts.split("-").reverse().join("/") +
+      ", então não está no histórico que a B3 manda. Sem esse número não dá para calcular " +
+      "o imposto dessa venda — e ele não é chutado aqui, porque um imposto chutado tem a " +
+      "mesma cara de um imposto calculado. A nota de corretagem antiga resolve.</p>";
   }
-  document.getElementById("perguntas").classList.remove("hidden");
-  document.getElementById("perguntas").scrollIntoView({ behavior: "smooth", block: "start" });
+  mostra("perguntas");
+  etapa(1);
+  $("perguntas").scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
 /* --- perguntas --- */
 const escolha = DADOS.questionnaire.questions.filter(q => q.kind === "escolha");
-const qs = document.getElementById("qs");
+const qsBox = $("qs");
 escolha.forEach(q => {
   const box = el("div", "q");
   box.append(el("p", null, q.prompt), el("p", "help", q.help));
@@ -403,28 +469,28 @@ escolha.forEach(q => {
     opts.append(b);
   });
   box.append(opts);
-  qs.append(box);
+  qsBox.append(box);
 });
 
-const qsBox = document.getElementById("qs");
-const resumoBox = document.getElementById("resumo");
-document.getElementById("alterar").onclick = () => {
+const resumoBox = $("resumo");
+$("alterar").onclick = () => {
   qsBox.classList.remove("hidden");
   resumoBox.classList.add("hidden");
   qsBox.scrollIntoView({ behavior: "smooth", block: "start" });
 };
 
 function avaliar() {
-  const veredito = document.getElementById("veredito");
   if (Object.keys(respostas).length < escolha.length) {
-    veredito.textContent = "";
-    ["mapa", "portas", "razao"].forEach(id => document.getElementById(id).classList.add("hidden"));
+    $("veredito").textContent = "";
+    esconde("mapa", "planos-sec", "razao-sec");
     return;
   }
+  // Respondido, o formulário vira uma linha: no celular, deixá-lo aberto obriga
+  // a rolar por tudo que já foi respondido para chegar ao resultado.
   qsBox.classList.add("hidden");
   resumoBox.classList.remove("hidden");
-  document.getElementById("chips").innerHTML =
-    escolha.map(q => "<span>" + respostas[q.key].brief + "</span>").join("");
+  $("chips").innerHTML = escolha.map(q => "<span>" + respostas[q.key].brief + "</span>").join("");
+
   // O perfil é o menor teto, igual ao módulo: sem soma, sem peso, sem nota.
   let perfil = "arrojado";
   escolha.forEach(q => {
@@ -436,87 +502,94 @@ function avaliar() {
   const causas = escolha.map(q => respostas[q.key])
     .filter(o => o.caps_profile === perfil && o.note);
   const pior = DADOS.questionnaire.worst_measured_drawdown[perfil];
-  veredito.innerHTML = "Perfil <b>" + perfil + "</b> — " +
+  $("veredito").innerHTML = "Perfil <b>" + perfil + "</b> — " +
     (causas.length ? causas.map(o => o.note).join("; ")
                    : "nenhuma resposta impôs teto abaixo do máximo") +
-    ". A pior queda medida deste perfil foi de <b class='num neg'>" + PCT(pior) + "</b>.";
+    ". A pior queda já medida neste perfil foi de <b class='num neg'>" + PCT(pior) + "</b>.";
+  etapa(2);
   render(perfil);
 }
 
 /* --- mapa --- */
 function render(perfil) {
-  const p = DADOS.profiles[perfil];
-  const a = p.adequar, b = p.adaptar;
-  ["mapa", "portas"].forEach(id => document.getElementById(id).classList.remove("hidden"));
-  document.getElementById("razao").classList.add("hidden");
-  caminho = null;
+  const p = DADOS.profiles[perfil], a = p.adequar, b = p.adaptar;
+  mostra("mapa", "planos-sec");
+  esconde("razao-sec");
 
-  document.getElementById("aderencia").textContent = PCT(a.alignment) + " já serve";
-  document.getElementById("aderencia-txt").textContent =
-    "De " + BRL(a.total_brl) + ", essa parte já está de acordo com o que a política declara para " +
-    "o perfil " + perfil + ". É o resto que os dois planos tratam de forma diferente.";
+  $("aderencia").textContent = PCT(a.alignment) + " já serve";
+  $("aderencia-txt").textContent =
+    "De " + BRL(a.total_brl) + ", essa parte já está de acordo com o que a política declara " +
+    "para o perfil " + perfil + ". É o resto que os dois planos tratam de forma diferente.";
 
   const fora = b.out_of_scope_brl / b.total_brl;
   barra("bar-hoje", [b.equity_before, 1 - b.equity_before - fora, fora]);
   barra("bar-alvo", [b.equity_budget, 1 - b.equity_budget, 0]);
 
-  const fgc = document.getElementById("fgc");
+  const fgc = $("fgc");
   const estouros = Object.entries(a.fgc_breaches || {});
-  fgc.style.display = estouros.length ? "flex" : "none";
+  fgc.style.display = estouros.length ? "block" : "none";
   if (estouros.length) {
     const [nome, valor] = estouros[0];
     fgc.innerHTML = "<p><b>" + BRL(valor - 250000) + " sem cobertura do FGC.</b> " +
       "Você tem " + BRL(valor) + " no conglomerado " + nome + ", e a garantia cobre até " +
-      "R$ 250.000 por CPF. Os dois planos mantêm essa posição: é risco de crédito assumido, e " +
-      "assumi-lo precisa ser decisão registrada, não distração.</p>";
+      "R$ 250.000 por CPF. Os dois planos mantêm essa posição: é risco de crédito assumido, " +
+      "e assumi-lo precisa ser decisão registrada, não distração.</p>";
   }
-  portas(perfil, a, b);
+  planos(perfil, a, b);
 }
 
 function barra(id, partes) {
-  const cores = ["var(--accent)", "var(--muted)", "var(--down)"];
-  const host = document.getElementById(id);
+  const cores = ["var(--btn)", "var(--line-strong)", "var(--erro)"];
+  const host = $(id);
   host.innerHTML = "";
-  host.style.cssText = "display:flex;height:26px;border-radius:5px;overflow:hidden;gap:2px";
+  host.style.cssText = "display:flex;height:2rem;overflow:hidden;gap:1px";
   partes.forEach((v, i) => {
     if (v <= 0.001) return;
     const s = el("div");
     s.style.cssText = "flex:" + v + ";background:" + cores[i] +
-      ";display:grid;place-items:center;font-size:.7rem;font-weight:600;color:var(--ground)";
-    s.textContent = v > 0.08 ? PCT(v, 0) : "";
+      ";display:grid;place-items:center;font-size:.75rem;color:var(--on-color)";
+    s.className = "num";
+    s.textContent = v > 0.09 ? PCT(v, 0) : "";
     s.title = PCT(v);
     host.append(s);
   });
 }
 
-/* --- portas --- */
-function portas(perfil, a, b) {
-  const host = document.getElementById("doors");
+/* --- os dois planos --- */
+function planos(perfil, a, b) {
+  const host = $("planos");
   host.innerHTML = "";
   [["adequar", a], ["adaptar", b]].forEach(([chave, m]) => {
-    const d = el("button", "door");
+    const d = el("button", "plano");
     d.type = "button";
     d.setAttribute("aria-pressed", "false");
     d.append(
       el("h3", null, m.path_label),
-      // Com imposto incompleto o número é piso, não total, e precisa dizer isso
-      // onde é lido — não numa nota adiante.
-      el("div", "cost num", (m.tax_is_complete ? "" : "a partir de ") +
-        BRL(m.transition_total_brl) +
-        "<small>custo hoje · " + (m.transition_cost_pct < 0.0001
-          ? "menos de 0,01%" : PCT(m.transition_cost_pct, 2)) + " do patrimônio</small>"),
+      el("div", "custo num", BRL(m.transition_total_brl) +
+        "<small>" + (m.tax_is_complete ? "custo total" : "custo já calculado") + " · " +
+        (m.transition_cost_pct < 0.0001 ? "menos de 0,01%" : PCT(m.transition_cost_pct, 2)) +
+        " do patrimônio</small>"),
       el("dl", null,
         "<dt>Movimenta</dt><dd class='num'>" + BRL(m.turnover_brl) + "</dd>" +
-        "<dt>Imposto</dt><dd class='num'>" + BRL(m.transition_tax_brl) +
-        (m.tax_is_complete ? "" : " <span class='neg'>+ falta</span>") + "</dd>" +
-        "<dt>Módulos</dt><dd>" + m.modules.length + " de 2</dd>"),
-      el("div", "flag " + (m.track_record_applies ? "ok" : "no"),
-        m.track_record_applies
-          ? "O histórico publicado descreve esta carteira"
-          : "O histórico publicado NÃO descreve esta carteira"));
+        "<dt>Imposto</dt><dd class='num'>" + BRL(m.transition_tax_brl) + "</dd>" +
+        "<dt>Do método</dt><dd>" + m.modules.length + " de 2 módulos</dd>"));
+    // Em vez de um "a partir de" que ninguém decifra, a falta é dita por
+    // extenso: o que falta, de quanto é, e por quê.
+    if (!m.tax_is_complete) {
+      d.append(el("div", "falta",
+        "<b>Ainda falta o imposto de " + m.positions_without_cost_basis.map(p => p.ticker).join(", ") +
+        // Sem "e só aumenta": um ganho eleva o imposto, um prejuízo abate o das
+      // outras vendas da mesma cesta. Só dá para afirmar a direção quem sabe o
+      // custo, que é justamente o que falta.
+      "</b>" + BRL(m.unpriced_sale_brl) + " vão ser vendidos e a B3 não informou por quanto " +
+        "você comprou. Esse imposto entra na conta quando você informar o valor."));
+    }
+    d.append(el("div", "selo " + (m.track_record_applies ? "" : "nao"),
+      m.track_record_applies
+        ? "O resultado que publicamos foi medido nesta carteira"
+        : "O resultado que publicamos NÃO foi medido nesta carteira"));
     d.onclick = () => {
-      caminho = chave;
-      host.querySelectorAll(".door").forEach(x => x.setAttribute("aria-pressed", "false"));
+      host.querySelectorAll(".plano").forEach(x => x.setAttribute("aria-pressed", "false"));
       d.setAttribute("aria-pressed", "true");
       razao(perfil, chave);
     };
@@ -524,38 +597,38 @@ function portas(perfil, a, b) {
   });
 }
 
-/* --- a razão do caminho escolhido --- */
+/* --- o que muda no plano escolhido --- */
 function razao(perfil, chave) {
   const m = DADOS.profiles[perfil][chave];
   const outro = DADOS.profiles[perfil][chave === "adequar" ? "adaptar" : "adequar"];
-  const sec = document.getElementById("razao");
-  sec.classList.remove("hidden");
-  document.getElementById("razao-h").textContent = m.path_label;
-  document.getElementById("razao-lede").textContent = m.honesty;
+  mostra("razao-sec");
+  etapa(3);
+  $("razao-h").textContent = m.path_label;
+  $("razao-lede").textContent = m.honesty;
 
   const grupos = [["vender", "Sai"], ["reduzir", "Reduz"], ["comprar", "Entra"], ["manter", "Fica"]];
-  const led = document.getElementById("ledger");
-  led.innerHTML = "";
+  const host = $("razao");
+  host.innerHTML = "";
   grupos.forEach(([acao, titulo]) => {
     const linhas = m.moves.filter(x => x.action === acao);
     if (!linhas.length) return;
-    led.append(el("p", "grp", titulo + " · " + linhas.length));
+    host.append(el("p", "grupo", titulo + " · " + linhas.length));
     linhas.forEach(x => {
-      const r = el("div", "row");
+      const r = el("div", "linha");
       const delta = x.delta_brl;
       r.append(
         el("b", null, x.ticker),
         el("div", "val num" + (delta < 0 ? " neg" : ""),
           (delta === 0 ? BRL(x.from_brl) : (delta > 0 ? "+" : "−") + BRL(Math.abs(delta))) +
-          "<small>" + BRL(x.from_brl) + " → " + BRL(x.to_brl) + "</small>"),
-        // O motivo primeiro: é ele que responde "por que essa linha existe".
-        // A nota vem depois porque é consequência, não causa.
-        el("div", "why", x.reason + (x.notes && x.notes.length ? " · " + x.notes[0] : "")));
-      led.append(r);
+          "<small>" + BRL(x.from_brl) + " para " + BRL(x.to_brl) + "</small>"),
+        // O motivo primeiro: é ele que responde "por que essa linha existe". A
+        // nota vem depois porque é consequência, não causa.
+        el("div", "porque", x.reason + (x.notes && x.notes.length ? " · " + x.notes[0] : "")));
+      host.append(r);
     });
   });
 
-  const bill = document.getElementById("bill");
+  const conta = $("conta");
   let html = "<div><span>Execução</span><span class='num'>" +
     BRL(m.transition_cost_brl) + "</span></div>";
   Object.entries(m.tax_by_bucket).forEach(([cesta, d]) => {
@@ -568,35 +641,31 @@ function razao(perfil, chave) {
       ? nome + " · imposto sobre " + BRL(d.realised_gain_brl) + " de ganho"
       : cesta === "fora_do_escopo"
         ? nome + " · prejuízo de " + BRL(-d.realised_gain_brl) + ", de regime próprio"
-        : nome + " · prejuízo de " + BRL(-d.realised_gain_brl) +
-          ", que vira crédito nesta cesta";
-    html += "<div><span>" + rotulo + "</span><span class='num'>" +
-      BRL(d.tax_brl) + "</span></div>";
+        : nome + " · prejuízo de " + BRL(-d.realised_gain_brl) + ", que vira crédito nesta cesta";
+    html += "<div><span>" + rotulo + "</span><span class='num'>" + BRL(d.tax_brl) + "</span></div>";
   });
   if (!m.tax_is_complete) {
-    html += "<div><span class='neg'>" + m.positions_without_cost_basis.map(p => p.ticker).join(", ") +
-      " · " + BRL(m.unpriced_sale_brl) + " vendidos sem custo apurável</span>" +
-      "<span class='num neg'>não apurado</span></div>";
+    html += "<div><span class='neg'>Imposto de " +
+      m.positions_without_cost_basis.map(p => p.ticker).join(", ") + ", sobre " +
+      BRL(m.unpriced_sale_brl) + " vendidos</span>" +
+      "<span class='num neg'>ainda sem calcular</span></div>";
   }
-  html += "<div class='tot'><span>" +
-    (m.tax_is_complete ? "Total, pago uma vez" : "Apurado até aqui — piso, não total") +
+  html += "<div class='total'><span>" +
+    (m.tax_is_complete ? "Total, pago uma vez" : "Calculado até aqui, pago uma vez") +
     "</span><span class='num'>" + BRL(m.transition_total_brl) + "</span></div>";
-  // Todo zero na coluna de imposto precisa dizer por que é zero. Sem isso, a
-  // isenção mensal e uma conta não feita ficam com a mesma aparência.
-  const ganhoRV = (m.tax_by_bucket.renda_variavel || {}).realised_gain_brl || 0;
-  html += "<p>Apurado por cesta, ao custo médio: ganhos e prejuízos se compensam dentro da cesta " +
-    "e nunca entre cestas." +
-    (m.exempt_month_assumed && ganhoRV > 0
+  html += "<p>O imposto é apurado por cesta, ao custo médio: ganhos e prejuízos se compensam " +
+    "dentro da cesta e nunca entre cestas." +
+    (m.exempt_month_assumed && (m.tax_by_bucket.renda_variavel || {}).realised_gain_brl > 0
       ? " O imposto sobre ações fica em zero porque o total vendido no mês cabe na isenção de " +
         "R$ 20 mil — se houver outra venda no mesmo mês, ela deixa de valer."
       : "") +
     (m.tax_by_bucket.fora_do_escopo
-      ? " O zero na cesta fora do escopo não é isenção: é uma conta que não é feita aqui, porque " +
-        "cripto tem regime próprio."
+      ? " O zero na cesta fora do escopo não é isenção: é uma conta que não é feita aqui, " +
+        "porque cripto tem regime próprio."
       : "") +
     " O outro plano custaria " + BRL(outro.transition_total_brl) + ".</p>";
-  bill.innerHTML = html;
-  sec.scrollIntoView({ behavior: "smooth", block: "start" });
+  conta.innerHTML = html;
+  $("razao-sec").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 </script>
 """
