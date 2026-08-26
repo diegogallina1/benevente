@@ -11,6 +11,8 @@ Este documento separa o que está fechado no repositório do que depende de aç�
 
 ## BTech 2026
 
+- **Fontes atualizadas em 25/08/2026** com o resultado posterior (Seção 4.1.1 no BTech; abstract e seção de escolha de regra no CiFer). Os arquivos finais em outputs/ (.docx/.pdf/.tex) foram gerados da versão anterior e precisam ser regenerados com tools/build_article_documents.py antes de qualquer envio.
+
 - Manuscrito identificado em português, conforme o template oficial.
 - Entre 6.000 e 8.000 palavras, incluindo referências.
 - Times New Roman 12, espaçamento 1,5, margens superior e esquerda de 3 cm, inferior e direita de 2 cm.

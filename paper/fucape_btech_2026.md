@@ -4,7 +4,7 @@
 
 ## Resumo
 
-Decisões de carteira precisam continuar explicáveis depois de executadas. Este trabalho constrói e avalia o Benevente Wealth System, um artefato que registra os dados admitidos, a regra quantitativa, a carteira proposta, a explicação e a aprovação humana. A pesquisa segue design science e combina testes funcionais, auditoria adversarial e diagnóstico sequencial de onze decisões entre 2015 e 2025. Sete controles capazes de impedir inflação artificial dos resultados foram incorporados. A auditoria também revelou que 13,9% da exposição acumulada a ações dependia de proventos imputados. A tentativa de reconstruir 56 observações ativo-ano com fechamentos brutos e eventos da página atual da B3 comparou 54, encontrou sete divergências superiores a cinco pontos percentuais e deixou duas sem resposta. O sistema recusou o selo de reconciliação. Os retornos são, portanto, diagnóstico de desenvolvimento, não validação comercial. Na reamostragem pareada, os intervalos de 95% do excesso de retorno cruzam zero contra CDI e Ibovespa. O Benevente 1 foi registrado em 16 de agosto de 2026; extensões posteriores não herdam essa data. O modelo de linguagem não demonstrou ganho de retorno e permanece restrito à explicação. A contribuição comprovada é separar, de forma verificável, dado, cálculo, linguagem e responsabilidade.
+Decisões de carteira precisam continuar explicáveis depois de executadas. Este trabalho constrói e avalia o Benevente Wealth System, um artefato que registra os dados admitidos, a regra quantitativa, a carteira proposta, a explicação e a aprovação humana. A pesquisa segue design science e combina testes funcionais, auditoria adversarial e diagnóstico sequencial de onze decisões entre 2015 e 2025. Sete controles capazes de impedir inflação artificial dos resultados foram incorporados. A auditoria também revelou que 13,9% da exposição acumulada a ações dependia de proventos imputados. A reconstrução de 56 observações ativo-ano com eventos da página atual da B3 comparou 54, achou sete divergências acima de cinco pontos percentuais e deixou duas sem resposta; o selo de reconciliação foi recusado. Os retornos são, portanto, diagnóstico de desenvolvimento, não validação comercial. Na reamostragem pareada, os intervalos de 95% do excesso de retorno cruzam zero contra CDI e Ibovespa. O Benevente 1 foi registrado em 16 de agosto de 2026; extensões posteriores não herdam essa data. Atualização posterior (25/08/2026): a seleção aninhada foi aposentada por medição — 36 → 256 candidatos custou 2,63 p.p. ao ano — e a política vigente é declarada e congelada por perfil (Seção 4.1.1). O modelo de linguagem não demonstrou ganho de retorno e permanece restrito à explicação. A contribuição comprovada é separar, de forma verificável, dado, cálculo, linguagem e responsabilidade.
 
 Palavras-chave: governança de investimentos; alocação de carteira; trilha de auditoria; design science; pesquisa reprodutível.
 
@@ -12,7 +12,7 @@ Palavras-chave: governança de investimentos; alocação de carteira; trilha de 
 
 ## 1. Introdução: problema, objetivo e contribuição
 
-Este trabalho parte de um problema operacional: a recomendação é produzida hoje, mas pode precisar ser defendida anos depois. Sem preservar o dado admitido, a versão da regra e a aprovação, a justificativa posterior pode incorporar informações inexistentes na decisão. O Benevente produz a proposta e seu registro verificável. A intensidade do problema e a disposição a pagar ainda precisam ser medidas em piloto. O artigo não atribui ao artefato impacto regional ou demanda comercial não observados.
+O problema é operacional: a recomendação é produzida hoje e defendida anos depois; sem preservar dado admitido, versão da regra e aprovação, a justificativa posterior incorpora informação que não existia. O Benevente produz proposta e registro verificável no mesmo fluxo. Intensidade do problema e disposição a pagar ainda dependem de piloto; o artigo não presume impacto regional nem demanda.
 
 Quando um cliente pergunta por que uma ação entrou na carteira anos antes, o escritório precisa demonstrar três coisas.
 
@@ -20,7 +20,7 @@ Quando um cliente pergunta por que uma ação entrou na carteira anos antes, o e
 2. Qual regra foi aplicada. Não a regra que o escritório usa hoje, mas a que estava vigente naquele janeiro, com os limites que estavam vigentes.
 3. Quem aprovou. Uma decisão de alocação sem responsável identificado não é auditável, e a automação sem aprovação humana desloca a responsabilidade para um sistema que não pode respondê-la.
 
-Planilhas sem controle de versão podem sobrescrever estados, misturar regra e dado e perder autoria. Sistemas fechados podem entregar uma carteira sem evidenciar o critério. O artefato deve permitir que uma pessoa independente refaça a decisão sem depender da memória de quem a produziu.
+Planilha sobrescreve estado e perde autoria; sistema fechado entrega carteira sem evidenciar critério. O artefato deve permitir que um terceiro refaça a decisão sem depender da memória de quem a produziu.
 
 A pergunta prioritária é: como usar modelos de linguagem acessíveis à comunidade para apoiar decisões de investimento, e quão úteis são essas ferramentas para a tomada de decisão? No Benevente, ela se torna uma questão de engenharia e governança: como produzir proposta e prova no mesmo fluxo, sem transferir ao texto gerado a seleção, os pesos ou a responsabilidade?
 
@@ -30,13 +30,13 @@ O objetivo é construir e avaliar um artefato B2B que transforme cada recomenda�
 
 ## 2. Problema prático e fundamentação
 
-O público inicial do Benevente são escritórios de investimento, consultorias de valores mobiliários e estruturas de gestão patrimonial que precisam recomendar, revisar e defender carteiras. Nesse ambiente, a dificuldade não termina quando o peso de cada ativo é calculado. A instituição precisa preservar o contexto da decisão, demonstrar por que um ativo foi aceito ou recusado e comparar o resultado com alternativas reconhecíveis pelo cliente. O piloto comercial proposto poderá ser realizado no Espírito Santo por conveniência e aderência ao congresso, mas sua função será medir o problema e a utilidade do artefato, não confirmar antecipadamente um efeito sobre a economia local.
+O público inicial são escritórios de investimento, consultorias de valores mobiliários e gestão patrimonial que precisam recomendar, revisar e defender carteiras: preservar o contexto da decisão, demonstrar por que cada ativo entrou ou não, e comparar com alternativas reconhecíveis pelo cliente. O piloto comercial proposto poderá ser realizado no Espírito Santo por conveniência e aderência ao congresso, mas sua função será medir o problema e a utilidade do artefato, não confirmar antecipadamente um efeito sobre a economia local.
 
 Três vieses clássicos de backtesting foram tratados como requisitos de projeto. O viés de sobrevivência é mitigado ao reconstruir o universo pelo arquivo histórico da B3 e manter os deslistados; ainda resta reconciliar integralmente seus eventos societários. O viés de antecipação, ou *look-ahead*, é mitigado pela data de recebimento de ITR e DFP e pelo corte anual; republicações e fontes auxiliares continuam sujeitas a inspeção. O viés de mineração de dados, ou *data-snooping*, é limitado pela seleção aninhada, pelo prêmio de retrospectiva e pelo Sharpe deflacionado (Bailey & López de Prado, 2014), mas onze decisões não substituem uma amostra prospectiva.
 
 Markowitz (1952) fundamenta a comparação média-variância, ou MVO, calculada de modo independente sobre o mesmo conjunto elegível. Black e Litterman (1992) inspiram apenas a separação entre visões e alocação, não um modelo implementado. DeMiguel, Garlappi e Uppal (2009) justificam diversificação e cautela diante do erro de estimação; o MVO de 7,83% ao ano nesta execução descreve um comparador específico, não inferioridade geral. Qualidade, valor e confirmação de mercado dialogam com Novy-Marx (2013) e Fama e French (2015). Custos, giro e deslizamento entram no protocolo porque atritos podem consumir anomalias (Novy-Marx & Velikov, 2016).
 
-Os estudos recentes também recomendam separar utilidade narrativa de capacidade preditiva. Perlin et al. (2025) executaram 30 mil simulações com 1.522 empresas anonimizadas e não encontraram superioridade consistente do Gemini sobre 1/N ou S&P 500, sobretudo em horizontes longos. Pelster e Val (2024) adotaram um experimento ao vivo, desenho mais adequado para evitar conhecimento posterior. Kim, Muhn e Nikolaev (2024) reportam que modelos podem extrair informações narrativas úteis de demonstrativos anonimizados, sem que isso implique alfa de negociação. Li et al. (2026), no FINSABER, mostram que vantagens aparentes se deterioram em universos amplos, horizontes longos e regimes distintos. FINCON (Yu et al., 2024) inspira a divisão de responsabilidades, não autonomia de negociação. Esse conjunto sustenta a escolha do Benevente: a regra determinística calcula, o modelo apenas explica fatos aprovados e sua utilidade será avaliada prospectivamente.
+A literatura recente separa utilidade narrativa de capacidade preditiva: Perlin et al. (2025), com 30 mil simulações e 1.522 empresas anonimizadas, não encontram superioridade consistente de LLM sobre 1/N ou S&P 500; Pelster e Val (2024) defendem o experimento ao vivo contra conhecimento posterior; Kim, Muhn e Nikolaev (2024) mostram extração narrativa útil sem alfa de negociação; Li et al. (2026, FINSABER) veem vantagens aparentes se deteriorarem em universos amplos e regimes distintos; FINCON (Yu et al., 2024) inspira divisão de responsabilidades, não autonomia. Esse conjunto sustenta a escolha do Benevente: a regra calcula, o modelo apenas explica fatos aprovados, e a utilidade será avaliada prospectivamente.
 
 Essas escolhas definem o tipo de evidência que o trabalho pode produzir. O backtest é um experimento histórico sobre um protocolo e não uma simulação da experiência individual de todo cliente. Suitability, necessidade de liquidez, tributação específica, ativos já detidos e restrições contratuais podem mudar a carteira implementável. Por isso, o artefato separa três objetos que costumam aparecer misturados: a regra acadêmica usada para medir o sinal; a política institucional que limita o risco; e o texto explicativo que ajuda uma pessoa a revisar a decisão. Uma boa curva não substitui nenhum dos três.
 
@@ -66,7 +66,7 @@ O fluxo da Figura 1 separa funções que costumam aparecer misturadas. Dados e f
 
 O universo de registro é o arquivo histórico de cotações da própria B3, não um feed de terceiro. A consequência é direta e mensurável. O painel construído cobre 514 emissores entre 2010 e 2025, dos quais 166 deixam de negociar antes de dezembro de 2025, 77 deles antes de 2020, e 58 já haviam perdido mais de 60% do próprio topo quando pararam de negociar. Um painel montado a partir de provedor público simplesmente não contém essas empresas. A diferença entre incluí-las e não incluí-las é a diferença entre medir a estratégia e medir a sorte de ter olhado só para os sobreviventes.
 
-Preços deslistados exigem tratamento de eventos societários sem a ajuda do provedor. A primeira versão detectava razões de preço redondas e obteve precisão de 88,1%, mas recall de apenas 23,3% contra o arquivo de eventos disponível. Para retirar essa heurística da posição de fonte principal, uma nova rotina consultou diretamente a página pública da B3 (B3, 2026b). A página respondeu para 475 das 497 séries. Depois de excluir eventos anteriores ao intervalo realmente observado de cada código, o arquivo contém 9.772 registros, 127 subscrições e 153 eventos manuais. Vinte e dois códigos não foram devolvidos. A auditoria também corrigiu uma interpretação indevida: resposta do endpoint não significa cobertura histórica completa. Entre as 56 observações ativo-ano efetivamente mantidas, 54 puderam ser reconstruídas com o arquivo atual; sete divergiram do retorno ajustado publicado em mais de cinco pontos percentuais e duas observações de MRFG3 ficaram sem resposta. Nenhum evento manual coincidiu com uma posição aberta. A série publicada não foi requalificada: ela continua como dado de pesquisa até que uma base histórica primária ou licenciada consiga reproduzir cada retorno desde o preço bruto.
+Preços deslistados exigem eventos societários sem ajuda do provedor. O detector de razões redondas obteve precisão de 88,1% e recall de 23,3%; para tirá-lo da posição de fonte principal, uma rotina consultou a página pública da B3 (2026b), que respondeu para 475 das 497 séries — 9.772 registros, 127 subscrições, 153 eventos manuais; 22 códigos sem resposta. Resposta do endpoint não significa cobertura histórica completa. Entre as 56 observações ativo-ano efetivamente mantidas, 54 puderam ser reconstruídas com o arquivo atual; sete divergiram do retorno ajustado publicado em mais de cinco pontos percentuais e duas observações de MRFG3 ficaram sem resposta. Nenhum evento manual coincidiu com uma posição aberta. A série publicada não foi requalificada: ela continua como dado de pesquisa até que uma base histórica primária ou licenciada consiga reproduzir cada retorno desde o preço bruto.
 
 Os fundamentos vêm dos formulários ITR e DFP da CVM, com a data de recebimento usada como porta: um documento só entra na decisão de janeiro do ano *t* se o regulador o recebeu antes daquela data. A ponte entre o ticker da B3 e o CNPJ da CVM é construída ano a ano, e sua cobertura é publicada em vez de suposta. Em 2012, primeiro ano da série, 266 de 314 ações tiveram ponte aceita e 171 tiveram fundamentos completos, porque a série do ITR começa em 2011 e 2012 é o primeiro ano em que a construção de doze meses tem os dois lados disponíveis.
 
@@ -76,7 +76,7 @@ A tela de elegibilidade reprova ativos por liquidez insuficiente, ausência de f
 
 O foco econômico é uma análise fundamentalista multifatorial. Qualidade procura empresas capazes de remunerar o capital e sustentar a operação; valor procura um preço coerente com lucros, patrimônio ou geração de caixa; momento de doze meses funciona como confirmação de mercado e reduz a compra mecânica de uma empresa barata que continua deteriorando. Liquidez determina se a tese é executável. Bancos e empresas operacionais recebem métricas diferentes porque dívida e margem operacional não significam a mesma coisa nos dois balanços. O retorno histórico entra como fator complementar, não substitui os demonstrativos.
 
-Depois da triagem, cada ativo recebe um escore comparável dentro do universo disponível naquele janeiro. A estratégia publicada faz um corte nos melhores emissores, mantém apenas uma classe por emissor e distribui o orçamento de renda variável proporcionalmente ao escore, sujeito ao número de posições e aos limites da configuração. O saldo fica no CDI. A configuração completa — família de fatores, número de posições e orçamento de ações — é escolhida anualmente pelo desempenho ajustado ao risco nos anos já encerrados. A otimização média-variância não define essa carteira. Ela é calculada de modo independente, sobre o mesmo universo elegível, para medir o que uma carteira puramente quantitativa de média e covariância teria produzido.
+Depois da triagem, cada ativo recebe um escore comparável dentro do universo disponível naquele janeiro. A estratégia publicada faz um corte nos melhores emissores, mantém apenas uma classe por emissor e distribui o orçamento de renda variável proporcionalmente ao escore, sujeito ao número de posições e aos limites da configuração. O saldo fica no CDI. No período aqui avaliado, a configuração completa — família de fatores, número de posições e orçamento de ações — era escolhida ano a ano pela seleção aninhada da Seção 4.1; desde 25/08/2026 ela é declarada e congelada por perfil (Seção 4.1.1).
 
 Essa separação também resolve a ambiguidade entre os nomes. Benevente Quant AI designa a pesquisa acadêmica, inclusive o experimento que combina um modelo de linguagem com um otimizador convexo. Benevente Wealth System designa o produto B2B de governança que entrega proposta, explicação e registro. A carteira histórica publicada é a regra multifatorial determinística. O modelo de linguagem não seleciona ativo e não escreve peso; seu papel é transformar fatos aprovados em tese, riscos e perguntas para revisão humana.
 
@@ -84,11 +84,11 @@ Sem expor o código da aplicação, a lógica é verificável. O sistema elimina
 
 ### 3.4 Por que a decisão é anual
 
-A cadência anual é uma hipótese coerente com a natureza do sinal e, neste estudo, uma escolha empiricamente testada. Qualidade, retorno sobre capital, alavancagem e geração de caixa são grandezas divulgadas em ciclos contábeis e cuja tese econômica precisa de tempo para aparecer no preço. Uma troca mensal baseada nelas pode vender uma empresa antes que a melhora operacional seja reconhecida e aumenta o número de decisões que precisam ser justificadas. A revisão em janeiro também cria uma fronteira operacional simples: tudo o que foi publicado até a data pode entrar; tudo o que veio depois pertence ao próximo ciclo.
+A cadência anual é coerente com o sinal e foi testada: fundamentos são divulgados em ciclos contábeis e a tese precisa de tempo para aparecer no preço; troca mensal vende a empresa antes do reconhecimento e multiplica decisões a justificar. A revisão em janeiro cria uma fronteira simples — o publicado até a data entra, o resto pertence ao próximo ciclo.
 
-Anual não significa que o sistema ignora o risco durante doze meses. Preços, concentração, liquidez e eventos materiais podem ser monitorados continuamente, e uma política institucional pode prever um gatilho extraordinário. Significa apenas que a reseleção sistemática da cesta acontece uma vez por ano. No teste de robustez, mantendo regra e dados constantes, a reseleção anual superou as versões trimestral e mensal antes mesmo dos custos. Com apenas onze anos pareados, isso não prova que a frequência anual seja universalmente ótima; mostra que não houve evidência para substituir a regra mais simples nesta amostra.
+Anual não significa ignorar risco por doze meses — preço, concentração, liquidez e eventos seguem monitorados, e uma política institucional pode prever gatilho extraordinário; significa que a reseleção sistemática ocorre uma vez ao ano. Mantidas regra e dados, a cadência anual superou trimestral e mensal antes dos custos; onze anos pareados não provam otimalidade, apenas ausência de evidência para trocar a regra mais simples.
 
-Notícias não entram no retorno histórico deste estudo. No acompanhamento corrente, um radar com Gemini lê fontes públicas, deduplica ocorrências e classifica alertas para revisão humana. Ele não altera ativos nem pesos. Avaliar se notícias acrescentam valor preditivo exige um braço prospectivo separado, com horário de publicação, corte verificável e decisões arquivadas antes do desfecho. Misturar notícias retrospectivamente ao protocolo anual criaria uma nova oportunidade de usar informação futura.
+Notícias não entram no retorno histórico. No acompanhamento corrente, um radar com Gemini lê fontes públicas e classifica alertas para revisão humana, sem alterar ativos ou pesos; avaliá-las exige braço prospectivo com horário de publicação e decisões arquivadas antes do desfecho — misturá-las retrospectivamente reabriria o uso de informação futura.
 
 ### 3.5 Custos, imposto e execução
 
@@ -118,6 +118,12 @@ Quatro mecanismos delimitam o que o software pode fazer. Eles transformam a pres
 O artefato admite múltiplas políticas, combinando orçamento de renda variável, número de posições e família de fatores. Publicar a melhor delas medida sobre toda a amostra seria exatamente o erro que a Seção 2 descreve. Na sequência histórica, para decidir a política do ano *t*, o sistema ordena as 36 candidatas usando somente os anos encerrados antes de *t*, pelo índice de Sharpe do excesso sobre o CDI, e adota a primeira colocada. Trocar de política é tratado como operação real e cobra rebalanceamento integral.
 
 O ranqueamento exige no mínimo três anos encerrados. Como o painel começa em 2012, os anos de 2012 a 2014 inicializam a escolha e 2015 a 2025 formam onze decisões anuais. A ordem temporal reduz o uso direto do retorno futuro em cada decisão, mas não cria uma amostra verdadeiramente externa: os dados, filtros e hipóteses foram examinados durante o desenvolvimento do projeto. Por isso, esta janela é chamada de diagnóstico retrospectivo sequencial, e não de teste fora da amostra. O teste prospectivo começa apenas depois do congelamento descrito na Seção 4.5.
+
+#### 4.1.1 Resultado posterior: o limite de capacidade da própria busca (25/08/2026)
+
+Após o fechamento deste texto, a defesa da Seção 4.1 foi testada em si mesma: com insumos, código e janela idênticos (as 36 configurações compartilhadas reproduzem com diferença máxima de 5,6×10⁻¹⁷), a mesma seleção aninhada sobre 256 candidatos rendeu 12,68% ao ano contra 15,31% da grade de 36, e o Sharpe deflacionado caiu de 0,957 para 0,777, abaixo da significância — o máximo esperado sob a hipótese nula subiu de 0,375 para 0,746. Em 2018, o seletor amplo dedicou o ano a uma configuração que rendeu −7,2% contra 6,4% do CDI. A seleção aninhada tem, portanto, um limite de capacidade: dez observações anuais não ranqueiam 256 candidatos, e ultrapassá-lo degrada em silêncio a garantia que o protocolo oferece.
+
+A resposta foi declarar em vez de buscar: uma configuração por perfil — conservador (35% em ações, 12 emissores), equilibrado (55%, 8) e arrojado (75%, 5), com um quinto do orçamento de ações num fundo B3 do S&P 500 em reais — congelada no registro benevente_profile_ladder_v2 (SHA-256 fc5521f1…), com assinante, critério de falseamento e amostra confirmatória a partir de 2027. No diagnóstico 2015–2025, cada perfil bateu o CDI em 8 de 11 anos, com quedas máximas de −9,2%, −17,9% e −28,9% sob a camada de proteção. O experimento completo está em manuscrito próprio (declared_over_searched_2026), e todo número publicado é conferido por máquina contra os artefatos. A mesma auditoria corrigiu a referência do Ibovespa para a série datada de origem (11,74% a.a., queda de −46,8%), após constatar deriva na curva rebaseada do motor.
 
 ### 4.2 Comparadores
 
@@ -153,9 +159,9 @@ A versão anual Benevente 1 foi registrada em 16 de agosto de 2026, com hash e d
 
 ### 5.1 Funcionamento e diagnóstico financeiro
 
-O artefato produziu, para cada decisão anual, um registro com fontes, hashes, elegibilidade, ranking, pesos, custos estimados, comparadores e justificativa. Os testes de integridade recusaram arquivos alterados, pesos que não somavam 100%, ordens acima do limite de liquidez e fundamentos recebidos depois da decisão. A auditoria adversarial descrita na Seção 5.7 encontrou sete defeitos no próprio processo de pesquisa. Corrigi-los mudou as métricas, o que demonstra que o registro é capaz de contestar o resultado que o sistema produz.
+Cada decisão anual saiu com fontes, hashes, elegibilidade, ranking, pesos, custos, comparadores e justificativa; os testes de integridade recusaram arquivo alterado, peso que não soma 100%, ordem acima da liquidez e fundamento recebido após a decisão. A auditoria adversarial (Seção 5.7) achou sete defeitos no próprio processo, e corrigi-los mudou as métricas — o registro contesta o resultado que o sistema produz.
 
-A Tabela 2 apresenta o diagnóstico financeiro de onze decisões, de 2015 a 2025, líquido de custos estimados. Ele descreve o comportamento do protótipo durante o desenvolvimento. Não é validação prospectiva nem demonstração de que a carteira repetirá o desempenho.
+A Tabela 2 apresenta o diagnóstico de onze decisões (2015–2025), líquido de custos estimados: comportamento do protótipo no desenvolvimento, não validação prospectiva nem promessa de repetição.
 
 | Série | Retorno anualizado | Valor final de R$ 100 mil | Anos vencidos | Queda máxima diária |
 |---|---:|---:|:---:|---:|
@@ -215,13 +221,19 @@ O prêmio de retrospectiva diz que escolher a política vencedora conhecendo tod
 
 ### 5.5 O que não funcionou
 
-Cinco hipóteses foram testadas e nenhuma se sustentou de forma suficiente para substituir a política principal. Elas são publicadas porque um artefato que só reporta o que deu certo não é auditável.
+Oito hipóteses foram testadas e nenhuma se sustentou de forma suficiente para substituir a política principal. Elas são publicadas porque um artefato que só reporta o que deu certo não é auditável.
 
-Previsão anual de regime. Testamos se indicadores disponíveis em janeiro, entre prêmio de lucro sobre o CDI, nível do CDI, retorno e volatilidade do mercado nos doze meses anteriores e distância do topo, anteciparam se o ano seria de ações ou de caixa. Sobre 8 anos, o melhor preditor acertou 3 de 4 chamadas efetivas, com p de 0,31 contra cara-ou-coroa. Um acerto de 75% em quatro tentativas não distingue habilidade de sorte. O prêmio disponível para quem acertasse todas as chamadas era de 6,5 pontos percentuais ao ano, e permanece inalcançável. Sem sinal.
+Ampliar a busca de configurações. Ver Seção 4.1.1: 36 → 256 candidatos custou 2,63 pontos percentuais ao ano e a significância. É a rejeição que reorganizou o protocolo.
+
+Pesar pelo inverso da volatilidade. Contra o peso publicado, perdeu em 8 de 8 configurações — 0,95 ponto de queda a menos por 2,11 pontos de retorno — e piorou o pior ano justamente nas cestas largas onde deveria ajudar.
+
+Meta de volatilidade em janeiro. Cortou exposição em 5 de 13 anos, sempre depois de um estresse e nunca antes: 2020 rodou cheio e a queda máxima não mudou um dia; 2016 foi cortado a 8,8% de ações num ano de +35%.
+
+Previsão anual de regime. Cinco indicadores disponíveis em janeiro (prêmio de lucro sobre o CDI, nível do CDI, retorno e volatilidade de doze meses, distância do topo) tentaram antecipar se o ano seria de ações ou de caixa. O melhor acertou 3 de 4 chamadas (p = 0,31): sorte e habilidade indistinguíveis, com prêmio potencial de 6,5 p.p. ao ano inalcançado. Sem sinal.
 
 Realocação mensal e semanal. Em 118 períodos mensais e 521 semanais, nenhuma das sete regras contínuas superou de forma significativa o peso estático. A regra de média-variância foi significativamente pior. O prêmio por acertar o tempo existe, mas nenhum sinal testado o capturou.
 
-Reseleção mais frequente da cesta. A objeção seguinte é diferente da anterior e precisa ser separada dela: não se a proporção entre ações e caixa deve mudar mais vezes, que é o que o parágrafo acima rejeita, mas se a própria cesta deveria ser retriada, reordenada e reotimizada mais vezes por ano. Testamos três cadências com a mesma regra, os mesmos limites e o mesmo painel, variando apenas as datas de decisão.
+Reseleção mais frequente da cesta. Questão distinta da anterior: não a proporção ações/caixa, mas se a própria cesta deveria ser retriada mais vezes por ano. Três cadências, mesma regra, mesmos limites, mesmo painel; só as datas de decisão variam.
 
 | Cadência | Decisões | CAGR bruto | Líquido de custo | Após IR | Giro no ano |
 |---|---:|---:|---:|---:|---:|
@@ -229,9 +241,9 @@ Reseleção mais frequente da cesta. A objeção seguinte é diferente da anteri
 | Trimestral | 44 | 16,37% | 16,25% | 15,60% | 116,0% |
 | Mensal | 132 | 13,92% | 13,75% | 13,32% | 177,6% |
 
-Nenhuma cadência mais rápida superou a anual. Pareando por ano-calendário, a trimestral fica 1,55 ponto percentual abaixo ao ano após imposto, com p de 0,376, e a mensal 3,27 pontos abaixo, com p de 0,306. A leitura correta é que não há evidência de que decidir mais vezes ajude, e não que esteja provado que atrapalhe: onze anos pareados não sustentam a afirmação mais forte.
+Nenhuma cadência mais rápida superou a anual: pareada por ano-calendário e após imposto, a trimestral fica 1,55 p.p. abaixo (p = 0,376) e a mensal 3,27 (p = 0,306). A leitura correta é ausência de evidência a favor, não prova de prejuízo.
 
-A diferença surgiu antes dos custos: o retorno bruto caiu 4,66 pontos da cadência anual para a mensal. O sinal combina qualidade, valor e momento, grandezas de maturação lenta. O modelo tributário subestima o imposto do braço mensal ao não acompanhar o lote vendido; esse viés favorece a alternativa que mesmo assim não venceu.
+A diferença nasce antes dos custos — o bruto cai 4,66 pontos de anual para mensal; o sinal amadurece devagar. O modelo tributário até favorece o braço mensal, que mesmo assim não venceu.
 
 Modelo de linguagem como fonte de retorno. Este é o teste que mais interessa à governança do produto, e está detalhado a seguir.
 
@@ -302,7 +314,7 @@ O produto permanece em estágio de protótipo reprodutível. A janela de 2015 a 
 
 ### 6.4 Matriz de evidências
 
-A Tabela 9 delimita o que pode ser afirmado na data da submissão. Ela também serve como contrato de comunicação para a demonstração do produto.
+A Tabela 9 delimita o que pode ser afirmado na submissão e é o contrato de comunicação da demonstração.
 
 | Afirmação | Evidência disponível | Situação |
 |---|---|---|
@@ -314,7 +326,7 @@ A Tabela 9 delimita o que pode ser afirmado na data da submissão. Ela também s
 | Há demanda e disposição a pagar | Piloto ainda não executado | Não demonstrada |
 | A regra funciona em dados futuros | Registro de 16/08/2026, mínimo de três anos | Em acompanhamento |
 
-A matriz converge com a literatura externa. A ausência de alfa atribuído ao modelo é compatível com Perlin et al. (2025) e com o desgaste de vantagens em testes longos descrito por Li et al. (2026). O valor narrativo ainda plausível acompanha Kim et al. (2024), mas não autoriza pesos. A linha prospectiva adota a exigência empírica ilustrada por Pelster e Val (2024). Assim, cada achado externo reforça uma fronteira do artefato: cálculo determinístico, explicação limitada e responsabilidade humana.
+A matriz converge com a literatura: sem alfa do modelo (Perlin et al., 2025; Li et al., 2026), valor narrativo plausível sem autorizar pesos (Kim et al., 2024), exigência prospectiva (Pelster & Val, 2024). Cada achado externo reforça uma fronteira do artefato.
 
 ---
 
@@ -322,17 +334,17 @@ A matriz converge com a literatura externa. A ausência de alfa atribuído ao mo
 
 ### 7.1 Limitações
 
-A primeira limitação é temporal. Onze decisões anuais são poucas, e a janela avaliada também serviu ao desenvolvimento. O prêmio de retrospectiva de 0,65 ponto percentual e o Sharpe deflacionado tratam parte do risco de múltiplas tentativas, mas não equivalem a validação prospectiva. A reamostragem também não cria regimes que a história não contém.
+A primeira limitação é temporal: onze decisões anuais são poucas, e a janela também serviu ao desenvolvimento. O prêmio de retrospectiva de 0,65 ponto percentual e o Sharpe deflacionado tratam parte do risco de múltiplas tentativas, mas não equivalem a validação prospectiva. A reamostragem também não cria regimes que a história não contém.
 
 A segunda limitação está nos dados. A página atual da B3 respondeu para 95,6% das séries consultadas, mas esse percentual mede resposta do serviço, não completude histórica. A reconstrução das posições efetivamente mantidas encontrou sete diferenças materiais em 54 comparações e duas observações sem resposta. Papéis sem cobertura completa recebem, em casos identificados, uma distribuição imputada pela mediana transversal do ano. Essa fragilidade atingiu 13,9% da exposição acumulada a ações e 50% da carteira total em 2020. O novo arquivo melhora a auditabilidade porque permite reprovar a própria reconciliação; não transforma a curva em evidência institucional.
 
 A terceira é econômica. A queda máxima diária do Benevente 1 chegou a 47,8%, ligeiramente pior que os 47,0% do Ibovespa. O Benevente 2 reduziu essa marca retrospectiva para 28,7% e melhorou o retorno pontual, mas foi concebido depois da Covid-19, não possui imposto intranual conciliado por lote e ainda não demonstrou benefício prospectivo.
 
-Por fim, o produto não elimina responsabilidade profissional. Uso comercial exige enquadramento regulatório, política de suitability, segurança, contrato de fontes e aprovação humana. O modelo de linguagem não antecipou a Covid-19, não seleciona ativos e não define pesos. O radar atual lê e classifica notícias com Gemini para alerta humano, mas não participa do retorno histórico nem muda a carteira.
+Por fim, o produto não elimina responsabilidade profissional: uso comercial exige enquadramento regulatório, suitability, segurança, contrato de fontes e aprovação humana. O modelo de linguagem não antecipou a Covid-19, não seleciona ativos e não define pesos. O radar atual lê e classifica notícias com Gemini para alerta humano, mas não participa do retorno histórico nem muda a carteira.
 
 ### 7.2 Recomendações de pesquisa e implantação
 
-O passo científico prioritário é acumular decisões depois do registro congelado. Em paralelo, uma versão institucional precisará adquirir ou construir um livro histórico de eventos capaz de cobrir os 22 códigos não devolvidos e reproduzir as sete diferenças materiais encontradas no escopo da estratégia. A reamostragem em blocos já mede dependência serial curta; testes seguintes devem acrescentar trajetórias sintéticas com regimes de baixa prolongada que não estejam limitadas à ordem histórica. Simulação não substitui observação futura. Um estudo com notícias deve ser registrado como braço separado, com frequência trimestral ou orientada a eventos e horário verificável. O passo de produto é um piloto silencioso, sem execução automática, capaz de medir tempo, completude documental, divergência de custos, compreensão do usuário e disposição a pagar.
+O passo científico prioritário é acumular decisões após o registro congelado. Em paralelo, uma versão institucional precisará adquirir ou construir um livro histórico de eventos capaz de cobrir os 22 códigos não devolvidos e reproduzir as sete diferenças materiais encontradas no escopo da estratégia. A reamostragem em blocos já mede dependência serial curta; testes seguintes devem acrescentar trajetórias sintéticas com regimes de baixa prolongada que não estejam limitadas à ordem histórica. Simulação não substitui observação futura. Um estudo com notícias deve ser registrado como braço separado, com frequência trimestral ou orientada a eventos e horário verificável. O passo de produto é um piloto silencioso, sem execução automática, capaz de medir tempo, completude documental, divergência de custos, compreensão do usuário e disposição a pagar.
 
 ---
 
@@ -340,9 +352,13 @@ O passo científico prioritário é acumular decisões depois do registro congel
 
 O Benevente Wealth System foi construído para resolver uma falha operacional específica: carteiras são propostas em um momento e justificadas em outro, enquanto os dados, a regra e a aprovação podem se separar. O protótipo mostrou que é possível produzir a alocação e a evidência da decisão no mesmo fluxo, com fundamentos admitidos pela data de recebimento, regra quantitativa separada da explicação em linguagem natural, custos, imposto e comparadores independentes.
 
-No diagnóstico de 2015 a 2025, a carteira apresentou retorno anualizado superior aos comparadores e queda máxima semelhante à do mercado. A incerteza da amostra e a dependência parcial de séries imputadas impedem tratar essa diferença como superioridade comprovada. Os testes negativos são informativos: a frequência anual não perdeu para reseleções mais rápidas, o modelo de linguagem não acrescentou retorno e a alocação direta por texto produziu carteiras aritmeticamente inconsistentes em parte dos anos. Esses achados justificam um sistema em que a matemática calcula a alocação, a linguagem ajuda a compreendê-la e uma pessoa conserva a responsabilidade final.
+No diagnóstico 2015–2025, o retorno anualizado superou os comparadores com queda máxima semelhante à do mercado; incerteza amostral e imputação parcial impedem tratar isso como superioridade comprovada. Os negativos são informativos — reselecionar mais rápido não ajudou, o modelo de linguagem não acrescentou retorno, a alocação direta por texto saiu aritmeticamente inconsistente em parte dos anos, e a própria busca de configurações se degradou ao ser ampliada (Seção 4.1.1). Justifica-se um sistema em que a matemática calcula, a linguagem explica e uma pessoa responde.
 
-A conclusão comprovada é mais estreita e mais defensável que a versão anterior do artigo: o artefato cria uma cadeia auditável e usa essa cadeia para descobrir erros que mudam o próprio resultado. A tentativa de reconciliação é parte desse resultado porque o sistema recusou uma fonte primária incapaz de reproduzir integralmente a série publicada. A viabilidade comercial será confirmada somente se um piloto mostrar ganho de tempo, completude documental, compreensão e disposição a pagar. A validade financeira exigirá uma base histórica reconciliável e dados posteriores ao registro; a política de risco começa sua amostra confirmatória em 2027. Até lá, o desempenho histórico permanece diagnóstico de desenvolvimento.
+A conclusão comprovada é estreita e defensável: o artefato cria uma cadeia auditável e a usa para descobrir erros que mudam o próprio resultado — inclusive recusando uma fonte primária incapaz de reproduzir a série publicada. A viabilidade comercial será confirmada somente se um piloto mostrar ganho de tempo, completude documental, compreensão e disposição a pagar. A validade financeira exigirá uma base histórica reconciliável e dados posteriores ao registro; a política de risco começa sua amostra confirmatória em 2027. Até lá, o desempenho histórico permanece diagnóstico de desenvolvimento.
+
+---
+
+**Nota (25/08/2026).** O ciclo de auditoria alcançou o próprio protocolo: a busca aninhada foi aposentada por medição (Seção 4.1.1) e substituída por políticas declaradas e congeladas por perfil. Os números aqui reportados permanecem reprodutíveis e descrevem a regra do período; o que muda é a alegação — de "escolher sem ler a resposta" para "medir o limite dessa escolha e declarar quando ele é atingido".
 
 ---
 
@@ -382,7 +398,6 @@ DeMiguel, V., Garlappi, L., & Uppal, R. (2009). Optimal versus naive diversifica
 
 Fama, E. F., & French, K. R. (2015). A five-factor asset pricing model. *Journal of Financial Economics, 116*(1), 1–22. https://doi.org/10.1016/j.jfineco.2014.10.010
 
-Harvey, C. R., Liu, Y., & Zhu, H. (2016). … and the cross-section of expected returns. *Review of Financial Studies, 29*(1), 5–68. https://doi.org/10.1093/rfs/hhv059
 
 Hevner, A. R., March, S. T., Park, J., & Ram, S. (2004). Design science in information systems research. *MIS Quarterly, 28*(1), 75–105. https://doi.org/10.2307/25148625
 

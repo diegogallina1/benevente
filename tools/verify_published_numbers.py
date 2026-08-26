@@ -196,6 +196,21 @@ def main() -> int:
         check(f"{page} sem Ibovespa defasado (11,33/11.33/11,77/11.77)",
               all(x not in s for x in ("11,33", "11.33", "11,77", "11.77", "46,95", "46.95")))
 
+    # ------------------------------------------------- G. manuscritos não podem derivar
+    btech = (ROOT / "paper/fucape_btech_2026.md").read_text(encoding="utf-8")
+    cifer = (ROOT / "paper/ieee_cifer_2027.tex").read_text(encoding="utf-8")
+    novo = (ROOT / "paper/declared_over_searched_2026.md").read_text(encoding="utf-8")
+    check("BTech carrega o resultado posterior (256, 2,63 pp, 0,777, fc5521f1)",
+          all(x in btech for x in ("256 candidatos", "2,63 pontos percentuais", "0,777", "fc5521f1")))
+    check("BTech: oito hipóteses rejeitadas, não cinco",
+          "Oito hipóteses foram testadas" in btech and "Cinco hipóteses foram testadas" not in btech)
+    check("CiFer: regra aninhada como registro do período, não como vigente",
+          "protocol of record for the period" in cifer and "The current protocol is nested" not in cifer)
+    check("CiFer carrega o resultado posterior (2.63, 0.777, declared)",
+          all(x in cifer for x in ("2.63 percentage points", "0.777", "declared and frozen per investor profile")))
+    check("manuscrito novo: tabela do par com 1.047 (não 0.806) e faixa 6.7-8.7",
+          "1.047" in novo and "| 0.806 |" not in novo and "6.7–8.7" in novo)
+
     print()
     if FAILURES:
         print(f"{len(FAILURES)} FALHA(S):")
