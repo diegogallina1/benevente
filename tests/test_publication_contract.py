@@ -42,7 +42,7 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     assert "Benevente 2, Ibovespa e CDI" not in home  # comparison is visual, not repeated as prose
     # The home must be meaningful before JavaScript runs, so the ladder's own
     # figures are the static fallback. They used to be the retired rule's.
-    assert all(label in home for label in ("+265,6%", "+388,6%", "+634,0%", "+174,4%"))
+    assert all(label in home for label in ("+259,6%", "+382,9%", "+629,1%", "+167,6%"))
     assert "543,8%" not in home and "509,8%" not in home
     # O estúdio que trocava de versão na home saiu junto com o dossiê: cada
     # página de versão já traz o seu próprio histórico de decisões, e manter um

@@ -103,12 +103,16 @@ def main() -> int:
     check("20 nomes = 74% do universo de 2016 e 21% do de 2025",
           close(20 / uni.loc[2016], .74, 1e-2) and close(20 / uni.loc[2025], .21, 1e-2))
 
-    # ------------------------------------------------------------------- C. escada v2
+    # ------------------------------------------------------------------- C. escada v3
+    # A v3 mantém a escada da v2 e troca o caixa: índice 100% do CDI por Tesouro
+    # Selic líquido de custódia e de rolagem. Os números caem por isso, e é essa
+    # queda que estes valores travam — se um dia subirem sem uma nova versão
+    # registrada, alguma entrada mudou sem passar pelo rito.
     L = json.loads((ROOT / "web/ladder_v2.json").read_text(encoding="utf-8"))
-    R = json.loads((ROOT / "data/benevente_profile_ladder_v2_registration.json").read_text(encoding="utf-8"))
-    esperado = {"conservador": (.35, 12, .1339, -.1670, .1251, -.0916),
-                "equilibrado": (.55, 8, .1637, -.2652, .1551, -.1786),
-                "arrojado": (.75, 5, .2032, -.3564, .1987, -.2894)}
+    R = json.loads((ROOT / "data/benevente_profile_ladder_v3_registration.json").read_text(encoding="utf-8"))
+    esperado = {"conservador": (.35, 12, .1322, -.1671, .1234, -.0917),
+                "equilibrado": (.55, 8, .1625, -.2654, .1539, -.1788),
+                "arrojado": (.75, 5, .2026, -.3564, .1979, -.2895)}
     for nome, (eqw, tops, c1, dd1, c2, dd2) in esperado.items():
         item = L["profiles"][nome]
         ok = (item["declared"]["maximum_equity_weight"] == eqw and item["declared"]["top_assets"] == tops
@@ -120,11 +124,14 @@ def main() -> int:
         custo = (item["benevente1"]["cagr"] - item["benevente2"]["cagr"]) * 100
         check(f"escada {nome}: camada devolve {red:.2f} pp de queda por {custo:.2f} pp",
               6.7 - .05 <= red <= 8.7 + .05 and custo < 1.0)
-    check("CDI 9.61% e Ibovespa 11.74% da fonte datada",
-          close(L["references"]["CDI"]["cagr"], .0961, 5e-4) and close(L["references"]["Ibovespa"]["cagr"], .1174, 5e-4))
-    check("selo e assinatura: evidência == registro",
+    check("caixa 9.36% (Tesouro Selic) e Ibovespa 11.74% da fonte datada",
+          close(L["references"]["Tesouro Selic"]["cagr"], .0936, 5e-4)
+          and close(L["references"]["Ibovespa"]["cagr"], .1174, 5e-4))
+    check("a referência de caixa é nomeada pelo instrumento, não pelo índice",
+          "Tesouro Selic" in L["references"] and "CDI" not in L["references"])
+    check("selo e assinatura: evidência == registro v3",
           L["registration_sha256"] == R["registration_sha256"] and L["approved_by"] == R["approved_by"]
-          and R["registration_sha256"].startswith("fc5521f1"))
+          and R["policy"].endswith("_v3") and R["supersedes"].endswith("_v2"))
     forbidden = json.dumps(R).lower()
     # Parâmetros de política com "drawdown" no nome (limiares do overlay) são
     # permitidos; estatísticas de resultado, não.
@@ -133,12 +140,12 @@ def main() -> int:
 
     cand = pd.read_csv(ROOT / "artifacts/ladder_v2_candidates/ladder_v2_candidates.csv")
     pega = lambda p, r: float(cand[(cand.perfil.eq(p)) & (cand.regime.str.startswith(r))].sharpe_excesso.iloc[0])
-    check("sharpe do par publicado sobe nos 3 (0.512→0.561, 0.507→0.603, 0.537→0.617)",
-          close(pega("conservador", "3"), .512, 1e-3) and close(pega("conservador", "5"), .561, 1e-3)
-          and close(pega("equilibrado", "3"), .507, 1e-3) and close(pega("equilibrado", "5"), .603, 1e-3)
-          and close(pega("arrojado", "3"), .537, 1e-3) and close(pega("arrojado", "5"), .617, 1e-3))
-    check("doméstico isolado: conservador 0.408 → 0.328",
-          close(pega("conservador", "1"), .408, 1e-3) and close(pega("conservador", "2"), .328, 1e-3))
+    check("sharpe do par publicado sobe nos 3 (0.524→0.575, 0.517→0.615, 0.547→0.628)",
+          close(pega("conservador", "3"), .524, 1e-3) and close(pega("conservador", "5"), .575, 1e-3)
+          and close(pega("equilibrado", "3"), .517, 1e-3) and close(pega("equilibrado", "5"), .615, 1e-3)
+          and close(pega("arrojado", "3"), .547, 1e-3) and close(pega("arrojado", "5"), .628, 1e-3))
+    check("doméstico isolado: conservador 0.418 → 0.338",
+          close(pega("conservador", "1"), .418, 1e-3) and close(pega("conservador", "2"), .338, 1e-3))
 
     # ------------------------------------------------------------ D. negativos auxiliares
     lw = pd.read_csv(ROOT / "artifacts/weighting_scheme_v1/ladder_by_weighting.csv")
@@ -183,11 +190,12 @@ def main() -> int:
 
     # ----------------------------------------------------- F. o site repete o que os dados dizem
     versoes = (ROOT / "web/versoes.html").read_text(encoding="utf-8")
-    for fig in ("−16,7", "−9,2", "−26,5", "−17,9", "−35,6", "−28,9", "0,512", "0,561", "0,507", "0,603", "0,537", "0,617", "0,408", "0,328"):
+    for fig in ("−16,7", "−9,2", "−26,5", "−17,9", "−35,6", "−29,0", "0,524", "0,575", "0,517", "0,615", "0,547", "0,628", "0,418", "0,338"):
         check(f"versoes.html cita {fig}", fig.replace("−", "") in versoes.replace("−", ""))
     home = (ROOT / "web/index.html").read_text(encoding="utf-8")
     curva = L["monthly_curve"]["series"]
-    for rotulo, chave in (("265,6", "Conservador"), ("388,6", "Equilibrado"), ("634,0", "Arrojado"), ("174,4", "CDI")):
+    for rotulo, chave in (("259,6", "Conservador"), ("382,9", "Equilibrado"), ("629,1", "Arrojado"),
+                          ("167,6", "Tesouro Selic")):
         implied = curva[chave][-1] - 100
         check(f"home fallback {rotulo}% == fim da curva {chave}",
               rotulo in home and close(implied, float(rotulo.replace(",", ".")), .06))

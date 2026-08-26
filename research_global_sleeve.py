@@ -39,8 +39,16 @@ GLOBAL_INPUTS = {
 }
 
 
-def build_global_engine() -> tuple[AnnualWalkForwardEngine, pd.DataFrame]:
-    prices, _ = load_total_return_export(str(GLOBAL_INPUTS["prices"]), str(GLOBAL_INPUTS["total_return_manifest"]))
+def build_global_engine(prices_path=None, manifest_path=None) -> tuple[AnnualWalkForwardEngine, pd.DataFrame]:
+    """Motor sobre o painel com perna global.
+
+    Os caminhos são parâmetros porque a política vigente declara qual painel usa,
+    e versões diferentes declaram painéis diferentes — a v3 troca a coluna de
+    caixa. O padrão continua sendo o painel da v2, para que todo experimento
+    arquivado siga reproduzindo o que reproduzia.
+    """
+    prices, _ = load_total_return_export(str(prices_path or GLOBAL_INPUTS["prices"]),
+                                         str(manifest_path or GLOBAL_INPUTS["total_return_manifest"]))
     fundamentals = pd.read_csv(GLOBAL_INPUTS["fundamentals"], parse_dates=["as_of_date", "available_date"])
     evidence, _ = load_decision_evidence(str(GLOBAL_INPUTS["universe"]), str(GLOBAL_INPUTS["mapping"]))
     benchmarks = pd.read_csv(GLOBAL_INPUTS["benchmarks"], parse_dates=["date"]).set_index("date")

@@ -1,6 +1,6 @@
 {
   "public_name": "Benevente",
-  "registration_sha256": "fc5521f11d133520ae03b3413490418d01f140fb9fbc2b78ed9aa8e6ddd2cfdc",
+  "registration_sha256": "ca2476d4d5ce8dac3796bd20aceefd5437ba7b71fc9e126f2493f6f0beba563b",
   "window": {
     "first_decision_year": 2015,
     "last_decision_year": 2025,
@@ -18,9 +18,9 @@
           "realised_next_year": 0.4894
         },
         "cash_row": {
-          "trailing_12m": 0.1058,
-          "trailing_vol": 0.0009,
-          "realised_next_year": 0.1325
+          "trailing_12m": 0.1023,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.1298
         },
         "positions": [
           {
@@ -170,9 +170,9 @@
           "realised_next_year": -0.0538
         },
         "cash_row": {
-          "trailing_12m": 0.1305,
+          "trailing_12m": 0.1279,
           "trailing_vol": 0.0013,
-          "realised_next_year": 0.14
+          "realised_next_year": 0.1343
         },
         "positions": [
           {
@@ -200,7 +200,7 @@
           {
             "ticker": "CMIG4.SA",
             "weight": 0.035626,
-            "previous_weight": 0.02038,
+            "previous_weight": 0.020417,
             "action": "increased",
             "score": 0.9394,
             "trailing_12m": -0.4806,
@@ -222,7 +222,7 @@
           {
             "ticker": "LREN3.SA",
             "weight": 0.02193,
-            "previous_weight": 0.010955,
+            "previous_weight": 0.010974,
             "action": "increased",
             "score": 0.8788,
             "trailing_12m": 0.1778,
@@ -233,7 +233,7 @@
           {
             "ticker": "ITUB4.SA",
             "weight": 0.021475,
-            "previous_weight": 0.026398,
+            "previous_weight": 0.026445,
             "action": "reduced",
             "score": 0.8485,
             "trailing_12m": -0.1115,
@@ -244,7 +244,7 @@
           {
             "ticker": "EQTL3.SA",
             "weight": 0.02104,
-            "previous_weight": 0.015655,
+            "previous_weight": 0.015683,
             "action": "increased",
             "score": 0.8182,
             "trailing_12m": 0.3104,
@@ -266,7 +266,7 @@
           {
             "ticker": "ITSA4.SA",
             "weight": 0.019663,
-            "previous_weight": 0.022977,
+            "previous_weight": 0.023018,
             "action": "reduced",
             "score": 0.7576,
             "trailing_12m": -0.1446,
@@ -288,7 +288,7 @@
           {
             "ticker": "ABEV3.SA",
             "weight": 0.009851,
-            "previous_weight": 0.017576,
+            "previous_weight": 0.017608,
             "action": "reduced",
             "score": 0.697,
             "trailing_12m": 0.2381,
@@ -299,7 +299,7 @@
           {
             "ticker": "PSSA3.SA",
             "weight": 0.007655,
-            "previous_weight": 0.019983,
+            "previous_weight": 0.020019,
             "action": "reduced",
             "score": 0.6364,
             "trailing_12m": 0.0657,
@@ -322,15 +322,15 @@
           "realised_next_year": 0.1714
         },
         "cash_row": {
-          "trailing_12m": 0.1358,
-          "trailing_vol": 0.0015,
-          "realised_next_year": 0.099
+          "trailing_12m": 0.1302,
+          "trailing_vol": 0.0029,
+          "realised_next_year": 0.0989
         },
         "positions": [
           {
             "ticker": "CMIG4.SA",
             "weight": 0.0434,
-            "previous_weight": 0.042221,
+            "previous_weight": 0.042354,
             "action": "increased",
             "score": 0.9744,
             "trailing_12m": 0.4061,
@@ -341,13 +341,13 @@
           {
             "ticker": "SMLE3.SA",
             "weight": 0.0434,
-            "previous_weight": 0.044063,
+            "previous_weight": 0.044201,
             "action": "reduced",
             "score": 1.0,
             "trailing_12m": 0.3517,
             "trailing_vol": 0.4887,
             "eligible": true,
-            "realised_next_year": 1.0016
+            "realised_next_year": 1.0015
           },
           {
             "ticker": "SAPR4.SA",
@@ -385,7 +385,7 @@
           {
             "ticker": "ITUB4.SA",
             "weight": 0.01699,
-            "previous_weight": 0.026726,
+            "previous_weight": 0.02681,
             "action": "reduced",
             "score": 0.8718,
             "trailing_12m": 0.4901,
@@ -418,7 +418,7 @@
           {
             "ticker": "ITSA4.SA",
             "weight": 0.014199,
-            "previous_weight": 0.023285,
+            "previous_weight": 0.023358,
             "action": "reduced",
             "score": 0.7692,
             "trailing_12m": 0.4089,
@@ -429,7 +429,7 @@
           {
             "ticker": "BBAS3.SA",
             "weight": 0.011453,
-            "previous_weight": 0.033163,
+            "previous_weight": 0.033267,
             "action": "reduced",
             "score": 0.7436,
             "trailing_12m": 0.9793,
@@ -446,7 +446,7 @@
             "trailing_12m": -0.2204,
             "trailing_vol": 0.4527,
             "eligible": true,
-            "realised_next_year": 0.4773
+            "realised_next_year": 0.4769
           },
           {
             "ticker": "CSAN3.SA",
@@ -474,9 +474,9 @@
           "realised_next_year": 0.0912
         },
         "cash_row": {
-          "trailing_12m": 0.0951,
-          "trailing_vol": 0.0016,
-          "realised_next_year": 0.0642
+          "trailing_12m": 0.095,
+          "trailing_vol": 0.002,
+          "realised_next_year": 0.0618
         },
         "positions": [
           {
@@ -504,7 +504,7 @@
           {
             "ticker": "CVCB3.SA",
             "weight": 0.035315,
-            "previous_weight": 0.026504,
+            "previous_weight": 0.026506,
             "action": "increased",
             "score": 0.9545,
             "trailing_12m": 1.2192,
@@ -526,7 +526,7 @@
           {
             "ticker": "SAPR4.SA",
             "weight": 0.025318,
-            "previous_weight": 0.036968,
+            "previous_weight": 0.036971,
             "action": "reduced",
             "score": 0.9091,
             "trailing_12m": 0.24,
@@ -626,15 +626,15 @@
           "realised_next_year": 0.3987
         },
         "cash_row": {
-          "trailing_12m": 0.0625,
-          "trailing_vol": 0.0007,
-          "realised_next_year": 0.0595
+          "trailing_12m": 0.0602,
+          "trailing_vol": 0.0011,
+          "realised_next_year": 0.0575
         },
         "positions": [
           {
             "ticker": "BRSR6.SA",
             "weight": 0.0434,
-            "previous_weight": 0.042554,
+            "previous_weight": 0.042614,
             "action": "increased",
             "score": 0.9792,
             "trailing_12m": 0.6202,
@@ -656,7 +656,7 @@
           {
             "ticker": "MGLU3.SA",
             "weight": 0.0434,
-            "previous_weight": 0.085313,
+            "previous_weight": 0.085434,
             "action": "reduced",
             "score": 1.0,
             "trailing_12m": 1.608,
@@ -700,7 +700,7 @@
           {
             "ticker": "BBSE3.SA",
             "weight": 0.020295,
-            "previous_weight": 0.022748,
+            "previous_weight": 0.02278,
             "action": "reduced",
             "score": 0.875,
             "trailing_12m": 0.0964,
@@ -722,7 +722,7 @@
           {
             "ticker": "EGIE3.SA",
             "weight": 0.013788,
-            "previous_weight": 0.011392,
+            "previous_weight": 0.011408,
             "action": "increased",
             "score": 0.8333,
             "trailing_12m": 0.3723,
@@ -733,7 +733,7 @@
           {
             "ticker": "BBDC3.SA",
             "weight": 0.012921,
-            "previous_weight": 0.015389,
+            "previous_weight": 0.015411,
             "action": "reduced",
             "score": 0.8125,
             "trailing_12m": 0.3004,
@@ -778,9 +778,9 @@
           "realised_next_year": 0.4993
         },
         "cash_row": {
-          "trailing_12m": 0.058,
-          "trailing_vol": 0.0006,
-          "realised_next_year": 0.0275
+          "trailing_12m": 0.056,
+          "trailing_vol": 0.0008,
+          "realised_next_year": 0.0232
         },
         "positions": [
           {
@@ -808,7 +808,7 @@
           {
             "ticker": "BBSE3.SA",
             "weight": 0.040676,
-            "previous_weight": 0.024186,
+            "previous_weight": 0.024215,
             "action": "increased",
             "score": 0.9701,
             "trailing_12m": 0.509,
@@ -830,7 +830,7 @@
           {
             "ticker": "CMIG3.SA",
             "weight": 0.028156,
-            "previous_weight": 0.018792,
+            "previous_weight": 0.018815,
             "action": "increased",
             "score": 0.9403,
             "trailing_12m": 0.1423,
@@ -863,7 +863,7 @@
           {
             "ticker": "IRBR3.SA",
             "weight": 0.01859,
-            "previous_weight": 0.030131,
+            "previous_weight": 0.030167,
             "action": "reduced",
             "score": 0.8955,
             "trailing_12m": 0.4968,
@@ -896,7 +896,7 @@
           {
             "ticker": "TEND3.SA",
             "weight": 0.008046,
-            "previous_weight": 0.024319,
+            "previous_weight": 0.024347,
             "action": "reduced",
             "score": 0.8507,
             "trailing_12m": 1.033,
@@ -930,15 +930,15 @@
           "realised_next_year": 0.4089
         },
         "cash_row": {
-          "trailing_12m": 0.0264,
-          "trailing_vol": 0.0006,
-          "realised_next_year": 0.0445
+          "trailing_12m": 0.0222,
+          "trailing_vol": 0.0038,
+          "realised_next_year": 0.0436
         },
         "positions": [
           {
             "ticker": "BBSE3.SA",
             "weight": 0.0434,
-            "previous_weight": 0.035174,
+            "previous_weight": 0.03528,
             "action": "increased",
             "score": 0.9722,
             "trailing_12m": -0.1153,
@@ -949,7 +949,7 @@
           {
             "ticker": "MRFG3.SA",
             "weight": 0.0434,
-            "previous_weight": 0.062801,
+            "previous_weight": 0.062992,
             "action": "reduced",
             "score": 0.9861,
             "trailing_12m": 0.5552,
@@ -971,7 +971,7 @@
           {
             "ticker": "EQTL3.SA",
             "weight": 0.032115,
-            "previous_weight": 0.028519,
+            "previous_weight": 0.028605,
             "action": "increased",
             "score": 0.9583,
             "trailing_12m": 0.0511,
@@ -1015,7 +1015,7 @@
           {
             "ticker": "CMIG3.SA",
             "weight": 0.013924,
-            "previous_weight": 0.031416,
+            "previous_weight": 0.031512,
             "action": "reduced",
             "score": 0.9028,
             "trailing_12m": 0.1653,
@@ -1082,9 +1082,9 @@
           "realised_next_year": -0.234
         },
         "cash_row": {
-          "trailing_12m": 0.0441,
-          "trailing_vol": 0.0015,
-          "realised_next_year": 0.1241
+          "trailing_12m": 0.043,
+          "trailing_vol": 0.0016,
+          "realised_next_year": 0.1226
         },
         "positions": [
           {
@@ -1134,7 +1134,7 @@
           {
             "ticker": "TASA4.SA",
             "weight": 0.032539,
-            "previous_weight": 0.064664,
+            "previous_weight": 0.064703,
             "action": "reduced",
             "score": 0.9551,
             "trailing_12m": 0.6856,
@@ -1200,7 +1200,7 @@
           {
             "ticker": "MRFG3.SA",
             "weight": 0.004859,
-            "previous_weight": 0.064708,
+            "previous_weight": 0.064747,
             "action": "reduced",
             "score": 0.8652,
             "trailing_12m": 0.5723,
@@ -1234,9 +1234,9 @@
           "realised_next_year": 0.1385
         },
         "cash_row": {
-          "trailing_12m": 0.1233,
-          "trailing_vol": 0.0013,
-          "realised_next_year": 0.1303
+          "trailing_12m": 0.1219,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.1284
         },
         "positions": [
           {
@@ -1253,7 +1253,7 @@
           {
             "ticker": "UNIP6.SA",
             "weight": 0.0434,
-            "previous_weight": 0.03833,
+            "previous_weight": 0.038368,
             "action": "increased",
             "score": 0.9888,
             "trailing_12m": 0.1221,
@@ -1275,7 +1275,7 @@
           {
             "ticker": "BRAP4.SA",
             "weight": 0.030115,
-            "previous_weight": 0.033102,
+            "previous_weight": 0.033134,
             "action": "reduced",
             "score": 0.9663,
             "trailing_12m": 0.3697,
@@ -1341,7 +1341,7 @@
           {
             "ticker": "TASA4.SA",
             "weight": 0.012153,
-            "previous_weight": 0.017503,
+            "previous_weight": 0.01752,
             "action": "reduced",
             "score": 0.8989,
             "trailing_12m": -0.4016,
@@ -1363,7 +1363,7 @@
           {
             "ticker": "GOAU4.SA",
             "weight": 0.006083,
-            "previous_weight": 0.0484,
+            "previous_weight": 0.048447,
             "action": "reduced",
             "score": 0.8539,
             "trailing_12m": 0.283,
@@ -1386,15 +1386,15 @@
           "realised_next_year": 0.5566
         },
         "cash_row": {
-          "trailing_12m": 0.1332,
-          "trailing_vol": 0.0007,
-          "realised_next_year": 0.1088
+          "trailing_12m": 0.1313,
+          "trailing_vol": 0.0008,
+          "realised_next_year": 0.1053
         },
         "positions": [
           {
             "ticker": "CURY3.SA",
             "weight": 0.0434,
-            "previous_weight": 0.03697,
+            "previous_weight": 0.037013,
             "action": "increased",
             "score": 0.9888,
             "trailing_12m": 0.5937,
@@ -1405,7 +1405,7 @@
           {
             "ticker": "VIVA3.SA",
             "weight": 0.0434,
-            "previous_weight": 0.062608,
+            "previous_weight": 0.06268,
             "action": "reduced",
             "score": 1.0,
             "trailing_12m": 0.6278,
@@ -1427,7 +1427,7 @@
           {
             "ticker": "BBSE3.SA",
             "weight": 0.032594,
-            "previous_weight": 0.019759,
+            "previous_weight": 0.019781,
             "action": "increased",
             "score": 0.9663,
             "trailing_12m": 0.1109,
@@ -1460,7 +1460,7 @@
           {
             "ticker": "KEPL3.SA",
             "weight": 0.023388,
-            "previous_weight": 0.045584,
+            "previous_weight": 0.045636,
             "action": "reduced",
             "score": 0.9326,
             "trailing_12m": 0.1712,
@@ -1504,7 +1504,7 @@
           {
             "ticker": "UNIP6.SA",
             "weight": 0.008044,
-            "previous_weight": 0.034975,
+            "previous_weight": 0.035015,
             "action": "reduced",
             "score": 0.8876,
             "trailing_12m": -0.1037,
@@ -1538,15 +1538,15 @@
           "realised_next_year": 0.0522
         },
         "cash_row": {
-          "trailing_12m": 0.1097,
-          "trailing_vol": 0.0009,
-          "realised_next_year": 0.1421
+          "trailing_12m": 0.1062,
+          "trailing_vol": 0.0012,
+          "realised_next_year": 0.1398
         },
         "positions": [
           {
             "ticker": "CURY3.SA",
             "weight": 0.0434,
-            "previous_weight": 0.044743,
+            "previous_weight": 0.044847,
             "action": "reduced",
             "score": 0.9896,
             "trailing_12m": 0.0676,
@@ -1557,7 +1557,7 @@
           {
             "ticker": "VIVA3.SA",
             "weight": 0.0434,
-            "previous_weight": 0.023822,
+            "previous_weight": 0.023877,
             "action": "increased",
             "score": 1.0,
             "trailing_12m": -0.426,
@@ -1568,7 +1568,7 @@
           {
             "ticker": "BBSE3.SA",
             "weight": 0.043384,
-            "previous_weight": 0.035801,
+            "previous_weight": 0.035885,
             "action": "increased",
             "score": 0.9792,
             "trailing_12m": 0.1686,
@@ -1585,12 +1585,12 @@
             "trailing_12m": 0.4115,
             "trailing_vol": 0.3787,
             "eligible": true,
-            "realised_next_year": 0.175
+            "realised_next_year": 0.1747
           },
           {
             "ticker": "CMIN3.SA",
             "weight": 0.022895,
-            "previous_weight": 0.024403,
+            "previous_weight": 0.02446,
             "action": "reduced",
             "score": 0.9583,
             "trailing_12m": -0.2543,
@@ -1601,8 +1601,8 @@
           {
             "ticker": "PLPL3.SA",
             "weight": 0.02101,
-            "previous_weight": 0.020978,
-            "action": "increased",
+            "previous_weight": 0.021027,
+            "action": "reduced",
             "score": 0.9479,
             "trailing_12m": -0.1461,
             "trailing_vol": 0.482,
@@ -1612,7 +1612,7 @@
           {
             "ticker": "WEGE3.SA",
             "weight": 0.019829,
-            "previous_weight": 0.011188,
+            "previous_weight": 0.011214,
             "action": "increased",
             "score": 0.9375,
             "trailing_12m": 0.458,
@@ -1623,7 +1623,7 @@
           {
             "ticker": "LEVE3.SA",
             "weight": 0.018099,
-            "previous_weight": 0.020173,
+            "previous_weight": 0.02022,
             "action": "reduced",
             "score": 0.9271,
             "trailing_12m": -0.1576,
@@ -1640,7 +1640,7 @@
             "trailing_12m": 1.5483,
             "trailing_vol": 0.3992,
             "eligible": true,
-            "realised_next_year": 0.6026
+            "realised_next_year": 0.6022
           },
           {
             "ticker": "VBBR3.SA",
@@ -1673,7 +1673,7 @@
             "trailing_12m": 0.8872,
             "trailing_vol": 0.3967,
             "eligible": true,
-            "realised_next_year": -0.2168
+            "realised_next_year": -0.2171
           }
         ],
         "domestic_equity": 0.280001,
@@ -1692,9 +1692,9 @@
           "realised_next_year": 0.4894
         },
         "cash_row": {
-          "trailing_12m": 0.1058,
-          "trailing_vol": 0.0009,
-          "realised_next_year": 0.1325
+          "trailing_12m": 0.1023,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.1298
         },
         "positions": [
           {
@@ -1800,9 +1800,9 @@
           "realised_next_year": -0.0538
         },
         "cash_row": {
-          "trailing_12m": 0.1305,
+          "trailing_12m": 0.1279,
           "trailing_vol": 0.0013,
-          "realised_next_year": 0.14
+          "realised_next_year": 0.1343
         },
         "positions": [
           {
@@ -1830,7 +1830,7 @@
           {
             "ticker": "CMIG4.SA",
             "weight": 0.081147,
-            "previous_weight": 0.050138,
+            "previous_weight": 0.050208,
             "action": "increased",
             "score": 0.9394,
             "trailing_12m": -0.4806,
@@ -1863,7 +1863,7 @@
           {
             "ticker": "ITUB4.SA",
             "weight": 0.031238,
-            "previous_weight": 0.049503,
+            "previous_weight": 0.049573,
             "action": "reduced",
             "score": 0.8485,
             "trailing_12m": -0.1115,
@@ -1908,15 +1908,15 @@
           "realised_next_year": 0.1714
         },
         "cash_row": {
-          "trailing_12m": 0.1358,
-          "trailing_vol": 0.0015,
-          "realised_next_year": 0.099
+          "trailing_12m": 0.1302,
+          "trailing_vol": 0.0029,
+          "realised_next_year": 0.0989
         },
         "positions": [
           {
             "ticker": "CMIG4.SA",
             "weight": 0.0979,
-            "previous_weight": 0.089438,
+            "previous_weight": 0.089627,
             "action": "increased",
             "score": 0.9744,
             "trailing_12m": 0.4061,
@@ -1927,13 +1927,13 @@
           {
             "ticker": "SMLE3.SA",
             "weight": 0.0979,
-            "previous_weight": 0.092437,
+            "previous_weight": 0.092632,
             "action": "increased",
             "score": 1.0,
             "trailing_12m": 0.3517,
             "trailing_vol": 0.4887,
             "eligible": true,
-            "realised_next_year": 1.0016
+            "realised_next_year": 1.0015
           },
           {
             "ticker": "SAPR4.SA",
@@ -1971,7 +1971,7 @@
           {
             "ticker": "ITUB4.SA",
             "weight": 0.023611,
-            "previous_weight": 0.036156,
+            "previous_weight": 0.036232,
             "action": "reduced",
             "score": 0.8718,
             "trailing_12m": 0.4901,
@@ -2016,9 +2016,9 @@
           "realised_next_year": 0.0912
         },
         "cash_row": {
-          "trailing_12m": 0.0951,
-          "trailing_vol": 0.0016,
-          "realised_next_year": 0.0642
+          "trailing_12m": 0.095,
+          "trailing_vol": 0.002,
+          "realised_next_year": 0.0618
         },
         "positions": [
           {
@@ -2046,7 +2046,7 @@
           {
             "ticker": "CVCB3.SA",
             "weight": 0.068335,
-            "previous_weight": 0.032136,
+            "previous_weight": 0.032138,
             "action": "increased",
             "score": 0.9545,
             "trailing_12m": 1.2192,
@@ -2068,7 +2068,7 @@
           {
             "ticker": "SAPR4.SA",
             "weight": 0.044295,
-            "previous_weight": 0.064815,
+            "previous_weight": 0.064819,
             "action": "reduced",
             "score": 0.9091,
             "trailing_12m": 0.24,
@@ -2124,15 +2124,15 @@
           "realised_next_year": 0.3987
         },
         "cash_row": {
-          "trailing_12m": 0.0625,
-          "trailing_vol": 0.0007,
-          "realised_next_year": 0.0595
+          "trailing_12m": 0.0602,
+          "trailing_vol": 0.0011,
+          "realised_next_year": 0.0575
         },
         "positions": [
           {
             "ticker": "MGLU3.SA",
             "weight": 0.0979,
-            "previous_weight": 0.174377,
+            "previous_weight": 0.174539,
             "action": "reduced",
             "score": 1.0,
             "trailing_12m": 1.608,
@@ -2143,7 +2143,7 @@
           {
             "ticker": "BRSR6.SA",
             "weight": 0.095435,
-            "previous_weight": 0.071929,
+            "previous_weight": 0.071996,
             "action": "increased",
             "score": 0.9792,
             "trailing_12m": 0.6202,
@@ -2198,7 +2198,7 @@
           {
             "ticker": "BBSE3.SA",
             "weight": 0.032324,
-            "previous_weight": 0.035676,
+            "previous_weight": 0.035709,
             "action": "reduced",
             "score": 0.875,
             "trailing_12m": 0.0964,
@@ -2232,9 +2232,9 @@
           "realised_next_year": 0.4993
         },
         "cash_row": {
-          "trailing_12m": 0.058,
-          "trailing_vol": 0.0006,
-          "realised_next_year": 0.0275
+          "trailing_12m": 0.056,
+          "trailing_vol": 0.0008,
+          "realised_next_year": 0.0232
         },
         "positions": [
           {
@@ -2262,7 +2262,7 @@
           {
             "ticker": "BBSE3.SA",
             "weight": 0.079392,
-            "previous_weight": 0.035639,
+            "previous_weight": 0.035667,
             "action": "increased",
             "score": 0.9701,
             "trailing_12m": 0.509,
@@ -2284,7 +2284,7 @@
           {
             "ticker": "CMIG3.SA",
             "weight": 0.046277,
-            "previous_weight": 0.028121,
+            "previous_weight": 0.028143,
             "action": "increased",
             "score": 0.9403,
             "trailing_12m": 0.1423,
@@ -2317,7 +2317,7 @@
           {
             "ticker": "IRBR3.SA",
             "weight": 0.020973,
-            "previous_weight": 0.047328,
+            "previous_weight": 0.047365,
             "action": "reduced",
             "score": 0.8955,
             "trailing_12m": 0.4968,
@@ -2340,15 +2340,15 @@
           "realised_next_year": 0.4089
         },
         "cash_row": {
-          "trailing_12m": 0.0264,
-          "trailing_vol": 0.0006,
-          "realised_next_year": 0.0445
+          "trailing_12m": 0.0222,
+          "trailing_vol": 0.0038,
+          "realised_next_year": 0.0436
         },
         "positions": [
           {
             "ticker": "MRFG3.SA",
             "weight": 0.0979,
-            "previous_weight": 0.142847,
+            "previous_weight": 0.143162,
             "action": "reduced",
             "score": 0.9861,
             "trailing_12m": 0.5552,
@@ -2370,7 +2370,7 @@
           {
             "ticker": "BBSE3.SA",
             "weight": 0.096541,
-            "previous_weight": 0.069227,
+            "previous_weight": 0.06938,
             "action": "increased",
             "score": 0.9722,
             "trailing_12m": -0.1153,
@@ -2381,8 +2381,8 @@
           {
             "ticker": "EQTL3.SA",
             "weight": 0.048213,
-            "previous_weight": 0.048113,
-            "action": "increased",
+            "previous_weight": 0.048219,
+            "action": "reduced",
             "score": 0.9583,
             "trailing_12m": 0.0511,
             "trailing_vol": 0.4371,
@@ -2425,7 +2425,7 @@
           {
             "ticker": "CMIG3.SA",
             "weight": 0.014925,
-            "previous_weight": 0.052066,
+            "previous_weight": 0.052181,
             "action": "reduced",
             "score": 0.9028,
             "trailing_12m": 0.1653,
@@ -2448,9 +2448,9 @@
           "realised_next_year": -0.234
         },
         "cash_row": {
-          "trailing_12m": 0.0441,
-          "trailing_vol": 0.0015,
-          "realised_next_year": 0.1241
+          "trailing_12m": 0.043,
+          "trailing_vol": 0.0016,
+          "realised_next_year": 0.1226
         },
         "positions": [
           {
@@ -2500,7 +2500,7 @@
           {
             "ticker": "TASA4.SA",
             "weight": 0.057595,
-            "previous_weight": 0.137881,
+            "previous_weight": 0.137937,
             "action": "reduced",
             "score": 0.9551,
             "trailing_12m": 0.6856,
@@ -2556,9 +2556,9 @@
           "realised_next_year": 0.1385
         },
         "cash_row": {
-          "trailing_12m": 0.1233,
-          "trailing_vol": 0.0013,
-          "realised_next_year": 0.1303
+          "trailing_12m": 0.1219,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.1284
         },
         "positions": [
           {
@@ -2575,7 +2575,7 @@
           {
             "ticker": "UNIP6.SA",
             "weight": 0.092858,
-            "previous_weight": 0.075601,
+            "previous_weight": 0.075656,
             "action": "increased",
             "score": 0.9888,
             "trailing_12m": 0.1221,
@@ -2597,7 +2597,7 @@
           {
             "ticker": "BRAP4.SA",
             "weight": 0.053834,
-            "previous_weight": 0.051051,
+            "previous_weight": 0.051088,
             "action": "increased",
             "score": 0.9663,
             "trailing_12m": 0.3697,
@@ -2664,15 +2664,15 @@
           "realised_next_year": 0.5566
         },
         "cash_row": {
-          "trailing_12m": 0.1332,
-          "trailing_vol": 0.0007,
-          "realised_next_year": 0.1088
+          "trailing_12m": 0.1313,
+          "trailing_vol": 0.0008,
+          "realised_next_year": 0.1053
         },
         "positions": [
           {
             "ticker": "CURY3.SA",
             "weight": 0.0979,
-            "previous_weight": 0.060422,
+            "previous_weight": 0.060471,
             "action": "increased",
             "score": 0.9888,
             "trailing_12m": 0.5937,
@@ -2683,7 +2683,7 @@
           {
             "ticker": "VIVA3.SA",
             "weight": 0.0979,
-            "previous_weight": 0.138267,
+            "previous_weight": 0.13838,
             "action": "reduced",
             "score": 1.0,
             "trailing_12m": 0.6278,
@@ -2705,7 +2705,7 @@
           {
             "ticker": "BBSE3.SA",
             "weight": 0.054995,
-            "previous_weight": 0.027283,
+            "previous_weight": 0.027305,
             "action": "increased",
             "score": 0.9663,
             "trailing_12m": 0.1109,
@@ -2738,7 +2738,7 @@
           {
             "ticker": "KEPL3.SA",
             "weight": 0.034022,
-            "previous_weight": 0.091689,
+            "previous_weight": 0.091763,
             "action": "reduced",
             "score": 0.9326,
             "trailing_12m": 0.1712,
@@ -2772,15 +2772,15 @@
           "realised_next_year": 0.0522
         },
         "cash_row": {
-          "trailing_12m": 0.1097,
-          "trailing_vol": 0.0009,
-          "realised_next_year": 0.1421
+          "trailing_12m": 0.1062,
+          "trailing_vol": 0.0012,
+          "realised_next_year": 0.1398
         },
         "positions": [
           {
             "ticker": "CURY3.SA",
             "weight": 0.0979,
-            "previous_weight": 0.106704,
+            "previous_weight": 0.106894,
             "action": "reduced",
             "score": 0.9896,
             "trailing_12m": 0.0676,
@@ -2791,7 +2791,7 @@
           {
             "ticker": "VIVA3.SA",
             "weight": 0.0979,
-            "previous_weight": 0.05681,
+            "previous_weight": 0.056911,
             "action": "increased",
             "score": 1.0,
             "trailing_12m": -0.426,
@@ -2802,7 +2802,7 @@
           {
             "ticker": "BBSE3.SA",
             "weight": 0.087024,
-            "previous_weight": 0.063863,
+            "previous_weight": 0.063976,
             "action": "increased",
             "score": 0.9792,
             "trailing_12m": 0.1686,
@@ -2819,12 +2819,12 @@
             "trailing_12m": 0.4115,
             "trailing_vol": 0.3787,
             "eligible": true,
-            "realised_next_year": 0.175
+            "realised_next_year": 0.1747
           },
           {
             "ticker": "CMIN3.SA",
             "weight": 0.034364,
-            "previous_weight": 0.044542,
+            "previous_weight": 0.044621,
             "action": "reduced",
             "score": 0.9583,
             "trailing_12m": -0.2543,
@@ -2835,7 +2835,7 @@
           {
             "ticker": "PLPL3.SA",
             "weight": 0.029519,
-            "previous_weight": 0.034181,
+            "previous_weight": 0.034242,
             "action": "reduced",
             "score": 0.9479,
             "trailing_12m": -0.1461,
@@ -2857,7 +2857,7 @@
           {
             "ticker": "LEVE3.SA",
             "weight": 0.022037,
-            "previous_weight": 0.031788,
+            "previous_weight": 0.031845,
             "action": "reduced",
             "score": 0.9271,
             "trailing_12m": -0.1576,
@@ -2882,9 +2882,9 @@
           "realised_next_year": 0.4894
         },
         "cash_row": {
-          "trailing_12m": 0.1058,
-          "trailing_vol": 0.0009,
-          "realised_next_year": 0.1325
+          "trailing_12m": 0.1023,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.1298
         },
         "positions": [
           {
@@ -2957,9 +2957,9 @@
           "realised_next_year": -0.0538
         },
         "cash_row": {
-          "trailing_12m": 0.1305,
+          "trailing_12m": 0.1279,
           "trailing_vol": 0.0013,
-          "realised_next_year": 0.14
+          "realised_next_year": 0.1343
         },
         "positions": [
           {
@@ -2987,7 +2987,7 @@
           {
             "ticker": "CMIG4.SA",
             "weight": 0.129073,
-            "previous_weight": 0.117687,
+            "previous_weight": 0.117796,
             "action": "increased",
             "score": 0.9394,
             "trailing_12m": -0.4806,
@@ -3032,15 +3032,15 @@
           "realised_next_year": 0.1714
         },
         "cash_row": {
-          "trailing_12m": 0.1358,
-          "trailing_vol": 0.0015,
-          "realised_next_year": 0.099
+          "trailing_12m": 0.1302,
+          "trailing_vol": 0.0029,
+          "realised_next_year": 0.0989
         },
         "positions": [
           {
             "ticker": "CMIG4.SA",
             "weight": 0.204,
-            "previous_weight": 0.137135,
+            "previous_weight": 0.137297,
             "action": "increased",
             "score": 0.9744,
             "trailing_12m": 0.4061,
@@ -3051,13 +3051,13 @@
           {
             "ticker": "SMLE3.SA",
             "weight": 0.204,
-            "previous_weight": 0.185676,
+            "previous_weight": 0.185895,
             "action": "increased",
             "score": 1.0,
             "trailing_12m": 0.3517,
             "trailing_vol": 0.4887,
             "eligible": true,
-            "realised_next_year": 1.0016
+            "realised_next_year": 1.0015
           },
           {
             "ticker": "SAPR4.SA",
@@ -3107,9 +3107,9 @@
           "realised_next_year": 0.0912
         },
         "cash_row": {
-          "trailing_12m": 0.0951,
-          "trailing_vol": 0.0016,
-          "realised_next_year": 0.0642
+          "trailing_12m": 0.095,
+          "trailing_vol": 0.002,
+          "realised_next_year": 0.0618
         },
         "positions": [
           {
@@ -3159,7 +3159,7 @@
           {
             "ticker": "SAPR4.SA",
             "weight": 0.058174,
-            "previous_weight": 0.0783,
+            "previous_weight": 0.078305,
             "action": "reduced",
             "score": 0.9091,
             "trailing_12m": 0.24,
@@ -3182,15 +3182,15 @@
           "realised_next_year": 0.3987
         },
         "cash_row": {
-          "trailing_12m": 0.0625,
-          "trailing_vol": 0.0007,
-          "realised_next_year": 0.0595
+          "trailing_12m": 0.0602,
+          "trailing_vol": 0.0011,
+          "realised_next_year": 0.0575
         },
         "positions": [
           {
             "ticker": "MGLU3.SA",
             "weight": 0.179049,
-            "previous_weight": 0.31255,
+            "previous_weight": 0.312695,
             "action": "reduced",
             "score": 1.0,
             "trailing_12m": 1.608,
@@ -3201,7 +3201,7 @@
           {
             "ticker": "BRSR6.SA",
             "weight": 0.170709,
-            "previous_weight": 0.097779,
+            "previous_weight": 0.097825,
             "action": "increased",
             "score": 0.9792,
             "trailing_12m": 0.6202,
@@ -3257,9 +3257,9 @@
           "realised_next_year": 0.4993
         },
         "cash_row": {
-          "trailing_12m": 0.058,
-          "trailing_vol": 0.0006,
-          "realised_next_year": 0.0275
+          "trailing_12m": 0.056,
+          "trailing_vol": 0.0008,
+          "realised_next_year": 0.0232
         },
         "positions": [
           {
@@ -3309,7 +3309,7 @@
           {
             "ticker": "CMIG3.SA",
             "weight": 0.046993,
-            "previous_weight": 0.032111,
+            "previous_weight": 0.032124,
             "action": "increased",
             "score": 0.9403,
             "trailing_12m": 0.1423,
@@ -3332,9 +3332,9 @@
           "realised_next_year": 0.4089
         },
         "cash_row": {
-          "trailing_12m": 0.0264,
-          "trailing_vol": 0.0006,
-          "realised_next_year": 0.0445
+          "trailing_12m": 0.0222,
+          "trailing_vol": 0.0038,
+          "realised_next_year": 0.0436
         },
         "positions": [
           {
@@ -3351,7 +3351,7 @@
           {
             "ticker": "MRFG3.SA",
             "weight": 0.17036,
-            "previous_weight": 0.253433,
+            "previous_weight": 0.253754,
             "action": "reduced",
             "score": 0.9861,
             "trailing_12m": 0.5552,
@@ -3362,7 +3362,7 @@
           {
             "ticker": "BBSE3.SA",
             "weight": 0.162298,
-            "previous_weight": 0.104437,
+            "previous_weight": 0.10457,
             "action": "increased",
             "score": 0.9722,
             "trailing_12m": -0.1153,
@@ -3373,7 +3373,7 @@
           {
             "ticker": "EQTL3.SA",
             "weight": 0.057633,
-            "previous_weight": 0.051,
+            "previous_weight": 0.051064,
             "action": "increased",
             "score": 0.9583,
             "trailing_12m": 0.0511,
@@ -3407,9 +3407,9 @@
           "realised_next_year": -0.234
         },
         "cash_row": {
-          "trailing_12m": 0.0441,
-          "trailing_vol": 0.0015,
-          "realised_next_year": 0.1241
+          "trailing_12m": 0.043,
+          "trailing_vol": 0.0016,
+          "realised_next_year": 0.1226
         },
         "positions": [
           {
@@ -3459,7 +3459,7 @@
           {
             "ticker": "TASA4.SA",
             "weight": 0.053793,
-            "previous_weight": 0.234863,
+            "previous_weight": 0.234915,
             "action": "reduced",
             "score": 0.9551,
             "trailing_12m": 0.6856,
@@ -3482,9 +3482,9 @@
           "realised_next_year": 0.1385
         },
         "cash_row": {
-          "trailing_12m": 0.1233,
-          "trailing_vol": 0.0013,
-          "realised_next_year": 0.1303
+          "trailing_12m": 0.1219,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.1284
         },
         "positions": [
           {
@@ -3501,7 +3501,7 @@
           {
             "ticker": "UNIP6.SA",
             "weight": 0.15319,
-            "previous_weight": 0.125096,
+            "previous_weight": 0.125149,
             "action": "increased",
             "score": 0.9888,
             "trailing_12m": 0.1221,
@@ -3557,15 +3557,15 @@
           "realised_next_year": 0.5566
         },
         "cash_row": {
-          "trailing_12m": 0.1332,
-          "trailing_vol": 0.0007,
-          "realised_next_year": 0.1088
+          "trailing_12m": 0.1313,
+          "trailing_vol": 0.0008,
+          "realised_next_year": 0.1053
         },
         "positions": [
           {
             "ticker": "VIVA3.SA",
             "weight": 0.204,
-            "previous_weight": 0.273251,
+            "previous_weight": 0.273373,
             "action": "reduced",
             "score": 1.0,
             "trailing_12m": 0.6278,
@@ -3576,7 +3576,7 @@
           {
             "ticker": "CURY3.SA",
             "weight": 0.192066,
-            "previous_weight": 0.048857,
+            "previous_weight": 0.048879,
             "action": "increased",
             "score": 0.9888,
             "trailing_12m": 0.5937,
@@ -3632,15 +3632,15 @@
           "realised_next_year": 0.0522
         },
         "cash_row": {
-          "trailing_12m": 0.1097,
-          "trailing_vol": 0.0009,
-          "realised_next_year": 0.1421
+          "trailing_12m": 0.1062,
+          "trailing_vol": 0.0012,
+          "realised_next_year": 0.1398
         },
         "positions": [
           {
             "ticker": "VIVA3.SA",
             "weight": 0.204,
-            "previous_weight": 0.126708,
+            "previous_weight": 0.126848,
             "action": "increased",
             "score": 1.0,
             "trailing_12m": -0.426,
@@ -3651,7 +3651,7 @@
           {
             "ticker": "CURY3.SA",
             "weight": 0.18336,
-            "previous_weight": 0.224069,
+            "previous_weight": 0.224317,
             "action": "reduced",
             "score": 0.9896,
             "trailing_12m": 0.0676,
@@ -3662,7 +3662,7 @@
           {
             "ticker": "BBSE3.SA",
             "weight": 0.122957,
-            "previous_weight": 0.093428,
+            "previous_weight": 0.093531,
             "action": "increased",
             "score": 0.9792,
             "trailing_12m": 0.1686,
@@ -3679,12 +3679,12 @@
             "trailing_12m": 0.4115,
             "trailing_vol": 0.3787,
             "eligible": true,
-            "realised_next_year": 0.175
+            "realised_next_year": 0.1747
           },
           {
             "ticker": "CMIN3.SA",
             "weight": 0.036275,
-            "previous_weight": 0.068993,
+            "previous_weight": 0.06907,
             "action": "reduced",
             "score": 0.9583,
             "trailing_12m": -0.2543,

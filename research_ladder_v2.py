@@ -94,7 +94,12 @@ def _annual_rebalanced_blend(host: pd.Series, fund: pd.Series, years: pd.Series,
 
 
 def run(output: Path, start_year: int, end_year: int) -> pd.DataFrame:
-    engine, panel = build_global_engine()
+    # O painel é o que a política vigente declara. A v3 troca a coluna de caixa,
+    # e o Sharpe do excesso é medido contra esse caixa — publicar o número da v2
+    # ao lado da escada da v3 seria comparar contra uma régua aposentada.
+    from profile_ladder_v3 import V3_INPUTS
+    engine, panel = build_global_engine(prices_path=V3_INPUTS["prices"],
+                                        manifest_path=V3_INPUTS["total_return_manifest"])
     rows: list[dict] = []
     checks: dict[str, dict] = {}
     tax = BrazilianTaxModel()

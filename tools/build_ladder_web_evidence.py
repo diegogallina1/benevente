@@ -22,6 +22,7 @@ import pandas as pd
 from annual_walk_forward import BrazilianTaxModel, apply_annual_taxes
 from profile_intrayear_risk import apply_profile_overlay
 from profile_ladder_v2 import (GLOBAL_FRACTION, LADDER_V2, domestic_protocol)
+from profile_ladder_v3 import V3_INPUTS
 from research_global_sleeve import GLOBAL_TICKER, build_global_engine
 from research_ladder_v2 import _annual_rebalanced_blend, _daily
 
@@ -31,7 +32,14 @@ ROOT = Path(__file__).resolve().parents[1]
 # de produto a mais dividia a atenção sem descrever nada que os módulos já não
 # descrevessem.
 PUBLIC_NAME = "Benevente"
-REGISTRATION = ROOT / "data" / "benevente_profile_ladder_v2_registration.json"
+# A v3 declara Tesouro Selic como caixa. Continuar rotulando a série como "CDI"
+# publicaria um número do instrumento com o nome do índice — o tipo de troca
+# silenciosa que este projeto existe para impedir.
+CASH_LABEL = "Tesouro Selic"
+# A política vigente é a v3: mesma escada da v2 com o caixa declarado como
+# instrumento comprável. A v2 fica publicada como linhagem, não como vigente.
+REGISTRATION = ROOT / "data" / "benevente_profile_ladder_v3_registration.json"
+SUPERSEDED_REGISTRATION = ROOT / "data" / "benevente_profile_ladder_v2_registration.json"
 BENCHMARKS = ROOT / "data" / "benchmarks_market_2011_2025.csv"
 
 
@@ -193,9 +201,13 @@ def _monthly_curve(daily_dates: pd.Series, tracks: dict[str, pd.Series]) -> dict
 
 def build(start_year: int, end_year: int) -> dict:
     if not REGISTRATION.exists():
-        raise SystemExit("Congele a v2 antes de publicar: profile_ladder_v2.py --register")
+        raise SystemExit("Congele a v3 antes de publicar: profile_ladder_v3.py --register")
     registration = json.loads(REGISTRATION.read_text(encoding="utf-8"))
-    engine, panel = build_global_engine()
+    # O painel da v3 difere do da v2 numa coluna só — a de caixa, que deixou de
+    # ser índice e passou a ser Tesouro Selic. Ler o painel que o registro
+    # declara, em vez do padrão, é o que mantém a página e a política juntas.
+    engine, panel = build_global_engine(prices_path=V3_INPUTS["prices"],
+                                        manifest_path=V3_INPUTS["total_return_manifest"])
     tax = BrazilianTaxModel()
 
     profiles: dict[str, dict] = {}
@@ -242,7 +254,7 @@ def build(start_year: int, end_year: int) -> dict:
         }
         if not references:
             references = {
-                "CDI": _metrics(daily.cdi_daily_return, daily.date),
+                CASH_LABEL: _metrics(daily.cdi_daily_return, daily.date),
                 "Ibovespa": _reference(daily, "IBOVESPA"),
                 "BOVA11": _reference(daily, "BOVA11"),
             }
@@ -257,7 +269,7 @@ def build(start_year: int, end_year: int) -> dict:
         if column in source.columns:
             level = source[column].reindex(index).ffill()
             tracks[label] = level.pct_change().fillna(0.0).reset_index(drop=True)
-    tracks["CDI"] = daily.cdi_daily_return.reset_index(drop=True)
+    tracks[CASH_LABEL] = daily.cdi_daily_return.reset_index(drop=True)
 
     return {
         "policy": registration["policy"],
@@ -315,7 +327,7 @@ def main() -> None:
         b1, b2 = item["benevente1"], item["benevente2"]
         print(f"  {name:12s} B1 {b1['cagr']:6.2%} / {b1['max_drawdown']:7.2%}   "
               f"B2 {b2['cagr']:6.2%} / {b2['max_drawdown']:7.2%}")
-    print(f"  {'CDI':12s} {payload['references']['CDI']['cagr']:6.2%}"
+    print(f"  {CASH_LABEL:12s} {payload['references'][CASH_LABEL]['cagr']:6.2%}"
           f" · Ibovespa {payload['references']['Ibovespa']['cagr']:6.2%}")
 
 

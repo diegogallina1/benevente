@@ -30,7 +30,11 @@ def test_sample_dossier_carries_the_contract() -> None:
     text = " ".join(page.extract_text() or ""
                     for page in PdfReader(DOSSIERS / "dossie_equilibrado_2025.pdf").pages)
     flat = re.sub(r"\s+", " ", text)
-    assert "fc5521f11d133520" in flat            # hash do registro congelado
+    # O hash vem do registro vigente, não de uma constante: uma versão nova troca
+    # o selo, e o teste precisa acompanhar a política em vez de fossilizá-la.
+    registro = json.loads((ROOT / "data" / "benevente_profile_ladder_v3_registration.json").read_text(encoding="utf-8"))
+    assert registro["registration_sha256"][:16] in flat
+    assert registro["policy"].upper() in flat
     assert "Diego Gallina" in flat               # aprovador nominal
     assert "RECONSTRUÇÃO RETROSPECTIVA" in flat  # honestidade sobre 2015-2025
     assert "SEPARADA DE PROPÓSITO" in flat       # fronteira da informação posterior

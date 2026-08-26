@@ -130,7 +130,7 @@ def build_dossier(profile: str, block: dict, ladder: dict, registration: dict) -
     section.top_margin = section.bottom_margin = Cm(1.8)
     section.left_margin = section.right_margin = Cm(2.0)
 
-    kicker(document, "Benevente · política benevente_profile_ladder_v2 · documento de demonstração")
+    kicker(document, f"Benevente · política {registration['policy']} · documento de demonstração")
     para(document, "Dossiê de decisão de carteira", size=20, bold=True, color=NAVY, space_after=2)
     para(document, f"Perfil {label} · decisão de {date_br}", size=13, color=TEAL, space_after=10)
 
@@ -142,7 +142,7 @@ def build_dossier(profile: str, block: dict, ladder: dict, registration: dict) -
     run = cell.paragraphs[0].add_run("RECONSTRUÇÃO RETROSPECTIVA SOB POLÍTICA CONGELADA\n")
     run.font.size = Pt(8); run.bold = True; run.font.color.rgb = TEAL
     run = cell.paragraphs[0].add_run(
-        f"A política que produz esta decisão foi declarada e congelada em 25/08/2026 "
+        f"A política que produz esta decisão foi declarada e congelada em 26/08/2026 "
         f"(registro SHA-256 {sha[:16]}…, aprovado por Diego Gallina); as decisões de 2015 a 2025 são a "
         f"reconstrução do que ela teria feito, usando apenas informação disponível em cada data. "
         f"Nenhum parâmetro muda depois do congelamento e a amostra confirmatória começa no primeiro "
@@ -172,7 +172,7 @@ def build_dossier(profile: str, block: dict, ladder: dict, registration: dict) -
               ["Bloco", "Fração do patrimônio"],
               [["Ações Brasil (cesta selecionada)", pct(block["domestic_equity"], 0)],
                ["S&P 500 em reais (IVVB11, declarado)", pct(block["global_sleeve"], 0)],
-               ["Caixa remunerado (CDI)", pct(block["cash"], 0)]],
+               ["Caixa remunerado (Tesouro Selic)", pct(block["cash"], 0)]],
               widths=[9.0, 7.6])
     para(document, "A camada de proteção pode reduzir a fração doméstica dentro do ano, conforme os "
                    "gatilhos da Seção 1; a perna global e o caixa não participam do sinal.",
@@ -201,13 +201,17 @@ def build_dossier(profile: str, block: dict, ladder: dict, registration: dict) -
                    "retroalimentar a regra. Ela existe para auditoria do resultado, não para a decisão.",
          size=9, color=MUTED)
     result = annual_result(ladder["monthly_curve"], LABELS[profile], year)
-    cdi = annual_result(ladder["monthly_curve"], "CDI", year)
+    # A política vigente declara o caixa como instrumento; o dossiê compara
+    # contra o papel que o cliente compra, com o nome dele.
+    cash_label = next(k for k in ladder["monthly_curve"]["series"]
+                      if k not in (*LABELS.values(), "Ibovespa"))
+    cdi = annual_result(ladder["monthly_curve"], cash_label, year)
     ibov = annual_result(ladder["monthly_curve"], "Ibovespa", year)
     global_row = block.get("global_row") or {}
     add_table(document, ["Série", f"Resultado do ciclo {year}"],
               [[f"Perfil {label} (com proteção)", pct(result)],
                ["Perna global (IVVB11)", pct(global_row.get("realised_next_year"))],
-               ["CDI", pct(cdi)],
+               [cash_label, pct(cdi)],
                ["Ibovespa (retorno total)", pct(ibov)]],
               widths=[9.0, 7.6])
     rows = [[position["ticker"].removesuffix(".SA"), pct(position.get("realised_next_year"), 1)]
@@ -254,7 +258,7 @@ def build_dossier(profile: str, block: dict, ladder: dict, registration: dict) -
 def main() -> None:
     composition = json.loads((ROOT / "web" / "composition.json").read_text(encoding="utf-8"))
     ladder = json.loads((ROOT / "web" / "ladder_v2.json").read_text(encoding="utf-8"))
-    registration = json.loads((ROOT / "data" / "benevente_profile_ladder_v2_registration.json").read_text(encoding="utf-8"))
+    registration = json.loads((ROOT / "data" / "benevente_profile_ladder_v3_registration.json").read_text(encoding="utf-8"))
     OUT_DOCX.mkdir(parents=True, exist_ok=True)
     count = 0
     for profile, blocks in composition["profiles"].items():

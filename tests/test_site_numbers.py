@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
 EVIDENCE = json.loads((WEB / "ladder_v2.json").read_text(encoding="utf-8"))
 REGISTRATION = json.loads(
-    (ROOT / "data" / "benevente_profile_ladder_v2_registration.json").read_text(encoding="utf-8"))
+    (ROOT / "data" / "benevente_profile_ladder_v3_registration.json").read_text(encoding="utf-8"))
 PAGES = {path.name: path.read_text(encoding="utf-8") for path in sorted(WEB.glob("*.html"))}
 
 # Figures produced by the nested search that the declared ladder replaced. They
@@ -111,7 +111,9 @@ def test_the_chart_curve_agrees_with_the_profile_metrics() -> None:
 def test_the_chart_carries_the_references_it_is_compared_against() -> None:
     curve = EVIDENCE["monthly_curve"]
     years = len({date[:4] for date in curve["dates"]})
-    for label, key in (("CDI", "CDI"), ("Ibovespa", "Ibovespa")):
+    # A v3 declara o caixa como instrumento, então a curva é rotulada pelo papel
+    # que se compra — não pelo índice que ninguém compra.
+    for label, key in (("Tesouro Selic", "Tesouro Selic"), ("Ibovespa", "Ibovespa")):
         assert label in curve["series"], f"{label} sumiu do gráfico"
         values = curve["series"][label]
         implied = (values[-1] / values[0]) ** (1 / years) - 1
