@@ -193,3 +193,30 @@ def test_what_the_decision_could_not_know_is_kept_apart() -> None:
             for row in year["positions"]:
                 assert "realised_next_year" in row, f"{name}: falta o retorno realizado"
                 assert {"score", "trailing_12m", "trailing_vol"} <= set(row), name
+
+
+def test_every_asset_reference_is_stamped_with_its_own_content() -> None:
+    """A hand-bumped cache parameter is a promise someone will remember.
+
+    It was broken three times in one session, and each failure was silent: the
+    corrected file simply never reached the browser. The stamp is derived from
+    the content, and this test is what makes the rule hold.
+    """
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("stamp_assets", ROOT / "tools" / "stamp_assets.py")
+    module = importlib.util.module_from_spec(spec)
+    assert spec and spec.loader
+    spec.loader.exec_module(module)
+
+    missing: list[str] = []
+    stale: list[str] = []
+    for page in sorted(WEB.glob("*.html")):
+        _, changes = module.stamp(page, missing)
+        if changes:
+            stale.append(f"{page.name} ({changes})")
+    assert not missing, f"referência para arquivo inexistente: {missing}"
+    assert not stale, (
+        f"parâmetro de cache defasado em {stale}. Rode tools/stamp_assets.py — sem isso a correção "
+        f"não chega a nenhum navegador com cache."
+    )

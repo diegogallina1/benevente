@@ -1,5 +1,6 @@
 import importlib.util
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -162,8 +163,11 @@ def test_strategy_pages_share_the_same_live_structure() -> None:
         assert 'class="strategy-tab"' in source
         assert f'data-live-strategy="{mode}"' in source
         assert "CARTEIRA-SOMBRA 2026" in source
-        assert "paper.js?v=20260824" in source
+        # The cache parameter is derived from the file's content. Pinning a
+        # literal here would break on every legitimate edit and would teach the
+        # next reader to update the test instead of looking at what changed.
+        assert re.search(r'src="\./paper\.js\?v=[0-9a-f]{10}"', source)
         assert f'data-strategy-decisions="{mode}"' in source
         assert "COMO REPLICAR" in source
     assert "data-event-radar" in second
-    assert "event-radar.js?v=20260824" in second
+    assert re.search(r'src="\./event-radar\.js\?v=[0-9a-f]{10}"', second)
