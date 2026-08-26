@@ -1,0 +1,143 @@
+"""The site may not state a number the published evidence does not imply.
+
+Three separate drifts got through review before this test existed. Pages that
+were not edited kept the retired rule's figures while the pages next to them
+showed the ladder. The chart plotted one strategy while the summary underneath
+it described another. And a builder field counted years against cash on a series
+nobody is offered, disagreeing with the prose by one year in every profile.
+
+Each of those is invisible to a human reviewer reading one page at a time, and
+each is exactly the kind of error this project's audit history exists to catch.
+"""
+from __future__ import annotations
+
+import json
+import re
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parents[1]
+WEB = ROOT / "web"
+EVIDENCE = json.loads((WEB / "ladder_v2.json").read_text(encoding="utf-8"))
+REGISTRATION = json.loads(
+    (ROOT / "data" / "benevente_profile_ladder_v2_registration.json").read_text(encoding="utf-8"))
+PAGES = {path.name: path.read_text(encoding="utf-8") for path in sorted(WEB.glob("*.html"))}
+
+# Figures produced by the nested search that the declared ladder replaced. They
+# remain reproducible in artifacts/configuration_search_2012/ and are correct
+# about the rule they describe; they are simply not true of any live policy.
+# A page that needs to cite one as history must be added to RETIRED_ALLOWED with
+# the reason, so the exception is a decision rather than an oversight.
+RETIRED = {
+    "17,86%": "CAGR da seleção aninhada aposentada",
+    "18,45%": "CAGR do Benevente 2 sob a regra aposentada",
+    "509,8%": "acumulado do Benevente 1 aposentado",
+    "543,8%": "acumulado do Benevente 2 aposentado",
+    "22,93%": "volatilidade da regra aposentada",
+    "28,75%": "queda máxima do Benevente 2 aposentado",
+    "47,78%": "queda máxima do Benevente 1 aposentado",
+    "11,77%": "Ibovespa medido sobre a curva do motor, que deriva",
+}
+RETIRED_ALLOWED: dict[str, set[str]] = {}
+
+
+def _pt(value: float, digits: int = 2, percent: bool = True) -> str:
+    """Format like the pages do: comma decimal, optional percent sign."""
+    number = value * 100 if percent else value
+    text = f"{number:,.{digits}f}".replace(",", "\x00").replace(".", ",").replace("\x00", ".")
+    return f"{text}%" if percent else text
+
+
+def _normalise(text: str) -> str:
+    """The pages use a typographic minus; a formatted number uses a hyphen."""
+    return text.replace("−", "-").replace("–", "-")
+
+
+@pytest.mark.parametrize("page", sorted(PAGES))
+def test_no_page_restates_a_retired_figure(page: str) -> None:
+    source = PAGES[page]
+    for figure, meaning in RETIRED.items():
+        if page in RETIRED_ALLOWED.get(figure, set()):
+            continue
+        # A retired CAGR of 17,86% and a live drawdown of -17,86% are the same
+        # digits; only the sign separates them, so the sign is part of the match.
+        pattern = r"(?<![-−\d,])" + re.escape(figure)
+        assert not re.search(pattern, source), (
+            f"{page} publica {figure} ({meaning}). Se a citação for histórica e deliberada, "
+            f"acrescente a página a RETIRED_ALLOWED com o motivo."
+        )
+
+
+def test_published_evidence_matches_the_frozen_registration() -> None:
+    assert EVIDENCE["policy"] == REGISTRATION["policy"]
+    assert EVIDENCE["registration_sha256"] == REGISTRATION["registration_sha256"]
+    assert EVIDENCE["approved_by"] == REGISTRATION["approved_by"]
+    for name, item in EVIDENCE["profiles"].items():
+        declared, frozen = item["declared"], REGISTRATION["profiles"][name]
+        for field in ("maximum_equity_weight", "top_assets", "maximum_asset_weight",
+                      "global_share_of_portfolio"):
+            assert declared[field] == frozen[field], f"{name}.{field} divergiu do registro"
+
+
+@pytest.mark.parametrize("name", sorted(EVIDENCE["profiles"]))
+def test_every_profile_figure_appears_somewhere_on_the_site(name: str) -> None:
+    """A published number must exist in the evidence, and be shown at least once."""
+    item = EVIDENCE["profiles"][name]
+    everything = _normalise("".join(PAGES.values()))
+    for label, value in (("CAGR", item["benevente2"]["cagr"]),
+                         ("queda", item["benevente2"]["max_drawdown"])):
+        assert _pt(value) in everything, f"{name}: {label} {_pt(value)} não aparece em nenhuma página"
+
+
+def test_the_chart_curve_agrees_with_the_profile_metrics() -> None:
+    """The plotted path and the stated CAGR must be the same object.
+
+    They were not: the chart read the retired series while the table beside it
+    was built from a different file.
+    """
+    curve = EVIDENCE["monthly_curve"]
+    years = len({date[:4] for date in curve["dates"]})
+    labels = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
+    for name, label in labels.items():
+        values = curve["series"][label]
+        implied = (values[-1] / values[0]) ** (1 / years) - 1
+        stated = EVIDENCE["profiles"][name]["benevente2"]["cagr"]
+        assert implied == pytest.approx(stated, abs=5e-4), (
+            f"{label}: a curva do gráfico implica {implied:.4%} e a métrica publicada diz {stated:.4%}"
+        )
+
+
+def test_the_chart_carries_the_references_it_is_compared_against() -> None:
+    curve = EVIDENCE["monthly_curve"]
+    years = len({date[:4] for date in curve["dates"]})
+    for label, key in (("CDI", "CDI"), ("Ibovespa", "Ibovespa")):
+        assert label in curve["series"], f"{label} sumiu do gráfico"
+        values = curve["series"][label]
+        implied = (values[-1] / values[0]) ** (1 / years) - 1
+        assert implied == pytest.approx(EVIDENCE["references"][key]["cagr"], abs=5e-4)
+
+
+def test_the_ladder_ordering_holds_in_the_published_numbers() -> None:
+    order = ["conservador", "equilibrado", "arrojado"]
+    cagr = [EVIDENCE["profiles"][name]["benevente2"]["cagr"] for name in order]
+    drawdown = [EVIDENCE["profiles"][name]["benevente2"]["max_drawdown"] for name in order]
+    assert cagr == sorted(cagr), "o retorno deixou de subir com o perfil"
+    assert drawdown == sorted(drawdown, reverse=True), "a queda deixou de piorar com o perfil"
+
+
+def test_pages_that_show_the_ladder_load_the_data_and_the_seal() -> None:
+    for page in ("benevente-1.html", "benevente-2.html"):
+        source = PAGES[page]
+        assert "ladder.js" in source and "ladder.css" in source, page
+        assert "data-ladder-seal" in source, page
+
+
+def test_every_page_reaches_the_limitations() -> None:
+    """No page may state a result without a route to what the system cannot do."""
+    for page, source in PAGES.items():
+        if page in {"limitacoes.html"}:
+            continue
+        if not re.search(r"\d,\d{2}%", source):
+            continue
+        assert "limitacoes" in source, f"{page} publica números e não linka as limitações"

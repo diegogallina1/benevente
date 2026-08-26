@@ -13,7 +13,7 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     home = (ROOT / "web" / "index.html").read_text(encoding="utf-8")
     assert "Carregando" not in home
     assert "PROTÓTIPO DE PESQUISA" in home
-    assert "O Benevente 1 é a regra anual publicada" in home
+    assert "A política vigente declara três perfis" in home
     assert "diagnóstico retrospectivo, não validação prospectiva" in home
     assert "Reproduzir no GitHub" not in home
     assert "O Benevente separa o que calcula, o que explica e o que decide" in home
@@ -23,7 +23,10 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
         assert moved_class not in home
     assert "hero-performance" in home
     assert "Benevente 2, Ibovespa e CDI" not in home  # comparison is visual, not repeated as prose
-    assert all(label in home for label in ("+543,8%", "+240,1%", "+174,4%"))
+    # The home must be meaningful before JavaScript runs, so the ladder's own
+    # figures are the static fallback. They used to be the retired rule's.
+    assert all(label in home for label in ("+265,6%", "+388,6%", "+634,0%", "+174,4%"))
+    assert "543,8%" not in home and "509,8%" not in home
     assert 'data-dossier-strategy="b1"' in home
     assert 'data-dossier-strategy="b2"' in home
     assert home.index('data-dossier-strategy="b1"') < home.index('for="decision-year"')

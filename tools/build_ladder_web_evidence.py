@@ -66,6 +66,23 @@ def _reference(curve: pd.DataFrame, column: str) -> dict:
     return _metrics(level.pct_change().dropna(), level.index.to_series())
 
 
+def _years_beating_cash(track: pd.Series, daily: pd.DataFrame) -> dict:
+    """Calendar years in which the published series beat cash.
+
+    Both sides are compounded over the same calendar year from the same daily
+    index, so a partial first or last year is compared like with like.
+    """
+    frame = pd.DataFrame({
+        "r": track.to_numpy(),
+        "c": daily.cdi_daily_return.to_numpy(),
+        "y": pd.to_datetime(daily.date).dt.year.to_numpy(),
+    }).fillna(0.0)
+    annual = frame.groupby("y").apply(
+        lambda block: pd.Series({"r": (1 + block.r).prod() - 1, "c": (1 + block.c).prod() - 1}),
+        include_groups=False)
+    return {"years_beating_cdi": int((annual.r > annual.c).sum())}
+
+
 LABELS = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
 
 
@@ -136,7 +153,11 @@ def build(start_year: int, end_year: int) -> dict:
             "average_positions": float(results.equity_positions.mean()),
             "average_sectors": float(results.distinct_sectors.mean()),
             "average_turnover": float(results.turnover.mean()),
-            "years_beating_cdi": int((results.net_return > results.cdi_net_return).sum()),
+            # Counted on the series the site actually publishes. Reading it from
+            # the bare domestic run instead — no global sleeve, no overlay —
+            # answers a question about a portfolio nobody is offered, and it
+            # disagreed with the published policy by one year in every profile.
+            **_years_beating_cash(benevente2, daily),
             "years": int(len(results)),
         }
         if not references:

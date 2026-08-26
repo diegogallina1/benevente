@@ -209,3 +209,37 @@ h1, h2, h3, h4,
   .version-benchmark-grid article { min-height: 8.5rem; }
   .version-benchmark-grid strong { margin: 1rem 0 .25rem; }
 }
+
+/* O gráfico de comparação em telas estreitas.
+   Em 375px o SVG media 554px dentro de um cartão com overflow-x:hidden, então
+   cerca de 40% da curva era cortada sem nenhuma forma de alcançá-la — o leitor
+   não via nem que faltava algo. A largura passa a seguir o contêiner e a altura
+   segue o viewBox; o corte vira rolagem no cartão como rede de segurança, para
+   que nada volte a sumir em silêncio. */
+@media (max-width: 720px) {
+  .comparison-card { overflow-x: auto; }
+  .comparison-grid,
+  .compact-chart-layout { grid-template-columns: minmax(0, 1fr); }
+  .return-chart { min-width: 0; padding-right: 0; }
+  /* O viewBox é 900x410, então largura total do viewport daria 142px de altura
+     — ilegível para cinco curvas sobre onze anos. O gráfico mantém uma largura
+     legível e rola dentro do cartão, que é o tratamento padrão para série
+     temporal densa em tela estreita: nada é perdido e a curva continua legível.
+     A alternativa, achatar até caber, troca corte por ilegibilidade. */
+  .line-chart,
+  #line-chart {
+    width: 620px;
+    max-width: none;
+    height: auto;
+    min-height: 0;
+    display: block;
+  }
+  .chart-title small::after {
+    content: " · arraste o gráfico para o lado";
+    color: var(--ink-faint, #8ba0a9);
+  }
+  /* Cinco curvas em 375px empilham em duas linhas de botão; o alvo de toque
+     continua com altura suficiente para o dedo. */
+  #curve-toggles { flex-wrap: wrap; gap: .4rem; }
+  #curve-toggles .curve-toggle { min-height: 2.25rem; }
+}

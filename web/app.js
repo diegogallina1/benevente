@@ -5,6 +5,7 @@ const profiles = {
 };
 
 let researchData = null;
+let ladderEvidence = null;
 let forecastData = null;
 let universeData = null;
 let currentDecisionData = null;
@@ -665,20 +666,22 @@ function renderComparison(period) {
   renderCurveToggles(period); renderLineChart(period); renderWealthCards(period);
 }
 
+// The panel used to compare one Benevente 1 against one Benevente 2, which is a
+// comparison the declared ladder no longer has: there are three policies, and
+// the overlay is a layer inside each of them. It now states what that layer
+// costs and returns in the profile the reader is most likely to be offered.
 function renderBenevente2Panel() {
-  const experiment = researchData?.meta?.benevente2;
   const panel = document.querySelector("#benevente2-panel");
-  if (!experiment || !panel) return;
-  const b1 = experiment.full_period_metrics?.["Benevente 1"];
-  const b2 = experiment.training_only_selection?.full_period_metrics;
-  const covid = experiment.covid_2020_trace_for_training_selected_candidate;
-  if (!b1 || !b2 || !covid) return;
-  panel.querySelector("[data-b2='cagr']").textContent = plainPct(b2.cagr);
-  panel.querySelector("[data-b2='drawdown']").textContent = plainPct(b2.max_drawdown);
-  panel.querySelector("[data-b2='volatility']").textContent = plainPct(b2.annual_volatility);
-  panel.querySelector("[data-b2='covid']").textContent = plainPct(covid.annual_returns["Benevente 2"]);
-  panel.querySelector("[data-b1='cagr']").textContent = plainPct(b1.cagr);
-  panel.querySelector("[data-b1='drawdown']").textContent = plainPct(b1.max_drawdown);
+  const profile = ladderEvidence?.profiles?.equilibrado;
+  if (!panel || !profile) return;
+  const withLayer = profile.benevente2, without = profile.benevente1;
+  if (!withLayer || !without) return;
+  panel.querySelector("[data-b2='cagr']").textContent = plainPct(withLayer.cagr);
+  panel.querySelector("[data-b2='drawdown']").textContent = plainPct(withLayer.max_drawdown);
+  panel.querySelector("[data-b2='volatility']").textContent = plainPct(withLayer.annual_volatility);
+  panel.querySelector("[data-b2='covid']").textContent = plainPct(withLayer.cagr - without.cagr);
+  panel.querySelector("[data-b1='cagr']").textContent = plainPct(without.cagr);
+  panel.querySelector("[data-b1='drawdown']").textContent = plainPct(without.max_drawdown);
   panel.classList.remove("hidden");
 }
 let currentPeriod = "11";
@@ -805,6 +808,7 @@ Promise.all([fetch("./annual_research.json"), fetch("./fund_presets.json"), fetc
   if (ladderResponse?.ok) {
     try {
       const ladder = await ladderResponse.json();
+      ladderEvidence = ladder;
       if (ladder?.monthly_curve?.dates?.length) researchData.monthly_curve = ladder.monthly_curve;
     } catch (_) { /* keeps the previous curve rather than blanking the chart */ }
   }

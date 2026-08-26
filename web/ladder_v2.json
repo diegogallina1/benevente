@@ -33,7 +33,7 @@
       "average_positions": 12.0,
       "average_sectors": 8.090909090909092,
       "average_turnover": 0.4086346824323313,
-      "years_beating_cdi": 7,
+      "years_beating_cdi": 8,
       "years": 11
     },
     "equilibrado": {
@@ -58,7 +58,7 @@
       "average_positions": 8.0,
       "average_sectors": 5.454545454545454,
       "average_turnover": 0.5892036949571916,
-      "years_beating_cdi": 7,
+      "years_beating_cdi": 8,
       "years": 11
     },
     "arrojado": {
@@ -83,7 +83,7 @@
       "average_positions": 5.0,
       "average_sectors": 4.181818181818182,
       "average_turnover": 0.7690634197857502,
-      "years_beating_cdi": 7,
+      "years_beating_cdi": 8,
       "years": 11
     }
   },
