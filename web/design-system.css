@@ -166,6 +166,9 @@ h1, h2, h3, h4,
 .pilot-form-foot { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
 #demo-form-response { margin: 0; font-size: .82rem; color: var(--ink-soft, #5b6f7c); }
 .pilot-note { margin-top: .9rem; font-size: .78rem; color: var(--ink-soft, #5b6f7c); max-width: 720px; }
+.quick-composition { margin-top: .9rem; font-size: .82rem; color: var(--ink-soft, #5b6f7c); }
+.quick-composition a { color: var(--brand-green, #0b8377); font-weight: 750; text-decoration: none; }
+.quick-composition a:hover { text-decoration: underline; }
 @media (max-width: 680px) { .pilot-form-grid { grid-template-columns: 1fr; } }
 .wealth-card.primary strong.num-lg { font-size: clamp(1.7rem, 2.7vw, 2.6rem); }
 .wealth-card.primary strong.num-xl { font-size: clamp(1.4rem, 2.2vw, 2.1rem); }

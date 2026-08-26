@@ -132,7 +132,8 @@
   }
 
   const years = data.profiles.conservador.map(item => item.decision_year).sort((a, b) => b - a);
-  let activeProfile = "equilibrado";
+  const requestedProfile = new URLSearchParams(location.search).get("perfil");
+  let activeProfile = Object.prototype.hasOwnProperty.call(LABELS, requestedProfile) ? requestedProfile : "equilibrado";
   let activeYear = years[0];
 
   const render = host => {

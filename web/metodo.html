@@ -19,7 +19,7 @@
     <link rel="stylesheet" href="./versions.css?v=5256a2e04e" />
     <link rel="stylesheet" href="./paper.css?v=53e5e97e39" />
     <link rel="stylesheet" href="./site-polish.css?v=39e348ecd6" />
-    <link rel="stylesheet" href="./design-system.css?v=dc244e6cc1" />
+    <link rel="stylesheet" href="./design-system.css?v=14abe1e6ff" />
     <link rel="stylesheet" href="./ladder.css?v=618ca3ec60" />
   </head>
   <body class="version-page">
@@ -62,6 +62,7 @@
 
       <h2>3 · Custos e imposto</h2>
       <p>Custo é a taxa da B3 mais um termo de deslizamento que cresce com a participação da ordem no volume médio diário do papel. Na seleção anual, o imposto usa 15% sobre ganho realizado em renda variável e a tabela regressiva na parcela em caixa. Para as vendas de renda variável — rebalanceamento anual, reduções e recomposições da camada de proteção e a perna em ETF —, uma rotina própria reconstrói o livro diário de cada perfil e apura o imposto como a lei manda: por ativo, ao custo médio de aquisição, consolidado por mês-calendário, com isenção quando as vendas de ações do mês não superam R$ 20 mil, compensação de prejuízos acumulados e ETF sem isenção. Na janela 2015–2025, essa apuração custa entre 0,7 e 2,1 pontos percentuais ao ano conforme o perfil, e fica até 10% abaixo da estimativa agregada anterior, porque a agregação ignorava isenção e compensação. O que ainda falta é a conciliação com nota de corretagem, que exige operação real; a rotina e o razão mês a mês estão em artifacts/tax_lot_accounting.</p>
+      <p>A parcela em caixa é um único instrumento sintético: remuneração de 100% do CDI com capitalização diária, construída da série 12 do Banco Central — o equivalente prático de Tesouro Selic ou de um fundo DI sem taxa. Nenhum produto bancário específico é modelado: não há CDB com spread, LCI/LCA isenta, prefixado nem IPCA+. É uma escolha deliberada: qualquer produto real de caixa rende diferente disso por prêmios e isenções que variam por emissor e por cliente, e modelá-los criaria uma promessa que o sistema não pode auditar.</p>
 
       <h2>4 · Como a regra foi escolhida</h2>
       <p>Esta é a parte que a maioria dos backtests erra, e que erramos primeiro. Uma grade de regras candidatas foi avaliada, a melhor foi publicada, e o seu posto passou de 57º no critério de treino declarado para 1º no holdout. Isso só é possível se o holdout foi lido. Nada a jusante daquela escolha era fora da amostra.</p>
