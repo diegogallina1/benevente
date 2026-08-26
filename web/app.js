@@ -32,7 +32,7 @@ let chartZoom = 1;
 let chartFocus = null;
 let chartScale = "linear";
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
-const colors = { "Benevente":"#0f766e", "Benevente 1":"#0f766e", "Benevente 2":"#20a486", "Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490" };
+const colors = { "Conservador":"#7fc0b4", "Equilibrado":"#20a486", "Arrojado":"#0f766e", "Benevente":"#0f766e", "Benevente 1":"#0f766e", "Benevente 2":"#20a486", "Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490" };
 // Any string that reaches innerHTML has to be escaped, including strings the
 // user typed into the compare box and the name of a file they imported. Nothing
 // here is persisted or shared, so the exposure is to the person's own browser
@@ -177,7 +177,9 @@ function metricsForSeries(values, dates) {
   const volatility = Math.sqrt(returns.reduce((sum, value) => sum + Math.pow(value - average, 2), 0) / Math.max(returns.length - 1, 1)) * Math.sqrt(12);
   let peak = -Infinity, drawdown = 0;
   observed.forEach(item => { peak = Math.max(peak, item.value); drawdown = Math.min(drawdown, item.value / peak - 1); });
-  return { cagr, volatility, drawdown };
+  // ``cumulative`` travels with the rest so a caller working from a plotted
+  // series does not have to recover it from a second, unrelated source.
+  return { cagr, cumulative, volatility, drawdown };
 }
 
 function pct(value, digits = 1) { return `${value >= 0 ? "+" : ""}${(value * 100).toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits })}%`; }
@@ -623,16 +625,29 @@ function renderComparison(period) {
   // A percentage is easy to nod at and hard to feel. The same number said in
   // reais is what a reader actually compares against the fund they already own,
   // so it travels beside every series instead of only in the headline.
-  document.querySelector("#comparison-summary").textContent = benevente2
-    ? `Benevente 2 ${plainPct(benevente2.cumulative)} acumulado; Benevente 1 ${plainPct(benevente.cumulative)}. A melhoria principal foi reduzir risco, não provar retorno adicional.`
+  // The summary and the table below the chart used to be built from the retired
+  // annual series while the chart itself plotted something else, so the two
+  // could describe different strategies on the same screen. They are now
+  // derived from the series actually plotted, whatever those are.
+  const plotted = profileDataset(period);
+  const plottedNames = plotted ? Object.keys(plotted.series) : [];
+  const noteFor = {
+    "Conservador": "Política declarada · 35% em ações, 12 emissores",
+    "Equilibrado": "Política declarada · 55% em ações, 8 emissores",
+    "Arrojado": "Política declarada · 75% em ações, 5 emissores",
+    "CDI": "Rendimento do caixa",
+    "Ibovespa": "Índice de retorno total da B3",
+    "MVO de referência": "Otimização neutra independente",
+  };
+  const baseRows = plottedNames.map(name => {
+    const stats = metricsForSeries(plotted.series[name], plotted.dates);
+    return stats ? [name, stats, noteFor[name] || "Série do gráfico"] : null;
+  }).filter(Boolean);
+  const ranked = baseRows.filter(([name]) => noteFor[name]?.startsWith("Política"));
+  const cash = baseRows.find(([name]) => name === "CDI");
+  document.querySelector("#comparison-summary").textContent = ranked.length && cash
+    ? `Na janela escolhida: ${ranked.map(([name, stats]) => `${name} ${plainPct(stats.cumulative)}`).join("; ")}. CDI ${plainPct(cash[1].cumulative)}. Retorno e queda sobem juntos — a escada é a escolha, não o número isolado.`
     : `Benevente 1 ${plainPct(benevente.cumulative)} acumulado. Venceu o CDI em ${winCdi} de ${rows.length} anos e o MVO de referência em ${winMvo}.${marketPhrase}`;
-  const baseRows = [
-    ["Benevente 1", benevente, "Regra anual publicada"],
-    benevente2 ? ["Benevente 2", benevente2, "Extensão de risco em carteira-sombra"] : null,
-    ["MVO de referência", mvo, "Otimização neutra independente"],
-    ["CDI", cdi, "Rendimento do caixa"],
-    ibovespa ? ["Ibovespa", ibovespa, "Índice de retorno total da B3"] : null,
-  ].filter(Boolean);
   const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => {
     const metrics = metricsForSeries(values, profileDataset(period).dates);
     const firstAvailable = values.findIndex(value => Number.isFinite(Number(value)));
@@ -640,8 +655,13 @@ function renderComparison(period) {
     return metrics ? [name, { cumulative: values.at(-1) / values.find(Number.isFinite) - 1, cagr: metrics.cagr }, note] : null;
   }).filter(Boolean);
   document.querySelector("#comparison-table").innerHTML = [...baseRows, ...extras].map(([name, stats, note]) => `<tr><td>${escapeHtml(name)}</td><td><b>${plainPct(stats.cumulative)}</b><small>${plainPct(stats.cagr)}<br />a.a.</small></td><td>${escapeHtml(note)}</td></tr>`).join("");
-  const marketNote = ibovespa ? ` Contra o Ibovespa, ${pct(benevente.cumulative - ibovespa.cumulative)}.` : "";
-  document.querySelector("#research-note").textContent = `Na janela escolhida, a diferença do Benevente 1 para o CDI é ${pct(versusCdi)} e para o MVO é ${pct(versusMvo)}.${marketNote} O Benevente 1 é a regra anual publicada. O Benevente 2 mantém a seleção e altera somente a exposição; seus números de 2015–2025 são retrospectivos e 2026 permanece carteira-sombra.`;
+  const reference = baseRows.find(([name]) => name === "Ibovespa");
+  const spread = ranked.length && reference
+    ? ` Contra o Ibovespa, de ${pct(ranked[0][1].cumulative - reference[1].cumulative)} a ${pct(ranked.at(-1)[1].cumulative - reference[1].cumulative)} conforme o perfil.`
+    : "";
+  document.querySelector("#research-note").textContent = ranked.length
+    ? `As três curvas são políticas declaradas e congeladas antes do período, com a camada de risco intranual aplicada.${spread} A janela também desenvolveu as próprias regras, então descreve a amostra; a avaliação prospectiva começa na decisão de janeiro de 2027, e a carteira de 2026 segue a política anterior.`
+    : `Na janela escolhida, a diferença do Benevente 1 para o CDI é ${pct(versusCdi)} e para o MVO é ${pct(versusMvo)}.`;
   renderCurveToggles(period); renderLineChart(period); renderWealthCards(period);
 }
 
@@ -774,9 +794,20 @@ function renderModel(step) { const item=modelSteps[step]; document.querySelector
 document.querySelectorAll(".model-step").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".model-step").forEach(item=>item.classList.remove("active"));button.classList.add("active");renderModel(button.dataset.step)}));
 
 renderModel("optimizer");
-Promise.all([fetch("./annual_research.json"), fetch("./fund_presets.json"), fetch("./data_contract.json").catch(() => null)]).then(async ([research, fundPresets, contractResponse]) => {
+Promise.all([fetch("./annual_research.json"), fetch("./fund_presets.json"), fetch("./data_contract.json").catch(() => null), fetch("./ladder_v2.json").catch(() => null)]).then(async ([research, fundPresets, contractResponse, ladderResponse]) => {
   if (!research.ok || !fundPresets.ok) throw new Error("research unavailable");
   researchData = await research.json(); fundPresetsData = await fundPresets.json();
+  // The chart used to plot the retired single-strategy series because there
+  // was one published rule. There are three declared policies now, so the
+  // curve comes from the frozen ladder. annual_research.json stays as the
+  // record of the rule that was replaced, and is still what feeds the parts
+  // of the page that describe that history.
+  if (ladderResponse?.ok) {
+    try {
+      const ladder = await ladderResponse.json();
+      if (ladder?.monthly_curve?.dates?.length) researchData.monthly_curve = ladder.monthly_curve;
+    } catch (_) { /* keeps the previous curve rather than blanking the chart */ }
+  }
   if (contractResponse?.ok) {
     try {
       const contract = await contractResponse.json();

@@ -66,6 +66,36 @@ def _reference(curve: pd.DataFrame, column: str) -> dict:
     return _metrics(level.pct_change().dropna(), level.index.to_series())
 
 
+LABELS = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
+
+
+def _monthly_curve(daily_dates: pd.Series, tracks: dict[str, pd.Series]) -> dict:
+    """Month-end levels of each declared profile, rebased to 100 together.
+
+    Eleven January points cannot show a drawdown or when a year turned, and the
+    raw daily series reads as a smear at page width; month ends are the
+    readable middle. Every series is rebased on the same first date, so the
+    chart compares wealth paths rather than unrelated scales.
+    """
+    frame = pd.DataFrame({name: series.to_numpy() for name, series in tracks.items()})
+    frame.index = pd.to_datetime(daily_dates).to_numpy()
+    levels = (1 + frame.fillna(0.0)).cumprod()
+    month_end = levels.resample("ME").last().dropna(how="all")
+    # The first point is the opening value, not the first month's close, so the
+    # chart starts at 100 instead of at whatever the market did in January.
+    opening = pd.DataFrame([[1.0] * len(levels.columns)], columns=levels.columns,
+                           index=[levels.index[0]])
+    month_end = pd.concat([opening, month_end])
+    rebased = month_end / month_end.iloc[0] * 100
+    return {
+        "dates": [stamp.date().isoformat() for stamp in rebased.index],
+        "series": {name: [round(float(value), 4) for value in rebased[name]] for name in rebased.columns},
+        "evaluation_starts": rebased.index[0].date().isoformat(),
+        "note": ("Perfis declarados com a camada de risco intranual. Rebaseados em 100 na mesma data. "
+                 "Referências lidas da série datada de origem."),
+    }
+
+
 def build(start_year: int, end_year: int) -> dict:
     if not REGISTRATION.exists():
         raise SystemExit("Congele a v2 antes de publicar: profile_ladder_v2.py --register")
@@ -76,6 +106,8 @@ def build(start_year: int, end_year: int) -> dict:
     profiles: dict[str, dict] = {}
     references: dict = {}
     window = {}
+    tracks: dict[str, pd.Series] = {}
+    curve_dates = None
     for profile in LADDER_V2:
         protocol = domestic_protocol(profile, start_year, end_year)
         results, _, _ = engine.run(protocol)
@@ -88,6 +120,9 @@ def build(start_year: int, end_year: int) -> dict:
 
         benevente1 = _annual_rebalanced_blend(daily.strategy_daily_return, fund, daily.decision_year, share)
         benevente2 = _annual_rebalanced_blend(overlaid.protected_return, fund, daily.decision_year, share)
+        tracks[LABELS[profile]] = benevente2
+        if curve_dates is None:
+            curve_dates = daily.date
         declared = registration["profiles"][profile]
         profiles[profile] = {
             "declared": {
@@ -115,6 +150,14 @@ def build(start_year: int, end_year: int) -> dict:
                       "first_session": str(pd.to_datetime(daily.date).min().date()),
                       "last_session": str(pd.to_datetime(daily.date).max().date())}
 
+    source = pd.read_csv(BENCHMARKS, parse_dates=["date"]).set_index("date")
+    index = pd.DatetimeIndex(pd.to_datetime(curve_dates))
+    for label, column in (("Ibovespa", "IBOVESPA"),):
+        if column in source.columns:
+            level = source[column].reindex(index).ffill()
+            tracks[label] = level.pct_change().fillna(0.0).reset_index(drop=True)
+    tracks["CDI"] = daily.cdi_daily_return.reset_index(drop=True)
+
     return {
         "policy": registration["policy"],
         "registration_sha256": registration["registration_sha256"],
@@ -124,6 +167,7 @@ def build(start_year: int, end_year: int) -> dict:
         "window": window,
         "profiles": profiles,
         "references": references,
+        "monthly_curve": _monthly_curve(curve_dates, tracks),
         "global_sleeve": {
             "instrument": registration["global_sleeve"]["instrument"],
             "share_of_equity_budget": registration["global_sleeve"]["share_of_equity_budget"],
