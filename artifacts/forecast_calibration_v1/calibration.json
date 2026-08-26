@@ -1,0 +1,339 @@
+{
+  "status": "retrospective_research_only",
+  "question": "O intervalo de 80% que a regra projeta em cada janeiro contém o ano seguinte em 80% das vezes? A pergunta é sobre a honestidade da incerteza, não sobre acerto de retorno.",
+  "method": {
+    "estimator": "block bootstrap",
+    "block_days": 20,
+    "draws": 20000,
+    "seed": 20260826,
+    "point_in_time": "só retornos anteriores ao primeiro pregão do ano previsto",
+    "minimum_history_days": 504
+  },
+  "limitation": "Onze observações anuais dão erro padrão de doze pontos na cobertura: só um desvio grande é distinguível de ruído. E a distribuição é reamostrada da própria janela, então não contém regime que a janela não tenha.",
+  "profiles": {
+    "conservador": {
+      "years": [
+        {
+          "year": 2018,
+          "history_days": 746,
+          "horizon_days": 245,
+          "p10": 0.062878,
+          "p50": 0.152918,
+          "p90": 0.254861,
+          "realised": 0.143062,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2019,
+          "history_days": 991,
+          "horizon_days": 247,
+          "p10": 0.068477,
+          "p50": 0.154538,
+          "p90": 0.251051,
+          "realised": 0.169041,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2020,
+          "history_days": 1238,
+          "horizon_days": 247,
+          "p10": 0.073707,
+          "p50": 0.155574,
+          "p90": 0.246463,
+          "realised": 0.027774,
+          "inside": false,
+          "above": false,
+          "below": true
+        },
+        {
+          "year": 2021,
+          "history_days": 1485,
+          "horizon_days": 246,
+          "p10": 0.045125,
+          "p50": 0.136672,
+          "p90": 0.228023,
+          "realised": 0.068277,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2022,
+          "history_days": 1731,
+          "horizon_days": 249,
+          "p10": 0.040859,
+          "p50": 0.127814,
+          "p90": 0.215309,
+          "realised": 0.044387,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2023,
+          "history_days": 1980,
+          "horizon_days": 247,
+          "p10": 0.03373,
+          "p50": 0.11631,
+          "p90": 0.20167,
+          "realised": 0.165387,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2024,
+          "history_days": 2227,
+          "horizon_days": 250,
+          "p10": 0.039925,
+          "p50": 0.121628,
+          "p90": 0.206972,
+          "realised": 0.084353,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2025,
+          "history_days": 2477,
+          "horizon_days": 249,
+          "p10": 0.038754,
+          "p50": 0.119799,
+          "p90": 0.201474,
+          "realised": 0.202343,
+          "inside": false,
+          "above": true,
+          "below": false
+        }
+      ],
+      "coverage": {
+        "inside": 6,
+        "total": 8,
+        "observed": 0.75,
+        "nominal": 0.8,
+        "standard_error": 0.1414
+      },
+      "median_bias_pp": -2.258
+    },
+    "equilibrado": {
+      "years": [
+        {
+          "year": 2018,
+          "history_days": 746,
+          "horizon_days": 245,
+          "p10": 0.008319,
+          "p50": 0.167605,
+          "p90": 0.365451,
+          "realised": 0.24362,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2019,
+          "history_days": 991,
+          "horizon_days": 247,
+          "p10": 0.032268,
+          "p50": 0.187805,
+          "p90": 0.379124,
+          "realised": 0.25966,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2020,
+          "history_days": 1238,
+          "horizon_days": 247,
+          "p10": 0.052098,
+          "p50": 0.202943,
+          "p90": 0.380094,
+          "realised": 0.04208,
+          "inside": false,
+          "above": false,
+          "below": true
+        },
+        {
+          "year": 2021,
+          "history_days": 1485,
+          "horizon_days": 246,
+          "p10": 0.011029,
+          "p50": 0.179976,
+          "p90": 0.356972,
+          "realised": 0.131106,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2022,
+          "history_days": 1731,
+          "horizon_days": 249,
+          "p10": 0.016101,
+          "p50": 0.176727,
+          "p90": 0.350061,
+          "realised": 0.009512,
+          "inside": false,
+          "above": false,
+          "below": true
+        },
+        {
+          "year": 2023,
+          "history_days": 1980,
+          "horizon_days": 247,
+          "p10": 0.002936,
+          "p50": 0.153705,
+          "p90": 0.316431,
+          "realised": 0.190022,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2024,
+          "history_days": 2227,
+          "horizon_days": 250,
+          "p10": 0.003501,
+          "p50": 0.155739,
+          "p90": 0.317341,
+          "realised": 0.055045,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2025,
+          "history_days": 2477,
+          "horizon_days": 249,
+          "p10": 0.003615,
+          "p50": 0.151423,
+          "p90": 0.307501,
+          "realised": 0.284688,
+          "inside": true,
+          "above": false,
+          "below": false
+        }
+      ],
+      "coverage": {
+        "inside": 6,
+        "total": 8,
+        "observed": 0.75,
+        "nominal": 0.8,
+        "standard_error": 0.1414
+      },
+      "median_bias_pp": -2.002
+    },
+    "arrojado": {
+      "years": [
+        {
+          "year": 2018,
+          "history_days": 746,
+          "horizon_days": 245,
+          "p10": -0.069266,
+          "p50": 0.172233,
+          "p90": 0.495399,
+          "realised": 0.415146,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2019,
+          "history_days": 991,
+          "horizon_days": 247,
+          "p10": -0.015841,
+          "p50": 0.229103,
+          "p90": 0.548286,
+          "realised": 0.367134,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2020,
+          "history_days": 1238,
+          "horizon_days": 247,
+          "p10": 0.019886,
+          "p50": 0.257806,
+          "p90": 0.558385,
+          "realised": 0.076424,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2021,
+          "history_days": 1485,
+          "horizon_days": 246,
+          "p10": -0.03836,
+          "p50": 0.239702,
+          "p90": 0.553987,
+          "realised": 0.212221,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2022,
+          "history_days": 1731,
+          "horizon_days": 249,
+          "p10": -0.028149,
+          "p50": 0.238996,
+          "p90": 0.539684,
+          "realised": -0.015076,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2023,
+          "history_days": 1980,
+          "horizon_days": 247,
+          "p10": -0.045245,
+          "p50": 0.205419,
+          "p90": 0.492315,
+          "realised": 0.238971,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2024,
+          "history_days": 2227,
+          "horizon_days": 250,
+          "p10": -0.040232,
+          "p50": 0.205012,
+          "p90": 0.489941,
+          "realised": 0.02357,
+          "inside": true,
+          "above": false,
+          "below": false
+        },
+        {
+          "year": 2025,
+          "history_days": 2477,
+          "horizon_days": 249,
+          "p10": -0.040073,
+          "p50": 0.192222,
+          "p90": 0.467861,
+          "realised": 0.430784,
+          "inside": true,
+          "above": false,
+          "below": false
+        }
+      ],
+      "coverage": {
+        "inside": 8,
+        "total": 8,
+        "observed": 1.0,
+        "nominal": 0.8,
+        "standard_error": 0.1414
+      },
+      "median_bias_pp": 0.109
+    }
+  }
+}
