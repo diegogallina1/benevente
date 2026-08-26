@@ -1,0 +1,185 @@
+{
+  "status": "demonstration_only",
+  "warning": "Carteira sintética escrita à mão para exercitar o módulo.",
+  "target_profile": "equilibrado",
+  "target_decision": "2026-01-02",
+  "mapping": {
+    "total_brl": 700000,
+    "alignment": 0.6771,
+    "turnover_brl": 271235.0,
+    "transition_cost_brl": 542.47,
+    "transition_tax_brl": 11250.0,
+    "transition_total_brl": 11792.47,
+    "transition_cost_pct": 0.01685,
+    "exempt_month_assumed": false,
+    "tax_by_bucket": {
+      "fora_do_escopo": {
+        "realised_gain_brl": -9000.0,
+        "tax_brl": 0.0
+      },
+      "renda_variavel": {
+        "realised_gain_brl": 75000.0,
+        "tax_brl": 11250.0
+      }
+    },
+    "fgc_breaches": {
+      "Beta": 310000.0
+    },
+    "sources": [
+      "Open Finance (compartilhamento de investimentos)",
+      "extrato da Área do Investidor da B3",
+      "lançamento manual"
+    ],
+    "moves": [
+      {
+        "ticker": "WEGE3",
+        "action": "vender",
+        "from_brl": 180000,
+        "to_brl": 0.0,
+        "delta_brl": -180000.0,
+        "reason": "não está na cesta do perfil",
+        "trade_cost_brl": 180.0,
+        "realised_gain_brl": 140000.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "MGLU3",
+        "action": "vender",
+        "from_brl": 25000,
+        "to_brl": 0.0,
+        "delta_brl": -25000.0,
+        "reason": "não está na cesta do perfil",
+        "trade_cost_brl": 25.0,
+        "realised_gain_brl": -65000.0,
+        "tax_brl": 0.0,
+        "notes": [
+          "prejuízo realizado: abate o ganho das outras vendas da mesma cesta"
+        ]
+      },
+      {
+        "ticker": "Cripto",
+        "action": "vender",
+        "from_brl": 21000,
+        "to_brl": 0.0,
+        "delta_brl": -21000.0,
+        "reason": "não está na cesta do perfil",
+        "trade_cost_brl": 21.0,
+        "realised_gain_brl": -9000.0,
+        "tax_brl": 0.0,
+        "notes": [
+          "prejuízo realizado: abate o ganho das outras vendas da mesma cesta"
+        ]
+      },
+      {
+        "ticker": "IVVB11",
+        "action": "comprar",
+        "from_brl": 0.0,
+        "to_brl": 77000.0,
+        "delta_brl": 77000.0,
+        "reason": "perna global declarada pela política",
+        "trade_cost_brl": 77.0,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "CMIN3",
+        "action": "comprar",
+        "from_brl": 0.0,
+        "to_brl": 68530.0,
+        "delta_brl": 68530.0,
+        "reason": "entra pela seleção do perfil",
+        "trade_cost_brl": 68.53,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "VIVA3",
+        "action": "comprar",
+        "from_brl": 0.0,
+        "to_brl": 68530.0,
+        "delta_brl": 68530.0,
+        "reason": "entra pela seleção do perfil",
+        "trade_cost_brl": 68.53,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "BBSE3",
+        "action": "comprar",
+        "from_brl": 0.0,
+        "to_brl": 41770.4,
+        "delta_brl": 41770.4,
+        "reason": "entra pela seleção do perfil",
+        "trade_cost_brl": 41.77,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "LEVE3",
+        "action": "comprar",
+        "from_brl": 0.0,
+        "to_brl": 21646.8,
+        "delta_brl": 21646.8,
+        "reason": "entra pela seleção do perfil",
+        "trade_cost_brl": 21.65,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "PLPL3",
+        "action": "comprar",
+        "from_brl": 0.0,
+        "to_brl": 14866.6,
+        "delta_brl": 14866.6,
+        "reason": "entra pela seleção do perfil",
+        "trade_cost_brl": 14.87,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "COGN3",
+        "action": "comprar",
+        "from_brl": 0.0,
+        "to_brl": 12964.0,
+        "delta_brl": 12964.0,
+        "reason": "entra pela seleção do perfil",
+        "trade_cost_brl": 12.96,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "TEND3",
+        "action": "comprar",
+        "from_brl": 0.0,
+        "to_brl": 11162.2,
+        "delta_brl": 11162.2,
+        "reason": "entra pela seleção do perfil",
+        "trade_cost_brl": 11.16,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "CURY3",
+        "action": "manter",
+        "from_brl": 44000,
+        "to_brl": 44000,
+        "delta_brl": 0,
+        "reason": "já está no peso do perfil",
+        "trade_cost_brl": 0.0,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      }
+    ],
+    "honesty": "O custo da travessia inclui o imposto que a venda realiza, que é o número que costuma faltar. O mapa não estima em quanto tempo a mudança 'se paga': isso exigiria projetar retorno futuro, e a calibração publicada mostra que projeções desse tipo erram na direção de quem as faz."
+  }
+}
