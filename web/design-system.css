@@ -195,6 +195,45 @@ h1, h2, h3, h4,
   .version-nav nav { display: flex; flex-wrap: wrap; width: 100%; gap: .35rem; }
   .version-nav nav a:not([aria-current="page"]):not(.version-back) { display: inline-block; }
 }
+/* Três coisas que só aparecem no celular, medidas em 375px.
+
+   1. Alvo de toque: links de 14 a 20px de altura são impossíveis de acertar
+      com o polegar. O mínimo confortável é 40px, obtido com padding, sem
+      mudar o tamanho da letra.
+   2. Nada abaixo de 11px: rótulos que funcionam a 9px no desktop ficam
+      ilegíveis na mão.
+   3. Só a tabela rola, não o cartão inteiro: a tabela de comparação tem 544px
+      dentro de uma coluna de 324px, e isso fazia o cartão do gráfico inteiro
+      deslizar de lado. */
+@media (max-width: 680px) {
+  .hero-performance-foot a,
+  .text-link,
+  .version-next a,
+  .version-footer a,
+  [data-event-radar] a,
+  .quick-composition a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+  }
+  .curve-toggles button, .period, .chart-source, .quick-ticker, .fund-preset-button { min-height: 36px; }
+  .hero-performance-pair small,
+  .hero-performance-pair p,
+  .hero-performance-foot span,
+  .hero-performance-foot a { font-size: 11px; }
+  .version-label, .version-kicker, .control-label, .version-metric span { font-size: 10px; }
+  .version-tag, .chart-title small, .line-chart-caption { font-size: 10.5px; }
+  .chart-tools button { min-height: 34px; }
+  /* Um filho de grade/flex tem largura mínima igual ao conteúdo: sem min-width:0
+     a tabela de 544px empurrava a coluna e o cartão inteiro deslizava de lado.
+     Com o zero, a coluna respeita a tela e só a tabela rola. */
+  .comparison-grid, .chart-sidepanel, .return-chart { min-width: 0; }
+  .comparison-table-wrap { overflow-x: auto; max-width: 100%; min-width: 0; }
+  /* O gráfico continua com a largura legível de 620px e rolando dentro do
+     cartão — decisão registrada mais abaixo, no bloco de 720px. Achatá-lo até
+     caber em 325px tornaria cinco curvas sobre onze anos ilegíveis. */
+}
+
 @media (max-width: 680px) {
   .version-nav nav { display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; }
   .version-nav nav a,
