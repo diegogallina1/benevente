@@ -25,5 +25,10 @@ data/yahoo_adjusted_total_return_*_manifest.json
 data/prices_b3_total_return_full_*.csv
 data/prices_b3_price_return_full_*.csv
 data/prices_b3_cotahist_2011_2026.csv
+# Painel com a perna global: reconstruível por build_global_etf_panel.py a partir
+# do painel pai. O manifesto fica versionado porque carrega o hash do pai.
+data/prices_b3_with_global_*.csv
 
 .vercel
+# Cache do dataset aberto do Tesouro, rebaixável por research_fixed_income_probe.py
+data/tesouro_direto_precos_taxas.csv

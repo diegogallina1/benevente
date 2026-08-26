@@ -1,0 +1,5 @@
+produto,tipo,isento,fonte,cdi_equivalente,taxa_bruta_aa
+CDB 112% do CDI,pos,False,ilustrativo,112.0,15.93
+LCI 94% do CDI (isenta),pos,True,ilustrativo,108.45,13.37
+Tesouro Prefixado 2029,prefixado,False,Tesouro Transparente,100.0,14.22
+CDB 100% do CDI,pos,False,referência,100.0,14.22

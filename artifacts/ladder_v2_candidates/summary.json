@@ -1,0 +1,29 @@
+{
+  "status": "retrospective_research_only",
+  "global_fraction_of_equity_budget": 0.2,
+  "risk_matching_check": {
+    "conservador": {
+      "acoes_alvo_variante_4": 0.35000000000000003,
+      "acoes_alvo_variante_5": 0.35
+    },
+    "equilibrado": {
+      "acoes_alvo_variante_4": 0.5499999999999999,
+      "acoes_alvo_variante_5": 0.5500000000000002
+    },
+    "arrojado": {
+      "acoes_alvo_variante_4": 0.9499999999999997,
+      "acoes_alvo_variante_5": 0.9500000000000002
+    }
+  },
+  "instrument": "IVVB11",
+  "variants": {
+    "dentro": "registered overlay applied unchanged to a book holding the fund",
+    "fora": "fund held at a declared share of the portfolio, rebalanced annually, overlay on the rest"
+  },
+  "limitations": [
+    "Both layers were designed after the crises present in this sample.",
+    "About a third of the fund's return in this window came from BRL depreciation, not from the American market; the sleeve is an unhedged long dollar position.",
+    "Intra-year tax on gains the overlay realises is still not modelled.",
+    "Neither variant is registered. Choosing between them after reading this table is a selection and must be declared as such."
+  ]
+}

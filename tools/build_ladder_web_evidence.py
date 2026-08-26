@@ -1,0 +1,140 @@
+"""Publish the declared ladder's evidence for the site.
+
+The pages used to read one curve from ``annual_research.json`` because there was
+one published strategy. There are now three declared policies, and each of them
+exists in two forms: the annual selection on its own, which is Benevente 1, and
+the same selection with the intra-year overlay, which is Benevente 2.
+
+This builder produces both forms for all three profiles from the frozen v2
+registration, so the site never states a number that the registration does not
+imply. It reads the registration rather than restating its parameters, which is
+what keeps the page and the policy from drifting apart.
+"""
+from __future__ import annotations
+
+from pathlib import Path
+import argparse
+import json
+import math
+
+import pandas as pd
+
+from annual_walk_forward import BrazilianTaxModel, apply_annual_taxes
+from profile_intrayear_risk import apply_profile_overlay
+from profile_ladder_v2 import (GLOBAL_FRACTION, LADDER_V2, domestic_protocol)
+from research_global_sleeve import GLOBAL_TICKER, build_global_engine
+from research_ladder_v2 import _annual_rebalanced_blend, _daily
+
+ROOT = Path(__file__).resolve().parents[1]
+REGISTRATION = ROOT / "data" / "benevente_profile_ladder_v2_registration.json"
+
+
+def _metrics(returns: pd.Series, dates: pd.Series) -> dict:
+    clean = returns.fillna(0.0)
+    wealth = (1 + clean).cumprod()
+    years = max(int(pd.to_datetime(dates).dt.year.nunique()), 1)
+    return {
+        "cagr": float(wealth.iloc[-1] ** (1 / years) - 1),
+        "cumulative_return": float(wealth.iloc[-1] - 1),
+        "annual_volatility": float(clean.std(ddof=1) * math.sqrt(252)),
+        "max_drawdown": float((wealth / wealth.cummax() - 1).min()),
+    }
+
+
+def _reference(curve: pd.DataFrame, column: str) -> dict:
+    if column not in curve.columns:
+        return {}
+    level = curve[column].astype(float)
+    return _metrics(level.pct_change(), curve.date)
+
+
+def build(start_year: int, end_year: int) -> dict:
+    if not REGISTRATION.exists():
+        raise SystemExit("Congele a v2 antes de publicar: profile_ladder_v2.py --register")
+    registration = json.loads(REGISTRATION.read_text(encoding="utf-8"))
+    engine, panel = build_global_engine()
+    tax = BrazilianTaxModel()
+
+    profiles: dict[str, dict] = {}
+    references: dict = {}
+    window = {}
+    for profile in LADDER_V2:
+        protocol = domestic_protocol(profile, start_year, end_year)
+        results, _, _ = engine.run(protocol)
+        results = apply_annual_taxes(results, tax)
+        daily = _daily(engine, results)
+        overlaid = apply_profile_overlay(
+            daily, daily.decision_year.map(results.set_index("decision_year").target_equity_weight), profile)
+        fund = panel[GLOBAL_TICKER].reindex(daily.date).pct_change().fillna(0.0).reset_index(drop=True)
+        share = float(LADDER_V2[profile]["maximum_equity_weight"]) * GLOBAL_FRACTION
+
+        benevente1 = _annual_rebalanced_blend(daily.strategy_daily_return, fund, daily.decision_year, share)
+        benevente2 = _annual_rebalanced_blend(overlaid.protected_return, fund, daily.decision_year, share)
+        declared = registration["profiles"][profile]
+        profiles[profile] = {
+            "declared": {
+                "maximum_equity_weight": declared["maximum_equity_weight"],
+                "top_assets": declared["top_assets"],
+                "maximum_asset_weight": declared["maximum_asset_weight"],
+                "global_share_of_portfolio": declared["global_share_of_portfolio"],
+            },
+            "benevente1": _metrics(benevente1, daily.date),
+            "benevente2": _metrics(benevente2, daily.date),
+            "average_positions": float(results.equity_positions.mean()),
+            "average_sectors": float(results.distinct_sectors.mean()),
+            "average_turnover": float(results.turnover.mean()),
+            "years_beating_cdi": int((results.net_return > results.cdi_net_return).sum()),
+            "years": int(len(results)),
+        }
+        if not references:
+            references = {
+                "CDI": _metrics(daily.cdi_daily_return, daily.date),
+                "Ibovespa": _reference(daily, "IBOVESPA"),
+                "BOVA11": _reference(daily, "BOVA11"),
+            }
+            window = {"first_decision_year": int(results.decision_year.min()),
+                      "last_decision_year": int(results.decision_year.max()),
+                      "first_session": str(pd.to_datetime(daily.date).min().date()),
+                      "last_session": str(pd.to_datetime(daily.date).max().date())}
+
+    return {
+        "policy": registration["policy"],
+        "registration_sha256": registration["registration_sha256"],
+        "approved_by": registration["approved_by"],
+        "registered_at": registration["registered_at"],
+        "confirmatory_sample_starts": registration["confirmatory_sample_starts"],
+        "window": window,
+        "profiles": profiles,
+        "references": references,
+        "global_sleeve": {
+            "instrument": registration["global_sleeve"]["instrument"],
+            "share_of_equity_budget": registration["global_sleeve"]["share_of_equity_budget"],
+            "currency_warning": registration["global_sleeve"]["unhedged_currency_warning"],
+        },
+        "overlay_applies_to": registration["intrayear_overlay"]["applies_to"],
+        "status": ("Retrospectivo. A janela foi usada para desenvolver as próprias regras; "
+                   "a amostra confirmatória começa no primeiro pregão de 2027."),
+    }
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Publish the declared ladder's evidence for the site.")
+    parser.add_argument("--output", default="web/ladder_v2.json")
+    parser.add_argument("--start-year", type=int, default=2015)
+    parser.add_argument("--end-year", type=int, default=2026)
+    args = parser.parse_args()
+    payload = build(args.start_year, args.end_year)
+    target = ROOT / args.output
+    target.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(f"escrito {args.output} · janela {payload['window']['first_decision_year']}"
+          f"–{payload['window']['last_decision_year']}")
+    for name, item in payload["profiles"].items():
+        b1, b2 = item["benevente1"], item["benevente2"]
+        print(f"  {name:12s} B1 {b1['cagr']:6.2%} / {b1['max_drawdown']:7.2%}   "
+              f"B2 {b2['cagr']:6.2%} / {b2['max_drawdown']:7.2%}")
+    print(f"  {'CDI':12s} {payload['references']['CDI']['cagr']:6.2%}"
+          f" · Ibovespa {payload['references']['Ibovespa']['cagr']:6.2%}")
+
+
+if __name__ == "__main__":
+    main()

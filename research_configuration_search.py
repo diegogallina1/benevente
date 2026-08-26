@@ -53,25 +53,61 @@ from total_return_adapter import load_total_return_export
 ISSUER_CAP_SLACK = 1.6
 MAXIMUM_ISSUER_CAP = .25
 MINIMUM_SELECTION_YEARS = 3
+# Issuer floor for the selectivity family; the published name encodes only the
+# share, so the floor has to be recoverable from a constant.
+SELECTIVITY_FLOOR = 5
 SWITCHING_TURNOVER = 2.0
 
 
 def configuration_grid(equity_budgets: tuple[float, ...], asset_counts: tuple[int, ...],
-                       factors: tuple[str, ...]) -> list[dict]:
-    """Every configuration the nested selection may choose between."""
+                       factors: tuple[str, ...], sector_limits: tuple[int | None, ...] = (None,),
+                       selectivity_fractions: tuple[float, ...] = (),
+                       selectivity_floor: int = SELECTIVITY_FLOOR) -> list[dict]:
+    """Every configuration the nested selection may choose between.
+
+    Two families share the space. A ``n`` configuration holds a fixed number of
+    issuers. An ``f`` configuration holds a fixed *share* of whatever passed the
+    screen that January, floored and capped, because a constant count was three
+    quarters of the 2016 eligible universe and a fifth of the 2025 one.
+
+    For the ``f`` family the issuer ceiling is derived from the floor rather
+    than the cap: derived from the cap, a year that selects few names could not
+    reach its own equity budget and would silently become a cash book.
+    """
     grid: list[dict] = []
     for budget in equity_budgets:
         for count in asset_counts:
-            cap = min(MAXIMUM_ISSUER_CAP, budget / count * ISSUER_CAP_SLACK)
-            for factor in factors:
-                grid.append({
-                    "name": f"eq{int(round(budget * 100))}_n{count}_{factor}",
-                    "maximum_equity_weight": float(budget),
-                    "maximum_asset_weight": float(cap),
-                    "top_assets": int(count),
-                    "factor": factor,
-                })
+            for sector_limit in sector_limits:
+                cap = min(MAXIMUM_ISSUER_CAP, budget / count * ISSUER_CAP_SLACK)
+                for factor in factors:
+                    grid.append({
+                        "name": f"eq{int(round(budget * 100))}_n{count}{_sector_tag(sector_limit)}_{factor}",
+                        "maximum_equity_weight": float(budget),
+                        "maximum_asset_weight": float(cap),
+                        "top_assets": int(count),
+                        "factor": factor,
+                        "maximum_names_per_sector": sector_limit,
+                    })
+        for fraction in selectivity_fractions:
+            ceiling = max(asset_counts)
+            cap = min(MAXIMUM_ISSUER_CAP, budget / selectivity_floor * ISSUER_CAP_SLACK)
+            for sector_limit in sector_limits:
+                for factor in factors:
+                    grid.append({
+                        "name": f"eq{int(round(budget * 100))}_f{int(round(fraction * 100))}{_sector_tag(sector_limit)}_{factor}",
+                        "maximum_equity_weight": float(budget),
+                        "maximum_asset_weight": float(cap),
+                        "top_assets": int(ceiling),
+                        "top_assets_minimum": int(selectivity_floor),
+                        "top_assets_universe_fraction": float(fraction),
+                        "factor": factor,
+                        "maximum_names_per_sector": sector_limit,
+                    })
     return grid
+
+
+def _sector_tag(sector_limit: int | None) -> str:
+    return "" if sector_limit is None else f"s{int(sector_limit)}"
 
 
 def evaluate_grid(engine: AnnualWalkForwardEngine, base: AnnualWalkForwardConfig,
@@ -80,9 +116,8 @@ def evaluate_grid(engine: AnnualWalkForwardEngine, base: AnnualWalkForwardConfig
     runs: dict[str, pd.DataFrame] = {}
     failures: list[dict] = []
     for item in grid:
-        protocol = replace(base, factor=item["factor"], top_assets=item["top_assets"],
-                           maximum_equity_weight=item["maximum_equity_weight"],
-                           maximum_asset_weight=item["maximum_asset_weight"])
+        overrides = {key: value for key, value in item.items() if key != "name"}
+        protocol = replace(base, **overrides)
         try:
             annual, _, _ = engine.run(protocol)
         except Exception as exc:  # a configuration that cannot form a book is not a candidate
@@ -169,6 +204,11 @@ def main() -> None:
     parser.add_argument("--equity-budgets", default="0.55,0.75,0.95")
     parser.add_argument("--asset-counts", default="5,8,12")
     parser.add_argument("--factors", default="value_quality,triple_factor,momentum_12m")
+    parser.add_argument("--sector-limits", default="",
+                        help="Comma-separated issuer limits per CVM sector; empty means no limit.")
+    parser.add_argument("--selectivity-fractions", default="",
+                        help="Comma-separated shares of the eligible universe to hold, e.g. 0.10,0.15.")
+    parser.add_argument("--selectivity-floor", type=int, default=SELECTIVITY_FLOOR)
     parser.add_argument("--output", default="artifacts/configuration_search")
     args = parser.parse_args()
 
@@ -179,10 +219,15 @@ def main() -> None:
     engine = AnnualWalkForwardEngine(prices.set_index("date"), snapshots_from_frame(fundamentals),
                                      SystemConfig(), evidence, benchmarks)
     base = AnnualWalkForwardConfig(args.start_year, args.end_year)
+    sector_limits: tuple[int | None, ...] = (None,) + tuple(
+        int(item) for item in args.sector_limits.split(",") if item.strip())
     grid = configuration_grid(
         tuple(float(item) for item in args.equity_budgets.split(",")),
         tuple(int(item) for item in args.asset_counts.split(",")),
         tuple(item.strip() for item in args.factors.split(",")),
+        sector_limits=sector_limits,
+        selectivity_fractions=tuple(float(item) for item in args.selectivity_fractions.split(",") if item.strip()),
+        selectivity_floor=args.selectivity_floor,
     )
     print(f"Evaluating {len(grid)} configurations.")
     matrix, runs = evaluate_grid(engine, base, grid)

@@ -1,0 +1,23 @@
+{
+  "status": "retrospective_research_only",
+  "profile": "equilibrado",
+  "cadences": {
+    "anual": 12,
+    "semestral": 6,
+    "trimestral": 3,
+    "mensal": 1
+  },
+  "portfolio_sizes_brl": [
+    100000,
+    300000,
+    1000000,
+    5000000
+  ],
+  "monthly_sale_exemption_brl": 20000.0,
+  "limitations": [
+    "The exemption covers ordinary share sales only. An ETF sleeve is taxed regardless of size, so a book holding the global sleeve gets less relief than this table shows.",
+    "Each review is assumed to fall in a distinct calendar month and to be the client's only share sale that month. A client selling elsewhere in the same month loses the exemption.",
+    "The threshold is a legal parameter that changes; it is read from BrazilianTaxModel, not hard-coded here.",
+    "Execution cost rises with cadence and is charged; the intra-year path is otherwise unchanged."
+  ]
+}

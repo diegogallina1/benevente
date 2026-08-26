@@ -1,0 +1,104 @@
+/* Declared profile ladder. Three policies where the site used to state one. */
+.ladder-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--hairline, #d9e4e0);
+  border-radius: 14px;
+  background: var(--surface, #fff);
+}
+
+.ladder-table {
+  width: 100%;
+  min-width: 34rem;
+  border-collapse: collapse;
+  font-size: .88rem;
+}
+
+.ladder-table caption {
+  caption-side: top;
+  text-align: left;
+  padding: .85rem 1rem .55rem;
+  font-size: .72rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-soft, #5b6f7c);
+  font-weight: 600;
+}
+
+.ladder-table th,
+.ladder-table td {
+  padding: .58rem .9rem;
+  border-top: 1px solid var(--hairline, #d9e4e0);
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.ladder-table thead th {
+  border-top: 0;
+  border-bottom: 1px solid var(--hairline, #d9e4e0);
+  font-size: .68rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-soft, #5b6f7c);
+  font-weight: 600;
+}
+
+.ladder-table th[scope="row"],
+.ladder-table thead th:first-child {
+  text-align: left;
+  font-weight: 700;
+  color: var(--ink-strong, #0d2b3f);
+}
+
+.ladder-table tbody tr:first-child th,
+.ladder-table tbody tr:first-child td {
+  border-top: 0;
+}
+
+.ladder-strong {
+  font-weight: 700;
+  color: var(--ink-strong, #0d2b3f);
+}
+
+.ladder-reference th[scope="row"],
+.ladder-reference td {
+  color: var(--ink-soft, #5b6f7c);
+  font-weight: 500;
+}
+
+.ladder-reference th[scope="row"] {
+  font-weight: 600;
+}
+
+.ladder-note {
+  margin: .7rem 0 0;
+  font-size: .8rem;
+  color: var(--ink-soft, #5b6f7c);
+}
+
+.ladder-error {
+  font-size: .85rem;
+  color: var(--ink-soft, #5b6f7c);
+}
+
+/* The seal is the page's claim to being generated rather than typed. */
+.ladder-seal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem 1.4rem;
+  margin-top: 1rem;
+  padding-top: .8rem;
+  border-top: 1px solid var(--hairline, #d9e4e0);
+  font-size: .74rem;
+  color: var(--ink-soft, #5b6f7c);
+}
+
+.ladder-seal span strong {
+  color: var(--ink-strong, #0d2b3f);
+  font-weight: 650;
+}
+
+.ladder-seal code {
+  font-size: .95em;
+  word-break: break-all;
+}

@@ -1,0 +1,19 @@
+{
+  "status": "diagnostic_not_selection",
+  "window": "2013-2025",
+  "schemes": [
+    "score",
+    "equal",
+    "inverse_volatility",
+    "inverse_volatility_score"
+  ],
+  "basket_sizes": [
+    5,
+    8,
+    12,
+    16,
+    20
+  ],
+  "basket_budget": 0.55,
+  "note": "Selection is held fixed. Any scheme adopted from here multiplies the candidate space by four and must be re-registered with the updated trial count."
+}

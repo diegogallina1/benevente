@@ -1,0 +1,16 @@
+{
+  "status": "viability_probe_not_an_engine",
+  "source": "Tesouro Transparente, public and unauthenticated",
+  "as_of": "2026-08-21",
+  "titles_on_curve": 58,
+  "horizon_years": 3.0,
+  "implied_cdi_from_curve": 14.22,
+  "implied_cdi_anchor": "2029-01-01",
+  "note": "The implied CDI is read from the fixed-rate bond nearest the horizon. It is not a forecast: it is the average CDI at which the fixed-rate bond breaks even, which is the bet the client takes or declines.",
+  "limitations": [
+    "Bank quotes above are illustrative. CDB, LCI and LCA rates have no public source and depend on a commercial arrangement with the broker.",
+    "Credit risk is not priced here; FGC coverage and issuer limits are separate constraints.",
+    "The fixed-rate bond carries a term premium, so reading it as a pure CDI expectation overstates the implied CDI by that premium.",
+    "Custody and platform fees are not deducted in this probe."
+  ]
+}

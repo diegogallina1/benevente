@@ -41,12 +41,24 @@ def test_benevente_2_has_direct_benchmarks_and_shared_design_system() -> None:
         assert "DM+Mono" not in source, path
         assert "design-system.css" in source, path
     benevente2 = (ROOT / "web" / "benevente-2.html").read_text(encoding="utf-8")
-    assert "Benevente 2, Ibovespa e CDI na mesma janela" in benevente2
-    assert 'data-version-metric="ibov-cumulative"' in benevente2
-    assert 'data-version-metric="cdi-cumulative"' in benevente2
+    benevente1 = (ROOT / "web" / "benevente-1.html").read_text(encoding="utf-8")
     assert "Experimento retrospectivo" not in benevente2
-    assert "Regra anual publicada" in benevente2
-    assert "Extensão acompanhada em carteira-sombra" in benevente2
+    # A single Benevente 2 number set against the index stopped existing when the
+    # policy became three declared profiles. Both pages must carry the ladder and
+    # the seal that says which frozen policy they describe, and must not restate
+    # the retired single-strategy metrics.
+    assert 'data-ladder="benevente2"' in benevente2
+    assert 'data-ladder="benevente1"' in benevente1
+    assert "Benevente 2, Ibovespa e CDI na mesma janela" not in benevente2
+    for page, source in (("benevente-1", benevente1), ("benevente-2", benevente2)):
+        assert "data-ladder-seal" in source, page
+        assert "ladder.js" in source and "ladder.css" in source, page
+        assert 'data-version-metric="b1-cagr"' not in source, page
+        assert 'data-version-metric="b2-cagr"' not in source, page
+    # The 2026 shadow book was decided under the previous policy and says so;
+    # restating it as the new one would be the retroactive revision the project
+    # exists to prevent.
+    assert "política anterior" in benevente1
 
 
 def test_site_data_contract_matches_canonical_sources() -> None:

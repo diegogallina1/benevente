@@ -1,0 +1,58 @@
+{
+  "policy": "benevente_profile_ladder_v1",
+  "status": "registered_not_prospectively_validated",
+  "registered_at": "2026-08-25T13:47:48.698531-03:00",
+  "confirmatory_sample_starts": "first B3 trading session of 2027",
+  "selection_method": "declared, not searched",
+  "why_not_searched": "On identical inputs, code and window (2016-2025) a 36-candidate nested search returned 15.31% a year with a deflated Sharpe of 0.957, and the same search over 256 candidates returned 12.68% with a deflated Sharpe of 0.777, below significance. The expected maximum Sharpe under the null rose from 0.375 to 0.746. Ten annual observations cannot rank 256 candidates.",
+  "signal_family": "triple_factor",
+  "review_frequency": "annual",
+  "maximum_names_per_sector": 3,
+  "sector_limit_status": "Governance constraint. Where it binds it cost 0.15 percentage points of CAGR and improved the excess Sharpe in none of the twenty configurations affected. It is not claimed to improve returns.",
+  "intrayear_overlay": "not included; see benevente_profile_risk_v1. The combination is unmeasured.",
+  "profiles": {
+    "conservador": {
+      "maximum_equity_weight": 0.35,
+      "top_assets": 12,
+      "maximum_asset_weight": 0.046667,
+      "rationale": "Widest basket at the smallest budget. The worst calendar year measured in sample was positive; the profile buys stability, not upside."
+    },
+    "equilibrado": {
+      "maximum_equity_weight": 0.55,
+      "top_assets": 8,
+      "maximum_asset_weight": 0.11,
+      "rationale": "The published budget with a wider basket than the published five names, at the point where the count stops costing efficiency."
+    },
+    "arrojado": {
+      "maximum_equity_weight": 0.95,
+      "top_assets": 5,
+      "maximum_asset_weight": 0.25,
+      "rationale": "Concentration and the largest budget. The in-sample worst year was -21%, which is the cost the profile exists to accept."
+    }
+  },
+  "inputs": {
+    "prices": "9bc6ad08d6a3ca2dc1253e94f17541d863d36d5f30bbc1c232f81b43b11bef85",
+    "total_return_manifest": "d41d364b757b8df207930dfc7b6ff25544bfdd2c6f7230c059fb6d3453350ca8",
+    "fundamentals": "c2e41b5285cac91568434b41bc75657d3da889bd1bec3ea7a57a88768224456f",
+    "universe": "b4315cbd7bbfd21781f1252a21437cda8bdb603963ad040539997ea3bcf15d83",
+    "mapping": "34915dbade0df919b2c5350331acef9ff3c4a0537d08c91b5e14f5d9744f0385",
+    "benchmarks": "658697bf27e9988f1e8cafdf564acacac0038969f743073dcdec0f9eea343c1b"
+  },
+  "code": {
+    "annual_walk_forward.py": "e9a78f07a6f3918b82182c44ae94609a2643673efeaf3477ea17e0e4b966cc7b",
+    "portfolio_risk.py": "5a2e9f81efc5a73c55261d97482467c316fb51ff570a86126bc21f2d36ac43f5",
+    "profile_ladder.py": "c5fb74fd32a9f0d0d87ff47e952063fc07e7723b58f8197cb7ba4f7bf486afdb"
+  },
+  "success_criterion": {
+    "minimum_years": 3,
+    "must_beat_cdi_after_tax": true,
+    "must_beat_investable_market_etf": true,
+    "profile_ordering_must_hold": "conservador <= equilibrado <= arrojado in realised risk and return",
+    "falsification": "A profile that fails to clear the CDI after tax over the full prospective window, or a ladder whose realised risk ordering inverts, refutes the policy. One good year confirms nothing."
+  },
+  "non_negotiable_gates": {
+    "no_parameter_change_after_sample_start": true,
+    "in_sample_window_is_exploratory": "2013-2025"
+  },
+  "registration_sha256": "f1f38817587a7b75842a21560c6d52a8facc86ba525cf810624303c08dcd37c9"
+}
