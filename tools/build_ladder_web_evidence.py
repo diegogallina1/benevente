@@ -27,6 +27,7 @@ from research_ladder_v2 import _annual_rebalanced_blend, _daily
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRATION = ROOT / "data" / "benevente_profile_ladder_v2_registration.json"
+BENCHMARKS = ROOT / "data" / "benchmarks_market_2011_2025.csv"
 
 
 def _metrics(returns: pd.Series, dates: pd.Series) -> dict:
@@ -42,10 +43,27 @@ def _metrics(returns: pd.Series, dates: pd.Series) -> dict:
 
 
 def _reference(curve: pd.DataFrame, column: str) -> dict:
-    if column not in curve.columns:
+    """Benchmark metrics read from the source series, not from the engine curve.
+
+    Two separate defects made this necessary. Filling the level's missing
+    sessions with a zero return deletes the market's move *across* each gap and
+    understates the benchmark, which flatters every comparison against it. And
+    the engine's own rebased benchmark level drifts: over the identical 2,718
+    sessions it accumulates 247.2% where the source accumulates 239.1%, an
+    overstatement of roughly eight points. The drift is a separate bug that
+    still affects the main chart and is recorded as such.
+
+    Reading the dated source over exactly the sessions the run covered avoids
+    both, and is the number a reader can reproduce from a published file.
+    """
+    dates = pd.to_datetime(curve.date)
+    source = pd.read_csv(BENCHMARKS, parse_dates=["date"]).set_index("date")
+    if column not in source.columns:
         return {}
-    level = curve[column].astype(float)
-    return _metrics(level.pct_change(), curve.date)
+    level = source[column].reindex(pd.DatetimeIndex(dates)).dropna()
+    if len(level) < 2:
+        return {}
+    return _metrics(level.pct_change().dropna(), level.index.to_series())
 
 
 def build(start_year: int, end_year: int) -> dict:

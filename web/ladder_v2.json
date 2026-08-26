@@ -95,16 +95,16 @@
       "max_drawdown": 0.0
     },
     "Ibovespa": {
-      "cagr": 0.11332360599939251,
-      "cumulative_return": 2.257133756083864,
-      "annual_volatility": 0.23207907922290966,
-      "max_drawdown": -0.46954217243611507
+      "cagr": 0.11740434578416914,
+      "cumulative_return": 2.3908916808720995,
+      "annual_volatility": 0.23366829746068152,
+      "max_drawdown": -0.46815808848135965
     },
     "BOVA11": {
-      "cagr": 0.11834692558627391,
-      "cumulative_return": 2.4224887557684087,
-      "annual_volatility": 0.23595804645714633,
-      "max_drawdown": -0.47230667094452583
+      "cagr": 0.11800671658696982,
+      "cumulative_return": 2.4110535630606997,
+      "annual_volatility": 0.23700851476463053,
+      "max_drawdown": -0.4693169006552962
     }
   },
   "global_sleeve": {
