@@ -87,6 +87,7 @@ def _composition(holdings: pd.DataFrame, results: pd.DataFrame, global_share: fl
         rows = [{
             "ticker": str(item.ticker),
             "weight": round(float(item.weight) * (1 - global_share), 6),
+            "previous_weight": round(float(item.previous_weight) * (1 - global_share), 6),
             "action": str(item.decision_action),
             "score": None if pd.isna(item.value_quality_score) else round(float(item.value_quality_score), 4),
             "trailing_12m": None if pd.isna(item.trailing_12m_return_at_decision)
