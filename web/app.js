@@ -227,6 +227,7 @@ function syncDossierStrategyButtons() {
 }
 
 function renderProfileHistory() {
+  if (!document.querySelector("#decision-year")) return;
   const container = document.querySelector("#profile-history");
   if (!container || !researchData) return;
   const rows = activeProfileRows();
@@ -261,6 +262,7 @@ function syncDecisionYears() {
 }
 
 function renderAssetWorkbench() {
+  if (!document.querySelector("#asset-grid")) return;
   if (!researchData) return;
   const decision = selectedAnnualDecision();
   if (!decision) return;
@@ -324,6 +326,7 @@ function pctPlain(value) { return Number.isFinite(value) ? `${(value * 100).toLo
 function signedScenario(value) { return Number.isFinite(value) ? `${value >= 0 ? "+" : ""}${pctPlain(value)}` : "não calculado"; }
 
 function renderForecast() {
+  if (!document.querySelector("#scenario-chart")) return;
   if (!forecastData || !researchData) return;
   const profileName = ({ conservador: "Conservador", moderado: "Equilibrado", arrojado: "Arrojado" })[currentProfile] || "Equilibrado";
   const returns = activeProfileRows().map(item => item.net_return).filter(Number.isFinite).sort((a, b) => a - b);
@@ -351,6 +354,7 @@ function renderForecast() {
 }
 
 function renderCurrentDecision() {
+  if (!document.querySelector("#current-decision-assets")) return;
   if (!currentDecisionData) return;
   const { universe, holdings, monitoring, decision_date: date } = currentDecisionData;
   const policy = activePolicy();
@@ -382,6 +386,7 @@ function renderCurrentDecision() {
 
 function moneyCompact(value) { return new Intl.NumberFormat("pt-BR", {style:"currency",currency:"BRL",notation:"compact",maximumFractionDigits:1}).format(value || 0); }
 function renderUniverse() {
+  if (!document.querySelector("#universe-table")) return;
   if (!universeData) return;
   const byClass = universeData.coverage_by_class;
   document.querySelector("#universe-summary").innerHTML = [[universeData.instrument_count, "instrumentos negociados"], [byClass.equity || 0, "ações"], [byClass.etf || 0, "ETFs / fundos listados"], [byClass.bdr || 0, "BDRs"], [byClass.fii || 0, "FIIs / Fiagros"]].map(([value, label]) => `<div><b>${value.toLocaleString("pt-BR")}</b><span>${label}</span></div>`).join("");
@@ -763,7 +768,7 @@ document.querySelector("#chart-add-form").addEventListener("submit", async event
     help.textContent = "Série adicionada. Use as chaves para mostrar ou ocultar linhas e clique no gráfico para inspecionar datas.";
   } catch (error) { help.textContent = error.message || "Não foi possível adicionar a série."; }
 });
-document.querySelector("#decision-year").addEventListener("change", () => { renderAssetWorkbench(); renderProfileHistory(); });
+document.querySelector("#decision-year")?.addEventListener("change", () => { renderAssetWorkbench(); renderProfileHistory(); });
 document.querySelectorAll("[data-dossier-strategy]").forEach(button => button.addEventListener("click", () => {
   currentDossierStrategy = button.dataset.dossierStrategy === "b2" ? "b2" : "b1";
   syncDossierStrategyButtons();
@@ -793,7 +798,7 @@ if (demoForm) demoForm.addEventListener("submit", async event => {
   } finally { button.disabled = false; }
 });
 
-function renderModel(step) { const item=modelSteps[step]; document.querySelector("#model-detail").innerHTML=`<span class="detail-number">${item.number}</span><h3>${item.title}</h3><p>${item.text}</p><div class="detail-grid"><div><small>USA</small><b>${item.uses}</b></div><div><small>BLOQUEIA</small><b>${item.blocks}</b></div><div><small>PRODUZ</small><b>${item.produces}</b></div><div><small>RESPONSÁVEL</small><b>Instituição e revisor humano</b></div></div><p class="detail-rule">${item.rule}</p>`; }
+function renderModel(step) { const detail=document.querySelector("#model-detail"); if(!detail) return; const item=modelSteps[step]; detail.innerHTML=`<span class="detail-number">${item.number}</span><h3>${item.title}</h3><p>${item.text}</p><div class="detail-grid"><div><small>USA</small><b>${item.uses}</b></div><div><small>BLOQUEIA</small><b>${item.blocks}</b></div><div><small>PRODUZ</small><b>${item.produces}</b></div><div><small>RESPONSÁVEL</small><b>Instituição e revisor humano</b></div></div><p class="detail-rule">${item.rule}</p>`; }
 document.querySelectorAll(".model-step").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".model-step").forEach(item=>item.classList.remove("active"));button.classList.add("active");renderModel(button.dataset.step)}));
 
 renderModel("optimizer");

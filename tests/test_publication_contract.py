@@ -24,8 +24,15 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     # E que a home roteie por jornada, não pelas versões internas do motor.
     assert "Entenda a pesquisa" in home and "Veja o produto de governança" in home
     assert "Benevente 1</strong>" not in home and "Benevente 2</strong>" not in home
-    for core_class in ("hero shell", "version-gateway shell", "model-shell", "comparison shell", "lab-section"):
+    # A home enxugou de seis blocos para três mais o público. O passo a passo
+    # do "como decide" e o dossiê ano a ano saíram porque já existiam, melhor
+    # servidos, no método e nas páginas de versão — repetir os dois na entrada
+    # era o que fazia o leitor frio se perder.
+    for core_class in ("hero shell", "version-gateway shell", "comparison shell"):
         assert core_class in home
+    for moved in ("model-shell", "lab-section", 'id="carteira"'):
+        assert moved not in home, f"{moved} voltou para a home"
+    assert "Feito para quem assina a recomendação" in home
     for moved_class in ("research-signal shell", "evidence-board shell", "research-disclosure shell"):
         assert moved_class not in home
     assert "hero-performance" in home
@@ -34,11 +41,14 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     # figures are the static fallback. They used to be the retired rule's.
     assert all(label in home for label in ("+265,6%", "+388,6%", "+634,0%", "+174,4%"))
     assert "543,8%" not in home and "509,8%" not in home
-    assert 'data-dossier-strategy="b1"' in home
-    assert 'data-dossier-strategy="b2"' in home
-    assert home.index('data-dossier-strategy="b1"') < home.index('for="decision-year"')
-    assert "Pesos anuais fixos" in home
-    assert "Controle de risco" in home
+    # O estúdio que trocava de versão na home saiu junto com o dossiê: cada
+    # página de versão já traz o seu próprio histórico de decisões, e manter um
+    # seletor de versão na entrada era pedir ao leitor frio que escolhesse entre
+    # módulos internos antes de saber o que o produto faz.
+    assert "data-dossier-strategy" not in home
+    for name, mode in (("benevente-1.html", "b1"), ("benevente-2.html", "b2")):
+        source = (ROOT / "web" / name).read_text(encoding="utf-8")
+        assert f'data-strategy-decisions="{mode}"' in source, name
 
 
 def test_benevente_2_has_direct_benchmarks_and_shared_design_system() -> None:
