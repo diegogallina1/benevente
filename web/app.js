@@ -633,9 +633,9 @@ function renderComparison(period) {
   const plotted = profileDataset(period);
   const plottedNames = plotted ? Object.keys(plotted.series) : [];
   const noteFor = {
-    "Conservador": "Política declarada · 35% em ações, 12 emissores",
-    "Equilibrado": "Política declarada · 55% em ações, 8 emissores",
-    "Arrojado": "Política declarada · 75% em ações, 5 emissores",
+    "Conservador": "Com proteção · 35% em ações, 12 emissores",
+    "Equilibrado": "Com proteção · 55% em ações, 8 emissores",
+    "Arrojado": "Com proteção · 75% em ações, 5 emissores",
     "CDI": "Rendimento do caixa",
     "Ibovespa": "Índice de retorno total da B3",
     "MVO de referência": "Otimização neutra independente",

@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Benevente: governança de decisão de carteira para a pesquisa Benevente Quant AI sobre decisão anual de carteira na B3." />
     <title>Benevente · governança de decisão de carteira</title>
+    <link rel="canonical" href="https://benevente.dgo.fi/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Benevente" />
+    <meta property="og:title" content="Benevente · governança de decisão de carteira" />
+    <meta property="og:description" content="Benevente: governança de decisão de carteira para a pesquisa Benevente Quant AI sobre decisão anual de carteira na B3." />
+    <meta property="og:url" content="https://benevente.dgo.fi/" />
+    <meta property="og:locale" content="pt_BR" />
     <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -15,7 +22,7 @@
     <link rel="stylesheet" href="./commercial.css?v=6c9172f724" />
     <link rel="stylesheet" href="./paper.css?v=53e5e97e39" />
     <link rel="stylesheet" href="./refinements.css?v=6ba71c3eea" />
-    <link rel="stylesheet" href="./design-system.css?v=36b48d3b13" />
+    <link rel="stylesheet" href="./design-system.css?v=03ad92bbb6" />
   </head>
   <body>
     <header class="nav shell">
@@ -44,12 +51,12 @@
             <div><span>DECIDE</span><p>Revisor humano responsável</p></div>
           </div>
           <div class="hero-actions">
-            <a class="button button-primary" href="#resultado">Ver resultados <span>→</span></a>
-            <a class="button button-secondary" href="#como-decide">Como funciona <span>↓</span></a>
+            <a class="button button-primary" href="./para-escritorios.html#onde-voce-entra">Como funciona <span>→</span></a>
+            <a class="button button-secondary" href="#resultado">Resultados retrospectivos <span>↓</span></a>
           </div>
         </div>
         <aside class="hero-performance" aria-label="Comparação histórica principal">
-          <div class="hero-performance-head"><span>2015—2025</span><b>TRÊS PERFIS DECLARADOS</b></div>
+          <div class="hero-performance-head"><span>2015—2025</span><b>POLÍTICA VIGENTE · COM PROTEÇÃO</b></div>
           <div class="hero-performance-pair">
             <div><small>Conservador · 35% em ações</small><strong>12,51%</strong><p>ao ano · maior queda de 9,2%</p></div>
             <div><small>Arrojado · 75% em ações</small><strong>19,87%</strong><p>ao ano · maior queda de 28,9%</p></div>
@@ -106,8 +113,13 @@
       <!-- 3. O resultado, com o custo dele na mesma tela. -->
       <section class="comparison shell" id="resultado">
         <div class="comparison-head">
-          <div><p class="eyebrow"><span></span> Resultado auditado</p><h2>O que a regra rendeu,<br /><em>e o que isso custou.</em></h2></div>
-          <p>Compare a seleção anual com o Benevente 2, sempre na mesma janela. Adicione uma ação, ETF ou fundo se quiser.</p>
+          <div><p class="eyebrow"><span></span> Resultados retrospectivos da política vigente</p><h2>O que a regra rendeu,<br /><em>e o que isso custou.</em></h2></div>
+          <p>Seleção (módulo 1) mais proteção (módulo 2), sempre na mesma janela. As curvas e os cartões usam a coluna “com proteção”. Adicione uma ação, ETF ou fundo se quiser.</p>
+          <div class="policy-split-wrap"><table class="policy-split"><thead><tr><th>Perfil</th><th>Só seleção</th><th>Com proteção</th><th>Queda com proteção</th></tr></thead><tbody>
+            <tr><td>Conservador · 35% em ações</td><td>13,39%</td><td><b>12,51%</b></td><td>−9,16%</td></tr>
+            <tr><td>Equilibrado · 55% em ações</td><td>16,37%</td><td><b>15,51%</b></td><td>−17,86%</td></tr>
+            <tr><td>Arrojado · 75% em ações</td><td>20,32%</td><td><b>19,87%</b></td><td>−28,94%</td></tr>
+          </tbody></table><p>Retorno anualizado 2015–2025, líquido de custos modelados. Sem proteção, as quedas máximas seriam de −16,70%, −26,52% e −35,64%.</p></div>
         </div>
         <div class="comparison-card">
           <div class="comparison-controls">
@@ -116,7 +128,7 @@
           </div>
           <div class="comparison-grid compact-chart-layout">
             <div class="return-chart"><div class="chart-title"><span>Retorno acumulado</span><small>0% na primeira data comum</small></div><div class="curve-toggles" id="curve-toggles" aria-label="Séries exibidas"></div><div class="chart-return-summary" id="chart-return-summary" aria-live="polite"></div><div class="chart-tools" aria-label="Ferramentas do gráfico"><button type="button" id="chart-zoom-out">−</button><span id="chart-zoom-status">Visão completa</span><button type="button" id="chart-zoom-in">+</button><button type="button" id="chart-zoom-reset">Redefinir</button><span class="chart-scale-label">Escala</span><button type="button" class="chart-scale active" data-scale="linear">Linear</button><button type="button" class="chart-scale" data-scale="log">Log</button></div><svg class="line-chart" id="line-chart" viewBox="0 0 900 410" role="img" aria-label="Retornos acumulados selecionados"><g id="line-chart-grid"></g><g id="line-chart-lines"></g><g id="line-chart-labels"></g><g id="line-chart-direct-labels"></g><line id="line-chart-cursor" class="line-cursor hidden" /></svg><p class="line-chart-caption" id="line-chart-caption">Mova o cursor sobre a curva; a roda do mouse amplia a janela.</p><div class="chart-inspector" id="chart-inspector" aria-live="polite">Selecione uma data no gráfico para comparar os retornos.</div></div>
-            <aside class="chart-sidepanel"><details class="chart-add-details"><summary>Comparar com uma ação, ETF ou fundo</summary><div class="chart-add"><div class="chart-add-tabs" role="tablist"><button type="button" class="chart-source active" data-source="ticker">Ação / ETF B3</button><button type="button" class="chart-source" data-source="fund">Fundos ativos</button></div><form id="chart-add-form"><label id="chart-symbol-label">Ticker B3<input id="chart-symbol" name="symbol" placeholder="Ex.: PETR4" maxlength="12" /></label><div class="fund-preset hidden" id="fund-preset-label"><span>Fundos sugeridos · cotas CVM</span><div class="fund-preset-list"><button type="button" class="fund-preset-button" data-fund-cnpj="73232530000139" data-fund-name="Dynamo Cougar FIF">Dynamo Cougar</button><button type="button" class="fund-preset-button" data-fund-cnpj="08507696000159" data-fund-name="Verde AM Multi Estratégia">Verde Multi</button><button type="button" class="fund-preset-button" data-fund-cnpj="08078571000150" data-fund-name="Itaú Ações Dividendos">Itaú Dividendos</button><button type="button" class="fund-preset-button" data-fund-cnpj="16718302000130" data-fund-name="Itaú Ações Momento 30">Itaú Momento</button></div></div><label class="fund-cnpj hidden" id="fund-cnpj-label">CNPJ da classe/fundo CVM<input id="fund-cnpj" inputmode="numeric" placeholder="Ex.: 73.232.530/0001-39" /></label><label class="fund-name hidden" id="fund-name-label">Nome para exibir<input id="fund-name" placeholder="Ex.: Fundo ativo CVM" /></label><label class="fund-file hidden" id="fund-file-label">Ou importar CSV de cotas<input id="fund-file" type="file" accept=".csv,text/csv" /></label><button class="chart-add-button" type="submit">Adicionar</button></form><div class="quick-compare"><span>Atalhos</span><button type="button" class="quick-ticker" data-ticker="PETR4">PETR4</button><button type="button" class="quick-ticker" data-ticker="VALE3">VALE3</button><button type="button" class="quick-ticker" data-ticker="IVVB11">IVVB11</button></div><p id="chart-add-help">Adicione uma ação, ETF ou fundo para comparar na janela atual.</p></div></details><div class="comparison-table-wrap"><table><thead><tr><th>Série</th><th>Retorno</th><th>Leitura</th></tr></thead><tbody id="comparison-table"><tr><td>Conservador</td><td><b>+265,6%</b><small>12,5%<br />a.a.</small></td><td>Política declarada · 35% em ações, 12 emissores</td></tr><tr><td>Equilibrado</td><td><b>+388,6%</b><small>15,5%<br />a.a.</small></td><td>Política declarada · 55% em ações, 8 emissores</td></tr><tr><td>Arrojado</td><td><b>+634,0%</b><small>19,9%<br />a.a.</small></td><td>Política declarada · 75% em ações, 5 emissores</td></tr><tr><td>Ibovespa</td><td><b>+239,1%</b><small>11,7%<br />a.a.</small></td><td>Índice de retorno total da B3</td></tr><tr><td>CDI</td><td><b>+174,4%</b><small>9,6%<br />a.a.</small></td><td>Rendimento do caixa</td></tr></tbody></table></div></aside>
+            <aside class="chart-sidepanel"><details class="chart-add-details"><summary>Comparar com uma ação, ETF ou fundo</summary><div class="chart-add"><div class="chart-add-tabs" role="tablist"><button type="button" class="chart-source active" data-source="ticker">Ação / ETF B3</button><button type="button" class="chart-source" data-source="fund">Fundos ativos</button></div><form id="chart-add-form"><label id="chart-symbol-label">Ticker B3<input id="chart-symbol" name="symbol" placeholder="Ex.: PETR4" maxlength="12" /></label><div class="fund-preset hidden" id="fund-preset-label"><span>Fundos sugeridos · cotas CVM</span><div class="fund-preset-list"><button type="button" class="fund-preset-button" data-fund-cnpj="73232530000139" data-fund-name="Dynamo Cougar FIF">Dynamo Cougar</button><button type="button" class="fund-preset-button" data-fund-cnpj="08507696000159" data-fund-name="Verde AM Multi Estratégia">Verde Multi</button><button type="button" class="fund-preset-button" data-fund-cnpj="08078571000150" data-fund-name="Itaú Ações Dividendos">Itaú Dividendos</button><button type="button" class="fund-preset-button" data-fund-cnpj="16718302000130" data-fund-name="Itaú Ações Momento 30">Itaú Momento</button></div></div><label class="fund-cnpj hidden" id="fund-cnpj-label">CNPJ da classe/fundo CVM<input id="fund-cnpj" inputmode="numeric" placeholder="Ex.: 73.232.530/0001-39" /></label><label class="fund-name hidden" id="fund-name-label">Nome para exibir<input id="fund-name" placeholder="Ex.: Fundo ativo CVM" /></label><label class="fund-file hidden" id="fund-file-label">Ou importar CSV de cotas<input id="fund-file" type="file" accept=".csv,text/csv" /></label><button class="chart-add-button" type="submit">Adicionar</button></form><div class="quick-compare"><span>Atalhos</span><button type="button" class="quick-ticker" data-ticker="PETR4">PETR4</button><button type="button" class="quick-ticker" data-ticker="VALE3">VALE3</button><button type="button" class="quick-ticker" data-ticker="IVVB11">IVVB11</button></div><p id="chart-add-help">Adicione uma ação, ETF ou fundo para comparar na janela atual.</p></div></details><div class="comparison-table-wrap"><table><thead><tr><th>Série</th><th>Retorno</th><th>Leitura</th></tr></thead><tbody id="comparison-table"><tr><td>Conservador</td><td><b>+265,6%</b><small>12,5%<br />a.a.</small></td><td>Com proteção · 35% em ações, 12 emissores</td></tr><tr><td>Equilibrado</td><td><b>+388,6%</b><small>15,5%<br />a.a.</small></td><td>Com proteção · 55% em ações, 8 emissores</td></tr><tr><td>Arrojado</td><td><b>+634,0%</b><small>19,9%<br />a.a.</small></td><td>Com proteção · 75% em ações, 5 emissores</td></tr><tr><td>Ibovespa</td><td><b>+239,1%</b><small>11,7%<br />a.a.</small></td><td>Índice de retorno total da B3</td></tr><tr><td>CDI</td><td><b>+174,4%</b><small>9,6%<br />a.a.</small></td><td>Rendimento do caixa</td></tr></tbody></table></div></aside>
             </div>
           <div class="comparison-summary" id="comparison-summary" aria-live="polite">Na janela completa: Conservador 265,6%; Equilibrado 388,6%; Arrojado 634,0%. CDI 174,4%. Retorno e queda sobem juntos — a escada é a escolha, não o número isolado.</div>
           <div class="comparison-foot"><span><i>✓</i> Verificações internas concluídas. Reconciliação externa e validação institucional pendentes.</span><span>Fontes: CVM, BCB e preços históricos documentados</span></div>
@@ -124,7 +136,7 @@
         <details class="fixed-comparators"><summary>Ver métricas fixas da janela total</summary><div class="fixed-comparators-wrap"><table><thead><tr><th>Série</th><th>CAGR</th><th>Queda máxima</th><th>Ações</th><th>Natureza</th></tr></thead><tbody><tr><td>Conservador</td><td>12,51%</td><td>−9,16%</td><td>35% em ações</td><td>Política declarada</td></tr><tr><td>Equilibrado</td><td>15,51%</td><td>−17,86%</td><td>55% em ações</td><td>Política declarada</td></tr><tr><td>Arrojado</td><td>19,87%</td><td>−28,94%</td><td>75% em ações</td><td>Política declarada</td></tr><tr><td>CDI</td><td>9,61%</td><td>0,00%</td><td>—</td><td>Caixa</td></tr><tr><td>Ibovespa</td><td>11,74%</td><td>−46,82%</td><td>—</td><td>Índice de retorno total</td></tr></tbody></table></div><p>Janela retrospectiva 2015–2025. O imposto incremental das reduções do Benevente 2 é estimado conforme o capital na simulação abaixo.</p></details>
         <div class="wealth-panel" aria-label="Quanto o patrimônio teria virado">
           <div class="wealth-form">
-            <div><span class="control-label">A ESCADA EM REAIS</span><h3>Escolha o valor aplicado.</h3></div>
+            <div><span class="control-label">SIMULAÇÃO RETROSPECTIVA EM REAIS</span><h3>Escolha o valor aplicado.</h3></div>
             <label for="wealth">Patrimônio aplicado no início da janela <output id="wealth-output">R$ 100.000</output></label>
             <input id="wealth" type="range" min="50000" max="1000000" step="50000" value="50000" />
           </div>
@@ -140,7 +152,7 @@
       </main>
 
     <footer class="footer"><div class="shell"><a class="brand" href="#inicio"><span class="brand-mark">B</span><span>Benevente</span></a><p>Protótipo de pesquisa. A política vigente declara três perfis, congelados antes do período; o desempenho de 2015–2025 é diagnóstico retrospectivo, não validação prospectiva. Os retornos exibidos são retrospectivos, incorporam custos modelados e dados parcialmente imputados, e não constituem recomendação, promessa de rentabilidade nem evidência de superioridade futura.</p><span>© 2026 Benevente</span></div></footer>
-    <script src="./app.js?v=c248478083"></script>
+    <script src="./app.js?v=6210af7c65"></script>
     <script src="./paper.js?v=2f54908341"></script>
   </body>
 </html>

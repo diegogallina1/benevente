@@ -147,6 +147,14 @@ h1, h2, h3, h4,
 /* O valor terminal cresce com o capital do slider; acima de onze dígitos a
    fonte cede antes de o número estourar a borda do cartão. */
 .wealth-card strong.wealth-value { letter-spacing: -.02em; }
+.policy-split-wrap { margin: 1.1rem 0 0; }
+.policy-split { width: 100%; max-width: 640px; border-collapse: collapse; background: #fff; border: 1px solid var(--hairline, #dbe4e8); font-size: .82rem; }
+.policy-split th, .policy-split td { padding: .55rem .8rem; text-align: right; border-bottom: 1px solid var(--hairline, #dbe4e8); }
+.policy-split th:first-child, .policy-split td:first-child { text-align: left; }
+.policy-split thead th { font-size: .68rem; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-soft, #5b6f7c); }
+.policy-split tr:last-child td { border-bottom: 0; }
+.policy-split-wrap > p { margin: .5rem 0 0; font-size: .78rem; color: var(--ink-soft, #5b6f7c); max-width: 640px; }
+@media (max-width: 680px) { .policy-split-wrap { overflow-x: auto; } .policy-split { min-width: 520px; } }
 .wealth-card.primary strong.num-lg { font-size: clamp(1.7rem, 2.7vw, 2.6rem); }
 .wealth-card.primary strong.num-xl { font-size: clamp(1.4rem, 2.2vw, 2.1rem); }
 .wealth-card.benchmark strong.num-lg { font-size: clamp(1.2rem, 1.7vw, 1.5rem); }

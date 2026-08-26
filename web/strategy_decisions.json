@@ -3331,7 +3331,7 @@
     }
   ],
   "sources_sha256": {
-    "web/annual_research.json": "ff5ac586fd1418584f23b90b85dde3a46a252d7d976990b261532a21964adbb0",
+    "web/annual_research.json": "272239e24db4c1977124496e28297bb11bac82082c52b07c634a6c07c741eaac",
     "artifacts/benevente2_event_risk/candidate_annual_comparison.csv": "5c6e4558bf7534400f01d95876096b0e3aae0bfc706f75ad66fe8580f06831f9",
     "artifacts/benevente2_event_risk/candidate_daily_comparison.csv": "4b25dc16011b219e4d2d3a5022ec79490d52be5edfdff4474cf73b4a78fd7fae"
   }
