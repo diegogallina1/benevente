@@ -1,10 +1,10 @@
 {
   "policy": "benevente_profile_ladder_v2",
-  "public_name": "Benevente Alpha",
+  "public_name": "Benevente",
   "lineage": {
-    "Benevente 1": "seleção anual declarada, com a perna global",
-    "Benevente 2": "acrescenta a camada de risco intranual",
-    "Benevente Alpha": "os dois acima, em três perfis declarados e congelados"
+    "Benevente 1": "módulo de seleção: a cesta anual declarada, com a perna global",
+    "Benevente 2": "módulo de proteção: reduz a exposição doméstica sob estresse observável",
+    "Benevente": "os dois módulos, em três perfis declarados e congelados"
   },
   "registration_sha256": "fc5521f11d133520ae03b3413490418d01f140fb9fbc2b78ed9aa8e6ddd2cfdc",
   "approved_by": "diegogallina1",

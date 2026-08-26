@@ -26,7 +26,11 @@ from research_global_sleeve import GLOBAL_TICKER, build_global_engine
 from research_ladder_v2 import _annual_rebalanced_blend, _daily
 
 ROOT = Path(__file__).resolve().parents[1]
-PUBLIC_NAME = "Benevente Alpha"
+# Uma marca só. Os módulos continuam sendo Benevente 1 (seleção) e Benevente 2
+# (proteção), e "Benevente Quant AI" continua sendo o nome da pesquisa. Um nome
+# de produto a mais dividia a atenção sem descrever nada que os módulos já não
+# descrevessem.
+PUBLIC_NAME = "Benevente"
 REGISTRATION = ROOT / "data" / "benevente_profile_ladder_v2_registration.json"
 BENCHMARKS = ROOT / "data" / "benchmarks_market_2011_2025.csv"
 
@@ -229,9 +233,9 @@ def build(start_year: int, end_year: int) -> dict:
         # descrevem as camadas de que o Alpha é feito.
         "public_name": PUBLIC_NAME,
         "lineage": {
-            "Benevente 1": "seleção anual declarada, com a perna global",
-            "Benevente 2": "acrescenta a camada de risco intranual",
-            PUBLIC_NAME: "os dois acima, em três perfis declarados e congelados",
+            "Benevente 1": "módulo de seleção: a cesta anual declarada, com a perna global",
+            "Benevente 2": "módulo de proteção: reduz a exposição doméstica sob estresse observável",
+            PUBLIC_NAME: "os dois módulos, em três perfis declarados e congelados",
         },
         "registration_sha256": registration["registration_sha256"],
         "approved_by": registration["approved_by"],
@@ -265,7 +269,7 @@ def main() -> None:
     target.write_text(json.dumps(payload, indent=2, ensure_ascii=False), encoding="utf-8")
     # A composição vai num arquivo próprio: são centenas de posições e a página
     # da escada não precisa carregá-las para desenhar a tabela de topo.
-    (ROOT / "web" / "alpha_composition.json").write_text(
+    (ROOT / "web" / "composition.json").write_text(
         json.dumps({"public_name": payload["public_name"],
                     "registration_sha256": payload["registration_sha256"],
                     "window": payload["window"],

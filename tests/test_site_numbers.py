@@ -143,14 +143,15 @@ def test_every_page_reaches_the_limitations() -> None:
         assert "limitacoes" in source, f"{page} publica números e não linka as limitações"
 
 
-COMPOSITION = json.loads((WEB / "alpha_composition.json").read_text(encoding="utf-8"))
+COMPOSITION = json.loads((WEB / "composition.json").read_text(encoding="utf-8"))
 
 
 def test_the_current_model_is_named_and_its_lineage_is_stated() -> None:
-    """Benevente 1 and 2 stay registered; Alpha names what is live today."""
-    assert EVIDENCE["public_name"] == "Benevente Alpha"
+    """One brand, two modules. A separate product name divided attention
+    without describing anything the modules did not already describe."""
+    assert EVIDENCE["public_name"] == "Benevente"
     assert COMPOSITION["public_name"] == EVIDENCE["public_name"]
-    assert set(EVIDENCE["lineage"]) == {"Benevente 1", "Benevente 2", "Benevente Alpha"}
+    assert set(EVIDENCE["lineage"]) == {"Benevente 1", "Benevente 2", "Benevente"}
     # Renaming must not touch the frozen registration: the seal is what makes
     # the registration worth having, and a name is not a policy.
     assert "public_name" not in REGISTRATION
@@ -220,3 +221,20 @@ def test_every_asset_reference_is_stamped_with_its_own_content() -> None:
         f"parâmetro de cache defasado em {stale}. Rode tools/stamp_assets.py — sem isso a correção "
         f"não chega a nenhum navegador com cache."
     )
+
+
+RETIRED_NAMES = {
+    "Benevente Alpha": "nome de produto extra, descartado em favor da marca única",
+    "Benevente Wealth System": "variação da marca que competia com o nome curto",
+}
+
+
+@pytest.mark.parametrize("page", sorted(PAGES))
+def test_no_page_reintroduces_a_discarded_name(page: str) -> None:
+    """Seis nomes circulavam ao mesmo tempo e o leitor não sabia qual era o quê.
+
+    Ficaram: a marca Benevente, os módulos Benevente 1 e 2, e Benevente Quant AI
+    como nome da pesquisa.
+    """
+    for name, reason in RETIRED_NAMES.items():
+        assert name not in PAGES[page], f"{page} reintroduz '{name}' ({reason})"

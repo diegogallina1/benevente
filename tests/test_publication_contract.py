@@ -16,7 +16,14 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     assert "A política vigente declara três perfis" in home
     assert "diagnóstico retrospectivo, não validação prospectiva" in home
     assert "Reproduzir no GitHub" not in home
-    assert "O Benevente separa o que calcula, o que explica e o que decide" in home
+    # A separação continua sendo a tese, mas deixou de ser a primeira frase: a
+    # home abre pelo problema do leitor. O contrato exige que ela esteja
+    # declarada, não que esteja numa redação específica.
+    assert all(papel in home for papel in ("CALCULA", "EXPLICA", "DECIDE"))
+    assert "Revisor humano responsável" in home
+    # E que a home roteie por jornada, não pelas versões internas do motor.
+    assert "Entenda a pesquisa" in home and "Veja o produto de governança" in home
+    assert "Benevente 1</strong>" not in home and "Benevente 2</strong>" not in home
     for core_class in ("hero shell", "version-gateway shell", "model-shell", "comparison shell", "lab-section"):
         assert core_class in home
     for moved_class in ("research-signal shell", "evidence-board shell", "research-disclosure shell"):

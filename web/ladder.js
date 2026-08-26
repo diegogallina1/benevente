@@ -100,7 +100,7 @@
   });
 })();
 
-/* Explorador de composição do Benevente Alpha.
+/* Explorador de composição dos perfis declarados.
  *
  * Uma escada só é auditável se o leitor puder ver o que cada perfil carregou,
  * quanto, por que entrou e o que aconteceu depois. O retorno realizado fica numa
@@ -123,7 +123,7 @@
 
   let data;
   try {
-    const response = await fetch("./alpha_composition.json", { cache: "no-store" });
+    const response = await fetch("./composition.json", { cache: "no-store" });
     if (!response.ok) throw new Error("indisponível");
     data = await response.json();
   } catch (_) {
