@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="./commercial.css?v=6c9172f724" />
     <link rel="stylesheet" href="./paper.css?v=53e5e97e39" />
     <link rel="stylesheet" href="./refinements.css?v=6ba71c3eea" />
-    <link rel="stylesheet" href="./design-system.css?v=03ad92bbb6" />
+    <link rel="stylesheet" href="./design-system.css?v=dc244e6cc1" />
   </head>
   <body>
     <header class="nav shell">
@@ -71,6 +71,34 @@
         </aside>
       </section>
 
+      <!-- Para quem. O interlocutor é quem assina a recomendação: é dele a
+           responsabilidade que o sistema existe para tornar defensável. -->
+      <section class="version-gateway shell" aria-labelledby="publico-title">
+        <div class="version-gateway-head">
+          <p class="eyebrow"><span></span> Interlocutor</p>
+          <h2 id="publico-title">Feito para quem assina a recomendação.</h2>
+          <p>Não para quem só a executa. O sistema não decide no seu lugar — ele torna a sua decisão reconstruível anos depois.</p>
+        </div>
+        <div class="role-contract" aria-label="Público">
+          <div><span>ESCRITÓRIOS</span><p>Consultorias de valores mobiliários e gestão patrimonial</p></div>
+          <div><span>COMITÊS</span><p>Quem precisa levar a decisão a um colegiado e defendê-la</p></div>
+          <div><span>COMPLIANCE</span><p>Quem responde por suitability e por auditoria posterior</p></div>
+        </div>
+      </section>
+
+      <!-- O entregável antes do resultado: o produto é o documento, não a curva. -->
+      <section class="version-gateway shell" aria-labelledby="recebe-title">
+        <div class="version-gateway-head">
+          <p class="eyebrow"><span></span> O que você recebe</p>
+          <h2 id="recebe-title">Cada decisão vira um dossiê que se defende sozinho.</h2>
+          <p>Proposta e prova no mesmo fluxo: parâmetros congelados da política, posições com o que era conhecido na data, a informação posterior separada de propósito, custos, imposto apurado por lote e o hash de verificação. Um documento por decisão — as 33 decisões retrospectivas já têm o seu.</p>
+        </div>
+        <div class="hero-actions" style="margin-top:6px">
+          <a class="button button-primary" href="./dossiers/dossie_equilibrado_2025.pdf" target="_blank" rel="noopener">Ver dossiê de exemplo <span>↧</span></a>
+          <a class="button button-secondary" href="./versoes.html#composicao">Baixar o de qualquer ano <span>→</span></a>
+        </div>
+      </section>
+
       <section class="version-gateway shell" aria-labelledby="version-gateway-title">
         <div class="version-gateway-head">
           <p class="eyebrow"><span></span> Duas leituras possíveis</p>
@@ -93,20 +121,6 @@
         </div>
       </section>
 
-      <!-- Para quem. O interlocutor é quem assina a recomendação: é dele a
-           responsabilidade que o sistema existe para tornar defensável. -->
-      <section class="version-gateway shell" aria-labelledby="publico-title">
-        <div class="version-gateway-head">
-          <p class="eyebrow"><span></span> Interlocutor</p>
-          <h2 id="publico-title">Feito para quem assina a recomendação.</h2>
-          <p>Não para quem só a executa. O sistema não decide no seu lugar — ele torna a sua decisão reconstruível anos depois.</p>
-        </div>
-        <div class="role-contract" aria-label="Público">
-          <div><span>ESCRITÓRIOS</span><p>Consultorias de valores mobiliários e gestão patrimonial</p></div>
-          <div><span>COMITÊS</span><p>Quem precisa levar a decisão a um colegiado e defendê-la</p></div>
-          <div><span>COMPLIANCE</span><p>Quem responde por suitability e por auditoria posterior</p></div>
-        </div>
-      </section>
 
       <!-- 2. A regra antes do resultado. Um número só significa alguma coisa
            depois que o leitor sabe como ele foi produzido. -->
@@ -135,6 +149,7 @@
           <div class="comparison-foot"><span><i>✓</i> Verificações internas concluídas. Reconciliação externa e validação institucional pendentes.</span><span>Fontes: CVM, BCB e preços históricos documentados</span></div>
         </div>
         <details class="fixed-comparators"><summary>Ver métricas fixas da janela total</summary><div class="fixed-comparators-wrap"><table><thead><tr><th>Série</th><th>CAGR</th><th>Queda máxima</th><th>Ações</th><th>Natureza</th></tr></thead><tbody><tr><td>Conservador</td><td>12,51%</td><td>−9,16%</td><td>35% em ações</td><td>Política declarada</td></tr><tr><td>Equilibrado</td><td>15,51%</td><td>−17,86%</td><td>55% em ações</td><td>Política declarada</td></tr><tr><td>Arrojado</td><td>19,87%</td><td>−28,94%</td><td>75% em ações</td><td>Política declarada</td></tr><tr><td>CDI</td><td>9,61%</td><td>0,00%</td><td>—</td><td>Caixa</td></tr><tr><td>Ibovespa</td><td>11,74%</td><td>−46,82%</td><td>—</td><td>Índice de retorno total</td></tr></tbody></table></div><p>Janela retrospectiva 2015–2025. O imposto incremental das reduções do Benevente 2 é estimado conforme o capital na simulação abaixo.</p></details>
+        <details class="fixed-comparators"><summary>Laboratório · simulação retrospectiva em reais</summary>
         <div class="wealth-panel" aria-label="Quanto o patrimônio teria virado">
           <div class="wealth-form">
             <div><span class="control-label">SIMULAÇÃO RETROSPECTIVA EM REAIS</span><h3>Escolha o valor aplicado.</h3></div>
@@ -143,8 +158,49 @@
           </div>
           <div id="wealth-cards" aria-live="polite"></div>
         </div>
+        </details>
         <p class="research-note" id="research-note">Leitura correta: esta é uma hipótese de pesquisa. A página calcula janelas com o arquivo anual auditado e não declara superioridade consistente se ela não estiver presente.</p>
         <div class="benchmark-panel candidate-disclosure"><div><span class="control-label">COMO LER</span><h3>Duas referências, duas perguntas.</h3><p>O CDI mede o custo de oportunidade do caixa: o que o mesmo capital renderia parado. O Ibovespa representa o retorno total do mercado brasileiro, com proventos reinvestidos na carteira teórica: o que renderia sem nenhuma seleção. Toda curva da escada deve ser lida contra as duas.</p><p>Todos os valores mudam com a janela selecionada. A base cobre 2015–2025; 2026 ainda não é um ano fechado.</p></div><div class="benchmark-actions"><a class="button button-secondary" href="./quant-ai.html">Ver a evidência completa <span>→</span></a></div></div>
+      </section>
+
+      <!-- Limitações à mão antes de qualquer conversa comercial. -->
+      <section class="version-gateway shell" aria-labelledby="limites-title">
+        <div class="version-gateway-head">
+          <p class="eyebrow"><span></span> Antes de qualquer proposta</p>
+          <h2 id="limites-title">Leia o que o sistema não sabe.</h2>
+          <p>As limitações estão numa página única, citável de qualquer proposta: janela de desenvolvimento, dados imputados, camadas desenhadas depois das crises, posição cambial da perna global.</p>
+        </div>
+        <div class="hero-actions" style="margin-top:6px">
+          <a class="button button-secondary" href="./limitacoes.html">Ler as limitações <span>→</span></a>
+        </div>
+      </section>
+
+      <!-- Piloto: a próxima ação de quem chegou até aqui. -->
+      <section class="version-gateway shell" id="piloto" aria-labelledby="piloto-title">
+        <div class="version-gateway-head">
+          <p class="eyebrow"><span></span> Piloto</p>
+          <h2 id="piloto-title">Solicitar um piloto silencioso.</h2>
+          <p>Oito a doze semanas, sem execução automática e sem mudar o processo do escritório: o sistema acompanha de duas a cinco carteiras em paralelo, gera o dossiê de cada decisão e o confronta com o material que a equipe já produz. Ao final, um relatório mede tempo economizado por proposta, completude documental, divergência entre custo estimado e executado e o que faltou — e só isso decide se há produto.</p>
+        </div>
+        <div class="role-contract" aria-label="Etapas do piloto">
+          <div><span>SEMANAS 1–2</span><p>Fontes, perfis e aprovadores definidos; nenhuma integração obrigatória</p></div>
+          <div><span>SEMANAS 3–10</span><p>Dossiê por decisão, em paralelo ao processo vigente; revisões registradas</p></div>
+          <div><span>AO FINAL</span><p>Relatório de medição e decisão conjunta de continuar, ajustar ou parar</p></div>
+        </div>
+        <form id="demo-request-form" class="pilot-form" autocomplete="on">
+          <div class="pilot-form-grid">
+            <label>Nome<input name="name" required maxlength="120" /></label>
+            <label>E-mail profissional<input name="email" type="email" required maxlength="180" /></label>
+            <label>Instituição<input name="institution" required maxlength="180" /></label>
+            <label>Interesse<select name="use_case"><option value="piloto">Piloto silencioso</option><option value="demonstracao">Demonstração</option><option value="auditoria">Acesso para auditoria</option></select></label>
+          </div>
+          <label>O que você precisa defender hoje e para quem<textarea name="message" required maxlength="2000" rows="3"></textarea></label>
+          <div class="pilot-form-foot">
+            <button class="button button-primary" type="submit">Solicitar piloto</button>
+            <p id="demo-form-response" aria-live="polite"></p>
+          </div>
+        </form>
+        <p class="pilot-note">A solicitação não cria vínculo nem carteira: o piloto é medição. O sistema não transmite ordens e a decisão permanece de quem assina.</p>
       </section>
 
       <!-- 4. A prova, ano a ano. Aqui o leitor sai da média e vai ao caso:
