@@ -44,8 +44,11 @@ def build() -> dict:
 def main() -> None:
     build()
     antes, depois = SOURCE.stat().st_size / 1024, OUT.stat().st_size / 1024
-    print(f"{OUT.name}: {depois:.1f} KB (de {antes:.1f} KB) · "
-          f"−{antes - depois:.1f} KB por carregamento da home")
+    # Sem sinais tipográficos aqui: o console do Windows abre em cp1252 e um
+    # menos U+2212 derruba a ferramenta na linha do print, depois de ela já ter
+    # feito o trabalho todo. Falhar ao contar o resultado é falhar à toa.
+    print(f"{OUT.name}: {depois:.1f} KB (de {antes:.1f} KB), "
+          f"economia de {antes - depois:.1f} KB por carregamento da home")
 
 
 if __name__ == "__main__":

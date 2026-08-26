@@ -1,354 +1,457 @@
-<title>Mapa da Travessia</title>
+<title>Plano de carteira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap">
-
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap">
 <style>
-  :root {
-    --ground:#f4f3ef; --panel:#ffffff; --ink:#0b1620; --ink-2:#3d4f5c; --ink-3:#6b7d89;
-    --line:#d7dee2; --line-2:#e9edef; --accent:#0a6f66; --accent-soft:#e6f2f0;
-    --neg:#9d1f1a; --neg-soft:#fbeceb; --warn:#8a5a13; --warn-soft:#fbf2e2;
-    --hold:#8a949b;
+/* Escrito a partir da tela pequena: as regras de base valem para o celular e
+   só crescem em telas maiores. O contrário — desenhar no monitor e depois
+   apertar — é o que produz alvo de toque de trinta pixels e tabela que sangra
+   para fora da margem. */
+:root {
+  --ground: #FBFBF9;  --panel: #FFFFFF;   --ink: #15191D;    --muted: #67707A;
+  --line: #E1E2DE;    --accent: #0B6B63;  --accent-soft: #E6F0EE;
+  --down: #B23A30;    --down-soft: #F7EAE8; --warn: #8A6A1F; --warn-soft: #FAF2DF;
+  --shadow: 0 1px 2px rgba(20,25,30,.05);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #101315; --panel: #171B1E;  --ink: #E7EAEC;    --muted: #949CA4;
+    --line: #262B2F;   --accent: #4FBFB2; --accent-soft: #16302E;
+    --down: #E4776A;   --down-soft: #2E1D1B; --warn: #D8B45E; --warn-soft: #2C2415;
+    --shadow: none;
   }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --ground:#0b1218; --panel:#121b22; --ink:#eef3f5; --ink-2:#a9b8c1; --ink-3:#7b8b96;
-      --line:#26333c; --line-2:#1c272e; --accent:#4fbfae; --accent-soft:#122a29;
-      --neg:#f08079; --neg-soft:#2a1615; --warn:#e0ab5a; --warn-soft:#2a2113;
-      --hold:#6d7b85;
-    }
-  }
-  :root[data-theme="dark"] {
-    --ground:#0b1218; --panel:#121b22; --ink:#eef3f5; --ink-2:#a9b8c1; --ink-3:#7b8b96;
-    --line:#26333c; --line-2:#1c272e; --accent:#4fbfae; --accent-soft:#122a29;
-    --neg:#f08079; --neg-soft:#2a1615; --warn:#e0ab5a; --warn-soft:#2a2113;
-    --hold:#6d7b85;
-  }
+}
+:root[data-theme="dark"] {
+  --ground: #101315; --panel: #171B1E;  --ink: #E7EAEC;    --muted: #949CA4;
+  --line: #262B2F;   --accent: #4FBFB2; --accent-soft: #16302E;
+  --down: #E4776A;   --down-soft: #2E1D1B; --warn: #D8B45E; --warn-soft: #2C2415;
+  --shadow: none;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--ground); color: var(--ink);
+  font-family: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  font-size: 16px; line-height: 1.55; -webkit-font-smoothing: antialiased;
+  overflow-wrap: break-word;
+}
+.wrap { max-width: 40rem; margin: 0 auto; padding: 1.75rem 1.15rem 4rem; }
+.num { font-family: "DM Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.neg { color: var(--down); }
+.hidden { display: none; }
 
-  * { box-sizing:border-box; }
-  body {
-    margin:0; background:var(--ground); color:var(--ink);
-    font-family:"Plus Jakarta Sans", system-ui, -apple-system, Arial, sans-serif;
-    font-size:15px; line-height:1.5; -webkit-font-smoothing:antialiased;
-  }
-  .num { font-family:"DM Mono", ui-monospace, "SF Mono", Menlo, monospace; font-variant-numeric:tabular-nums; }
-  .neg { color:var(--neg); }
-  .shell { max-width:1180px; margin:0 auto; padding:28px 24px 72px; }
+header { border-bottom: 1px solid var(--line); padding-bottom: 1.25rem; margin-bottom: 2rem; }
+.eyebrow { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+           color: var(--muted); font-weight: 600; margin: 0 0 .45rem; }
+h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; margin: 0 0 .4rem;
+     text-wrap: balance; }
+header p { margin: 0; color: var(--muted); font-size: .92rem; }
 
-  /* ---- barra do aplicativo ---------------------------------------- */
-  .appbar {
-    display:flex; align-items:center; justify-content:space-between; gap:20px; flex-wrap:wrap;
-    padding-bottom:16px; border-bottom:1px solid var(--line);
-  }
-  .who { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
-  .who h1 { margin:0; font-size:22px; letter-spacing:-.03em; font-weight:700; }
-  .who .sep { color:var(--line); }
-  .who .perfil {
-    font-size:12px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
-    color:var(--accent); background:var(--accent-soft); padding:4px 9px; border-radius:5px;
-  }
-  .origem { display:flex; gap:8px; flex-wrap:wrap; font-size:11.5px; color:var(--ink-3); }
-  .origem b { display:inline-block; padding:3px 8px; border:1px solid var(--line);
-              border-radius:4px; font-weight:600; color:var(--ink-2); }
+section { margin-bottom: 2.5rem; }
+h2 { font-size: 1.05rem; font-weight: 700; letter-spacing: -.01em; margin: 0 0 .3rem; }
+.lede { color: var(--muted); font-size: .88rem; margin: 0 0 1.25rem; }
 
-  /* ---- veredito: a resposta antes do detalhe ---------------------- */
-  .veredito { display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:1px;
-              background:var(--line); border:1px solid var(--line); margin-top:22px; }
-  .stat { background:var(--panel); padding:17px 18px 15px; }
-  .stat small { display:block; font-size:10.5px; letter-spacing:.07em; text-transform:uppercase;
-                color:var(--ink-3); font-weight:700; }
-  .stat strong { display:block; margin-top:9px; font-size:28px; letter-spacing:-.045em; font-weight:500; }
-  .stat span { display:block; margin-top:3px; font-size:11.5px; color:var(--ink-3); }
-  .stat.destaque strong { color:var(--neg); }
+/* --- perguntas --- */
+.q { border-top: 1px solid var(--line); padding: 1.15rem 0; }
+.q:first-of-type { border-top: none; padding-top: .25rem; }
+.q > p { margin: 0 0 .2rem; font-weight: 600; font-size: 1rem; text-wrap: pretty; }
+.q .help { color: var(--muted); font-size: .84rem; margin: 0 0 .85rem; }
+.opts { display: flex; flex-direction: column; gap: .5rem; }
+.opt { font: inherit; font-size: .92rem; text-align: left; cursor: pointer;
+       min-height: 2.75rem; padding: .7rem 1rem;
+       border: 1px solid var(--line); border-radius: 10px; background: var(--panel);
+       color: var(--ink); transition: border-color .12s, background .12s; }
+.opt:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.opt[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent);
+                            color: var(--accent); font-weight: 600; }
+.cap { font-size: .85rem; color: var(--muted); margin: 1rem 0 0; }
+.cap b { color: var(--ink); font-weight: 600; }
+/* Respondido, o formulário vira uma linha. No celular, deixá-lo aberto obriga a
+   rolar por tudo que já foi respondido para chegar ao resultado. */
+.chips { margin: 0 0 .5rem; font-size: .88rem; color: var(--ink); }
+.chips span + span::before { content: " · "; color: var(--muted); }
+.link { font: inherit; font-size: .85rem; font-weight: 600; color: var(--accent);
+        background: none; border: 0; padding: .6rem 0; min-height: 2.75rem; cursor: pointer;
+        text-decoration: underline; text-underline-offset: 3px; }
+.link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-  /* ---- composição: onde a massa está e para onde vai -------------- */
-  .bloco { margin-top:30px; }
-  .bloco > header { display:flex; align-items:baseline; justify-content:space-between;
-                    gap:16px; margin-bottom:12px; flex-wrap:wrap; }
-  .bloco h2 { margin:0; font-size:15px; font-weight:700; letter-spacing:-.01em; }
-  .bloco header p { margin:0; font-size:12px; color:var(--ink-3); max-width:52ch; }
+/* --- resultado --- */
+.verdict { background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+           padding: 1.1rem 1.2rem; box-shadow: var(--shadow); }
+.verdict .big { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; }
+.verdict p { margin: .35rem 0 0; color: var(--muted); font-size: .86rem; }
 
-  .comp { background:var(--panel); border:1px solid var(--line); padding:20px 22px; }
-  .comp figure { margin:0; }
-  .comp svg { display:block; width:100%; height:auto; }
-  .legenda { display:flex; gap:18px; flex-wrap:wrap; margin-top:14px; padding-top:12px;
-             border-top:1px solid var(--line-2); font-size:11.5px; color:var(--ink-2); }
-  .legenda i { display:inline-block; width:9px; height:9px; margin-right:6px; border-radius:1px;
-               vertical-align:baseline; }
+.bars { margin: 1.5rem 0 0; }
+.barrow { margin-bottom: .85rem; }
+.barrow > span { display: block; font-size: .78rem; color: var(--muted); margin-bottom: .3rem; }
+.legend { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin-top: .75rem;
+          font-size: .78rem; color: var(--muted); }
+.legend i { display: inline-block; width: .65rem; height: .65rem; border-radius: 2px;
+            margin-right: .35rem; vertical-align: -1px; }
 
-  /* ---- alerta: forma além de número ------------------------------- */
-  .alerta { display:flex; gap:13px; align-items:flex-start; margin-top:14px; padding:13px 15px;
-            background:var(--warn-soft); border-left:3px solid var(--warn); }
-  .alerta b { display:block; font-size:12.5px; color:var(--warn); letter-spacing:.01em; }
-  .alerta p { margin:3px 0 0; font-size:12.5px; color:var(--ink-2); }
+.alert { margin-top: 1.35rem; background: var(--warn-soft); border-radius: 10px;
+         padding: .9rem 1.05rem; font-size: .86rem; }
+.alert b { color: var(--ink); }
+.alert p { margin: 0; color: var(--muted); }
 
-  /* ---- razão de movimentos ---------------------------------------- */
-  .razao-wrap { overflow-x:auto; background:var(--panel); border:1px solid var(--line); }
-  table.razao { width:100%; min-width:720px; border-collapse:collapse; }
-  table.razao th, table.razao td { padding:11px 14px; text-align:right; border-bottom:1px solid var(--line-2); }
-  table.razao th:first-child, table.razao td:first-child,
-  table.razao th:nth-child(2), table.razao td:nth-child(2),
-  table.razao th:last-child, table.razao td:last-child { text-align:left; }
-  table.razao thead th { font-size:10px; letter-spacing:.07em; text-transform:uppercase;
-                         color:var(--ink-3); font-weight:700; border-bottom:1px solid var(--line); }
-  table.razao tbody td { font-size:13px; }
-  table.razao tbody tr:last-child td { border-bottom:0; }
-  table.razao .ativo { font-family:"DM Mono", monospace; font-weight:500; color:var(--ink); }
-  .acao { display:inline-block; min-width:64px; padding:2px 8px; border-radius:4px;
-          font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; text-align:center; }
-  .acao.vender { background:var(--neg-soft); color:var(--neg); }
-  .acao.comprar { background:var(--accent-soft); color:var(--accent); }
-  .acao.manter { background:var(--line-2); color:var(--hold); }
-  .obs { font-size:11.5px; color:var(--ink-3); }
-  .grupo td { padding:9px 14px 7px; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
-              color:var(--ink-3); font-weight:700; background:var(--line-2); border-bottom:1px solid var(--line); }
+/* --- as duas escolhas --- */
+.doors { display: grid; gap: .85rem; }
+.door { text-align: left; font: inherit; cursor: pointer; background: var(--panel);
+        border: 1px solid var(--line); border-radius: 12px; padding: 1.05rem 1.15rem;
+        color: var(--ink); display: flex; flex-direction: column; gap: .55rem;
+        transition: border-color .12s, box-shadow .12s; box-shadow: var(--shadow); }
+.door:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.door[aria-pressed="true"] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.door h3 { margin: 0; font-size: 1rem; font-weight: 700; letter-spacing: -.01em; }
+.door .cost { font-size: 1.5rem; font-weight: 700; letter-spacing: -.02em; }
+.door .cost small { display: block; font-size: .76rem; font-weight: 500; color: var(--muted);
+                    letter-spacing: 0; line-height: 1.35; }
+.door dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: .3rem .7rem;
+           font-size: .84rem; }
+.door dt { color: var(--muted); } .door dd { margin: 0; text-align: right; }
+.flag { font-size: .8rem; border-radius: 7px; padding: .5rem .7rem; margin-top: auto;
+        line-height: 1.4; }
+.flag.ok { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.flag.no { background: var(--down-soft); color: var(--down); font-weight: 600; }
 
-  /* ---- apuração ---------------------------------------------------- */
-  .apuracao { display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:1px;
-              background:var(--line); border:1px solid var(--line); margin-top:16px; }
-  .cesta { background:var(--panel); padding:15px 18px; }
-  .cesta small { font-size:10.5px; letter-spacing:.07em; text-transform:uppercase;
-                 color:var(--ink-3); font-weight:700; }
-  .cesta .linha { display:flex; justify-content:space-between; align-items:baseline;
-                  margin-top:9px; font-size:13px; }
-  .cesta .linha span { color:var(--ink-2); }
+/* --- o que muda --- */
+.ledger { margin-top: 1.75rem; }
+.grp { font-size: .72rem; letter-spacing: .09em; text-transform: uppercase; color: var(--muted);
+       font-weight: 700; margin: 1.35rem 0 .4rem; }
+.grp:first-child { margin-top: 0; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .2rem .9rem;
+       padding: .7rem 0; border-top: 1px solid var(--line); align-items: baseline; }
+.row b { font-weight: 600; font-size: .95rem; }
+.row .why { grid-column: 1 / -1; color: var(--muted); font-size: .8rem; }
+.row .val { grid-column: 2; grid-row: 1; text-align: right; font-size: .95rem;
+            white-space: nowrap; }
+.row .val small { display: block; color: var(--muted); font-size: .74rem; }
 
-  .nota { margin-top:26px; padding-top:16px; border-top:1px solid var(--line);
-          font-size:12px; line-height:1.7; color:var(--ink-3); max-width:78ch; }
-  .nota b { color:var(--ink-2); }
+.bill { margin-top: 1.75rem; border: 1px solid var(--line); border-radius: 12px;
+        background: var(--panel); padding: 1rem 1.15rem; box-shadow: var(--shadow); }
+.bill div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .1rem .9rem;
+            padding: .55rem 0; font-size: .88rem; }
+.bill div + div { border-top: 1px solid var(--line); }
+.bill div span:last-child { margin-left: auto; }
+.bill .tot { font-weight: 700; }
+.bill p { margin: .85rem 0 0; font-size: .8rem; color: var(--muted); }
 
-  @media (max-width:820px) {
-    .veredito { grid-template-columns:repeat(2, minmax(0,1fr)); }
-    .apuracao { grid-template-columns:1fr; }
-    .shell { padding:20px 16px 56px; }
-  }
+.cta { margin-top: 1.5rem; display: flex; flex-direction: column; gap: .7rem; }
+.btn { font: inherit; font-size: .95rem; font-weight: 600; cursor: pointer; border-radius: 10px;
+       min-height: 2.9rem; padding: .75rem 1.15rem; width: 100%;
+       border: 1px solid var(--accent); background: var(--accent); color: var(--ground); }
+.btn:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.cta span { font-size: .82rem; color: var(--muted); }
+
+footer { border-top: 1px solid var(--line); margin-top: 2.5rem; padding-top: 1.15rem;
+         font-size: .8rem; color: var(--muted); }
+footer p { margin: 0 0 .6rem; }
+footer code { font-family: "DM Mono", monospace; font-size: .95em; }
+
+/* Só a partir do tablet o layout ganha colunas. Até lá tudo empilha, que é
+   como a tela é de fato usada. */
+@media (min-width: 40rem) {
+  .wrap { padding: 2.75rem 1.5rem 5rem; }
+  h1 { font-size: 1.85rem; }
+  header p, .lede, footer p { max-width: 56ch; }
+  .opts { flex-direction: row; flex-wrap: wrap; }
+  .opt { padding: .6rem 1rem; font-size: .88rem; border-radius: 999px; }
+  .barrow { display: grid; grid-template-columns: 4.5rem 1fr; gap: .8rem; align-items: center; }
+  .barrow > span { text-align: right; margin-bottom: 0; }
+  .doors { grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .row .why { grid-column: 1; }
+  .cta { flex-direction: row; align-items: center; flex-wrap: wrap; }
+  .btn { width: auto; }
+}
+/* Encolher o alvo de toque é decisão sobre o ponteiro, não sobre a largura: um
+   tablet é largo e continua sendo dedo. Só onde existe mouse os controles
+   ficam compactos e ganham estado de hover. */
+@media (hover: hover) and (pointer: fine) {
+  .opt, .link { min-height: 0; }
+  .btn { min-height: 0; padding: .65rem 1.15rem; }
+  .opt:hover, .door:hover { border-color: var(--accent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
 </style>
 
-<div class="shell">
+<div class="wrap">
+<header>
+  <p class="eyebrow">Benevente · protótipo</p>
+  <h1>Plano de carteira</h1>
+  <p>Quatro perguntas definem o seu perfil. Depois você vê quanto da sua carteira já serve
+     e escolhe entre dois planos.</p>
+</header>
 
-  <div class="appbar">
-    <div class="who">
-      <h1>Mapa da travessia</h1>
-      <span class="sep">/</span>
-      <span class="perfil">Equilibrado</span>
-      <span class="num" style="font-size:12.5px;color:var(--ink-3)">decisão de 02/01/2026</span>
-    </div>
-    <div class="origem">
-      <span>Origem:</span>
-      <b>Área do Investidor B3</b>
-      <b>Open Finance</b>
-      <b>lançamento manual</b>
+<section id="perguntas">
+  <h2>Quatro perguntas</h2>
+  <p class="lede">Sem pontuação: cada resposta impõe um limite e vale o mais apertado. Por isso
+     dá sempre para apontar qual resposta decidiu.</p>
+  <div id="qs"></div>
+  <div id="resumo" class="hidden">
+    <p class="chips" id="chips"></p>
+    <button class="link" type="button" id="alterar">Alterar respostas</button>
+  </div>
+  <p class="cap" id="veredito"></p>
+</section>
+
+<section id="mapa" class="hidden">
+  <h2>Sua carteira hoje</h2>
+  <p class="lede">Lida do extrato da B3, do Open Finance e do que foi lançado à mão. Cada linha
+     carrega de onde veio.</p>
+  <div class="verdict">
+    <div class="big num" id="aderencia"></div>
+    <p id="aderencia-txt"></p>
+  </div>
+  <div class="bars">
+    <div class="barrow"><span>hoje</span><div id="bar-hoje"></div></div>
+    <div class="barrow"><span>seu perfil</span><div id="bar-alvo"></div></div>
+    <div class="legend">
+      <span><i style="background:var(--accent)"></i>ações</span>
+      <span><i style="background:var(--muted)"></i>renda fixa e caixa</span>
+      <span><i style="background:var(--down)"></i>fora do escopo</span>
     </div>
   </div>
+  <div class="alert" id="fgc"></div>
+</section>
 
-  <!-- A resposta à pergunta que abre qualquer conversa, antes de qualquer detalhe. -->
-  <section class="veredito">
-    <div class="stat">
-      <small>Já aderente ao perfil</small>
-      <strong class="num">67,7%</strong>
-      <span>de R$ 700.000 em carteira</span>
-    </div>
-    <div class="stat">
-      <small>Precisa girar</small>
-      <strong class="num">R$ 283.500</strong>
-      <span>40,5% do patrimônio</span>
-    </div>
-    <div class="stat destaque">
-      <small>Custo da travessia</small>
-      <strong class="num">R$ 11.817</strong>
-      <span>R$ 567 execução + R$ 11.250 imposto</span>
-    </div>
-    <div class="stat destaque">
-      <small>Custo sobre o patrimônio</small>
-      <strong class="num">1,69%</strong>
-      <span>pago uma vez, na mudança</span>
-    </div>
-  </section>
+<section id="portas" class="hidden">
+  <h2>Dois planos</h2>
+  <p class="lede">Um aplica o método inteiro e paga o imposto agora. O outro quase não custa e
+     aplica metade. A escolha é sua, e as duas ficam registradas.</p>
+  <div class="doors" id="doors"></div>
+</section>
 
-  <section class="bloco">
-    <header>
-      <h2>Onde o dinheiro está, e onde a política declara que deveria estar</h2>
-      <p>As duas barras somam o mesmo patrimônio. A diferença entre elas é o que a travessia move.</p>
-    </header>
-    <div class="comp">
-      <figure>
-        <svg viewBox="0 0 980 180" role="img"
-             aria-label="Composição atual: 35,6% em ações brasileiras, nenhuma perna global, 61,4% em renda fixa e caixa, 3,0% fora do escopo. Composição alvo: 44% em ações, 11% na perna global, 45% em caixa.">
-          <!-- eixo -->
-          <g font-family="DM Mono, monospace" font-size="10" fill="currentColor" opacity=".45">
-            <text x="0" y="12">0%</text>
-            <text x="235" y="12" text-anchor="middle">25%</text>
-            <text x="470" y="12" text-anchor="middle">50%</text>
-            <text x="705" y="12" text-anchor="middle">75%</text>
-            <text x="940" y="12" text-anchor="end">100%</text>
-          </g>
-          <g stroke="currentColor" opacity=".12">
-            <line x1="235" y1="20" x2="235" y2="168"/>
-            <line x1="470" y1="20" x2="470" y2="168"/>
-            <line x1="705" y1="20" x2="705" y2="168"/>
-          </g>
+<section id="razao" class="hidden">
+  <h2 id="razao-h"></h2>
+  <p class="lede" id="razao-lede"></p>
+  <div class="ledger" id="ledger"></div>
+  <div class="bill" id="bill"></div>
+  <div class="cta">
+    <button class="btn" type="button">Baixar o dossiê do plano</button>
+    <span>PDF com as contas, o plano que você não escolheu e o campo de assinatura.</span>
+  </div>
+</section>
 
-          <!-- ATUAL -->
-          <text x="0" y="42" font-family="Plus Jakarta Sans, sans-serif" font-size="11"
-                font-weight="700" letter-spacing="1.2" fill="currentColor" opacity=".55">ATUAL</text>
-          <g>
-            <rect x="0"     y="52" width="335.2" height="34" fill="#2f7f9e"/>
-            <rect x="335.2" y="52" width="577.8" height="34" fill="#8aa1ad"/>
-            <rect x="913"   y="52" width="27"    height="34" fill="#9d1f1a" opacity=".78"/>
-          </g>
-          <g font-family="DM Mono, monospace" font-size="11.5" fill="#ffffff">
-            <text x="12"    y="74">35,6%</text>
-            <text x="347"   y="74">61,4%</text>
-          </g>
-
-          <!-- ALVO -->
-          <text x="0" y="118" font-family="Plus Jakarta Sans, sans-serif" font-size="11"
-                font-weight="700" letter-spacing="1.2" fill="currentColor" opacity=".55">ALVO</text>
-          <g>
-            <rect x="0"     y="128" width="413.6" height="34" fill="#0a6f66"/>
-            <rect x="413.6" y="128" width="103.4" height="34" fill="#4a86a8"/>
-            <rect x="517"   y="128" width="423"   height="34" fill="#8aa1ad"/>
-          </g>
-          <g font-family="DM Mono, monospace" font-size="11.5" fill="#ffffff">
-            <text x="12"  y="150">44,0%</text>
-            <text x="426" y="150">11,0%</text>
-            <text x="529" y="150">45,0%</text>
-          </g>
-        </svg>
-        <figcaption class="legenda">
-          <span><i style="background:#0a6f66"></i>Ações da cesta declarada</span>
-          <span><i style="background:#2f7f9e"></i>Ações fora da cesta</span>
-          <span><i style="background:#4a86a8"></i>Perna global (IVVB11)</span>
-          <span><i style="background:#8aa1ad"></i>Renda fixa e caixa</span>
-          <span><i style="background:#9d1f1a;opacity:.78"></i>Fora do escopo da política</span>
-        </figcaption>
-      </figure>
-
-      <div class="alerta">
-        <div>
-          <b>Teto do FGC estourado no conglomerado Beta</b>
-          <p>R$ 310.000 em um só conglomerado, R$ 60.000 acima da cobertura de R$ 250.000 por CPF.
-             O excedente é risco de crédito assumido — e hoje não está declarado em lugar nenhum.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="bloco">
-    <header>
-      <h2>O que muda, na ordem em que acontece</h2>
-      <p>Vendas primeiro, porque são elas que realizam imposto e liberam o caixa das compras.</p>
-    </header>
-    <div class="razao-wrap">
-      <table class="razao">
-        <thead>
-          <tr>
-            <th>Ação</th><th>Ativo</th><th>De</th><th>Para</th><th>Δ</th>
-            <th>Ganho realizado</th><th>Observação</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="grupo"><td colspan="7">Sai da carteira</td></tr>
-          <tr>
-            <td><span class="acao vender">vender</span></td><td class="ativo">WEGE3</td>
-            <td class="num">180.000</td><td class="num">0</td><td class="num neg">−180.000</td>
-            <td class="num">+140.000</td><td class="obs">não está na cesta do perfil</td>
-          </tr>
-          <tr>
-            <td><span class="acao vender">vender</span></td><td class="ativo">MGLU3</td>
-            <td class="num">25.000</td><td class="num">0</td><td class="num neg">−25.000</td>
-            <td class="num neg">−65.000</td><td class="obs">prejuízo abate o ganho da mesma cesta</td>
-          </tr>
-          <tr>
-            <td><span class="acao vender">vender</span></td><td class="ativo">Cripto</td>
-            <td class="num">21.000</td><td class="num">0</td><td class="num neg">−21.000</td>
-            <td class="num neg">−9.000</td><td class="obs">cesta própria: não abate ação</td>
-          </tr>
-
-          <tr class="grupo"><td colspan="7">Entra ou completa</td></tr>
-          <tr>
-            <td><span class="acao comprar">comprar</span></td><td class="ativo">IVVB11</td>
-            <td class="num">0</td><td class="num">77.000</td><td class="num">+77.000</td>
-            <td class="num">—</td><td class="obs">perna global declarada pela política</td>
-          </tr>
-          <tr>
-            <td><span class="acao comprar">comprar</span></td><td class="ativo">CMIN3</td>
-            <td class="num">0</td><td class="num">68.530</td><td class="num">+68.530</td>
-            <td class="num">—</td><td class="obs">entra pela seleção do perfil</td>
-          </tr>
-          <tr>
-            <td><span class="acao comprar">comprar</span></td><td class="ativo">VIVA3</td>
-            <td class="num">0</td><td class="num">68.530</td><td class="num">+68.530</td>
-            <td class="num">—</td><td class="obs">entra pela seleção do perfil</td>
-          </tr>
-          <tr>
-            <td><span class="acao comprar">comprar</span></td><td class="ativo">CURY3</td>
-            <td class="num">44.000</td><td class="num">68.530</td><td class="num">+24.530</td>
-            <td class="num">—</td><td class="obs">já tinha, mas abaixo do peso declarado</td>
-          </tr>
-          <tr>
-            <td><span class="acao comprar">comprar</span></td><td class="ativo">BBSE3</td>
-            <td class="num">0</td><td class="num">41.770</td><td class="num">+41.770</td>
-            <td class="num">—</td><td class="obs">entra pela seleção do perfil</td>
-          </tr>
-          <tr>
-            <td><span class="acao comprar">comprar</span></td><td class="ativo">LEVE3</td>
-            <td class="num">0</td><td class="num">21.647</td><td class="num">+21.647</td>
-            <td class="num">—</td><td class="obs">entra pela seleção do perfil</td>
-          </tr>
-          <tr>
-            <td><span class="acao comprar">comprar</span></td><td class="ativo">PLPL3</td>
-            <td class="num">0</td><td class="num">14.867</td><td class="num">+14.867</td>
-            <td class="num">—</td><td class="obs">entra pela seleção do perfil</td>
-          </tr>
-          <tr>
-            <td><span class="acao comprar">comprar</span></td><td class="ativo">COGN3</td>
-            <td class="num">0</td><td class="num">12.964</td><td class="num">+12.964</td>
-            <td class="num">—</td><td class="obs">entra pela seleção do perfil</td>
-          </tr>
-          <tr>
-            <td><span class="acao comprar">comprar</span></td><td class="ativo">TEND3</td>
-            <td class="num">0</td><td class="num">11.162</td><td class="num">+11.162</td>
-            <td class="num">—</td><td class="obs">entra pela seleção do perfil</td>
-          </tr>
-
-          <tr class="grupo"><td colspan="7">Fica como está</td></tr>
-          <tr>
-            <td><span class="acao manter">manter</span></td><td class="ativo">CDB Beta</td>
-            <td class="num">310.000</td><td class="num">310.000</td><td class="num">0</td>
-            <td class="num">—</td><td class="obs">sem liquidez diária: saída depende do vencimento</td>
-          </tr>
-          <tr>
-            <td><span class="acao manter">manter</span></td><td class="ativo">Tesouro Selic</td>
-            <td class="num">120.000</td><td class="num">120.000</td><td class="num">0</td>
-            <td class="num">—</td><td class="obs">caixa do perfil</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="apuracao">
-      <div class="cesta">
-        <small>Apuração · renda variável</small>
-        <div class="linha"><span>Ganho líquido da cesta</span><b class="num">R$ 75.000</b></div>
-        <div class="linha"><span>Alíquota</span><b class="num">15%</b></div>
-        <div class="linha"><span>Imposto</span><b class="num neg">R$ 11.250</b></div>
-      </div>
-      <div class="cesta">
-        <small>Apuração · fora do escopo</small>
-        <div class="linha"><span>Prejuízo realizado</span><b class="num neg">−R$ 9.000</b></div>
-        <div class="linha"><span>Alíquota</span><b class="num">—</b></div>
-        <div class="linha"><span>Imposto</span><b class="num">R$ 0</b></div>
-      </div>
-    </div>
-  </section>
-
-  <p class="nota">
-    <b>O que este mapa não faz.</b> Ele não estima em quanto tempo a mudança se paga. Isso exigiria
-    projetar retorno futuro, e a calibração publicada mostra que projeções construídas assim erram
-    na direção de quem as faz — a mediana projetada é cerca de dois pontos otimista nos perfis que
-    carregam mais caixa. O custo acima é o que se sabe: execução modelada e imposto apurado por
-    cesta de compensação, ao custo médio. A decisão de atravessar, e quando, continua de quem assina.
-  </p>
-
+<footer>
+  <p><b>Protótipo.</b> A carteira é sintética. Os números vêm de
+     <code>portfolio_mapping.py</code> e o perfil, de <code>client_intake.py</code>. Nenhuma ordem
+     é transmitida por esta tela.</p>
+  <p>O custo aparece antes do benefício de propósito. E nenhuma tela deste projeto promete
+     patrimônio futuro: o que a Benevente publica é o quanto a própria régua erra.</p>
+</footer>
 </div>
+
+<script>
+const DADOS = {"questionnaire":{"method":"A restrição mais apertada define o perfil. Não há pontuação: cada resposta impõe um teto e vale o menor deles.","worst_measured_drawdown":{"conservador":-0.0917,"equilibrado":-0.1788,"arrojado":-0.2895},"questions":[{"key":"horizonte","prompt":"Quando você vai precisar desse dinheiro?","help":"É a única resposta que nenhuma estratégia contorna: quem precisa sacar em um ano não pode esperar uma queda se recuperar, por melhor que seja a carteira.","kind":"escolha","options":[{"value":"ate_2","label":"Em até dois anos","brief":"até 2 anos","caps_profile":"conservador","note":"com prazo curto, uma queda não tem tempo de se recuperar"},{"value":"2_a_5","label":"Entre dois e cinco anos","brief":"2 a 5 anos","caps_profile":"equilibrado","note":"cinco anos cobrem a maior parte das quedas medidas, mas não todas"},{"value":"5_mais","label":"Em cinco anos ou mais","brief":"5+ anos","caps_profile":null,"note":""}]},{"key":"queda","prompt":"Qual a maior queda que você aguentaria sem vender?","help":"Na janela medida, o conservador caiu 9,2%, o equilibrado 17,9% e o arrojado 28,9% no pior momento. Vender no fundo é o que transforma queda em prejuízo.","kind":"escolha","options":[{"value":"ate_10","label":"Até 10% — abaixo disso eu não durmo","brief":"queda até 10%","caps_profile":"conservador","note":"só o conservador ficou dentro desse limite na janela medida"},{"value":"ate_20","label":"Até 20% — incomoda, mas eu seguro","brief":"queda até 20%","caps_profile":"equilibrado","note":"o arrojado passou de 28% na pior queda, além do que foi declarado"},{"value":"acima_20","label":"Mais de 20% — eu entendo que faz parte","brief":"queda acima de 20%","caps_profile":null,"note":""}]},{"key":"reserva","prompt":"Você já tem reserva de emergência separada desse dinheiro?","help":"Sem reserva, o primeiro imprevisto vira uma venda forçada — e venda forçada acontece justamente quando o mercado está ruim.","kind":"escolha","options":[{"value":"sim","label":"Sim, está separada","brief":"com reserva","caps_profile":null,"note":""},{"value":"nao","label":"Ainda não","brief":"sem reserva","caps_profile":"conservador","note":"sem reserva, este dinheiro é a reserva na prática"}]},{"key":"retirada","prompt":"Você vai retirar deste dinheiro todo mês?","help":"Retirada mensal muda o problema: obriga a manter liquidez e a vender em momento ruim se a liquidez acabar.","kind":"escolha","options":[{"value":"nao","label":"Não, é para deixar rendendo","brief":"sem retirada","caps_profile":null,"note":""},{"value":"sim","label":"Sim, retiro um valor por mês","brief":"com retirada","caps_profile":"equilibrado","note":"retirada recorrente exige caixa e reduz o que pode oscilar"}]},{"key":"prejuizo","prompt":"Você tem prejuízo acumulado a compensar em ações?","help":"Prejuízo passado abate o imposto das vendas de agora, dentro da mesma cesta. Se existir e não for informado, o custo da mudança sai maior do que é de verdade.","kind":"valor","options":[]},{"key":"travar","prompt":"Alguma posição que você não quer ou não pode vender?","help":"Carência, ação de família, participação com significado próprio. O mapa respeita e registra — o que ele não faz é fingir que a restrição não existe.","kind":"texto","options":[]}]},"profiles":{"conservador":{"adequar":{"path":"adequar","path_label":"Adequar a carteira ao perfil","modules":["Módulo 1 — Seleção","Módulo 2 — Proteção"],"track_record_applies":true,"carried_loss_brl":0.0,"locked_tickers":[],"total_brl":700000,"alignment":0.6577,"turnover_brl":227119.3,"transition_cost_brl":454.22,"transition_tax_brl":12364.36,"transition_total_brl":12818.58,"transition_cost_pct":0.01831,"exempt_month_assumed":false,"tax_by_bucket":{"fora_do_escopo":{"realised_gain_brl":-9000.0,"tax_brl":0.0},"renda_variavel":{"realised_gain_brl":82429.09,"tax_brl":12364.36}},"fgc_breaches":{"Beta":310000.0},"sources":["Open Finance (compartilhamento de investimentos)","extrato da Área do Investidor da B3","lançamento manual"],"moves":[{"ticker":"WEGE3","action":"vender","from_brl":180000,"to_brl":0.0,"delta_brl":-180000.0,"reason":"não está na cesta do perfil","trade_cost_brl":180.0,"realised_gain_brl":140000.0,"tax_brl":0.0,"notes":[]},{"ticker":"MGLU3","action":"vender","from_brl":25000,"to_brl":0.0,"delta_brl":-25000.0,"reason":"não está na cesta do perfil","trade_cost_brl":25.0,"realised_gain_brl":-65000.0,"tax_brl":0.0,"notes":["prejuízo realizado: abate o ganho das outras vendas da mesma cesta"]},{"ticker":"Cripto","action":"vender","from_brl":21000,"to_brl":0.0,"delta_brl":-21000.0,"reason":"fora do escopo da política","trade_cost_brl":21.0,"realised_gain_brl":-9000.0,"tax_brl":0.0,"notes":["regime tributário próprio: o imposto desta venda não é apurado aqui"]},{"ticker":"IVVB11","action":"comprar","from_brl":0.0,"to_brl":49000.0,"delta_brl":49000.0,"reason":"perna global declarada pela política","trade_cost_brl":49.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"CMIN3","action":"comprar","from_brl":0.0,"to_brl":30380.0,"delta_brl":30380.0,"reason":"entra pela seleção do perfil","trade_cost_brl":30.38,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"VIVA3","action":"comprar","from_brl":0.0,"to_brl":30380.0,"delta_brl":30380.0,"reason":"entra pela seleção do perfil","trade_cost_brl":30.38,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"BBSE3","action":"comprar","from_brl":0.0,"to_brl":27244.0,"delta_brl":27244.0,"reason":"entra pela seleção do perfil","trade_cost_brl":27.24,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"LEVE3","action":"comprar","from_brl":0.0,"to_brl":15702.4,"delta_brl":15702.4,"reason":"entra pela seleção do perfil","trade_cost_brl":15.7,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"CURY3","action":"reduzir","from_brl":44000,"to_brl":30380.0,"delta_brl":-13620.0,"reason":"acima do peso declarado","trade_cost_brl":13.62,"realised_gain_brl":7429.09,"tax_brl":0.0,"notes":[]},{"ticker":"PLPL3","action":"comprar","from_brl":0.0,"to_brl":11813.9,"delta_brl":11813.9,"reason":"entra pela seleção do perfil","trade_cost_brl":11.81,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"COGN3","action":"comprar","from_brl":0.0,"to_brl":10723.3,"delta_brl":10723.3,"reason":"entra pela seleção do perfil","trade_cost_brl":10.72,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"TEND3","action":"comprar","from_brl":0.0,"to_brl":9689.4,"delta_brl":9689.4,"reason":"entra pela seleção do perfil","trade_cost_brl":9.69,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"TFCO4","action":"comprar","from_brl":0.0,"to_brl":8932.0,"delta_brl":8932.0,"reason":"entra pela seleção do perfil","trade_cost_brl":8.93,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"ECOR3","action":"comprar","from_brl":0.0,"to_brl":7184.1,"delta_brl":7184.1,"reason":"entra pela seleção do perfil","trade_cost_brl":7.18,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"RDOR3","action":"comprar","from_brl":0.0,"to_brl":7168.0,"delta_brl":7168.0,"reason":"entra pela seleção do perfil","trade_cost_brl":7.17,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"B3SA3","action":"comprar","from_brl":0.0,"to_brl":6401.5,"delta_brl":6401.5,"reason":"entra pela seleção do perfil","trade_cost_brl":6.4,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]}],"honesty":"O custo deste plano inclui o imposto que a venda realiza, que é o número que costuma faltar. E ele não estima em quanto tempo a mudança 'se paga': isso exigiria projetar retorno futuro, e a calibração publicada mostra que projeções desse tipo erram na direção de quem as faz."},"adaptar":{"path":"adaptar","path_label":"Manter a carteira e aplicar a proteção","modules":["Módulo 2 — Proteção"],"track_record_applies":false,"carried_loss_brl":0.0,"locked_tickers":[],"total_brl":700000,"alignment":1.0,"equity_before":0.3557,"equity_budget":0.35,"equity_after":0.3341,"equity_below_budget":false,"issuer_cap":0.2371,"issuer_cap_rule":"dobro do peso médio dos emissores que o cliente já tem; limite escolhido para este caminho, não medido no histórico","unrealised_loss_kept_brl":0,"tax_left_on_table_brl":0.0,"out_of_scope_brl":21000,"turnover_brl":7554.41,"transition_cost_brl":15.11,"transition_tax_brl":0.0,"transition_total_brl":15.11,"transition_cost_pct":2e-05,"exempt_month_assumed":true,"tax_by_bucket":{"renda_variavel":{"realised_gain_brl":10230.02,"tax_brl":0.0}},"fgc_breaches":{"Beta":310000.0},"sources":["Open Finance (compartilhamento de investimentos)","extrato da Área do Investidor da B3","lançamento manual"],"moves":[{"ticker":"WEGE3","action":"reduzir","from_brl":180000,"to_brl":166000.0,"delta_brl":-14000.0,"reason":"teto de concentração por emissor","trade_cost_brl":14.0,"realised_gain_brl":10888.89,"tax_brl":0.0,"notes":[]},{"ticker":"CURY3","action":"reduzir","from_brl":44000,"to_brl":43292.93,"delta_brl":-707.07,"reason":"orçamento de ações do perfil","trade_cost_brl":0.71,"realised_gain_brl":385.68,"tax_brl":0.0,"notes":[]},{"ticker":"MGLU3","action":"reduzir","from_brl":25000,"to_brl":24598.25,"delta_brl":-401.75,"reason":"orçamento de ações do perfil","trade_cost_brl":0.4,"realised_gain_brl":-1044.54,"tax_brl":0.0,"notes":["prejuízo realizado: abate o ganho das outras vendas da mesma cesta"]},{"ticker":"CDB Banco Beta","action":"manter","from_brl":310000,"to_brl":310000,"delta_brl":0,"reason":"renda fixa mantida","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"Cripto","action":"manter","from_brl":21000,"to_brl":21000,"delta_brl":0,"reason":"fora do escopo da política","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":["a camada de proteção não observa nem cobre esta posição"]},{"ticker":"Tesouro Selic","action":"manter","from_brl":120000,"to_brl":120000,"delta_brl":0,"reason":"renda fixa mantida","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]}],"honesty":"Este caminho aplica a camada de proteção sobre a seleção que já existe. O retorno publicado pela Benevente foi medido com seleção e proteção juntas, e não descreve esta carteira: não há medição do que a proteção sozinha teria feito sobre uma cesta escolhida por terceiro. O que se pode afirmar é o que a camada faz — reduzir exposição nos estados declarados —, não quanto ela teria rendido aqui."}},"equilibrado":{"adequar":{"path":"adequar","path_label":"Adequar a carteira ao perfil","modules":["Módulo 1 — Seleção","Módulo 2 — Proteção"],"track_record_applies":true,"carried_loss_brl":0.0,"locked_tickers":[],"total_brl":700000,"alignment":0.6771,"turnover_brl":283500.0,"transition_cost_brl":567.0,"transition_tax_brl":11250.0,"transition_total_brl":11817.0,"transition_cost_pct":0.01688,"exempt_month_assumed":false,"tax_by_bucket":{"fora_do_escopo":{"realised_gain_brl":-9000.0,"tax_brl":0.0},"renda_variavel":{"realised_gain_brl":75000.0,"tax_brl":11250.0}},"fgc_breaches":{"Beta":310000.0},"sources":["Open Finance (compartilhamento de investimentos)","extrato da Área do Investidor da B3","lançamento manual"],"moves":[{"ticker":"WEGE3","action":"vender","from_brl":180000,"to_brl":0.0,"delta_brl":-180000.0,"reason":"não está na cesta do perfil","trade_cost_brl":180.0,"realised_gain_brl":140000.0,"tax_brl":0.0,"notes":[]},{"ticker":"MGLU3","action":"vender","from_brl":25000,"to_brl":0.0,"delta_brl":-25000.0,"reason":"não está na cesta do perfil","trade_cost_brl":25.0,"realised_gain_brl":-65000.0,"tax_brl":0.0,"notes":["prejuízo realizado: abate o ganho das outras vendas da mesma cesta"]},{"ticker":"Cripto","action":"vender","from_brl":21000,"to_brl":0.0,"delta_brl":-21000.0,"reason":"fora do escopo da política","trade_cost_brl":21.0,"realised_gain_brl":-9000.0,"tax_brl":0.0,"notes":["regime tributário próprio: o imposto desta venda não é apurado aqui"]},{"ticker":"IVVB11","action":"comprar","from_brl":0.0,"to_brl":77000.0,"delta_brl":77000.0,"reason":"perna global declarada pela política","trade_cost_brl":77.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"CMIN3","action":"comprar","from_brl":0.0,"to_brl":68530.0,"delta_brl":68530.0,"reason":"entra pela seleção do perfil","trade_cost_brl":68.53,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"VIVA3","action":"comprar","from_brl":0.0,"to_brl":68530.0,"delta_brl":68530.0,"reason":"entra pela seleção do perfil","trade_cost_brl":68.53,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"BBSE3","action":"comprar","from_brl":0.0,"to_brl":41770.4,"delta_brl":41770.4,"reason":"entra pela seleção do perfil","trade_cost_brl":41.77,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"CURY3","action":"comprar","from_brl":44000,"to_brl":68530.0,"delta_brl":24530.0,"reason":"abaixo do peso declarado","trade_cost_brl":24.53,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"LEVE3","action":"comprar","from_brl":0.0,"to_brl":21646.8,"delta_brl":21646.8,"reason":"entra pela seleção do perfil","trade_cost_brl":21.65,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"PLPL3","action":"comprar","from_brl":0.0,"to_brl":14866.6,"delta_brl":14866.6,"reason":"entra pela seleção do perfil","trade_cost_brl":14.87,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"COGN3","action":"comprar","from_brl":0.0,"to_brl":12964.0,"delta_brl":12964.0,"reason":"entra pela seleção do perfil","trade_cost_brl":12.96,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"TEND3","action":"comprar","from_brl":0.0,"to_brl":11162.2,"delta_brl":11162.2,"reason":"entra pela seleção do perfil","trade_cost_brl":11.16,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]}],"honesty":"O custo deste plano inclui o imposto que a venda realiza, que é o número que costuma faltar. E ele não estima em quanto tempo a mudança 'se paga': isso exigiria projetar retorno futuro, e a calibração publicada mostra que projeções desse tipo erram na direção de quem as faz."},"adaptar":{"path":"adaptar","path_label":"Manter a carteira e aplicar a proteção","modules":["Módulo 2 — Proteção"],"track_record_applies":false,"carried_loss_brl":0.0,"locked_tickers":[],"total_brl":700000,"alignment":1.0,"equity_before":0.3557,"equity_budget":0.55,"equity_after":0.3357,"equity_below_budget":true,"issuer_cap":0.2371,"issuer_cap_rule":"dobro do peso médio dos emissores que o cliente já tem; limite escolhido para este caminho, não medido no histórico","unrealised_loss_kept_brl":65000,"tax_left_on_table_brl":0.0,"out_of_scope_brl":21000,"turnover_brl":7000.0,"transition_cost_brl":14.0,"transition_tax_brl":0.0,"transition_total_brl":14.0,"transition_cost_pct":2e-05,"exempt_month_assumed":true,"tax_by_bucket":{"renda_variavel":{"realised_gain_brl":10888.89,"tax_brl":0.0}},"fgc_breaches":{"Beta":310000.0},"sources":["Open Finance (compartilhamento de investimentos)","extrato da Área do Investidor da B3","lançamento manual"],"moves":[{"ticker":"WEGE3","action":"reduzir","from_brl":180000,"to_brl":166000.0,"delta_brl":-14000.0,"reason":"teto de concentração por emissor","trade_cost_brl":14.0,"realised_gain_brl":10888.89,"tax_brl":0.0,"notes":[]},{"ticker":"CDB Banco Beta","action":"manter","from_brl":310000,"to_brl":310000,"delta_brl":0,"reason":"renda fixa mantida","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"CURY3","action":"manter","from_brl":44000,"to_brl":44000,"delta_brl":0,"reason":"dentro dos limites do perfil","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"Cripto","action":"manter","from_brl":21000,"to_brl":21000,"delta_brl":0,"reason":"fora do escopo da política","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":["a camada de proteção não observa nem cobre esta posição"]},{"ticker":"MGLU3","action":"manter","from_brl":25000,"to_brl":25000,"delta_brl":0,"reason":"dentro dos limites do perfil","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"Tesouro Selic","action":"manter","from_brl":120000,"to_brl":120000,"delta_brl":0,"reason":"renda fixa mantida","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]}],"honesty":"Este caminho aplica a camada de proteção sobre a seleção que já existe. O retorno publicado pela Benevente foi medido com seleção e proteção juntas, e não descreve esta carteira: não há medição do que a proteção sozinha teria feito sobre uma cesta escolhida por terceiro. O que se pode afirmar é o que a camada faz — reduzir exposição nos estados declarados —, não quanto ela teria rendido aqui."}},"arrojado":{"adequar":{"path":"adequar","path_label":"Adequar a carteira ao perfil","modules":["Módulo 1 — Seleção","Módulo 2 — Proteção"],"track_record_applies":true,"carried_loss_brl":0.0,"locked_tickers":[],"total_brl":700000,"alignment":0.6771,"turnover_brl":353500.0,"transition_cost_brl":706.99,"transition_tax_brl":11250.0,"transition_total_brl":11956.99,"transition_cost_pct":0.01708,"exempt_month_assumed":false,"tax_by_bucket":{"fora_do_escopo":{"realised_gain_brl":-9000.0,"tax_brl":0.0},"renda_variavel":{"realised_gain_brl":75000.0,"tax_brl":11250.0}},"fgc_breaches":{"Beta":310000.0},"sources":["Open Finance (compartilhamento de investimentos)","extrato da Área do Investidor da B3","lançamento manual"],"moves":[{"ticker":"WEGE3","action":"vender","from_brl":180000,"to_brl":0.0,"delta_brl":-180000.0,"reason":"não está na cesta do perfil","trade_cost_brl":180.0,"realised_gain_brl":140000.0,"tax_brl":0.0,"notes":[]},{"ticker":"MGLU3","action":"vender","from_brl":25000,"to_brl":0.0,"delta_brl":-25000.0,"reason":"não está na cesta do perfil","trade_cost_brl":25.0,"realised_gain_brl":-65000.0,"tax_brl":0.0,"notes":["prejuízo realizado: abate o ganho das outras vendas da mesma cesta"]},{"ticker":"Cripto","action":"vender","from_brl":21000,"to_brl":0.0,"delta_brl":-21000.0,"reason":"fora do escopo da política","trade_cost_brl":21.0,"realised_gain_brl":-9000.0,"tax_brl":0.0,"notes":["regime tributário próprio: o imposto desta venda não é apurado aqui"]},{"ticker":"VIVA3","action":"comprar","from_brl":0.0,"to_brl":142800.0,"delta_brl":142800.0,"reason":"entra pela seleção do perfil","trade_cost_brl":142.8,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"IVVB11","action":"comprar","from_brl":0.0,"to_brl":105000.0,"delta_brl":105000.0,"reason":"perna global declarada pela política","trade_cost_brl":105.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"CMIN3","action":"comprar","from_brl":0.0,"to_brl":90470.8,"delta_brl":90470.8,"reason":"entra pela seleção do perfil","trade_cost_brl":90.47,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"CURY3","action":"comprar","from_brl":44000,"to_brl":121275.0,"delta_brl":77275.0,"reason":"abaixo do peso declarado","trade_cost_brl":77.27,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"BBSE3","action":"comprar","from_brl":0.0,"to_brl":48242.6,"delta_brl":48242.6,"reason":"entra pela seleção do perfil","trade_cost_brl":48.24,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"LEVE3","action":"comprar","from_brl":0.0,"to_brl":17211.6,"delta_brl":17211.6,"reason":"entra pela seleção do perfil","trade_cost_brl":17.21,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]}],"honesty":"O custo deste plano inclui o imposto que a venda realiza, que é o número que costuma faltar. E ele não estima em quanto tempo a mudança 'se paga': isso exigiria projetar retorno futuro, e a calibração publicada mostra que projeções desse tipo erram na direção de quem as faz."},"adaptar":{"path":"adaptar","path_label":"Manter a carteira e aplicar a proteção","modules":["Módulo 2 — Proteção"],"track_record_applies":false,"carried_loss_brl":0.0,"locked_tickers":[],"total_brl":700000,"alignment":1.0,"equity_before":0.3557,"equity_budget":0.75,"equity_after":0.3357,"equity_below_budget":true,"issuer_cap":0.2371,"issuer_cap_rule":"dobro do peso médio dos emissores que o cliente já tem; limite escolhido para este caminho, não medido no histórico","unrealised_loss_kept_brl":65000,"tax_left_on_table_brl":0.0,"out_of_scope_brl":21000,"turnover_brl":7000.0,"transition_cost_brl":14.0,"transition_tax_brl":0.0,"transition_total_brl":14.0,"transition_cost_pct":2e-05,"exempt_month_assumed":true,"tax_by_bucket":{"renda_variavel":{"realised_gain_brl":10888.89,"tax_brl":0.0}},"fgc_breaches":{"Beta":310000.0},"sources":["Open Finance (compartilhamento de investimentos)","extrato da Área do Investidor da B3","lançamento manual"],"moves":[{"ticker":"WEGE3","action":"reduzir","from_brl":180000,"to_brl":166000.0,"delta_brl":-14000.0,"reason":"teto de concentração por emissor","trade_cost_brl":14.0,"realised_gain_brl":10888.89,"tax_brl":0.0,"notes":[]},{"ticker":"CDB Banco Beta","action":"manter","from_brl":310000,"to_brl":310000,"delta_brl":0,"reason":"renda fixa mantida","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"CURY3","action":"manter","from_brl":44000,"to_brl":44000,"delta_brl":0,"reason":"dentro dos limites do perfil","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"Cripto","action":"manter","from_brl":21000,"to_brl":21000,"delta_brl":0,"reason":"fora do escopo da política","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":["a camada de proteção não observa nem cobre esta posição"]},{"ticker":"MGLU3","action":"manter","from_brl":25000,"to_brl":25000,"delta_brl":0,"reason":"dentro dos limites do perfil","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]},{"ticker":"Tesouro Selic","action":"manter","from_brl":120000,"to_brl":120000,"delta_brl":0,"reason":"renda fixa mantida","trade_cost_brl":0.0,"realised_gain_brl":0.0,"tax_brl":0.0,"notes":[]}],"honesty":"Este caminho aplica a camada de proteção sobre a seleção que já existe. O retorno publicado pela Benevente foi medido com seleção e proteção juntas, e não descreve esta carteira: não há medição do que a proteção sozinha teria feito sobre uma cesta escolhida por terceiro. O que se pode afirmar é o que a camada faz — reduzir exposição nos estados declarados —, não quanto ela teria rendido aqui."}}}};
+const BRL = v => "R$ " + Math.round(v).toLocaleString("pt-BR");
+const PCT = (v, c = 1) => (v * 100).toFixed(c).replace(".", ",") + "%";
+const RANK = { conservador: 0, equilibrado: 1, arrojado: 2 };
+const respostas = {};
+let caminho = null;
+
+const el = (tag, cls, html) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (html !== undefined) n.innerHTML = html;
+  return n;
+};
+
+/* --- perguntas --- */
+const escolha = DADOS.questionnaire.questions.filter(q => q.kind === "escolha");
+const qs = document.getElementById("qs");
+escolha.forEach(q => {
+  const box = el("div", "q");
+  box.append(el("p", null, q.prompt), el("p", "help", q.help));
+  const opts = el("div", "opts");
+  q.options.forEach(o => {
+    const b = el("button", "opt", o.label);
+    b.type = "button";
+    b.setAttribute("aria-pressed", "false");
+    b.onclick = () => {
+      respostas[q.key] = o;
+      opts.querySelectorAll(".opt").forEach(x => x.setAttribute("aria-pressed", "false"));
+      b.setAttribute("aria-pressed", "true");
+      avaliar();
+    };
+    opts.append(b);
+  });
+  box.append(opts);
+  qs.append(box);
+});
+
+const qsBox = document.getElementById("qs");
+const resumoBox = document.getElementById("resumo");
+document.getElementById("alterar").onclick = () => {
+  qsBox.classList.remove("hidden");
+  resumoBox.classList.add("hidden");
+  qsBox.scrollIntoView({ behavior: "smooth", block: "start" });
+};
+
+function avaliar() {
+  const veredito = document.getElementById("veredito");
+  if (Object.keys(respostas).length < escolha.length) {
+    veredito.textContent = "";
+    ["mapa", "portas", "razao"].forEach(id => document.getElementById(id).classList.add("hidden"));
+    return;
+  }
+  qsBox.classList.add("hidden");
+  resumoBox.classList.remove("hidden");
+  document.getElementById("chips").innerHTML =
+    escolha.map(q => "<span>" + respostas[q.key].brief + "</span>").join("");
+  // O perfil é o menor teto, igual ao módulo: sem soma, sem peso, sem nota.
+  let perfil = "arrojado";
+  escolha.forEach(q => {
+    const o = respostas[q.key];
+    if (o.caps_profile && RANK[o.caps_profile] < RANK[perfil]) perfil = o.caps_profile;
+  });
+  // Todas as respostas que prenderam no teto final, não só a primeira: quando
+  // duas apertam igual, mostrar uma faz a outra parecer não ter contado.
+  const causas = escolha.map(q => respostas[q.key])
+    .filter(o => o.caps_profile === perfil && o.note);
+  const pior = DADOS.questionnaire.worst_measured_drawdown[perfil];
+  veredito.innerHTML = "Perfil <b>" + perfil + "</b> — " +
+    (causas.length ? causas.map(o => o.note).join("; ")
+                   : "nenhuma resposta impôs teto abaixo do máximo") +
+    ". A pior queda medida deste perfil foi de <b class='num neg'>" + PCT(pior) + "</b>.";
+  render(perfil);
+}
+
+/* --- mapa --- */
+function render(perfil) {
+  const p = DADOS.profiles[perfil];
+  const a = p.adequar, b = p.adaptar;
+  ["mapa", "portas"].forEach(id => document.getElementById(id).classList.remove("hidden"));
+  document.getElementById("razao").classList.add("hidden");
+  caminho = null;
+
+  document.getElementById("aderencia").textContent = PCT(a.alignment) + " já serve";
+  document.getElementById("aderencia-txt").textContent =
+    "De " + BRL(a.total_brl) + ", essa parte já está de acordo com o que a política declara para " +
+    "o perfil " + perfil + ". É o resto que os dois planos tratam de forma diferente.";
+
+  const fora = b.out_of_scope_brl / b.total_brl;
+  barra("bar-hoje", [b.equity_before, 1 - b.equity_before - fora, fora]);
+  barra("bar-alvo", [b.equity_budget, 1 - b.equity_budget, 0]);
+
+  const fgc = document.getElementById("fgc");
+  const estouros = Object.entries(a.fgc_breaches || {});
+  fgc.style.display = estouros.length ? "flex" : "none";
+  if (estouros.length) {
+    const [nome, valor] = estouros[0];
+    fgc.innerHTML = "<p><b>" + BRL(valor - 250000) + " sem cobertura do FGC.</b> " +
+      "Você tem " + BRL(valor) + " no conglomerado " + nome + ", e a garantia cobre até " +
+      "R$ 250.000 por CPF. Os dois planos mantêm essa posição: é risco de crédito assumido, e " +
+      "assumi-lo precisa ser decisão registrada, não distração.</p>";
+  }
+  portas(perfil, a, b);
+}
+
+function barra(id, partes) {
+  const cores = ["var(--accent)", "var(--muted)", "var(--down)"];
+  const host = document.getElementById(id);
+  host.innerHTML = "";
+  host.style.cssText = "display:flex;height:26px;border-radius:5px;overflow:hidden;gap:2px";
+  partes.forEach((v, i) => {
+    if (v <= 0.001) return;
+    const s = el("div");
+    s.style.cssText = "flex:" + v + ";background:" + cores[i] +
+      ";display:grid;place-items:center;font-size:.7rem;font-weight:600;color:var(--ground)";
+    s.textContent = v > 0.08 ? PCT(v, 0) : "";
+    s.title = PCT(v);
+    host.append(s);
+  });
+}
+
+/* --- portas --- */
+function portas(perfil, a, b) {
+  const host = document.getElementById("doors");
+  host.innerHTML = "";
+  [["adequar", a], ["adaptar", b]].forEach(([chave, m]) => {
+    const d = el("button", "door");
+    d.type = "button";
+    d.setAttribute("aria-pressed", "false");
+    d.append(
+      el("h3", null, m.path_label),
+      // "0,00% do patrimônio" lê como erro de formatação, não como "quase nada".
+      el("div", "cost num", BRL(m.transition_total_brl) +
+        "<small>custo hoje · " + (m.transition_cost_pct < 0.0001
+          ? "menos de 0,01%" : PCT(m.transition_cost_pct, 2)) + " do patrimônio</small>"),
+      el("dl", null,
+        "<dt>Movimenta</dt><dd class='num'>" + BRL(m.turnover_brl) + "</dd>" +
+        "<dt>Imposto</dt><dd class='num'>" + BRL(m.transition_tax_brl) + "</dd>" +
+        "<dt>Módulos</dt><dd>" + m.modules.length + " de 2</dd>"),
+      el("div", "flag " + (m.track_record_applies ? "ok" : "no"),
+        m.track_record_applies
+          ? "O histórico publicado descreve esta carteira"
+          : "O histórico publicado NÃO descreve esta carteira"));
+    d.onclick = () => {
+      caminho = chave;
+      host.querySelectorAll(".door").forEach(x => x.setAttribute("aria-pressed", "false"));
+      d.setAttribute("aria-pressed", "true");
+      razao(perfil, chave);
+    };
+    host.append(d);
+  });
+}
+
+/* --- a razão do caminho escolhido --- */
+function razao(perfil, chave) {
+  const m = DADOS.profiles[perfil][chave];
+  const outro = DADOS.profiles[perfil][chave === "adequar" ? "adaptar" : "adequar"];
+  const sec = document.getElementById("razao");
+  sec.classList.remove("hidden");
+  document.getElementById("razao-h").textContent = m.path_label;
+  document.getElementById("razao-lede").textContent = m.honesty;
+
+  const grupos = [["vender", "Sai"], ["reduzir", "Reduz"], ["comprar", "Entra"], ["manter", "Fica"]];
+  const led = document.getElementById("ledger");
+  led.innerHTML = "";
+  grupos.forEach(([acao, titulo]) => {
+    const linhas = m.moves.filter(x => x.action === acao);
+    if (!linhas.length) return;
+    led.append(el("p", "grp", titulo + " · " + linhas.length));
+    linhas.forEach(x => {
+      const r = el("div", "row");
+      const delta = x.delta_brl;
+      r.append(
+        el("b", null, x.ticker),
+        el("div", "val num" + (delta < 0 ? " neg" : ""),
+          (delta === 0 ? BRL(x.from_brl) : (delta > 0 ? "+" : "−") + BRL(Math.abs(delta))) +
+          "<small>" + BRL(x.from_brl) + " → " + BRL(x.to_brl) + "</small>"),
+        // O motivo primeiro: é ele que responde "por que essa linha existe".
+        // A nota vem depois porque é consequência, não causa.
+        el("div", "why", x.reason + (x.notes && x.notes.length ? " · " + x.notes[0] : "")));
+      led.append(r);
+    });
+  });
+
+  const bill = document.getElementById("bill");
+  let html = "<div><span>Execução</span><span class='num'>" +
+    BRL(m.transition_cost_brl) + "</span></div>";
+  Object.entries(m.tax_by_bucket).forEach(([cesta, d]) => {
+    const nome = { renda_variavel: "Renda variável", renda_fixa: "Renda fixa",
+                   fora_do_escopo: "Fora do escopo" }[cesta] || cesta;
+    html += "<div><span>" + nome + " · imposto sobre " + BRL(d.realised_gain_brl) +
+      " apurados</span><span class='num'>" + BRL(d.tax_brl) + "</span></div>";
+  });
+  html += "<div class='tot'><span>Total, pago uma vez</span><span class='num'>" +
+    BRL(m.transition_total_brl) + "</span></div>";
+  // Todo zero na coluna de imposto precisa dizer por que é zero. Sem isso, a
+  // isenção mensal e uma conta não feita ficam com a mesma aparência.
+  const ganhoRV = (m.tax_by_bucket.renda_variavel || {}).realised_gain_brl || 0;
+  html += "<p>Apurado por cesta, ao custo médio: ganhos e prejuízos se compensam dentro da cesta " +
+    "e nunca entre cestas." +
+    (m.exempt_month_assumed && ganhoRV > 0
+      ? " O imposto sobre ações fica em zero porque o total vendido no mês cabe na isenção de " +
+        "R$ 20 mil — se houver outra venda no mesmo mês, ela deixa de valer."
+      : "") +
+    (m.tax_by_bucket.fora_do_escopo
+      ? " O zero na cesta fora do escopo não é isenção: é uma conta que não é feita aqui, porque " +
+        "cripto tem regime próprio."
+      : "") +
+    " O outro plano custaria " + BRL(outro.transition_total_brl) + ".</p>";
+  bill.innerHTML = html;
+  sec.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+</script>

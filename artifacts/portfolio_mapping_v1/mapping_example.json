@@ -3,7 +3,190 @@
   "warning": "Carteira sintética escrita à mão para exercitar o módulo.",
   "target_profile": "equilibrado",
   "target_decision": "2026-01-02",
+  "intake": {
+    "answers": {
+      "horizonte": "5_mais",
+      "queda": "ate_20",
+      "reserva": "sim",
+      "retirada": "nao"
+    },
+    "assessment": {
+      "profile": "equilibrado",
+      "worst_measured_drawdown": -0.1788,
+      "binding": [
+        {
+          "question": "Qual a maior queda que você aguentaria sem vender?",
+          "answer": "Até 20% — incomoda, mas eu seguro",
+          "caps_at": "equilibrado",
+          "why": "o arrojado passou de 28% na pior queda, além do que foi declarado"
+        }
+      ],
+      "all_limits": [
+        {
+          "question": "Quando você vai precisar desse dinheiro?",
+          "answer": "Em cinco anos ou mais",
+          "caps_at": "não limita",
+          "why": "não impõe teto"
+        },
+        {
+          "question": "Qual a maior queda que você aguentaria sem vender?",
+          "answer": "Até 20% — incomoda, mas eu seguro",
+          "caps_at": "equilibrado",
+          "why": "o arrojado passou de 28% na pior queda, além do que foi declarado"
+        },
+        {
+          "question": "Você já tem reserva de emergência separada desse dinheiro?",
+          "answer": "Sim, está separada",
+          "caps_at": "não limita",
+          "why": "não impõe teto"
+        },
+        {
+          "question": "Você vai retirar deste dinheiro todo mês?",
+          "answer": "Não, é para deixar rendendo",
+          "caps_at": "não limita",
+          "why": "não impõe teto"
+        }
+      ],
+      "rationale": "Perfil equilibrado: até 20% — incomoda, mas eu seguro — o arrojado passou de 28% na pior queda, além do que foi declarado.",
+      "unanswered": []
+    },
+    "questionnaire": {
+      "method": "A restrição mais apertada define o perfil. Não há pontuação: cada resposta impõe um teto e vale o menor deles.",
+      "worst_measured_drawdown": {
+        "conservador": -0.0917,
+        "equilibrado": -0.1788,
+        "arrojado": -0.2895
+      },
+      "questions": [
+        {
+          "key": "horizonte",
+          "prompt": "Quando você vai precisar desse dinheiro?",
+          "help": "É a única resposta que nenhuma estratégia contorna: quem precisa sacar em um ano não pode esperar uma queda se recuperar, por melhor que seja a carteira.",
+          "kind": "escolha",
+          "options": [
+            {
+              "value": "ate_2",
+              "label": "Em até dois anos",
+              "brief": "até 2 anos",
+              "caps_profile": "conservador",
+              "note": "com prazo curto, uma queda não tem tempo de se recuperar"
+            },
+            {
+              "value": "2_a_5",
+              "label": "Entre dois e cinco anos",
+              "brief": "2 a 5 anos",
+              "caps_profile": "equilibrado",
+              "note": "cinco anos cobrem a maior parte das quedas medidas, mas não todas"
+            },
+            {
+              "value": "5_mais",
+              "label": "Em cinco anos ou mais",
+              "brief": "5+ anos",
+              "caps_profile": null,
+              "note": ""
+            }
+          ]
+        },
+        {
+          "key": "queda",
+          "prompt": "Qual a maior queda que você aguentaria sem vender?",
+          "help": "Na janela medida, o conservador caiu 9,2%, o equilibrado 17,9% e o arrojado 28,9% no pior momento. Vender no fundo é o que transforma queda em prejuízo.",
+          "kind": "escolha",
+          "options": [
+            {
+              "value": "ate_10",
+              "label": "Até 10% — abaixo disso eu não durmo",
+              "brief": "queda até 10%",
+              "caps_profile": "conservador",
+              "note": "só o conservador ficou dentro desse limite na janela medida"
+            },
+            {
+              "value": "ate_20",
+              "label": "Até 20% — incomoda, mas eu seguro",
+              "brief": "queda até 20%",
+              "caps_profile": "equilibrado",
+              "note": "o arrojado passou de 28% na pior queda, além do que foi declarado"
+            },
+            {
+              "value": "acima_20",
+              "label": "Mais de 20% — eu entendo que faz parte",
+              "brief": "queda acima de 20%",
+              "caps_profile": null,
+              "note": ""
+            }
+          ]
+        },
+        {
+          "key": "reserva",
+          "prompt": "Você já tem reserva de emergência separada desse dinheiro?",
+          "help": "Sem reserva, o primeiro imprevisto vira uma venda forçada — e venda forçada acontece justamente quando o mercado está ruim.",
+          "kind": "escolha",
+          "options": [
+            {
+              "value": "sim",
+              "label": "Sim, está separada",
+              "brief": "com reserva",
+              "caps_profile": null,
+              "note": ""
+            },
+            {
+              "value": "nao",
+              "label": "Ainda não",
+              "brief": "sem reserva",
+              "caps_profile": "conservador",
+              "note": "sem reserva, este dinheiro é a reserva na prática"
+            }
+          ]
+        },
+        {
+          "key": "retirada",
+          "prompt": "Você vai retirar deste dinheiro todo mês?",
+          "help": "Retirada mensal muda o problema: obriga a manter liquidez e a vender em momento ruim se a liquidez acabar.",
+          "kind": "escolha",
+          "options": [
+            {
+              "value": "nao",
+              "label": "Não, é para deixar rendendo",
+              "brief": "sem retirada",
+              "caps_profile": null,
+              "note": ""
+            },
+            {
+              "value": "sim",
+              "label": "Sim, retiro um valor por mês",
+              "brief": "com retirada",
+              "caps_profile": "equilibrado",
+              "note": "retirada recorrente exige caixa e reduz o que pode oscilar"
+            }
+          ]
+        },
+        {
+          "key": "prejuizo",
+          "prompt": "Você tem prejuízo acumulado a compensar em ações?",
+          "help": "Prejuízo passado abate o imposto das vendas de agora, dentro da mesma cesta. Se existir e não for informado, o custo da mudança sai maior do que é de verdade.",
+          "kind": "valor",
+          "options": []
+        },
+        {
+          "key": "travar",
+          "prompt": "Alguma posição que você não quer ou não pode vender?",
+          "help": "Carência, ação de família, participação com significado próprio. O mapa respeita e registra — o que ele não faz é fingir que a restrição não existe.",
+          "kind": "texto",
+          "options": []
+        }
+      ]
+    }
+  },
   "mapping": {
+    "path": "adequar",
+    "path_label": "Adequar a carteira ao perfil",
+    "modules": [
+      "Módulo 1 — Seleção",
+      "Módulo 2 — Proteção"
+    ],
+    "track_record_applies": true,
+    "carried_loss_brl": 0.0,
+    "locked_tickers": [],
     "total_brl": 700000,
     "alignment": 0.6771,
     "turnover_brl": 283500.0,
@@ -63,12 +246,12 @@
         "from_brl": 21000,
         "to_brl": 0.0,
         "delta_brl": -21000.0,
-        "reason": "não está na cesta do perfil",
+        "reason": "fora do escopo da política",
         "trade_cost_brl": 21.0,
         "realised_gain_brl": -9000.0,
         "tax_brl": 0.0,
         "notes": [
-          "prejuízo realizado: abate o ganho das outras vendas da mesma cesta"
+          "regime tributário próprio: o imposto desta venda não é apurado aqui"
         ]
       },
       {
@@ -180,6 +363,124 @@
         "notes": []
       }
     ],
-    "honesty": "O custo da travessia inclui o imposto que a venda realiza, que é o número que costuma faltar. O mapa não estima em quanto tempo a mudança 'se paga': isso exigiria projetar retorno futuro, e a calibração publicada mostra que projeções desse tipo erram na direção de quem as faz."
+    "honesty": "O custo deste plano inclui o imposto que a venda realiza, que é o número que costuma faltar. E ele não estima em quanto tempo a mudança 'se paga': isso exigiria projetar retorno futuro, e a calibração publicada mostra que projeções desse tipo erram na direção de quem as faz."
+  },
+  "alternative": {
+    "path": "adaptar",
+    "path_label": "Manter a carteira e aplicar a proteção",
+    "modules": [
+      "Módulo 2 — Proteção"
+    ],
+    "track_record_applies": false,
+    "carried_loss_brl": 0.0,
+    "locked_tickers": [],
+    "total_brl": 700000,
+    "alignment": 1.0,
+    "equity_before": 0.3557,
+    "equity_budget": 0.55,
+    "equity_after": 0.3357,
+    "equity_below_budget": true,
+    "issuer_cap": 0.2371,
+    "issuer_cap_rule": "dobro do peso médio dos emissores que o cliente já tem; limite escolhido para este caminho, não medido no histórico",
+    "unrealised_loss_kept_brl": 65000,
+    "tax_left_on_table_brl": 0.0,
+    "out_of_scope_brl": 21000,
+    "turnover_brl": 7000.0,
+    "transition_cost_brl": 14.0,
+    "transition_tax_brl": 0.0,
+    "transition_total_brl": 14.0,
+    "transition_cost_pct": 2e-05,
+    "exempt_month_assumed": true,
+    "tax_by_bucket": {
+      "renda_variavel": {
+        "realised_gain_brl": 10888.89,
+        "tax_brl": 0.0
+      }
+    },
+    "fgc_breaches": {
+      "Beta": 310000.0
+    },
+    "sources": [
+      "Open Finance (compartilhamento de investimentos)",
+      "extrato da Área do Investidor da B3",
+      "lançamento manual"
+    ],
+    "moves": [
+      {
+        "ticker": "WEGE3",
+        "action": "reduzir",
+        "from_brl": 180000,
+        "to_brl": 166000.0,
+        "delta_brl": -14000.0,
+        "reason": "teto de concentração por emissor",
+        "trade_cost_brl": 14.0,
+        "realised_gain_brl": 10888.89,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "CDB Banco Beta",
+        "action": "manter",
+        "from_brl": 310000,
+        "to_brl": 310000,
+        "delta_brl": 0,
+        "reason": "renda fixa mantida",
+        "trade_cost_brl": 0.0,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "CURY3",
+        "action": "manter",
+        "from_brl": 44000,
+        "to_brl": 44000,
+        "delta_brl": 0,
+        "reason": "dentro dos limites do perfil",
+        "trade_cost_brl": 0.0,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "Cripto",
+        "action": "manter",
+        "from_brl": 21000,
+        "to_brl": 21000,
+        "delta_brl": 0,
+        "reason": "fora do escopo da política",
+        "trade_cost_brl": 0.0,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": [
+          "a camada de proteção não observa nem cobre esta posição"
+        ]
+      },
+      {
+        "ticker": "MGLU3",
+        "action": "manter",
+        "from_brl": 25000,
+        "to_brl": 25000,
+        "delta_brl": 0,
+        "reason": "dentro dos limites do perfil",
+        "trade_cost_brl": 0.0,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      },
+      {
+        "ticker": "Tesouro Selic",
+        "action": "manter",
+        "from_brl": 120000,
+        "to_brl": 120000,
+        "delta_brl": 0,
+        "reason": "renda fixa mantida",
+        "trade_cost_brl": 0.0,
+        "realised_gain_brl": 0.0,
+        "tax_brl": 0.0,
+        "notes": []
+      }
+    ],
+    "honesty": "Este caminho aplica a camada de proteção sobre a seleção que já existe. O retorno publicado pela Benevente foi medido com seleção e proteção juntas, e não descreve esta carteira: não há medição do que a proteção sozinha teria feito sobre uma cesta escolhida por terceiro. O que se pode afirmar é o que a camada faz — reduzir exposição nos estados declarados —, não quanto ela teria rendido aqui."
   }
 }
