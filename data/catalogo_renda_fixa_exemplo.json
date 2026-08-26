@@ -1,0 +1,25 @@
+{
+  "_aviso": "GRADE SINTÉTICA DE DEMONSTRAÇÃO. As taxas abaixo foram escritas à mão para exercitar o módulo e NÃO representam ofertas reais de nenhuma corretora. Nenhuma fonte pública arquiva a grade ofertada por distribuidor; a grade real é mantida pelo próprio escritório e carregada com a data de recebimento.",
+  "referencia": "2026-01-02",
+  "cdi_anual_premissa": 0.1015,
+  "products": [
+    {"name": "Tesouro Selic 2029", "kind": "TESOURO", "issuer": "Tesouro Nacional", "conglomerate": "Tesouro Nacional",
+     "index": "Selic", "rate": 1.0, "maturity": "2029-03-01", "daily_liquidity": true, "custody_fee_annual": 0.0020, "minimum_brl": 100},
+    {"name": "CDB liquidez diária 101% CDI", "kind": "CDB", "issuer": "Banco Alfa", "conglomerate": "Alfa",
+     "index": "CDI", "rate": 1.01, "maturity": "2029-01-02", "daily_liquidity": true, "minimum_brl": 1000},
+    {"name": "CDB 2 anos 118% CDI", "kind": "CDB", "issuer": "Banco Beta", "conglomerate": "Beta",
+     "index": "CDI", "rate": 1.18, "maturity": "2028-01-03", "minimum_brl": 5000, "available_brl": 300000},
+    {"name": "CDB 2 anos 116% CDI", "kind": "CDB", "issuer": "Beta Financeira", "conglomerate": "Beta",
+     "index": "CDI", "rate": 1.16, "maturity": "2028-01-03", "minimum_brl": 5000},
+    {"name": "CDB 3 anos 114% CDI", "kind": "CDB", "issuer": "Banco Gama", "conglomerate": "Gama",
+     "index": "CDI", "rate": 1.14, "maturity": "2029-01-02", "minimum_brl": 1000},
+    {"name": "LCI 2 anos 94% CDI", "kind": "LCI", "issuer": "Banco Delta", "conglomerate": "Delta",
+     "index": "CDI", "rate": 0.94, "maturity": "2028-01-03", "minimum_brl": 5000},
+    {"name": "LCA 1 ano 92% CDI", "kind": "LCA", "issuer": "Banco Epsilon", "conglomerate": "Epsilon",
+     "index": "CDI", "rate": 0.92, "maturity": "2027-01-04", "minimum_brl": 5000},
+    {"name": "CRI 5 anos IPCA+7%", "kind": "CRI", "issuer": "Securitizadora Zeta", "conglomerate": "Zeta",
+     "index": "IPCA+", "rate": 0.07, "maturity": "2031-01-02", "minimum_brl": 1000},
+    {"name": "Debênture incentivada IPCA+6,5%", "kind": "DEBENTURE_INCENTIVADA", "issuer": "Transmissora Eta", "conglomerate": "Eta",
+     "index": "IPCA+", "rate": 0.065, "maturity": "2032-01-02", "minimum_brl": 1000}
+  ]
+}

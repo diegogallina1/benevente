@@ -1,0 +1,21 @@
+{
+  "instrument": "Tesouro Selic",
+  "source": "https://www.tesourotransparente.gov.br/ckan/dataset/df56aa42-484a-4a59-8184-7676580c81e3/resource/796d2059-14e9-44e3-80c9-2d9e30b405c1/download/precotaxatesourodireto.csv",
+  "sessions": 4149,
+  "first": "2010-01-04",
+  "last": "2026-08-21",
+  "rolls": 11,
+  "cagr": 0.096212,
+  "rules": {
+    "minimum_days_to_maturity": 180,
+    "custody_schedule_annual": {
+      "até 2018": 0.003,
+      "2019-2021": 0.0025,
+      "2022+": 0.002
+    },
+    "exemption_first_10k_applied": false,
+    "roll_prices": "venda ao PU Venda, compra ao PU Compra; acúmulo diário ao PU Base"
+  },
+  "sha256": "a0c02f414d6fb8a39deab6795b53a3f1b888680bbb9918d39f94372eae43a4b4",
+  "source_sha256": "9dcbc27b4adf83992db2ce2cd4f812fabc6e90e8830299b547432a51bd35bc88"
+}

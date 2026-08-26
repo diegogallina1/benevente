@@ -1,0 +1,22 @@
+{
+  "status": "retrospective_research_only",
+  "question": "Quanto do resultado publicado dependia de um caixa que não é comprável?",
+  "note": "Única entrada trocada: a coluna TITULO_CDI do painel, do índice para o nível do Tesouro Selic líquido de custódia e de spread de rolagem. Mesmo código, mesma janela, mesma política congelada.",
+  "delta": [
+    {
+      "perfil": "conservador",
+      "retorno_pp": -0.169,
+      "excesso_pp": 0.078
+    },
+    {
+      "perfil": "equilibrado",
+      "retorno_pp": -0.123,
+      "excesso_pp": 0.125
+    },
+    {
+      "perfil": "arrojado",
+      "retorno_pp": -0.072,
+      "excesso_pp": 0.175
+    }
+  ]
+}

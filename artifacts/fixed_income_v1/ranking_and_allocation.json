@@ -1,0 +1,226 @@
+{
+  "status": "demonstration_only",
+  "warning": "GRADE SINTÉTICA DE DEMONSTRAÇÃO. As taxas abaixo foram escritas à mão para exercitar o módulo e NÃO representam ofertas reais de nenhuma corretora. Nenhuma fonte pública arquiva a grade ofertada por distribuidor; a grade real é mantida pelo próprio escritório e carregada com a data de recebimento.",
+  "reference": "2026-01-02",
+  "cdi_annual_assumption": 0.1015,
+  "ranking": [
+    {
+      "product": "CRI 5 anos IPCA+7%",
+      "kind": "CRI",
+      "issuer": "Securitizadora Zeta",
+      "regime": "valor mobiliário (CVM)",
+      "fgc_covered": false,
+      "days": 1826,
+      "gross_annual": 0.11815,
+      "tax_rate": 0.0,
+      "iof_share": 0.0,
+      "net_annual": 0.11815,
+      "net_over_cdi": 1.164,
+      "daily_liquidity": false
+    },
+    {
+      "product": "Debênture incentivada IPCA+6,5%",
+      "kind": "DEBENTURE_INCENTIVADA",
+      "issuer": "Transmissora Eta",
+      "regime": "valor mobiliário (CVM)",
+      "fgc_covered": false,
+      "days": 2191,
+      "gross_annual": 0.112925,
+      "tax_rate": 0.0,
+      "iof_share": 0.0,
+      "net_annual": 0.112925,
+      "net_over_cdi": 1.1126,
+      "daily_liquidity": false
+    },
+    {
+      "product": "CDB 2 anos 118% CDI",
+      "kind": "CDB",
+      "issuer": "Banco Beta",
+      "regime": "captação bancária (CMN/BCB)",
+      "fgc_covered": true,
+      "days": 731,
+      "gross_annual": 0.11977,
+      "tax_rate": 0.15,
+      "iof_share": 0.0,
+      "net_annual": 0.102635,
+      "net_over_cdi": 1.0112,
+      "daily_liquidity": false
+    },
+    {
+      "product": "CDB 2 anos 116% CDI",
+      "kind": "CDB",
+      "issuer": "Beta Financeira",
+      "regime": "captação bancária (CMN/BCB)",
+      "fgc_covered": true,
+      "days": 731,
+      "gross_annual": 0.11774,
+      "tax_rate": 0.15,
+      "iof_share": 0.0,
+      "net_annual": 0.100883,
+      "net_over_cdi": 0.9939,
+      "daily_liquidity": false
+    },
+    {
+      "product": "CDB 3 anos 114% CDI",
+      "kind": "CDB",
+      "issuer": "Banco Gama",
+      "regime": "captação bancária (CMN/BCB)",
+      "fgc_covered": true,
+      "days": 1096,
+      "gross_annual": 0.11571,
+      "tax_rate": 0.15,
+      "iof_share": 0.0,
+      "net_annual": 0.099868,
+      "net_over_cdi": 0.9839,
+      "daily_liquidity": false
+    },
+    {
+      "product": "LCI 2 anos 94% CDI",
+      "kind": "LCI",
+      "issuer": "Banco Delta",
+      "regime": "captação bancária (CMN/BCB)",
+      "fgc_covered": true,
+      "days": 731,
+      "gross_annual": 0.09541,
+      "tax_rate": 0.0,
+      "iof_share": 0.0,
+      "net_annual": 0.09541,
+      "net_over_cdi": 0.94,
+      "daily_liquidity": false
+    },
+    {
+      "product": "LCA 1 ano 92% CDI",
+      "kind": "LCA",
+      "issuer": "Banco Epsilon",
+      "regime": "captação bancária (CMN/BCB)",
+      "fgc_covered": true,
+      "days": 367,
+      "gross_annual": 0.09338,
+      "tax_rate": 0.0,
+      "iof_share": 0.0,
+      "net_annual": 0.09338,
+      "net_over_cdi": 0.92,
+      "daily_liquidity": false
+    },
+    {
+      "product": "CDB liquidez diária 101% CDI",
+      "kind": "CDB",
+      "issuer": "Banco Alfa",
+      "regime": "captação bancária (CMN/BCB)",
+      "fgc_covered": true,
+      "days": 1096,
+      "gross_annual": 0.102515,
+      "tax_rate": 0.15,
+      "iof_share": 0.0,
+      "net_annual": 0.088342,
+      "net_over_cdi": 0.8704,
+      "daily_liquidity": true
+    },
+    {
+      "product": "Tesouro Selic 2029",
+      "kind": "TESOURO",
+      "issuer": "Tesouro Nacional",
+      "regime": "título público federal",
+      "fgc_covered": false,
+      "days": 1154,
+      "gross_annual": 0.1015,
+      "tax_rate": 0.15,
+      "iof_share": 0.0,
+      "net_annual": 0.085799,
+      "net_over_cdi": 0.8453,
+      "daily_liquidity": true
+    }
+  ],
+  "allocation": {
+    "reference": "2026-01-02",
+    "amount_brl": 600000.0,
+    "allocated_brl": 600000.0,
+    "unallocated_brl": 0.0,
+    "blended_net_annual": 0.098139,
+    "blended_over_cdi": 0.9669,
+    "liquid_reserve_requested_brl": 150000.0,
+    "allocations": [
+      {
+        "product": "CDB 2 anos 118% CDI",
+        "kind": "CDB",
+        "issuer": "Banco Beta",
+        "regime": "captação bancária (CMN/BCB)",
+        "fgc_covered": true,
+        "days": 731,
+        "gross_annual": 0.11977,
+        "tax_rate": 0.15,
+        "iof_share": 0.0,
+        "net_annual": 0.102635,
+        "net_over_cdi": 1.0112,
+        "daily_liquidity": false,
+        "amount_brl": 250000.0,
+        "conglomerate": "Beta"
+      },
+      {
+        "product": "CDB 3 anos 114% CDI",
+        "kind": "CDB",
+        "issuer": "Banco Gama",
+        "regime": "captação bancária (CMN/BCB)",
+        "fgc_covered": true,
+        "days": 1096,
+        "gross_annual": 0.11571,
+        "tax_rate": 0.15,
+        "iof_share": 0.0,
+        "net_annual": 0.099868,
+        "net_over_cdi": 0.9839,
+        "daily_liquidity": false,
+        "amount_brl": 200000.0,
+        "conglomerate": "Gama"
+      },
+      {
+        "product": "CDB liquidez diária 101% CDI",
+        "kind": "CDB",
+        "issuer": "Banco Alfa",
+        "regime": "captação bancária (CMN/BCB)",
+        "fgc_covered": true,
+        "days": 1096,
+        "gross_annual": 0.102515,
+        "tax_rate": 0.15,
+        "iof_share": 0.0,
+        "net_annual": 0.088342,
+        "net_over_cdi": 0.8704,
+        "daily_liquidity": true,
+        "amount_brl": 150000.0,
+        "conglomerate": "Alfa"
+      }
+    ],
+    "rejected": [
+      {
+        "product": "CRI 5 anos IPCA+7%",
+        "reason": "sem cobertura do FGC e risco de crédito não declarado"
+      },
+      {
+        "product": "Debênture incentivada IPCA+6,5%",
+        "reason": "sem cobertura do FGC e risco de crédito não declarado"
+      },
+      {
+        "product": "CDB 2 anos 116% CDI",
+        "reason": "teto do FGC no conglomerado esgotado"
+      },
+      {
+        "product": "LCI 2 anos 94% CDI",
+        "reason": "reserva de liquidez da camada de proteção"
+      },
+      {
+        "product": "LCA 1 ano 92% CDI",
+        "reason": "reserva de liquidez da camada de proteção"
+      }
+    ],
+    "fgc": {
+      "per_conglomerate": {
+        "Beta": 250000.0,
+        "Gama": 200000.0,
+        "Alfa": 150000.0
+      },
+      "rolling_used_brl": 600000.0,
+      "per_conglomerate_cap_brl": 250000.0,
+      "rolling_cap_brl": 1000000.0,
+      "rolling_window_years": 4
+    }
+  }
+}
