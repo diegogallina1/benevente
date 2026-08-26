@@ -196,6 +196,19 @@ def main() -> int:
         check(f"{page} sem Ibovespa defasado (11,33/11.33/11,77/11.77)",
               all(x not in s for x in ("11,33", "11.33", "11,77", "11.77", "46,95", "46.95")))
 
+    # ------------------------------------------------- F2. apuração por lote publicada
+    lot = json.loads((ROOT / "artifacts/tax_lot_accounting/summary.json").read_text(encoding="utf-8"))
+    drags = [run["equity_tax_drag_pp"] for run in lot["runs"]]
+    check("site: arrasto do IR por lote 0,7–2,1 pp confere com o artefato",
+          0.6 <= min(drags) <= 0.8 and 2.0 <= max(drags) <= 2.2)
+    ratios = [run["lot_level_tax_brl"] / run["aggregate_annual_tax_brl"] for run in lot["runs"]]
+    check("site: lote até 10% abaixo do agregado confere com o artefato",
+          0.89 <= min(ratios) and max(ratios) < 1.0)
+    metodo_page = (ROOT / "web/metodo.html").read_text(encoding="utf-8")
+    limitacoes_page = (ROOT / "web/limitacoes.html").read_text(encoding="utf-8")
+    check("método e limitações publicam a mesma faixa 0,7–2,1",
+          "0,7 e 2,1" in metodo_page and "0,7 e 2,1" in limitacoes_page)
+
     # ------------------------------------------------- G. manuscritos não podem derivar
     btech = (ROOT / "paper/fucape_btech_2026.md").read_text(encoding="utf-8")
     cifer = (ROOT / "paper/ieee_cifer_2027.tex").read_text(encoding="utf-8")
