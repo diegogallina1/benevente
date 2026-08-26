@@ -12,7 +12,10 @@ ROOT = Path(__file__).resolve().parents[1]
 def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     home = (ROOT / "web" / "index.html").read_text(encoding="utf-8")
     assert "Carregando" not in home
-    assert "PROTÓTIPO DE PESQUISA" in home
+    # A faixa de topo saiu a pedido de revisão: um selo fixo martela menos que um
+    # banner. A alegação de estágio continua obrigatória — no rodapé.
+    assert "stage-ribbon" not in home and "PROTÓTIPO DE PESQUISA" not in home
+    assert "Protótipo de pesquisa" in home
     assert "A política vigente declara três perfis" in home
     assert "diagnóstico retrospectivo, não validação prospectiva" in home
     assert "Reproduzir no GitHub" not in home
