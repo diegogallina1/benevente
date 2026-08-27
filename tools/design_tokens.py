@@ -21,9 +21,10 @@ Os papéis, porque nomear cor por aparência envelhece mal:
   desabilitado, e usá-lo em legenda reprova no contraste.
 * ``sobre-inverso``, ``acao-inverso`` — texto e acento **dentro** de painel
   invertido, que não seguem a mesma inversão do resto.
-* ``btn`` — fundo de ação com ``btn-fg`` por cima. Nunca é o acento: texto
-  branco sobre o indigo dá 2,80 de contraste e reprova. É por isso que a ação
-  primária é branca com texto preto.
+* ``btn`` — fundo de ação com ``btn-fg`` por cima. É o verde da marca, e o par
+  foi escolhido por contraste: 5,35 no claro, 10,66 no escuro. O guia pede
+  botão branco; verde predominante foi pedido explicitamente, e pedido vence
+  guia — mas o par continua tendo de passar na medição.
 * ``neg`` — perda. É o segundo cromático, e existe porque valor negativo em
   tela financeira é requisito de leitura, não decoração.
 """
@@ -34,22 +35,32 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CSS = ROOT / "web" / "tokens.css"
 
+#: O claro e o padrao. O guia do design system e escuro por definicao, mas o
+#: pedido foi explicito, e preferencia declarada vence guia de estilo.
+CLARO = {
+    "canvas": "#ffffff", "card": "#f6f7f9", "elev": "#eceef2", "inverso": "#0d2b22",
+    "line": "#dcdfe5", "line-strong": "#b6bcc6", "inverso-linha": "#2c5a49",
+    "fg": "#0a0a0a", "fg-2": "#52565e", "fg-3": "#767b85", "sobre-inverso": "#ffffff",
+    # O verde da marca em duas intensidades: no claro ele precisa ser escuro o
+    # bastante para servir de texto sobre branco (5,35 de contraste); o claro de
+    # verdade fica reservado para o que vive dentro de painel escuro.
+    "acao": "#0d7a52", "acao-inverso": "#79e1ce", "acao-fraco": "#e6f7f0",
+    "neg": "#c8322f", "neg-fraco": "#fdecec",
+    "btn": "#0d7a52", "btn-fg": "#ffffff",
+}
 ESCURO = {
     "canvas": "#0a0a0a", "card": "#141414", "elev": "#1e1e1e", "inverso": "#1e1e1e",
     "line": "#313131", "line-strong": "#454545", "inverso-linha": "#454545",
     "fg": "#ffffff", "fg-2": "#a7a7a7", "fg-3": "#7c7c7c", "sobre-inverso": "#ffffff",
-    "acao": "#6798ff", "acao-inverso": "#6798ff", "acao-fraco": "#101a2e",
+    "acao": "#5fd3a0", "acao-inverso": "#5fd3a0", "acao-fraco": "#0c2119",
     "neg": "#ff6b6b", "neg-fraco": "#241213",
-    "btn": "#ffffff", "btn-fg": "#0a0a0a",
+    "btn": "#5fd3a0", "btn-fg": "#0a0a0a",
 }
-CLARO = {
-    "canvas": "#ffffff", "card": "#f6f7f9", "elev": "#eceef2", "inverso": "#0a0a0a",
-    "line": "#dcdfe5", "line-strong": "#b6bcc6", "inverso-linha": "#313131",
-    "fg": "#0a0a0a", "fg-2": "#52565e", "fg-3": "#767b85", "sobre-inverso": "#ffffff",
-    "acao": "#2f5fd0", "acao-inverso": "#a8c3ff", "acao-fraco": "#eaf0ff",
-    "neg": "#c8322f", "neg-fraco": "#fdecec",
-    "btn": "#0a0a0a", "btn-fg": "#ffffff",
-}
+
+#: Qual seletor carrega qual tema. Fica aqui, e nao repetido no gerador e nos
+#: testes, porque foi exatamente o que precisou mudar quando o claro virou o
+#: padrao — e um teste que repete a decisao trava a decisao em vez de conferi-la.
+TEMAS = ((":root", CLARO), (':root[data-theme="dark"]', ESCURO))
 
 SANS = '"Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif'
 MONO = '"Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
@@ -69,7 +80,7 @@ def _bloco(seletor: str, valores: dict) -> str:
 
 
 def css(com_cabecalho: bool = True) -> str:
-    """O bloco de tokens. O escuro é o padrão; o claro é escolha explícita."""
+    """O bloco de tokens. O claro é o padrão; o escuro é escolha explícita."""
     partes = []
     if com_cabecalho:
         partes.append(
@@ -77,14 +88,15 @@ def css(com_cabecalho: bool = True) -> str:
             " * O site e o app leem este mesmo arquivo; o artefato recebe o mesmo bloco\n"
             " * embutido, porque precisa ser um documento só. Um teste compara os três.\n"
             " *\n"
-            " * O escuro é o padrão: o design system é escuro por definição, então a\n"
-            " * preferência do sistema não é consultada. O claro é escolha explícita e\n"
-            " * fica guardada no navegador de quem escolheu.\n"
+            " * O claro é o padrão, e é o que vale quando nada foi escolhido — a\n"
+            " * preferência do sistema não é consultada, para que a página nunca abra\n"
+            " * num tema que o :root não descreve. O escuro é escolha explícita e fica\n"
+            " * guardada no navegador de quem escolheu.\n"
             " */")
-    partes.append(_bloco(":root", ESCURO))
-    partes.append(_bloco(':root[data-theme="light"]', CLARO))
+    for seletor, valores in TEMAS:
+        partes.append(_bloco(seletor, valores))
     partes.append(
-        ":root, :root[data-theme=\"light\"] {\n"
+        ", ".join(seletor for seletor, _ in TEMAS) + " {\n"
         f"  --sans: {SANS};\n"
         f"  --display: {SANS};\n"
         f"  --serif: {SANS};\n"

@@ -23,7 +23,9 @@ OUT = ROOT / "docs" / "desenho_tela_mapa.html"
 
 PERFIL_LABEL = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
 
-HTML = r"""<title>Plano de carteira</title>
+HTML = r"""<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plano de carteira</title>
 __FONTES__
 <style>
 /* Dovetail aplicado ao Benevente. Tokens do guia, adaptados ao layout que já
@@ -123,9 +125,15 @@ details > summary:focus-visible { outline: 2px solid var(--acao); outline-offset
 details > summary b { color: var(--fg); font-weight: 400; }
 .cols { display: grid; gap: 24px; margin-top: 0; }
 .cols ul { margin: 8px 0 0; padding: 0; list-style: none; }
+/* O trilho de borda que ficava aqui virava uma linha vertical no meio da tela:
+   em duas colunas, o trilho da segunda cai a poucos pixels do centro da página.
+   O marcador diz a mesma coisa sem desenhar a linha — e diz por forma, não por
+   cor, que é a regra da casa: o vermelho e o verde têm o mesmo cinza. */
 .cols li { font-size: 14px; line-height: 1.57; color: var(--fg-2);
-           padding: 8px 0 8px 16px; border-left: 1px solid var(--line); }
-.cols .nao li { border-left-color: var(--neg); }
+           padding: 6px 0 6px 22px; position: relative; }
+.cols li::before { content: "✓"; position: absolute; left: 0; top: 6px;
+                   color: var(--acao); font-size: 13px; }
+.cols .nao li::before { content: "✕"; color: var(--neg); }
 
 /* --- superfícies --- */
 .painel { background: var(--card); border: 1px solid var(--elev); border-radius: 8px;
@@ -250,7 +258,11 @@ details > summary b { color: var(--fg); font-weight: 400; }
        border: 1px solid var(--btn); border-radius: 8px; min-height: 44px;
        padding: 8px 16px; background: var(--btn); color: var(--btn-fg); width: 100%; }
 .btn:focus-visible { outline: 2px solid var(--acao); outline-offset: 2px; }
-.btn:disabled { background: transparent; color: var(--fg-3); border-color: var(--line-strong);
+/* Desabilitado aqui não é um controle apagado: é o botão que virou o aviso
+   "Conta conectada", e essa frase precisa ser lida. Com --fg-3 ela dava 4,25 de
+   contraste e reprovava; --fg-2 dá 7,36. O token de desabilitado continua
+   existindo para controles que a pessoa não precisa ler. */
+.btn:disabled { background: transparent; color: var(--fg-2); border-color: var(--line-strong);
                 cursor: default; }
 .acoes span { font-size: 12px; line-height: 1.4; color: var(--fg-2); }
 
@@ -446,25 +458,42 @@ const etapa = n => [...$("etapas").children].forEach((li, i) =>
   i <= n ? li.setAttribute("data-on", "1") : li.removeAttribute("data-on"));
 
 /* --- tema --- */
-// O Dovetail é escuro por definição: o escuro é o padrão, não uma resposta à
-// preferência do sistema. O claro continua existindo porque foi pedido antes,
-// mas é adaptação — o guia não o traz.
+// O claro é o padrão, e é o que o :root descreve. O guia é escuro por
+// definição, mas o padrão foi pedido claro — e a inversão também conserta um
+// defeito: enquanto o escuro era o :root, qualquer regra que tivesse escapado
+// com cor literal ficava com a cor do escuro dentro do tema claro, que é a
+// borda preta em volta de cartão branco e o texto que some no fundo.
 const temaBtn = $("tema");
 const guardado = (() => { try { return localStorage.getItem("tema"); } catch (e) { return null; } })();
 function aplicaTema(valor) {
-  const claro = valor === "light";
-  if (claro) document.documentElement.setAttribute("data-theme", "light");
+  const escuro = valor === "dark";
+  if (escuro) document.documentElement.setAttribute("data-theme", "dark");
   else document.documentElement.removeAttribute("data-theme");
-  $("tema-icone").textContent = claro ? "☀" : "☾";
-  $("tema-txt").textContent = claro ? "Claro" : "Escuro";
-  temaBtn.setAttribute("aria-pressed", String(!claro));
+  $("tema-icone").textContent = escuro ? "☾" : "☀";
+  $("tema-txt").textContent = escuro ? "Escuro" : "Claro";
+  temaBtn.setAttribute("aria-pressed", String(escuro));
 }
-aplicaTema(guardado === "light" ? "light" : "dark");
+aplicaTema(guardado === "dark" ? "dark" : "light");
 temaBtn.onclick = () => {
-  const novo = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+  const novo = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
   aplicaTema(novo);
   try { localStorage.setItem("tema", novo); } catch (e) { /* janela anônima: segue sem salvar */ }
 };
+
+/* --- rolagem --- */
+// Rolar a cada clique era o defeito: quando o destino já está à vista, mover a
+// página desorienta, e no celular a barra do navegador aparece e some a cada
+// movimento. Só rola quando o alvo está mesmo fora de vista, e nunca com
+// animação para quem pediu movimento reduzido no sistema.
+const menosMovimento = matchMedia("(prefers-reduced-motion: reduce)");
+function rolaPara(alvo, bloco) {
+  if (!alvo) return;
+  const r = alvo.getBoundingClientRect();
+  const altura = window.innerHeight || document.documentElement.clientHeight;
+  if (r.top >= 0 && r.top <= altura * 0.6) return;
+  alvo.scrollIntoView({ behavior: menosMovimento.matches ? "auto" : "smooth",
+                        block: bloco || "nearest" });
+}
 
 /* --- conexão com a B3 --- */
 const b3 = DADOS.b3;
@@ -505,7 +534,7 @@ $("conectar").onclick = () => {
   }
   mostra("perguntas");
   etapa(1);
-  $("perguntas").scrollIntoView({ behavior: "smooth", block: "start" });
+  rolaPara($("perguntas"), "start");
 };
 
 /* --- o custo informado pelo cliente --- */
@@ -649,11 +678,18 @@ escolha.forEach(q => {
 });
 
 const resumoBox = $("resumo");
-$("alterar").onclick = () => {
-  qsBox.classList.remove("hidden");
-  resumoBox.classList.add("hidden");
-  qsBox.scrollIntoView({ behavior: "smooth", block: "start" });
-};
+// Quem abriu o formulário para mudar uma resposta continua com ele aberto: antes
+// ele fechava sozinho a cada clique, e a página saltava a cada opção escolhida.
+// Fecha quando a pessoa disser que terminou.
+let editando = false;
+function editar(abrir) {
+  editando = abrir;
+  qsBox.classList.toggle("hidden", !abrir);
+  $("chips").classList.toggle("hidden", abrir);
+  $("alterar").textContent = abrir ? "Pronto" : "Alterar respostas";
+  if (abrir) rolaPara(qsBox, "start");
+}
+$("alterar").onclick = () => editar(!editando);
 
 function avaliar() {
   if (Object.keys(respostas).length < escolha.length) {
@@ -663,7 +699,7 @@ function avaliar() {
   }
   // Respondido, o formulário vira uma linha: no celular, deixá-lo aberto obriga
   // a rolar por tudo que já foi respondido para chegar ao resultado.
-  qsBox.classList.add("hidden");
+  if (!editando) qsBox.classList.add("hidden");
   resumoBox.classList.remove("hidden");
   $("chips").innerHTML = escolha.map(q => "<span>" + respostas[q.key].brief + "</span>").join("");
 
@@ -818,17 +854,25 @@ function grafico(anos) {
 }
 
 function barra(id, partes) {
-  // A barra de ações usa o indigo com texto escuro em cima: branco sobre o
-  // indigo dá contraste 2,80 e reprova.
-  const cores = ["var(--acao)", "var(--line-strong)", "var(--neg)"];
+  // Cada faixa carrega o próprio par de cores, e não uma cor de texto só para
+  // todas. O rótulo era var(--canvas) — "o oposto do fundo da página" — o que
+  // funcionava no escuro e reprovava no claro: branco sobre a faixa neutra dava
+  // 1,91 de contraste, e o número sumia dentro da barra. Medidos, claro e
+  // escuro: 5,35 e 10,66 na faixa de ações, 10,37 e 9,59 na neutra, 5,31 e
+  // 7,13 na de perda.
+  const faixas = [
+    ["var(--acao)", "var(--btn-fg)"],
+    ["var(--line-strong)", "var(--fg)"],
+    ["var(--neg)", "var(--canvas)"],
+  ];
   const host = $(id);
   host.innerHTML = "";
   host.style.cssText = "display:flex;height:2rem;overflow:hidden;gap:1px";
   partes.forEach((v, i) => {
     if (v <= 0.001) return;
     const s = el("div");
-    s.style.cssText = "flex:" + v + ";background:" + cores[i] +
-      ";display:grid;place-items:center;font-size:12px;color:var(--canvas)";
+    s.style.cssText = "flex:" + v + ";background:" + faixas[i][0] +
+      ";display:grid;place-items:center;font-size:12px;color:" + faixas[i][1];
     s.className = "num";
     s.textContent = v > 0.09 ? PCT(v, 0) : "";
     s.title = PCT(v);
@@ -986,10 +1030,10 @@ function razao(perfil, chave, rolar) {
     const pre = el("pre");
     pre.textContent = JSON.stringify(registroDaDecisao(perfil, chave), null, 2);
     caixa.append(texto, pre);
-    caixa.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    rolaPara(caixa, "nearest");
   };
 
-  if (rolar) $("razao-sec").scrollIntoView({ behavior: "smooth", block: "start" });
+  if (rolar) rolaPara($("razao-sec"), "start");
 }
 </script>
 """
@@ -1079,6 +1123,13 @@ def main() -> None:
     # No site o bloco embutido da lugar ao <link>: uma fonte, um arquivo.
     marcacao = marcacao.replace(tokens_css(com_cabecalho=False),
                                 "/* tokens em ./tokens.css */")
+    # O artefato declara charset e viewport porque e aberto como arquivo solto,
+    # sem invólucro nenhum — sem o charset o navegador chuta windows-1252 e todo
+    # acento aparece quebrado. No site, CABECALHO_SITE ja os declara, e duas
+    # declaracoes no mesmo documento so confundem quem for ler.
+    for meta in ('<meta charset="utf-8">\n',
+                 '<meta name="viewport" content="width=device-width, initial-scale=1">\n'):
+        marcacao = marcacao.replace(meta, "", 1)
     corpo = marcacao.replace('<div class="wrap">', TRAVA + '<div class="wrap hidden" id="app">', 1)
     corte = corpo.index("</style>") + len("</style>")
     SITE_HTML.write_text(

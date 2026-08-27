@@ -263,7 +263,7 @@ CABECALHO = """/* Camada de cor do site. Gerada por tools/build_site_theme.py �
    O gerador reescreve as regras que consegue ler; o que escapar — declaracao com
    mais de uma cor, seletor exotico — ao menos segue o tema em vez de ficar preso
    numa cor fixa. Foi assim que um span com --v-muted sobrou em /para-escritorios. */
-:root, :root[data-theme="light"] {
+:root, :root[data-theme="dark"] {
   --navy: var(--fg); --ink: var(--fg); --ink-strong: var(--fg);
   --v-navy: var(--fg); --v-ink: var(--fg);
   --muted: var(--fg-2); --ink-soft: var(--fg-2); --ink-muted: var(--fg-2);
@@ -285,8 +285,9 @@ code, kbd, pre, samp { font-family: var(--mono); }
 /* No guia a profundidade vem do degrau entre superficies. Sombra preta sobre
    canvas preto nao comunica nada. */
 * { box-shadow: none !important; }
-/* A acao primaria e branca com texto preto: e o unico elemento de alta
-   luminancia da pagina, e texto branco sobre o indigo da 2,80 e reprova. */
+/* A acao primaria carrega o verde da marca. O par foi escolhido por medicao —
+   5,35 de contraste no claro, 10,66 no escuro — e nao por gosto: e a mesma
+   verificacao que reprovou branco sobre o indigo anterior, com 2,80. */
 .button-primary, .dossier-download, .button.button-primary, .alpha-split i, .alpha-split .ss {
   background: var(--btn) !important; color: var(--btn-fg) !important;
   border-color: var(--btn) !important;

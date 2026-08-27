@@ -159,11 +159,16 @@ def test_published_document_has_a_verifiable_contract() -> None:
 def test_strategy_pages_share_the_same_live_structure() -> None:
     unified = (ROOT / "web" / "versoes.html").read_text(encoding="utf-8")
     assert 'class="strategy-tab"' in unified
-    # O rótulo deixou de dizer "2026" porque a carteira de 2026 sob a política
-    # vigente vive na home, nos três perfis; o que fica no arquivo é o livro da
-    # regra anterior, e ele precisa se anunciar como tal.
-    assert "CARTEIRA-SOMBRA DA REGRA ANTERIOR" in unified
-    assert 'data-live-strategy="b2"' in unified
+    # A carteira da regra anterior deixou de ser exibida acompanhada. Ela era
+    # marcada a mercado todo dia útil dentro do arquivo, e uma regra aposentada
+    # sendo remarcada diariamente tem a mesma aparência de um produto vivo. O
+    # que ela escolheu continua na série de decisões; o livro em si não continua.
+    assert "CARTEIRA-SOMBRA" not in unified.upper()
+    assert 'data-live-strategy="b2"' not in unified
+    # No lugar dela, os três livros correntes — o mesmo renderizador da home,
+    # lendo os mesmos arquivos, para que não existam duas carteiras "de hoje".
+    assert 'id="carteira-2026-cards"' in unified
+    assert re.search(r'src="\./carteira2026\.js\?v=[0-9a-f]{10}"', unified)
     for mode in ("b1", "b2"):
         assert f'data-strategy-decisions="{mode}"' in unified, mode
     # The cache parameter is derived from the file's content. Pinning a literal

@@ -16,7 +16,7 @@ import pytest
 
 RAIZ = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(RAIZ / "tools"))
-from design_tokens import CLARO, ESCURO, MONO, SANS, css  # noqa: E402
+from design_tokens import TEMAS, CLARO, ESCURO, MONO, SANS, css  # noqa: E402
 
 TOKENS_CSS = RAIZ / "web" / "tokens.css"
 ARTEFATO = RAIZ / "docs" / "desenho_tela_mapa.html"
@@ -37,7 +37,7 @@ def test_os_dois_temas_declaram_exatamente_os_mesmos_tokens():
 def test_o_arquivo_publicado_bate_com_o_modulo():
     assert TOKENS_CSS.exists(), "rode tools/design_tokens.py"
     publicado = TOKENS_CSS.read_text(encoding="utf-8")
-    for seletor, esperado in ((":root", ESCURO), (':root[data-theme="light"]', CLARO)):
+    for seletor, esperado in TEMAS:
         achado = _bloco(publicado, seletor)
         for nome, valor in esperado.items():
             assert achado.get(f"--{nome}", "").strip() == valor, f"{seletor} · --{nome}"
@@ -46,7 +46,7 @@ def test_o_arquivo_publicado_bate_com_o_modulo():
 def test_o_artefato_carrega_a_mesma_paleta():
     """Ele é um documento só, então embute — mas embute o que o módulo diz."""
     texto = ARTEFATO.read_text(encoding="utf-8")
-    for seletor, esperado in ((":root", ESCURO), (':root[data-theme="light"]', CLARO)):
+    for seletor, esperado in TEMAS:
         achado = _bloco(texto, seletor)
         for nome, valor in esperado.items():
             assert achado.get(f"--{nome}", "").strip() == valor, f"artefato · --{nome}"
@@ -79,14 +79,39 @@ def test_todo_papel_essencial_existe_nos_dois_temas(papel):
     assert papel in ESCURO and papel in CLARO
 
 
-def test_o_botao_nunca_e_o_acento():
-    """Texto branco sobre o indigo da 2,80 de contraste e reprova.
+def _contraste(a: str, b: str) -> float:
+    def lum(h):
+        h = h.lstrip("#")
+        c = [int(h[i:i + 2], 16) / 255 for i in (0, 2, 4)]
+        c = [x / 12.92 if x <= .03928 else ((x + .055) / 1.055) ** 2.4 for x in c]
+        return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]
+    claro, escuro = sorted((lum(a), lum(b)), reverse=True)
+    return (claro + .05) / (escuro + .05)
 
-    É por isso que a acao primaria e branca com texto preto, e nao colorida. Se
-    alguem igualar os dois, o contraste do botao cai pela metade.
+
+def test_o_botao_e_legivel_e_se_destaca_da_pagina():
+    """O que importa no botao e a medicao, nao a cor escolhida.
+
+    A versao anterior deste teste exigia ``btn != acao``, que era o rastro de um
+    defeito concreto: o botao branco existia porque texto branco sobre o indigo
+    dava 2,80 e reprovava. Com o verde da marca no botao os dois passaram a ser a
+    mesma cor, e o teste reprovou uma paleta correta — ele guardava a solucao de
+    ontem, nao a exigencia. A exigencia e esta: o rotulo tem de ser legivel sobre
+    o botao, e o botao tem de se separar da pagina.
     """
-    for tema in (ESCURO, CLARO):
-        assert tema["btn"] != tema["acao"]
+    for nome, tema in (("escuro", ESCURO), ("claro", CLARO)):
+        rotulo = _contraste(tema["btn"], tema["btn-fg"])
+        assert rotulo >= 4.5, f"{nome}: rotulo sobre o botao da {rotulo:.2f}"
+        borda = _contraste(tema["btn"], tema["canvas"])
+        assert borda >= 3.0, f"{nome}: botao sobre a pagina da {borda:.2f}"
+
+
+def test_o_acento_e_legivel_como_texto_no_seu_tema():
+    """Ele virou verde, e verde claro sobre branco reprova — entao mede-se."""
+    for nome, tema in (("escuro", ESCURO), ("claro", CLARO)):
+        for fundo in ("canvas", "card"):
+            r = _contraste(tema["acao"], tema[fundo])
+            assert r >= 4.5, f"{nome}: acento sobre {fundo} da {r:.2f}"
 
 
 def test_gerar_de_novo_da_o_mesmo_arquivo():

@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Protótipo do aplicativo da Benevente: conecta a B3, quatro perguntas e dois planos. Dados sintéticos.">
 <link rel="canonical" href="https://benevente.dgo.fi/app">
-<link rel="stylesheet" href="./tokens.css?v=a8851f0e77">
+<link rel="stylesheet" href="./tokens.css?v=8d7ab584dc">
 <title>Plano de carteira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -109,9 +109,15 @@ details > summary:focus-visible { outline: 2px solid var(--acao); outline-offset
 details > summary b { color: var(--fg); font-weight: 400; }
 .cols { display: grid; gap: 24px; margin-top: 0; }
 .cols ul { margin: 8px 0 0; padding: 0; list-style: none; }
+/* O trilho de borda que ficava aqui virava uma linha vertical no meio da tela:
+   em duas colunas, o trilho da segunda cai a poucos pixels do centro da página.
+   O marcador diz a mesma coisa sem desenhar a linha — e diz por forma, não por
+   cor, que é a regra da casa: o vermelho e o verde têm o mesmo cinza. */
 .cols li { font-size: 14px; line-height: 1.57; color: var(--fg-2);
-           padding: 8px 0 8px 16px; border-left: 1px solid var(--line); }
-.cols .nao li { border-left-color: var(--neg); }
+           padding: 6px 0 6px 22px; position: relative; }
+.cols li::before { content: "✓"; position: absolute; left: 0; top: 6px;
+                   color: var(--acao); font-size: 13px; }
+.cols .nao li::before { content: "✕"; color: var(--neg); }
 
 /* --- superfícies --- */
 .painel { background: var(--card); border: 1px solid var(--elev); border-radius: 8px;
@@ -236,7 +242,11 @@ details > summary b { color: var(--fg); font-weight: 400; }
        border: 1px solid var(--btn); border-radius: 8px; min-height: 44px;
        padding: 8px 16px; background: var(--btn); color: var(--btn-fg); width: 100%; }
 .btn:focus-visible { outline: 2px solid var(--acao); outline-offset: 2px; }
-.btn:disabled { background: transparent; color: var(--fg-3); border-color: var(--line-strong);
+/* Desabilitado aqui não é um controle apagado: é o botão que virou o aviso
+   "Conta conectada", e essa frase precisa ser lida. Com --fg-3 ela dava 4,25 de
+   contraste e reprovava; --fg-2 dá 7,36. O token de desabilitado continua
+   existindo para controles que a pessoa não precisa ler. */
+.btn:disabled { background: transparent; color: var(--fg-2); border-color: var(--line-strong);
                 cursor: default; }
 .acoes span { font-size: 12px; line-height: 1.4; color: var(--fg-2); }
 
@@ -431,6 +441,6 @@ footer a { color: var(--acao); }
 </div>
 
 
-<script src="./plano.js?v=96d5fff3d1"></script>
+<script src="./plano.js?v=6890f8c49e"></script>
 </body>
 </html>

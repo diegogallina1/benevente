@@ -21,8 +21,8 @@
     <link rel="stylesheet" href="./site-polish.css?v=39e348ecd6" />
     <link rel="stylesheet" href="./design-system.css?v=dadaa2d82a" />
     <link rel="stylesheet" href="./ladder.css?v=2a8be89fde" />
-    <link rel="stylesheet" href="./tokens.css?v=a8851f0e77">
-    <link rel="stylesheet" href="./benevente.css?v=ed54f637e8">
+    <link rel="stylesheet" href="./tokens.css?v=8d7ab584dc">
+    <link rel="stylesheet" href="./benevente.css?v=349cb9d059">
   </head>
   <body class="version-page">
     <header class="version-nav shell">
@@ -45,8 +45,10 @@
 
         <section class="version-section" id="radar"><header class="version-section-heading"><span class="version-label">RADAR ATIVO</span><h2>Eventos antes da reação dos preços</h2><p>A cada 12 horas, o sistema consolida documentos oficiais e notícias, elimina repetições e prioriza o que exige revisão humana. O radar não altera pesos e não participa do sinal de proteção.</p></header><div><div data-event-radar></div></div></section>
 
+        <section class="version-section" id="carteira-hoje"><header class="version-section-heading"><span class="version-label">A CARTEIRA DE HOJE</span><h2>O que cada perfil carrega neste momento</h2><p>Os três livros decididos em 02/01/2026 sob a política vigente, acompanhados todo dia útil. São estes os ativos de hoje; o que vem depois nesta página é arquivo.</p></header><div id="carteira-2026-cards" aria-live="polite"></div><p class="version-note" id="carteira-2026-note"></p></section>
+
         <section class="version-section" id="arquivo"><header class="version-section-heading"><span class="version-label">ARQUIVO · POLÍTICA ANTERIOR</span><h2>A regra que os manuscritos documentam</h2><p>Tudo abaixo pertence à política anterior — a seleção aninhada de cinco nomes, sem perna global. Fica publicado porque história não se reescreve; não descreve nenhum perfil vigente.</p></header><div>
-          <details><summary style="cursor:pointer;font-weight:750;color:var(--acao);padding:10px 0">CARTEIRA-SOMBRA DA REGRA ANTERIOR · decidida em 02/01/2026</summary><div class="version-callout" style="margin:14px 0"><h3>Este livro é da política anterior, e continua sendo.</h3><p>Cinco emissores e 55% em ações, sem perna global: foi o que a busca aninhada deixou vivo antes de a política ser declarada. Fica publicado porque é o registro do que a regra anterior escolheu, e é evidência sobre ela — não sobre a política vigente. <b>A carteira de 2026 sob a política atual está na página inicial</b>, nos três perfis, acompanhada todo dia útil. A amostra confirmatória continua começando no primeiro pregão de 2027.</p></div><div data-live-portfolio data-live-strategy="b2"></div></details>
+          <div class="version-callout" style="margin:0 0 22px"><h3>A carteira que a regra anterior escolheu não é mais carregada.</h3><p>Cinco emissores e 55% em ações, sem perna global: foi o que a busca aninhada deixou vivo antes de a política ser declarada. O que ela escolheu continua registrado na série de decisões abaixo e nos manuscritos, porque história não se reescreve. O que deixou de existir é o livro em si: ele não é mais mantido nem marcado a mercado, e acompanhá-lo todo dia fazia uma regra aposentada parecer um produto vivo.</p></div>
           <details style="margin-top:18px"><summary style="cursor:pointer;font-weight:750;color:var(--acao);padding:10px 0">TODAS AS DECISÕES 2015–2025 · a série dos manuscritos</summary><div style="margin-top:14px" data-strategy-decisions="b1"></div><div data-strategy-decisions="b2" hidden></div></details>
         </div></section>
 
@@ -59,7 +61,8 @@
     <script src="./versions.js?v=de6fd8d428"></script>
     <script src="./ladder.js?v=4aad8c6650"></script>
     <script src="./event-radar.js?v=f536ab2037"></script>
+    <script src="./carteira2026.js?v=7500bc4fdb"></script>
     <script src="./paper.js?v=a544313184"></script>
-    <script src="./tema.js?v=1a972e96aa"></script>
+    <script src="./tema.js?v=7f465dc3e6"></script>
   </body>
 </html>

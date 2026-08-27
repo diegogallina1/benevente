@@ -2,11 +2,32 @@
  * O site e o app leem este mesmo arquivo; o artefato recebe o mesmo bloco
  * embutido, porque precisa ser um documento só. Um teste compara os três.
  *
- * O escuro é o padrão: o design system é escuro por definição, então a
- * preferência do sistema não é consultada. O claro é escolha explícita e
- * fica guardada no navegador de quem escolheu.
+ * O claro é o padrão, e é o que vale quando nada foi escolhido — a
+ * preferência do sistema não é consultada, para que a página nunca abra
+ * num tema que o :root não descreve. O escuro é escolha explícita e fica
+ * guardada no navegador de quem escolheu.
  */
 :root {
+  --canvas: #ffffff;
+  --card: #f6f7f9;
+  --elev: #eceef2;
+  --inverso: #0d2b22;
+  --line: #dcdfe5;
+  --line-strong: #b6bcc6;
+  --inverso-linha: #2c5a49;
+  --fg: #0a0a0a;
+  --fg-2: #52565e;
+  --fg-3: #767b85;
+  --sobre-inverso: #ffffff;
+  --acao: #0d7a52;
+  --acao-inverso: #79e1ce;
+  --acao-fraco: #e6f7f0;
+  --neg: #c8322f;
+  --neg-fraco: #fdecec;
+  --btn: #0d7a52;
+  --btn-fg: #ffffff;
+}
+:root[data-theme="dark"] {
   --canvas: #0a0a0a;
   --card: #141414;
   --elev: #1e1e1e;
@@ -18,35 +39,15 @@
   --fg-2: #a7a7a7;
   --fg-3: #7c7c7c;
   --sobre-inverso: #ffffff;
-  --acao: #6798ff;
-  --acao-inverso: #6798ff;
-  --acao-fraco: #101a2e;
+  --acao: #5fd3a0;
+  --acao-inverso: #5fd3a0;
+  --acao-fraco: #0c2119;
   --neg: #ff6b6b;
   --neg-fraco: #241213;
-  --btn: #ffffff;
+  --btn: #5fd3a0;
   --btn-fg: #0a0a0a;
 }
-:root[data-theme="light"] {
-  --canvas: #ffffff;
-  --card: #f6f7f9;
-  --elev: #eceef2;
-  --inverso: #0a0a0a;
-  --line: #dcdfe5;
-  --line-strong: #b6bcc6;
-  --inverso-linha: #313131;
-  --fg: #0a0a0a;
-  --fg-2: #52565e;
-  --fg-3: #767b85;
-  --sobre-inverso: #ffffff;
-  --acao: #2f5fd0;
-  --acao-inverso: #a8c3ff;
-  --acao-fraco: #eaf0ff;
-  --neg: #c8322f;
-  --neg-fraco: #fdecec;
-  --btn: #0a0a0a;
-  --btn-fg: #ffffff;
-}
-:root, :root[data-theme="light"] {
+:root, :root[data-theme="dark"] {
   --sans: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --display: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --serif: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
