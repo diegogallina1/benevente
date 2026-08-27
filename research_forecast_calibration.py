@@ -118,6 +118,7 @@ def main() -> None:
               f"(nominal 80%, erro padrão {c['standard_error']:.0%})")
         print(f"  viés da mediana: {r['median_bias_pp']:+.2f} pp ao ano")
 
+    _amostra = min(len(r["years"]) for r in resultado.values())
     (OUT / "calibration.json").write_text(json.dumps({
         "status": "retrospective_research_only",
         "question": ("O intervalo de 80% que a regra projeta em cada janeiro contém o ano seguinte "
@@ -126,9 +127,14 @@ def main() -> None:
         "method": {"estimator": "block bootstrap", "block_days": BLOCK, "draws": DRAWS,
                    "seed": SEED, "point_in_time": "só retornos anteriores ao primeiro pregão do ano previsto",
                    "minimum_history_days": MINIMUM_HISTORY_DAYS},
-        "limitation": ("Onze observações anuais dão erro padrão de doze pontos na cobertura: só "
-                       "um desvio grande é distinguível de ruído. E a distribuição é reamostrada "
-                       "da própria janela, então não contém regime que a janela não tenha."),
+        # Derivada da amostra, não escrita à mão. A versão anterior dizia "onze
+        # observações" e "doze pontos" enquanto o artefato trazia oito e catorze
+        # — e o site publicava as duas contas contraditórias no mesmo parágrafo.
+        "limitation": (
+            f"{_amostra} observações anuais dão erro padrão de "
+            f"{round(math.sqrt(.8 * .2 / _amostra) * 100)} pontos na cobertura: só um desvio "
+            f"grande é distinguível de ruído. E a distribuição é reamostrada da própria "
+            f"janela, então não contém regime que a janela não tenha."),
         "profiles": resultado,
     }, indent=2, ensure_ascii=False), encoding="utf-8")
 

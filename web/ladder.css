@@ -1,3 +1,20 @@
+/* Tokens de cor, repetidos aqui de propósito.
+ *
+ * Este arquivo é carregado em páginas que não carregam styles.css, onde --navy,
+ * --teal, --muted e --line não existem. Uma declaração com var() indefinida é
+ * inválida e some: as cores caíam para herança, e `fill: var(--teal)` virava
+ * preto. Os valores abaixo são idênticos aos de styles.css, então nada muda
+ * onde ele está presente.
+ */
+:root {
+  --navy: #102a43;
+  --ink: #1d2d3c;
+  --muted: #667789;
+  --teal: #0c8076;
+  --line: #dbe4e8;
+  --cream: #f8f6f1;
+}
+
 /* Declared profile ladder. Three policies where the site used to state one. */
 .ladder-wrap {
   overflow-x: auto;
@@ -207,3 +224,21 @@
   border-left: 2px solid var(--hairline-strong, #bccfc9);
   color: var(--ink-soft, #5b6f7c);
 }
+
+/* Calibração do forecast: a faixa projetada contra o que aconteceu.
+   Vive junto do ladder porque as duas coisas saem do mesmo registro. */
+.calib-perfil{border-top:1px solid var(--line);padding-top:18px;margin-top:22px}
+.calib-perfil:first-child{border-top:0;padding-top:0;margin-top:0}
+.calib-perfil h3{font-size:15px;letter-spacing:-.03em;color:var(--navy);margin:0 0 6px}
+.calib-perfil p{font-size:13px;color:var(--muted);margin:0}
+.calib-perfil p b{color:var(--navy)}
+.calib-fig{margin:14px 0 0}
+.calib-fig svg{display:block;width:100%;height:auto;max-width:520px}
+.calib-fig figcaption{font-size:11px;line-height:1.5;color:#7b8b98;margin-top:6px;max-width:520px}
+.calib-eixo{font-size:9px;fill:#8c9aa6}
+.calib-zero{stroke:var(--line);stroke-width:1}
+.calib-faixa{stroke:#c3d2d9;stroke-width:7}
+.calib-meio{stroke:#f8f6f1;stroke-width:1.5}
+.calib-dentro{fill:var(--teal);stroke:#fff;stroke-width:2}
+.calib-fora{fill:#b3261e;stroke:#fff;stroke-width:2}
+.calib-nota{font-size:12px;line-height:1.6;color:var(--muted);border-top:1px solid var(--line);margin-top:22px;padding-top:16px}

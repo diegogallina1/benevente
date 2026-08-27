@@ -1004,6 +1004,52 @@ function razao(perfil, chave, rolar) {
 """
 
 
+#: O site tem CSP com ``script-src 'self'``: script embutido é bloqueado. Por
+#: isso a versão publicada separa o JavaScript num arquivo, enquanto o artefato
+#: continua num documento só. Mesma fonte, dois empacotamentos.
+SITE_HTML = ROOT / "web" / "app.html"
+SITE_JS = ROOT / "web" / "plano.js"
+
+#: Trava de conveniência, não de segurança. O conteúdo é sintético e a
+#: comparação roda no navegador — qualquer pessoa que abra o código passa. Serve
+#: para o visitante casual não cair numa tela inacabada, e nada além disso.
+SENHA_SHA256 = "4c073be62dd2eeca3d94f45932aef78e01d815664e90d0144b7ed10978f8b801"
+
+CABECALHO_SITE = """<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Protótipo do aplicativo da Benevente: conecta a B3, quatro perguntas e dois planos. Dados sintéticos.">
+<link rel="canonical" href="https://benevente.dgo.fi/app">
+"""
+
+TRAVA = """
+<div class="wrap" id="trava">
+  <header>
+    <div class="topo"><p class="marca">Benevente <span>· protótipo</span></p></div>
+    <h1>Protótipo do aplicativo</h1>
+    <p>Página de teste, com carteira sintética. Não indexada e ainda em construção.</p>
+  </header>
+  <label class="label" for="senha">Senha de acesso</label>
+  <div class="campo" style="margin-top:.5rem">
+    <input id="senha" type="password" autocomplete="off" placeholder="senha">
+    <button class="btn" type="button" id="entrar">Entrar</button>
+  </div>
+  <p class="ajuda" id="trava-erro"></p>
+  <p style="margin-top:2rem"><a class="link" href="./index.html">Voltar ao site</a></p>
+</div>
+"""
+
+
+def _partes(pagina: str) -> tuple[str, str]:
+    """Separa o documento em (marcação, javascript)."""
+    i = pagina.index("<script>")
+    j = pagina.index("</script>", i)
+    return pagina[:i], pagina[i + len("<script>"):j]
+
+
 def main() -> None:
     dados = json.loads(SOURCE.read_text(encoding="utf-8"))
     conexao = json.loads(CONEXAO.read_text(encoding="utf-8"))
@@ -1027,13 +1073,89 @@ def main() -> None:
             for perfil, r in calibracao["profiles"].items()
         },
     }
+    pagina = HTML.replace("__DADOS__", json.dumps(magro, ensure_ascii=False,
+                                                  separators=(",", ":")))
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(HTML.replace("__DADOS__", json.dumps(magro, ensure_ascii=False,
-                                                        separators=(",", ":"))),
-                   encoding="utf-8")
+    OUT.write_text(pagina, encoding="utf-8")
+
+    # --- versão do site: mesmo conteúdo, script fora do documento ---
+    marcacao, script = _partes(pagina)
+    corpo = marcacao.replace('<div class="wrap">', TRAVA + '<div class="wrap hidden" id="app">', 1)
+    corte = corpo.index("</style>") + len("</style>")
+    SITE_HTML.write_text(
+        CABECALHO_SITE + corpo[:corte] + "\n</head>\n<body>\n" + corpo[corte:]
+        + '\n<script src="./plano.js"></script>\n</body>\n</html>\n',
+        encoding="utf-8")
+    SITE_JS.write_text(
+        "// Gerado por tools/build_mapa_prototype.py. Não edite à mão.\n"
+        "// Separado do documento porque a CSP do site é script-src 'self'.\n"
+        + _TRAVA_JS.replace("__SHA__", SENHA_SHA256) + script, encoding="utf-8")
+
     print(f"{OUT.relative_to(ROOT)}: {OUT.stat().st_size / 1024:.1f} KB · "
           f"{len(magro['profiles'])} perfis, "
           f"{len([q for q in magro['questionnaire']['questions'] if q['kind'] == 'escolha'])} perguntas")
+    # Carimba na hora. O gerador reescreve app.html a cada execução com a
+    # referência crua, e quem rodasse só o gerador publicaria uma página apontando
+    # para o hash antigo do script — a correção não chegaria a navegador com
+    # cache. Deixar isso para um passo seguinte é confiar na memória de alguém.
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("stamp_assets", ROOT / "tools" / "stamp_assets.py")
+    stamp = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(stamp)
+    ausentes: list[str] = []
+    carimbado, trocas = stamp.stamp(SITE_HTML, ausentes)
+    if ausentes:
+        raise SystemExit(f"referência para arquivo inexistente: {ausentes}")
+    if trocas:
+        SITE_HTML.write_text(carimbado, encoding="utf-8")
+
+    print(f"{SITE_HTML.relative_to(ROOT)} + {SITE_JS.relative_to(ROOT)}: "
+          f"{(SITE_HTML.stat().st_size + SITE_JS.stat().st_size) / 1024:.1f} KB")
+
+
+_TRAVA_JS = r"""
+/* Trava de conveniência, não de segurança. A comparação roda no navegador e o
+   conteúdo é sintético: quem abrir o código passa. Ela existe para o visitante
+   casual não cair numa tela inacabada. Nada real pode ser protegido assim —
+   se um dia esta página mostrar carteira de cliente, a trava tem de sair e dar
+   lugar a autenticação de verdade no servidor.
+   A senha não aparece em texto claro aqui só para não vazar por leitura casual
+   do fonte; o hash não a torna secreta. */
+(function () {
+  const ESPERADO = "__SHA__";
+  const trava = document.getElementById("trava");
+  const app = document.getElementById("app");
+  const erro = document.getElementById("trava-erro");
+
+  function liberar() {
+    trava.style.display = "none";
+    app.classList.remove("hidden");
+  }
+  try { if (sessionStorage.getItem("benevente-app") === "1") liberar(); } catch (e) {}
+
+  async function conferir() {
+    const valor = document.getElementById("senha").value;
+    let digest;
+    try {
+      const bytes = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(valor));
+      digest = [...new Uint8Array(bytes)].map(b => b.toString(16).padStart(2, "0")).join("");
+    } catch (e) {
+      erro.textContent = "Este navegador não permite conferir a senha nesta página.";
+      return;
+    }
+    if (digest !== ESPERADO) {
+      erro.className = "ajuda ruim";
+      erro.textContent = "Senha incorreta.";
+      return;
+    }
+    try { sessionStorage.setItem("benevente-app", "1"); } catch (e) {}
+    liberar();
+  }
+
+  document.getElementById("entrar").onclick = conferir;
+  document.getElementById("senha").onkeydown = e => { if (e.key === "Enter") conferir(); };
+})();
+"""
 
 
 if __name__ == "__main__":

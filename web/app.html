@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Protótipo do aplicativo da Benevente: conecta a B3, quatro perguntas e dois planos. Dados sintéticos.">
+<link rel="canonical" href="https://benevente.dgo.fi/app">
+<title>Plano de carteira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Tokens do IBM Carbon Design System v11 (Apache 2.0), lidos do pacote
+   @carbon/themes 11.79.0: tema White para o claro, Gray 100 para o escuro.
+   Tipografia IBM Plex Sans e IBM Plex Mono, do próprio sistema.
+
+   Duas decisões vêm do Carbon e valem a pena nomear. Canto reto em tudo, sem
+   raio nenhum: é a assinatura do sistema e o contrário do arredondado que hoje
+   marca praticamente toda interface gerada. E aviso com barra de 3px à esquerda
+   em vez de ícone, que informa a gravidade sem pedir atenção.
+
+   Escrito a partir da tela pequena: as regras de base valem para o celular e só
+   crescem depois. O contrário — desenhar no monitor e apertar — é o que produz
+   alvo de toque de trinta pixels e tabela que sangra para fora da margem. */
+:root {
+  --bg: #ffffff;         --layer: #f4f4f4;      --layer-2: #ffffff;
+  --line: #c6c6c6;       --line-strong: #8d8d8d;
+  --fg: #161616;         --fg-2: #525252;       --fg-3: #6f6f6f;
+  --on-color: #ffffff;
+  --acao: #0f62fe;       --acao-fraco: #edf5ff;   --btn: #0f62fe;
+  --erro: #da1e28;       --erro-fraco: #fff1f1;
+  --aviso: #f1c21b;      --aviso-fraco: #fcf4d6;
+  --ok: #24a148;         --ok-fraco: #defbe6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #161616;       --layer: #262626;      --layer-2: #393939;
+    --line: #525252;     --line-strong: #6f6f6f;
+    --fg: #f4f4f4;       --fg-2: #c6c6c6;       --fg-3: #a8a8a8;
+    --on-color: #ffffff;
+    --acao: #78a9ff;     --acao-fraco: #002d9c;   --btn: #0f62fe;
+    --erro: #fa4d56;     --erro-fraco: #520408;
+    --aviso: #f1c21b;    --aviso-fraco: #483700;
+    --ok: #42be65;       --ok-fraco: #022d0d;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #161616;         --layer: #262626;      --layer-2: #393939;
+  --line: #525252;       --line-strong: #6f6f6f;
+  --fg: #f4f4f4;         --fg-2: #c6c6c6;       --fg-3: #a8a8a8;
+  --on-color: #ffffff;
+  --acao: #78a9ff;       --acao-fraco: #002d9c;   --btn: #0f62fe;
+  --erro: #fa4d56;       --erro-fraco: #520408;
+  --aviso: #f1c21b;      --aviso-fraco: #483700;
+  --ok: #42be65;         --ok-fraco: #022d0d;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--fg);
+  font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  font-size: 1rem; line-height: 1.5; letter-spacing: 0;
+  -webkit-font-smoothing: antialiased; overflow-wrap: break-word;
+}
+.wrap { max-width: 42rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+.num { font-family: "IBM Plex Mono", ui-monospace, monospace;
+       font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.neg { color: var(--erro); }
+.hidden { display: none; }
+::selection { background: var(--btn); color: var(--on-color); }
+
+/* Tipografia na escala do Carbon: label-01, body-01, body-02, heading-03/04. */
+.label { font-size: .75rem; line-height: 1.34; letter-spacing: .32px;
+         color: var(--fg-3); font-weight: 400; margin: 0; }
+h1 { font-size: 1.75rem; line-height: 1.29; font-weight: 400; letter-spacing: 0;
+     margin: 0 0 .5rem; text-wrap: balance; }
+h2 { font-size: 1.25rem; line-height: 1.4; font-weight: 400; margin: 0 0 .25rem; }
+h3 { font-size: 1rem; line-height: 1.5; font-weight: 600; margin: 0; }
+.lede { color: var(--fg-2); font-size: .875rem; line-height: 1.43; margin: 0 0 1.5rem; }
+
+header { padding-bottom: 1.5rem; margin-bottom: 1.5rem;
+         border-bottom: 1px solid var(--line); }
+.topo { display: flex; align-items: center; justify-content: space-between;
+        gap: 1rem; margin-bottom: 1rem; }
+.marca { font-size: .875rem; font-weight: 600; letter-spacing: .16px; margin: 0; }
+.marca span { color: var(--fg-3); font-weight: 400; }
+header p:last-child { margin: 0; color: var(--fg-2); font-size: .875rem; line-height: 1.43; }
+
+.tema { font: inherit; font-size: .75rem; letter-spacing: .32px; color: var(--fg-2);
+        background: none; border: 1px solid var(--line); border-radius: 0;
+        min-height: 2.75rem; padding: 0 .75rem; cursor: pointer;
+        display: flex; align-items: center; gap: .5rem; white-space: nowrap; }
+.tema:focus-visible { outline: 2px solid var(--acao); outline-offset: -2px; }
+
+/* Indicador de etapa: régua no topo de cada item, como no Carbon. Serve para
+   responder "quanto falta", que é a pergunta que faz alguém abandonar. */
+.etapas { display: grid; grid-template-columns: repeat(3, 1fr); gap: .25rem;
+          list-style: none; margin: 0 0 2.5rem; padding: 0; }
+.etapas li { border-top: 2px solid var(--line); padding-top: .5rem;
+             font-size: .75rem; letter-spacing: .32px; color: var(--fg-3); }
+.etapas li[data-on="1"] { border-top-color: var(--acao); color: var(--fg); font-weight: 600; }
+.etapas b { display: block; font-weight: inherit; }
+
+section { margin-bottom: 3rem; }
+
+/* --- conexão --- */
+.seguranca { list-style: none; margin: 0 0 1.5rem; padding: 0;
+             border-top: 1px solid var(--line); }
+.seguranca li { border-bottom: 1px solid var(--line); padding: .75rem 0;
+                font-size: .875rem; line-height: 1.43; color: var(--fg-2); }
+.seguranca b { color: var(--fg); font-weight: 600; }
+details { margin-top: 1.5rem; border-top: 1px solid var(--line); }
+details > summary { cursor: pointer; list-style: none; padding: .875rem 0;
+                    font-size: .875rem; color: var(--acao); min-height: 2.75rem;
+                    display: flex; align-items: center; justify-content: space-between;
+                    gap: 1rem; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::after { content: "+"; font-family: "IBM Plex Mono", monospace;
+                           font-size: 1.125rem; color: var(--fg-3); }
+details[open] > summary::after { content: "–"; }
+details > summary:focus-visible { outline: 2px solid var(--acao); outline-offset: -2px; }
+details > summary b { color: var(--fg); font-weight: 600; }
+
+.cols { display: grid; gap: 1.5rem; margin-top: 0; }
+.cols ul { margin: .5rem 0 0; padding: 0; list-style: none; }
+.cols li { font-size: .875rem; line-height: 1.43; color: var(--fg-2);
+           padding: .5rem 0 .5rem .875rem; border-left: 2px solid var(--line); }
+.cols .nao li { border-left-color: var(--erro); }
+
+/* --- painéis --- */
+.painel { background: var(--layer); padding: 1.25rem 1rem; }
+.quando { display: flex; flex-wrap: wrap; gap: .375rem .75rem; align-items: baseline;
+          font-size: .75rem; letter-spacing: .32px; color: var(--fg-3);
+          border-bottom: 1px solid var(--line); padding-bottom: .625rem; margin-bottom: .875rem; }
+.quando b { color: var(--fg); font-weight: 600; letter-spacing: 0; }
+.quando.velho { color: var(--erro); }
+.quando.velho b { color: var(--erro); }
+.painel .big { font-size: 1.75rem; line-height: 1.29; font-weight: 400; }
+.painel p { margin: .5rem 0 0; color: var(--fg-2); font-size: .875rem; line-height: 1.43; }
+
+/* Campo do Carbon: fundo de camada, só borda inferior, altura de 48px. */
+.informar { margin-top: 1rem; }
+.informar label { display: block; font-size: .75rem; letter-spacing: .32px;
+                  color: var(--fg-2); margin-bottom: .5rem; }
+.campo { display: flex; flex-wrap: wrap; gap: .5rem; }
+.campo input { font: inherit; font-family: "IBM Plex Mono", monospace; font-size: 1rem;
+               flex: 1 1 10rem; min-width: 0; min-height: 3rem; padding: 0 1rem;
+               color: var(--fg); background: var(--layer); border: 0; border-radius: 0;
+               border-bottom: 1px solid var(--line-strong); }
+.campo input:focus { outline: 2px solid var(--btn); outline-offset: -2px; }
+.campo input[aria-invalid="true"] { border-bottom: 2px solid var(--erro); }
+.campo .btn { flex: 0 0 auto; width: auto; min-width: 9rem; padding: .875rem 1rem; }
+.informar .ajuda { font-size: .75rem; line-height: 1.34; color: var(--fg-3); margin: .5rem 0 0; }
+.informar .ajuda.ruim { color: var(--erro); }
+.resolvido { border-left: 3px solid var(--ok); background: var(--ok-fraco);
+             padding: 1rem; margin-top: 1.5rem; font-size: .875rem; line-height: 1.43; }
+.resolvido p { margin: 0; color: var(--fg-2); }
+.resolvido b { color: var(--fg); font-weight: 600; }
+
+.aviso { border-left: 3px solid var(--aviso); background: var(--aviso-fraco);
+         padding: 1rem; margin-top: 1.5rem; font-size: .875rem; line-height: 1.43; }
+.aviso.erro { border-left-color: var(--erro); background: var(--erro-fraco); }
+.aviso p { margin: 0; color: var(--fg-2); }
+.aviso b { color: var(--fg); font-weight: 600; }
+
+.barras { margin-top: 1.5rem; }
+.barra-linha { margin-bottom: 1rem; }
+.barra-linha > span { display: block; font-size: .75rem; letter-spacing: .32px;
+                      color: var(--fg-3); margin-bottom: .375rem; }
+.legenda { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; margin-top: .75rem;
+           font-size: .75rem; letter-spacing: .32px; color: var(--fg-3); }
+.legenda i { display: inline-block; width: .75rem; height: .75rem;
+             margin-right: .375rem; vertical-align: -1px; }
+
+/* --- perguntas --- */
+.q { padding: 1.25rem 0; border-top: 1px solid var(--line); }
+.q:first-of-type { border-top: none; padding-top: 0; }
+.q > p { margin: 0 0 .25rem; font-size: 1rem; font-weight: 600; text-wrap: pretty; }
+.q .help { color: var(--fg-2); font-size: .875rem; line-height: 1.43; margin: 0 0 1rem; }
+.opts { display: flex; flex-direction: column; gap: 1px; background: var(--line); }
+.opt { font: inherit; font-size: .875rem; text-align: left; cursor: pointer;
+       min-height: 3rem; padding: .75rem 1rem; border: 0; border-radius: 0;
+       background: var(--layer); color: var(--fg);
+       transition: background .11s, box-shadow .11s; }
+.opt:focus-visible { outline: 2px solid var(--acao); outline-offset: -2px; }
+.opt[aria-pressed="true"] { background: var(--btn); color: var(--on-color); font-weight: 600; }
+
+.resumo { border-top: 1px solid var(--line); padding-top: 1rem; }
+.chips { margin: 0 0 .25rem; font-size: .875rem; }
+.chips span + span::before { content: " · "; color: var(--fg-3); }
+.link { font: inherit; font-size: .875rem; color: var(--acao); background: none;
+        border: 0; padding: .625rem 0; min-height: 2.75rem; cursor: pointer;
+        text-decoration: underline; text-underline-offset: 2px; }
+.link:focus-visible { outline: 2px solid var(--acao); outline-offset: 2px; }
+.veredito { font-size: .875rem; line-height: 1.43; color: var(--fg-2); margin: 1.5rem 0 0; }
+.veredito b { color: var(--fg); font-weight: 600; }
+.veredito b.neg { color: var(--erro); }
+
+/* --- a régua e o quanto ela erra --- */
+.regua { margin-top: 1.5rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
+.regua h3 { margin-bottom: .25rem; }
+.regua p { margin: 0 0 .75rem; font-size: .875rem; line-height: 1.43; color: var(--fg-2); }
+.regua p b { color: var(--fg); font-weight: 600; }
+.regua p b.neg { color: var(--erro); }
+.regua figure { margin: 1rem 0 0; }
+.regua svg { display: block; width: 100%; height: auto; }
+.regua figcaption { margin-top: .5rem; font-size: .75rem; line-height: 1.34;
+                    letter-spacing: .32px; color: var(--fg-3); }
+.regua .chaves { display: flex; flex-wrap: wrap; gap: .375rem 1rem; margin-top: .5rem;
+                 font-size: .75rem; letter-spacing: .32px; color: var(--fg-3); }
+.regua .chaves i { display: inline-block; width: .75rem; height: .75rem;
+                   margin-right: .375rem; vertical-align: -1px; }
+
+/* --- os dois planos --- */
+.planos { display: grid; gap: 1rem; }
+.plano { text-align: left; font: inherit; cursor: pointer; color: var(--fg);
+         background: var(--layer); border: 0; border-radius: 0;
+         border-left: 3px solid transparent; padding: 1.25rem 1rem;
+         display: flex; flex-direction: column; gap: .75rem;
+         transition: background .11s, border-color .11s; }
+.plano:focus-visible { outline: 2px solid var(--acao); outline-offset: -2px; }
+.plano[aria-pressed="true"] { border-left-color: var(--acao); background: var(--acao-fraco); }
+.plano .custo { font-size: 2rem; line-height: 1.2; font-weight: 400; }
+.plano .custo small { display: block; font-size: .75rem; letter-spacing: .32px;
+                      color: var(--fg-3); margin-top: .25rem; }
+.plano dl { margin: 0; display: grid; grid-template-columns: auto 1fr;
+            gap: .375rem .75rem; font-size: .875rem; }
+.plano dt { color: var(--fg-2); } .plano dd { margin: 0; text-align: right; }
+.falta { border-left: 3px solid var(--erro); background: var(--bg); padding: .75rem;
+         font-size: .8125rem; line-height: 1.4; color: var(--fg-2); }
+.falta b { display: block; color: var(--erro); font-weight: 600; margin-bottom: .125rem; }
+.selo { font-size: .8125rem; line-height: 1.4; padding: .625rem .75rem; margin-top: auto;
+        border-left: 3px solid var(--ok); background: var(--ok-fraco); color: var(--fg); }
+.selo.nao { border-left-color: var(--erro); background: var(--erro-fraco); }
+
+/* --- o que muda --- */
+.razao { margin-top: 1.5rem; }
+.grupo { font-size: .75rem; letter-spacing: .32px; color: var(--fg-3);
+         margin: 1.5rem 0 0; padding-bottom: .5rem; border-bottom: 1px solid var(--line); }
+.grupo:first-child { margin-top: 0; }
+.linha { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .125rem 1rem;
+         padding: .75rem 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.linha b { font-weight: 600; font-size: .875rem; }
+.linha .porque { grid-column: 1 / -1; color: var(--fg-3); font-size: .8125rem;
+                 line-height: 1.4; }
+.linha .val { grid-column: 2; grid-row: 1; text-align: right; font-size: .875rem;
+              white-space: nowrap; }
+.linha .val small { display: block; color: var(--fg-3); font-size: .75rem; }
+
+.conta { margin-top: 1.5rem; background: var(--layer); padding: .25rem 1rem 1rem; }
+.conta div { display: flex; flex-wrap: wrap; justify-content: space-between;
+             gap: .125rem 1rem; padding: .75rem 0; font-size: .875rem;
+             border-bottom: 1px solid var(--line); line-height: 1.43; }
+.conta div span:last-child { margin-left: auto; }
+.conta .total { font-weight: 600; border-bottom: 0; }
+.conta p { margin: 1rem 0 0; font-size: .8125rem; line-height: 1.4; color: var(--fg-3); }
+
+/* Botão do Carbon: retangular, texto à esquerda, altura de 48px. */
+.registro { margin-top: 1rem; background: var(--layer); padding: 1rem; }
+.registro p { margin: 0 0 .75rem; font-size: .8125rem; line-height: 1.4; color: var(--fg-2); }
+.registro pre { margin: 0; overflow-x: auto; font-family: "IBM Plex Mono", monospace;
+                font-size: .75rem; line-height: 1.5; color: var(--fg); }
+
+.acoes { margin-top: 1.5rem; display: flex; flex-direction: column; gap: .75rem; }
+.btn { font: inherit; font-size: .875rem; text-align: left; cursor: pointer;
+       border: 0; border-radius: 0; min-height: 3rem; padding: .875rem 4rem .875rem 1rem;
+       background: var(--btn); color: var(--on-color); width: 100%;
+       transition: background .11s; }
+.btn:focus-visible { outline: 2px solid var(--acao); outline-offset: -4px;
+                     box-shadow: inset 0 0 0 1px var(--on-color); }
+.btn:disabled { background: var(--layer-2); color: var(--fg-3); cursor: default; }
+.acoes span { font-size: .8125rem; line-height: 1.4; color: var(--fg-3); }
+
+footer { border-top: 1px solid var(--line); margin-top: 3rem; padding-top: 1.5rem;
+         font-size: .8125rem; line-height: 1.4; color: var(--fg-3); }
+footer p { margin: 0 0 .75rem; }
+footer code { font-family: "IBM Plex Mono", monospace; font-size: .95em; }
+footer a { color: var(--acao); }
+
+@media (min-width: 42rem) {
+  .wrap { padding: 3rem 1.5rem 5rem; }
+  h1 { font-size: 2.625rem; line-height: 1.199; }
+  .lede, header p:last-child, footer p { max-width: 58ch; }
+  .cols { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .planos { grid-template-columns: 1fr 1fr; }
+  .barra-linha { display: grid; grid-template-columns: 5rem 1fr; gap: 1rem;
+                 align-items: center; }
+  .barra-linha > span { text-align: right; margin-bottom: 0; }
+  .linha .porque { grid-column: 1; }
+  .acoes { flex-direction: row; align-items: center; flex-wrap: wrap; }
+  .btn { width: auto; min-width: 14rem; }
+}
+@media (hover: hover) and (pointer: fine) {
+  /* Encolher alvo de toque é decisão sobre o ponteiro, não sobre a largura: um
+     tablet é largo e continua sendo dedo. */
+  .tema { min-height: 2rem; } .link { min-height: 0; }
+  .opt:hover { background: var(--layer-2); }
+  .opt[aria-pressed="true"]:hover { background: var(--btn); }
+  .plano:hover { background: var(--layer-2); }
+  .btn:hover:not(:disabled) { filter: brightness(1.12); }
+  .tema:hover { border-color: var(--line-strong); color: var(--fg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; scroll-behavior: auto !important; }
+}
+</style>
+</head>
+<body>
+
+
+
+<div class="wrap" id="trava">
+  <header>
+    <div class="topo"><p class="marca">Benevente <span>· protótipo</span></p></div>
+    <h1>Protótipo do aplicativo</h1>
+    <p>Página de teste, com carteira sintética. Não indexada e ainda em construção.</p>
+  </header>
+  <label class="label" for="senha">Senha de acesso</label>
+  <div class="campo" style="margin-top:.5rem">
+    <input id="senha" type="password" autocomplete="off" placeholder="senha">
+    <button class="btn" type="button" id="entrar">Entrar</button>
+  </div>
+  <p class="ajuda" id="trava-erro"></p>
+  <p style="margin-top:2rem"><a class="link" href="./index.html">Voltar ao site</a></p>
+</div>
+<div class="wrap hidden" id="app">
+<header>
+  <div class="topo">
+    <p class="marca">Benevente <span>· protótipo</span></p>
+    <button class="tema" type="button" id="tema" aria-label="Alternar tema claro e escuro">
+      <span aria-hidden="true" id="tema-icone"></span><span id="tema-txt">Tema</span>
+    </button>
+  </div>
+  <h1>Plano de carteira</h1>
+  <p>Conecte a sua conta da B3, responda quatro perguntas e veja quanto da sua carteira
+     já serve. No fim, dois planos com custos bem diferentes.</p>
+</header>
+
+<ol class="etapas" id="etapas">
+  <li data-on="1"><b>1</b>Conectar</li>
+  <li><b>2</b>Perguntas</li>
+  <li><b>3</b>Seu plano</li>
+</ol>
+
+<section id="conexao">
+  <h2>Conectar a B3</h2>
+  <p class="lede">Sua carteira vem direto da B3, com a sua autorização.</p>
+  <ul class="seguranca">
+    <li><b>Você entra no site da B3, não aqui.</b> A autorização acontece lá dentro,
+        com o login da própria B3.</li>
+    <li><b>A sua senha não passa por nós.</b> Nunca a vemos e nunca a guardamos.</li>
+    <li><b>Você desliga quando quiser.</b> Em investidor.b3.com.br, na sua conta, em
+        Segurança, Aplicativos e Sites.</li>
+  </ul>
+  <button class="btn" type="button" id="conectar">Conectar minha conta da B3</button>
+  <div id="chegou" class="hidden">
+    <div class="painel">
+      <div class="big num" id="chegou-tit"></div>
+      <p id="chegou-txt"></p>
+    </div>
+    <details>
+      <summary><span><b>O que vem e o que não vem da B3</b></span></summary>
+      <div class="cols">
+        <div><p class="label">Vem</p><ul id="vem"></ul></div>
+        <div><p class="label">Não vem</p><ul id="nvem" class="nao"></ul></div>
+      </div>
+    </details>
+    <div class="aviso erro" id="lacuna"></div>
+  </div>
+</section>
+
+<section id="perguntas" class="hidden">
+  <h2>Quatro perguntas</h2>
+  <p class="lede">Sem pontuação: cada resposta impõe um limite e vale o mais apertado.
+     Assim dá sempre para apontar qual resposta decidiu.</p>
+  <div id="qs"></div>
+  <div id="resumo" class="resumo hidden">
+    <p class="chips" id="chips"></p>
+    <button class="link" type="button" id="alterar">Alterar respostas</button>
+  </div>
+  <p class="veredito" id="veredito"></p>
+</section>
+
+<section id="mapa" class="hidden">
+  <h2>Sua carteira hoje</h2>
+  <p class="lede">Cada posição mostra de onde o dado veio: extrato da B3, Open Finance ou
+     lançamento manual.</p>
+  <div class="painel">
+    <p class="quando" id="quando"></p>
+    <div class="big num" id="aderencia"></div>
+    <p id="aderencia-txt"></p>
+  </div>
+  <div class="barras">
+    <div class="barra-linha"><span>hoje</span><div id="bar-hoje"></div></div>
+    <div class="barra-linha"><span>seu perfil</span><div id="bar-alvo"></div></div>
+    <div class="legenda">
+      <span><i style="background:var(--btn)"></i>ações</span>
+      <span><i style="background:var(--line-strong)"></i>renda fixa e caixa</span>
+      <span><i style="background:var(--erro)"></i>fora da estratégia</span>
+    </div>
+  </div>
+  <div class="aviso" id="fgc"></div>
+  <div class="regua" id="regua"></div>
+</section>
+
+<section id="planos-sec" class="hidden">
+  <h2>Dois planos</h2>
+  <p class="lede">Um troca os seus ativos pela seleção da política e protege nas quedas.
+     O outro mantém os seus ativos e só protege. A escolha é sua, e as duas ficam
+     registradas.</p>
+  <div class="planos" id="planos"></div>
+</section>
+
+<section id="razao-sec" class="hidden">
+  <h2 id="razao-h"></h2>
+  <p class="lede" id="razao-lede"></p>
+  <details id="razao-det">
+    <summary><span id="razao-resumo"></span></summary>
+    <div class="razao" id="razao"></div>
+  </details>
+  <div class="conta" id="conta"></div>
+  <div class="acoes">
+    <button class="btn" type="button" id="gerar">Gerar o dossiê do plano</button>
+    <span>PDF com as contas, o plano que você não escolheu e o campo de assinatura.</span>
+  </div>
+  <div class="registro hidden" id="registro"></div>
+</section>
+
+<footer>
+  <p><b>Protótipo.</b> A carteira é sintética. Os números vêm de
+     <code>portfolio_mapping.py</code>, o perfil de <code>client_intake.py</code> e a leitura
+     da B3 de <code>b3_connection.py</code>. Nenhuma ordem é transmitida por esta tela.</p>
+  <p>O custo aparece antes do benefício de propósito, e nenhuma tela deste projeto promete
+     patrimônio futuro: o que a Benevente publica é o quanto a própria régua erra.</p>
+  <p>Desenho sobre o <a href="https://carbondesignsystem.com/">IBM Carbon Design System</a>
+     (Apache 2.0), com IBM Plex Sans e IBM Plex Mono.</p>
+</footer>
+</div>
+
+
+<script src="./plano.js?v=e156319dbf"></script>
+</body>
+</html>

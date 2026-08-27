@@ -9,7 +9,7 @@
     "point_in_time": "só retornos anteriores ao primeiro pregão do ano previsto",
     "minimum_history_days": 504
   },
-  "limitation": "Onze observações anuais dão erro padrão de doze pontos na cobertura: só um desvio grande é distinguível de ruído. E a distribuição é reamostrada da própria janela, então não contém regime que a janela não tenha.",
+  "limitation": "8 observações anuais dão erro padrão de 14 pontos na cobertura: só um desvio grande é distinguível de ruído. E a distribuição é reamostrada da própria janela, então não contém regime que a janela não tenha.",
   "profiles": {
     "conservador": {
       "years": [
