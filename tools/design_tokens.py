@@ -17,6 +17,11 @@ Os papéis, porque nomear cor por aparência envelhece mal:
   para cima. A elevação vem do degrau de luminância, não de sombra. Os três são
   da mesma família do acento: cinza frio ao lado de verde lê como cor de outro
   lugar, e foi assim que os fundos passaram a parecer "diferentes".
+
+  No claro a página é a superfície mais escura das três, e o cartão é branco.
+  Parece invertido e não é: branco puro numa página inteira cansa, e o cartão só
+  se destaca se tiver para onde subir. A menta da página é o tom, e o branco do
+  cartão é o degrau.
 * ``inverso`` — painel escuro sobre página clara. No tema escuro ele não pode
   continuar preto, senão some no fundo: vira superfície elevada.
 * ``fg``, ``fg-2`` — texto principal e secundário. ``fg-3`` é só para
@@ -44,13 +49,13 @@ CSS = ROOT / "web" / "tokens.css"
 #: O claro e o padrao. O guia do design system e escuro por definicao, mas o
 #: pedido foi explicito, e preferencia declarada vence guia de estilo.
 CLARO = {
-    "canvas": "#ffffff", "card": "#f4faf7", "elev": "#e8f3ee", "inverso": "#0d2b22",
+    "canvas": "#f4faf7", "card": "#ffffff", "elev": "#e8f3ee", "inverso": "#0d2b22",
     "line": "#dcdfe5", "line-strong": "#b6bcc6", "inverso-linha": "#2c5a49",
     "fg": "#0a0a0a", "fg-2": "#52565e", "fg-3": "#767b85", "sobre-inverso": "#ffffff",
     # O verde da marca em duas intensidades: no claro ele precisa ser escuro o
     # bastante para servir de texto sobre branco (5,35 de contraste); o claro de
     # verdade fica reservado para o que vive dentro de painel escuro.
-    "acao": "#0d7a52", "acao-inverso": "#79e1ce", "acao-fraco": "#e0f4ea",
+    "acao": "#0d7a52", "acao-inverso": "#79e1ce", "acao-fraco": "#e4f4ec",
     "acao-vivo": "#1f9a6e", "acao-vivo-fg": "#0a0a0a",
     "neg": "#c8322f", "neg-fraco": "#fdecec",
     "btn": "#0d7a52", "btn-fg": "#ffffff",

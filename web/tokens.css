@@ -8,8 +8,8 @@
  * guardada no navegador de quem escolheu.
  */
 :root {
-  --canvas: #ffffff;
-  --card: #f4faf7;
+  --canvas: #f4faf7;
+  --card: #ffffff;
   --elev: #e8f3ee;
   --inverso: #0d2b22;
   --line: #dcdfe5;
@@ -21,7 +21,7 @@
   --sobre-inverso: #ffffff;
   --acao: #0d7a52;
   --acao-inverso: #79e1ce;
-  --acao-fraco: #e0f4ea;
+  --acao-fraco: #e4f4ec;
   --acao-vivo: #1f9a6e;
   --acao-vivo-fg: #0a0a0a;
   --neg: #c8322f;
