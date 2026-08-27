@@ -130,8 +130,15 @@ details > summary, .annual-decision summary, .live-holdings summary { color: var
 .hero-performance-bars em, .hero-performance-bars > div:first-child em,
 .hero-performance-bars > div:nth-child(2) em, .bar i, .alpha-split span:nth-child(1),
 .alpha-split span:nth-child(2) { background: var(--acao-vivo) !important; }
-.alpha-split span, .alpha-split span *, .alpha-split .ss, .alpha-split .sf,
-.alpha-split i { color: var(--acao-vivo-fg) !important; }
+/* Cada faixa leva o rotulo da sua propria cor de fundo. A primeira e o verde
+   de preenchimento, que e claro nos dois temas, entao o rotulo dela e escuro
+   sempre. As outras duas seguem o tema, e por isso usam --fg: fixar preto nelas
+   dava 1,18 de contraste no escuro. */
+.alpha-split span:nth-child(1), .alpha-split span:nth-child(1) * {
+  color: var(--acao-vivo-fg) !important; }
+.alpha-split span:nth-child(2), .alpha-split span:nth-child(2) *,
+.alpha-split span:nth-child(3), .alpha-split span:nth-child(3) * {
+  color: var(--fg) !important; }
 /* Os rotulos dentro da faixa traziam fundo proprio, verde escuro, por cima do
    preenchimento claro do pai: davam 3,70 e reprovavam. Eles nao precisam de
    fundo nenhum, porque ja estao sobre a faixa. */
@@ -174,6 +181,23 @@ details > summary, .annual-decision summary, .live-holdings summary { color: var
 .hero-performance-pair > div:last-child small,
 .hero-performance-pair > div:last-child p { color: var(--fg-2) !important; }
 .wealth-card .up, .wealth-card-foot .up { color: var(--acao) !important; }
+
+/* Esperado contra realizado: tres blocos, sem fio entre eles. */
+.fc-perfil { margin-top: 34px; }
+.fc-perfil h3 { color: var(--acao); margin: 0 0 6px; }
+.fc-perfil p { color: var(--fg-2); margin: 0 0 12px; max-width: 68ch; }
+.fc-perfil p b { color: var(--fg); }
+.fc-fig { margin: 0; }
+.fc-fig svg { display: block; width: 100%; height: auto; max-width: 620px; }
+.fc-fig figcaption { margin-top: 8px; font-size: 12px; color: var(--fg-2); max-width: 68ch; }
+#forecast-2026-note { max-width: 68ch; margin-top: 26px; color: var(--fg-2) !important; }
+
+/* Os fios entre secoes. A pagina tem oito secoes e cada uma vinha com um
+   traco em cima: o olho le como grade, nao como divisao. O espaco separa. */
+.version-section, .version-section-heading, .version-section > div,
+.section-heading, .proof, .method-grid { border-top: 0 !important;
+  border-bottom: 0 !important; }
+.version-section { margin-top: 64px; }
 
 table, th, td { border-color: var(--line); }
 /* Paineis escuros cujo fundo o gerador nao alcanca — a cor vem de gradiente,

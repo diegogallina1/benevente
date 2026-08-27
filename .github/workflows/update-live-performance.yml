@@ -41,13 +41,17 @@ jobs:
         run: |
           python tools/update_live_performance.py
           python tools/update_profile_books.py
+          # A faixa de 2026 nao e recalculada aqui: ela foi congelada em janeiro
+          # e uma faixa que se ajusta ao resultado nunca erra, entao nao mede
+          # nada. Este passo so reescreve o outro lado da comparacao.
+          python tools/build_forecast_2026_web.py
           python tools/notify_queue.py
           python -m pytest tests/test_live_performance.py tests/test_profile_books_2026.py tests/test_notify_queue.py -q
 
       - name: Publicar somente quando houver novo dado
         shell: bash
         run: |
-          tracked="web/live_performance.json web/live_profiles_2026.json artifacts/notification_queue/queue.json"
+          tracked="web/live_performance.json web/live_profiles_2026.json web/forecast_2026.json artifacts/notification_queue/queue.json"
           for perfil in conservador equilibrado arrojado; do
             tracked="$tracked web/live_performance_${perfil}.json web/current_decision_2026_${perfil}.json"
           done
