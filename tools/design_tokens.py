@@ -44,7 +44,7 @@ CLARO = {
     # O verde da marca em duas intensidades: no claro ele precisa ser escuro o
     # bastante para servir de texto sobre branco (5,35 de contraste); o claro de
     # verdade fica reservado para o que vive dentro de painel escuro.
-    "acao": "#0d7a52", "acao-inverso": "#79e1ce", "acao-fraco": "#e6f7f0",
+    "acao": "#0d7a52", "acao-inverso": "#79e1ce", "acao-fraco": "#e0f4ea",
     "neg": "#c8322f", "neg-fraco": "#fdecec",
     "btn": "#0d7a52", "btn-fg": "#ffffff",
 }

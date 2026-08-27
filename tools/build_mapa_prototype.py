@@ -73,7 +73,7 @@ body {
 .label, .eyebrow {
   font-family: "Spline Sans Mono", ui-monospace, monospace;
   font-size: 12px; line-height: 1.4; letter-spacing: .85px;
-  text-transform: uppercase; color: var(--fg-2); font-weight: 400; margin: 0;
+  text-transform: uppercase; color: var(--acao); font-weight: 400; margin: 0;
 }
 h1 { font-size: 40px; line-height: 1.2; letter-spacing: -.84px; font-weight: 500;
      margin: 0 0 8px; text-wrap: balance; }
@@ -86,7 +86,7 @@ header { padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var
 .topo { display: flex; align-items: center; justify-content: space-between;
         gap: 16px; margin-bottom: 24px; }
 .marca { font-family: "Spline Sans Mono", monospace; font-size: 12px; letter-spacing: .85px;
-         text-transform: uppercase; color: var(--fg); margin: 0; }
+         text-transform: uppercase; color: var(--acao); margin: 0; }
 .marca span { color: var(--fg-2); }
 header p:last-child { margin: 0; color: var(--fg-2); font-size: 16px; }
 
@@ -106,7 +106,7 @@ header p:last-child { margin: 0; color: var(--fg-2); font-size: 16px; }
 .etapas li[data-on="1"] { border-top-color: var(--acao); color: var(--fg); }
 .etapas b { display: block; font-weight: 400; color: var(--acao); }
 
-section { margin-bottom: 80px; }
+section { margin-bottom: 56px; }
 
 /* --- conexão --- */
 .seguranca { list-style: none; margin: 0 0 24px; padding: 0; border-top: 1px solid var(--line); }
@@ -136,9 +136,12 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .cols .nao li::before { content: "✕"; color: var(--neg); }
 
 /* --- superfícies --- */
-.painel { background: var(--card); border: 1px solid var(--elev); border-radius: 8px;
+.painel { background: var(--acao-fraco); border: 1px solid var(--acao); border-radius: 8px;
           padding: 24px; }
 .painel .big { font-size: 40px; line-height: 1.2; letter-spacing: -.84px; font-weight: 500; }
+/* O número que responde à pergunta da tela leva a cor da marca: é o único da
+   página que a pessoa procura, e verde sobre a menta dá 4,66 de contraste. */
+.painel .big { color: var(--acao); }
 .painel p { margin: 8px 0 0; color: var(--fg-2); font-size: 14px; line-height: 1.57; }
 .quando { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline;
           font-family: "Spline Sans Mono", monospace; font-size: 12px; letter-spacing: .85px;
@@ -147,7 +150,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .quando b { color: var(--fg); font-weight: 400; }
 .quando.velho, .quando.velho b { color: var(--neg); }
 
-.aviso { border-left: 2px solid var(--acao); background: var(--card); border-radius: 0 8px 8px 0;
+.aviso { border-left: 2px solid var(--acao); background: var(--acao-fraco); border-radius: 0 8px 8px 0;
          padding: 16px; margin-top: 24px; font-size: 14px; line-height: 1.57; }
 .aviso.erro { border-left-color: var(--neg); }
 .aviso p { margin: 0; color: var(--fg-2); }
@@ -227,7 +230,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .selo { font-size: 12px; line-height: 1.4; padding: 8px 16px; margin-top: auto;
         border-left: 2px solid var(--acao); background: var(--canvas);
         border-radius: 0 4px 4px 0; color: var(--fg-2); }
-.selo.nao { border-left-color: var(--neg); color: var(--neg); }
+.selo.nao { border-left-color: var(--neg); }
 
 /* --- o que muda --- */
 .razao { margin-top: 24px; }
