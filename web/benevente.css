@@ -229,8 +229,13 @@ table, th, td { border-color: var(--line); }
 
    Fundo e texto mudam na mesma edicao. Separar os dois foi como eu troquei
    branco-sobre-branco por preto-sobre-preto da ultima vez. */
+/* As tres linhas da comparacao tem de ser a mesma coisa. Duas delas vinham com
+   fundo proprio e a terceira nao, e como nao ha padding nem raio o fundo virava
+   um retangulo cru atras de duas linhas de tres. Nenhuma tem fundo: elas ja
+   estao dentro do painel, e o que separa uma da outra e a barra. */
 .hero-performance-bars > div:first-child,
-.hero-performance-bars > div:nth-child(2) { background: var(--card) !important; }
+.hero-performance-bars > div:nth-child(2),
+.hero-performance-bars > div:nth-child(3) { background: transparent !important; }
 .hero-performance-bars > div:first-child, .hero-performance-bars > div:first-child *,
 .hero-performance-bars > div:nth-child(2), .hero-performance-bars > div:nth-child(2) * {
   color: var(--fg) !important;
