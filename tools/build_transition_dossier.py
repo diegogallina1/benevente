@@ -27,6 +27,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import argparse
+import hashlib
 import json
 import sys
 
@@ -252,15 +253,59 @@ def build(payload: dict, cliente: str, escolha: str, registro: dict) -> Document
 
     para(document, "", size=6)
     kicker(document, "Verificação")
-    para(document, f"Política {registro['policy']} · SHA-256 {registro['registration_sha256']} · "
-                   f"congelada por {registro['approved_by']} · decisão de destino "
-                   f"{payload['target_decision']} · mapa por portfolio_mapping.py · perfil por "
-                   f"client_intake.py.", size=7.5, color=MUTED)
+    linha = (f"Política {registro['policy']} · SHA-256 {registro['registration_sha256']} · "
+             f"congelada por {registro['approved_by']} · decisão de destino "
+             f"{payload['target_decision']} · mapa por portfolio_mapping.py · perfil por "
+             f"client_intake.py.")
+    if payload.get("record"):
+        # O documento aponta para o registro que o originou. Sem isso a cadeia
+        # tem um vão no meio: dá para conferir a política e as contas, e não dá
+        # para provar que as respostas eram estas.
+        corpo = json.dumps(payload["record"], ensure_ascii=False, sort_keys=True,
+                           separators=(",", ":")).encode("utf-8")
+        linha += (f" Registro da decisão {payload['record']['schema']} · SHA-256 "
+                  f"{hashlib.sha256(corpo).hexdigest()}")
+        if payload["record"].get("decided_at"):
+            linha += f" · respondido em {payload['record']['decided_at']}"
+        linha += "."
+    para(document, linha, size=7.5, color=MUTED)
     return document
+
+
+def payload_from_record(record, positions=None) -> dict:
+    """Refaz as contas a partir do registro da decisão.
+
+    Nenhum número atravessa a fronteira entre a tela e o dossiê: o registro traz
+    respostas, custos declarados e a escolha, e tudo é recalculado aqui com o
+    mesmo módulo de sempre. É o que impede o documento de discordar da tela por
+    acidente — não existem dois cálculos para discordarem.
+    """
+    from client_intake import as_json
+    from plan_record import apply_declared_costs
+    from portfolio_mapping import adapt_portfolio, map_portfolio
+    from research_portfolio_mapping import alvo_do_perfil, carteira_exemplo
+
+    posicoes = apply_declared_costs(list(positions or carteira_exemplo()),
+                                    record.declared_costs)
+    alvo, decisao = alvo_do_perfil(record.profile)
+    return {
+        "status": "generated_from_plan_record",
+        "target_profile": record.profile,
+        "target_decision": decisao,
+        "record": record.to_json(),
+        "intake": {"answers": record.answers,
+                   "assessment": record.intake.assessment(),
+                   "questionnaire": as_json()},
+        "mapping": map_portfolio(posicoes, alvo),
+        "alternative": adapt_portfolio(posicoes, alvo),
+    }
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--record", type=Path,
+                        help="registro da decisão emitido pela tela (plan_record_v1). "
+                             "Quando presente, manda no perfil, nos custos e no plano.")
     parser.add_argument("--mapping", type=Path,
                         default=ROOT / "artifacts/portfolio_mapping_v1/mapping_example.json")
     parser.add_argument("--caminho", choices=("adequar", "adaptar", "ambos"), default="ambos")
@@ -268,19 +313,32 @@ def main() -> None:
     parser.add_argument("--out", type=Path, default=OUT_DOCX)
     args = parser.parse_args()
 
-    payload = json.loads(args.mapping.read_text(encoding="utf-8"))
     registro = json.loads((ROOT / "data/benevente_profile_ladder_v3_registration.json")
                           .read_text(encoding="utf-8"))
     args.out.mkdir(parents=True, exist_ok=True)
 
-    for escolha in (("adequar", "adaptar") if args.caminho == "ambos" else (args.caminho,)):
-        document = build(payload, args.cliente, escolha, registro)
+    if args.record:
+        from plan_record import load
+        decisao = load(args.record)
+        payload = payload_from_record(decisao)
+        cliente = decisao.client or args.cliente
+        # A escolha é de quem assina, não do argumento de linha de comando.
+        caminhos = (decisao.chosen_path,)
+    else:
+        payload = json.loads(args.mapping.read_text(encoding="utf-8"))
+        cliente = args.cliente
+        caminhos = ("adequar", "adaptar") if args.caminho == "ambos" else (args.caminho,)
+
+    for escolha in caminhos:
+        document = build(payload, cliente, escolha, registro)
         destino = args.out / f"plano_{payload['target_profile']}_{escolha}.docx"
         document.save(destino)
         mapa = payload["mapping"] if escolha == "adequar" else payload["alternative"]
-        print(f"{destino.name}: {brl(mapa['transition_total_brl'])} "
-              f"({pct(mapa['transition_cost_pct'], 2)}) · "
-              f"{'histórico aplica' if mapa['track_record_applies'] else 'histórico NÃO aplica'}")
+        completo = mapa.get("tax_is_complete", True)
+        print(f"{destino.name}: {'' if completo else 'a partir de '}"
+              f"{brl(mapa['transition_total_brl'])} ({pct(mapa['transition_cost_pct'], 2)}) · "
+              f"{'histórico aplica' if mapa['track_record_applies'] else 'histórico NÃO aplica'}"
+              f"{'' if completo else ' · imposto incompleto'}")
 
 
 if __name__ == "__main__":

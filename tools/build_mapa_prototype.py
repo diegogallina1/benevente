@@ -248,6 +248,11 @@ details > summary b { color: var(--fg); font-weight: 600; }
 .conta p { margin: 1rem 0 0; font-size: .8125rem; line-height: 1.4; color: var(--fg-3); }
 
 /* Botão do Carbon: retangular, texto à esquerda, altura de 48px. */
+.registro { margin-top: 1rem; background: var(--layer); padding: 1rem; }
+.registro p { margin: 0 0 .75rem; font-size: .8125rem; line-height: 1.4; color: var(--fg-2); }
+.registro pre { margin: 0; overflow-x: auto; font-family: "IBM Plex Mono", monospace;
+                font-size: .75rem; line-height: 1.5; color: var(--fg); }
+
 .acoes { margin-top: 1.5rem; display: flex; flex-direction: column; gap: .75rem; }
 .btn { font: inherit; font-size: .875rem; text-align: left; cursor: pointer;
        border: 0; border-radius: 0; min-height: 3rem; padding: .875rem 4rem .875rem 1rem;
@@ -387,9 +392,10 @@ footer a { color: var(--acao); }
   </details>
   <div class="conta" id="conta"></div>
   <div class="acoes">
-    <button class="btn" type="button">Baixar o dossiê do plano</button>
+    <button class="btn" type="button" id="gerar">Gerar o dossiê do plano</button>
     <span>PDF com as contas, o plano que você não escolheu e o campo de assinatura.</span>
   </div>
+  <div class="registro hidden" id="registro"></div>
 </section>
 
 <footer>
@@ -758,6 +764,24 @@ function planos(perfil, a, b) {
 }
 
 /* --- o que muda no plano escolhido --- */
+// O que a tela entrega ao gerador do dossiê: respostas, custos declarados e a
+// escolha. Nenhum número atravessa — o gerador refaz as contas com o mesmo
+// módulo, e é isso que impede o PDF de discordar da tela por acidente.
+function registroDaDecisao(perfil, chave) {
+  const respostasBrutas = {};
+  escolha.forEach(q => { respostasBrutas[q.key] = respostas[q.key].value; });
+  return {
+    schema: "benevente_plan_record_v1",
+    decided_at: new Date().toISOString(),
+    client: "",
+    answers: respostasBrutas,
+    profile: perfil,
+    declared_costs: Object.fromEntries(
+      Object.entries(custosInformados).map(([t, v]) => [t, Math.round(v * 100) / 100])),
+    chosen_path: chave,
+  };
+}
+
 function razao(perfil, chave, rolar) {
   const m = resolvido(DADOS.profiles[perfil][chave]);
   const outro = resolvido(DADOS.profiles[perfil][chave === "adequar" ? "adaptar" : "adequar"]);
@@ -831,6 +855,24 @@ function razao(perfil, chave, rolar) {
       : "") +
     " O outro plano custaria " + BRL(outro.transition_total_brl) + ".</p>";
   conta.innerHTML = html;
+
+  const caixa = $("registro");
+  caixa.classList.add("hidden");
+  $("gerar").onclick = () => {
+    // O visualizador bloqueia download iniciado pela página, então o protótipo
+    // mostra o que seria enviado em vez de fingir um arquivo que não desce.
+    caixa.classList.remove("hidden");
+    caixa.innerHTML = "";
+    const texto = el("p", null,
+      "Este é o registro da sua decisão. No app ele vai para o servidor, que " +
+      "refaz as contas e devolve o PDF assinável. Aqui ele aparece para você ver " +
+      "o que seria enviado: só respostas e escolhas, nenhum número calculado.");
+    const pre = el("pre");
+    pre.textContent = JSON.stringify(registroDaDecisao(perfil, chave), null, 2);
+    caixa.append(texto, pre);
+    caixa.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
+
   if (rolar) $("razao-sec").scrollIntoView({ behavior: "smooth", block: "start" });
 }
 </script>
