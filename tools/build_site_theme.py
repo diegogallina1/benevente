@@ -438,6 +438,41 @@ details > summary, .annual-decision summary, .live-holdings summary { color: var
    dele, com mil pixels de altura. Nao delimitam nada que a pessoa precise ver. */
 .ladder-wrap, .ladder-wrap > * { border-left: 0 !important; border-right: 0 !important; }
 
+/* Fios em coisa que nao e card.
+ *
+ * Levantei no navegador toda borda visivel das seis paginas e separei em tres
+ * grupos. Card fechado com raio fica: ele delimita uma superficie de verdade.
+ * Controle fica: borda em botao, campo e seletor e o que diz que aquilo se
+ * clica. O que sai e o terceiro grupo, o fio solto de um lado so, que nao
+ * fecha nada e existe so para dividir, e a divisao ja vem do espaco.
+ *
+ * A borda lateral do grafico e do painel dele eram o caso mais visivel: um
+ * traco vertical de altura inteira encostado no desenho.
+ */
+.return-chart, .chart-sidepanel, .ladder-wrap, .comparison-controls,
+.comparison-foot, .fixed-comparators-wrap, .version-hero, .paper-foot,
+.carteira-2026-split, .annual-decision-body, .annual-decision,
+.benchmark-panel, .weight-rule, .version-callout, .paper-callout,
+.chart-return-summary, .comparison-card, .wealth-panel, .hero-performance-bars,
+.role-contract, .radar-summary {
+  border: 0 !important;
+}
+/* O calloute perdia o proprio sentido sem o trilho: ele e o que diz "isto e um
+   aparte". Ele volta como faixa de fundo, que separa sem desenhar linha. */
+.version-callout, .paper-callout { background: var(--acao-fraco) !important;
+  border-radius: 8px !important; padding: 16px 18px !important; }
+.paper-callout.warn { background: var(--neg-fraco) !important; }
+/* A moldura externa da tabela sai; as linhas de linha ficam, porque numa tabela
+   de sete colunas elas sao o que leva o olho ate o fim da linha certa. */
+table, table.policy-split, .alpha-table { border: 0 !important; }
+/* Fio vertical dentro de tabela: a linha da tabela ja separa por baixo, e a
+   coluna nao precisa de parede. */
+th, td { border-left: 0 !important; border-right: 0 !important; }
+/* E os ultimos dois fios soltos, achados no levantamento: divisoria de coluna
+   no resumo do radar e divisoria entre itens da lista de fontes. */
+.radar-summary > div > div { border-right: 0 !important; }
+.radar-sources li { border-bottom: 0 !important; }
+
 table, th, td { border-color: var(--line); }
 /* Paineis escuros cujo fundo o gerador nao alcanca — a cor vem de gradiente,
    que tem mais de um valor e ele ignora. Sem isto o texto deles fica marcado
