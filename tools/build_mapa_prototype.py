@@ -18,7 +18,7 @@ OUT = ROOT / "docs" / "desenho_tela_mapa.html"
 
 PERFIL_LABEL = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
 
-HTML = """<title>Plano de carteira</title>
+HTML = r"""<title>Plano de carteira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">

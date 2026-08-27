@@ -29,13 +29,18 @@ jobs:
           python-version: "3.12"
           cache: pip
 
+      # numpy e pandas entram por portfolio_risk.py, de onde saem os
+      # multiplicadores da camada de proteção. Esse arquivo é hasheado no
+      # registro congelado da política, então não pode ser editado para ficar
+      # leve — e copiar os multiplicadores para cá criaria uma segunda fonte
+      # de um parâmetro declarado, que é pior do que instalar a dependência.
       - name: Instalar dependências mínimas
-        run: python -m pip install pytest
+        run: python -m pip install pytest numpy pandas
 
       - name: Atualizar séries e validar contrato
         run: |
           python tools/update_live_performance.py
-          PYTHONPATH=tools python tools/update_profile_books.py
+          python tools/update_profile_books.py
           python tools/notify_queue.py
           python -m pytest tests/test_live_performance.py tests/test_profile_books_2026.py tests/test_notify_queue.py -q
 

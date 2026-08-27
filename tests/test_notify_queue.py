@@ -31,13 +31,45 @@ def test_a_fase_zero_nao_entrega_nada(fila) -> None:
 
 
 def test_todo_item_se_rastreia_ate_um_artefato(fila) -> None:
-    import hashlib
+    """O item aponta para um arquivo real, com hash bem formado.
+
+    A versão anterior deste teste comparava o hash guardado com o hash atual do
+    arquivo, e estava errada de um jeito que só apareceria em produção: o
+    acompanhamento reescreve ``web/live_performance_*.json`` todo pregão, e um
+    alerta enfileirado ontem passaria a apontar para um hash que não existe mais.
+    A CI quebraria no dia seguinte ao primeiro alerta.
+
+    O retrato é imutável de propósito — é justamente ele que permite dizer, três
+    anos depois, qual versão do artefato originou o alerta. O que se verifica
+    aqui é a forma; que o hash seja o do arquivo no momento em que foi escrito é
+    verificado em test_o_hash_gravado_e_o_do_arquivo_no_momento_do_registro.
+    """
     for item in fila["items"]:
         origem = ROOT / "web" / item["source"]["file"]
         assert origem.exists(), item["source"]["file"]
-        atual = hashlib.sha256(origem.read_bytes()).hexdigest()
-        assert item["source"]["sha256"] == atual, (
-            f"{item['key']} aponta para uma versão do artefato que não é a publicada")
+        sha = item["source"]["sha256"]
+        assert len(sha) == 64 and all(c in "0123456789abcdef" for c in sha), item["key"]
+
+
+def test_o_hash_gravado_e_o_do_arquivo_no_momento_do_registro(tmp_path) -> None:
+    """A propriedade que o teste acima não pode mais conferir retroativamente."""
+    import hashlib
+
+    from tools.notify_queue import _item
+
+    origem = tmp_path / "live_performance_conservador.json"
+    origem.write_text('{"a": 1}', encoding="utf-8")
+    esperado = hashlib.sha256(origem.read_bytes()).hexdigest()
+
+    item = _item("radar_revisao", "k", {"quantidade": "1", "tickers": "X", "data": "01/01/2026"},
+                 origem, None)
+    assert item["source"]["sha256"] == esperado
+
+    # E muda quando o arquivo muda: o retrato é do conteúdo, não do nome.
+    origem.write_text('{"a": 2}', encoding="utf-8")
+    outro = _item("radar_revisao", "k2", {"quantidade": "1", "tickers": "X", "data": "01/01/2026"},
+                  origem, None)
+    assert outro["source"]["sha256"] != esperado
 
 
 def test_a_cadeia_nao_pode_ser_reescrita_em_silencio(fila) -> None:

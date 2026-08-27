@@ -21,10 +21,17 @@ from datetime import date, datetime
 from pathlib import Path
 import argparse
 import json
+import sys
 
-from update_live_performance import update
-
+# Rodado como script, o Python põe tools/ no sys.path, não a raiz do
+# repositório — então os módulos de pesquisa que vivem na raiz não são
+# encontrados. Sob pytest isso não aparece, porque o pytest insere a raiz
+# sozinho: o teste passa e o script quebra, que foi exatamente o que houve.
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+
+from portfolio_risk import risk_profile_spec  # noqa: E402
+from update_live_performance import update  # noqa: E402
 BOOKS = ROOT / "artifacts" / "profile_books_2026" / "profile_books_2026.json"
 WEB = ROOT / "web"
 GLOBAL_TICKER = "IVVB11"
@@ -33,7 +40,6 @@ PROFILES = ("conservador", "equilibrado", "arrojado")
 
 def overlay_for(profile: str, registration: dict) -> tuple[dict, list[float]]:
     """Gatilhos e ação da camada, lidos do registro congelado."""
-    from portfolio_risk import risk_profile_spec
     spec = risk_profile_spec(profile)
     return registration["intrayear_overlay"]["config"], [spec.alert_multiplier, spec.severe_multiplier]
 

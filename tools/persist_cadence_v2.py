@@ -12,15 +12,22 @@ from __future__ import annotations
 from dataclasses import replace
 from pathlib import Path
 import json
+import sys
 
 import pandas as pd
+
+# Rodado como script, o Python põe tools/ no sys.path, não a raiz do
+# repositório — então os módulos de pesquisa que vivem na raiz não são
+# encontrados. Sob pytest isso não aparece, porque o pytest insere a raiz
+# sozinho: o teste passa e o script quebra, que foi exatamente o que houve.
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from annual_walk_forward import BrazilianTaxModel
 from profile_ladder_v2 import LADDER_V2, domestic_protocol
 from research_global_sleeve import build_global_engine
 from research_cadence_and_exemption import CADENCES, period_taxes, _calendar_years, _cagr
 
-ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "artifacts" / "cadence_v2_profiles"
 
 

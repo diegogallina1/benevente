@@ -15,9 +15,17 @@ from __future__ import annotations
 from pathlib import Path
 import argparse
 import json
+import sys
 import math
 
 import pandas as pd
+
+# Rodado como script, o Python põe tools/ no sys.path, não a raiz do
+# repositório — então os módulos de pesquisa que vivem na raiz não são
+# encontrados. Sob pytest isso não aparece, porque o pytest insere a raiz
+# sozinho: o teste passa e o script quebra, que foi exatamente o que houve.
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
 
 from annual_walk_forward import BrazilianTaxModel, apply_annual_taxes
 from profile_intrayear_risk import apply_profile_overlay
@@ -26,7 +34,6 @@ from profile_ladder_v3 import V3_INPUTS
 from research_global_sleeve import GLOBAL_TICKER, build_global_engine
 from research_ladder_v2 import _annual_rebalanced_blend, _daily
 
-ROOT = Path(__file__).resolve().parents[1]
 # Uma marca só. Os módulos continuam sendo Benevente 1 (seleção) e Benevente 2
 # (proteção), e "Benevente Quant AI" continua sendo o nome da pesquisa. Um nome
 # de produto a mais dividia a atenção sem descrever nada que os módulos já não

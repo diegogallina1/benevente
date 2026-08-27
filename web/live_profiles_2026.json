@@ -6,25 +6,25 @@
   "honesty": "A política é declarada e foi congelada antes desta execução, então aplicá-la a uma data passada não escolhe nada: orçamento, número de nomes, tetos e fatores já estavam assinados. A amostra confirmatória continua começando no primeiro pregão de 2027 — este livro é reconstrução, não validação prospectiva.",
   "profiles": {
     "conservador": {
-      "through": "2026-08-24",
-      "portfolio_return": 0.0511015712,
+      "through": "2026-08-25",
+      "portfolio_return": 0.0596203374,
       "equity_weight": 0.35,
       "issuers": 12,
-      "record_sha256": "f3ce9c36aa581d44ac0313a18a037e7bbb07ec71b09a3ca25348c4cc6d31bd5b"
+      "record_sha256": "65f72dcaf5af4a18885a2ab45905d85b62556e556367a9eee7c7ef6bf75ad6a8"
     },
     "equilibrado": {
-      "through": "2026-08-24",
-      "portfolio_return": 0.0358051687,
+      "through": "2026-08-25",
+      "portfolio_return": 0.0481946162,
       "equity_weight": 0.55,
       "issuers": 8,
-      "record_sha256": "9fd29d8cb3f19a4b17e4d168baa9faefee4cf2b7bb16d86748eade41a58a6e81"
+      "record_sha256": "4eb34b9a71d9f07f4ee7b6a90f491d156bbb153ffb9017426cb029674b5ade74"
     },
     "arrojado": {
-      "through": "2026-08-24",
-      "portfolio_return": 0.0034339962,
+      "through": "2026-08-25",
+      "portfolio_return": 0.0196349271,
       "equity_weight": 0.75,
       "issuers": 5,
-      "record_sha256": "7a43ebf77744b63d0d1fc1608ecad87f8d79605a2e8f4925e82ef53750649793"
+      "record_sha256": "dde91c7f7be88dac72b44c83ebb4ad64239d0917ca8369ece86905928cd28f1b"
     }
   }
 }
