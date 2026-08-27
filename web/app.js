@@ -659,7 +659,7 @@ function renderComparison(period) {
   const cashName = cashSeriesName(baseRows.map(([name]) => name));
   const cash = baseRows.find(([name]) => name === cashName);
   document.querySelector("#comparison-summary").textContent = ranked.length && cash
-    ? `Na janela escolhida: ${ranked.map(([name, stats]) => `${name} ${plainPct(stats.cumulative)}`).join("; ")}. ${cashName} ${plainPct(cash[1].cumulative)}. Retorno e queda sobem juntos — a escada é a escolha, não o número isolado.`
+    ? `Na janela escolhida: ${ranked.map(([name, stats]) => `${name} ${plainPct(stats.cumulative)}`).join("; ")}. ${cashName} ${plainPct(cash[1].cumulative)}. Retorno e queda sobem juntos, a escada é a escolha, não o número isolado.`
     : "Selecione uma janela para comparar os perfis declarados.";
   const extras = Object.entries(extraSeries[period] || {}).map(([name, values]) => {
     const metrics = metricsForSeries(values, profileDataset(period).dates);

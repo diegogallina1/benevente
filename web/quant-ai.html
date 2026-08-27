@@ -21,8 +21,8 @@
     <link rel="stylesheet" href="./site-polish.css?v=39e348ecd6" />
     <link rel="stylesheet" href="./design-system.css?v=dadaa2d82a" />
     <link rel="stylesheet" href="./ladder.css?v=2a8be89fde" />
-    <link rel="stylesheet" href="./tokens.css?v=d35b6d0e18">
-    <link rel="stylesheet" href="./benevente.css?v=8d36453e10">
+    <link rel="stylesheet" href="./tokens.css?v=170d149483">
+    <link rel="stylesheet" href="./benevente.css?v=da436b0311">
   </head>
   <body class="version-page">
     <header class="version-nav shell">
@@ -33,7 +33,7 @@
       <p class="version-kicker">BENEVENTE QUANT AI · ENGLISH RESEARCH VERSION</p>
       <p class="paper-lede" style="margin-top:.4rem;font-size:.85rem">Esta página documenta a pesquisa em inglês, o idioma do manuscrito submetido. O restante do site está em português.</p>
       <h1>Separating what the system calculates from what language explains.</h1>
-      <p class="paper-lede">The production artifact uses dated data and deterministic code to select and weight assets. Only after the proposal is sealed does a language model explain approved facts, risks and review questions. A separate retrospective experiment relaxed that boundary to test what model discretion would add; it found no detectable return benefit and cannot certify temporal purity.</p>
+      <p class="paper-lede">The production artifact uses dated data and deterministic code to select and weight assets. Only after the proposal is sealed does a language model explain approved facts, risks and review questions. A separate retrospective experiment relaxed that boundary to test what model discretion would add. It found no detectable return benefit and cannot certify temporal purity.</p>
 
       <div class="paper-callout"><b>One term, defined once</b>CDI is the Brazilian interbank overnight rate, the
       benchmark a domestic investor earns on cash with negligible credit risk. It is the local equivalent of a
@@ -42,7 +42,7 @@
       appears as a benchmark throughout and why the defensive sleeve is held in it rather than in bills.</div>
 
       <h2>1 · Why the separation exists</h2>
-      <p>Portfolio weights must sum to one, respect policy limits and remain traceable to the data admitted at the decision date. Free text cannot guarantee those properties. The separation is structural: deterministic code creates eligibility, ranking and weights; language receives a read-only decision record; a named human accepts or rejects the proposal.</p>
+      <p>Portfolio weights must sum to one, respect policy limits and remain traceable to the data admitted at the decision date. Free text cannot guarantee those properties. The separation is structural: deterministic code creates eligibility, ranking and weights. Language receives a read-only decision record. A named human accepts or rejects the proposal.</p>
       <div class="paper-callout"><b>Production contract</b>Dated data → deterministic rule → valid weights → explanation → human review. There is no path from generated prose back to selection, limits or weights.</div>
 
       <h2>2 · Pipeline</h2>
@@ -51,43 +51,43 @@
       <p>The universe of record is the exchange's own historical quotation archive, not a vendor feed. This matters more than it sounds: a public adjusted-price provider serves the companies that still exist, so building a universe from one silently deletes every company that was delisted, acquired or wound up. In this panel that is 166 of 514 issuers, 77 of which disappear before 2020, and 58 of which had already fallen more than 60% from their own peak when they stopped trading. Rebuilding from the exchange archive restores them.</p>
       <p>Corporate actions are recovered in two ways: confirmed against an archived provider event feed where one exists, and otherwise detected from round, persistent price ratios. The detector's precision and recall against the provider's own records are published with the panel rather than assumed, because for the delisted tail it is the only evidence available.</p>
       <h3>2.2 Point-in-time fundamentals</h3>
-      <p>Fundamentals come from the regulator's standardised filings, carrying both the reference date and the date the filing was received. Only filings received on or before the decision date can enter. Trailing-twelve-month figures are bridged from the annual statement plus the current and comparative interim periods, using the year-to-date column only — the interim filing also publishes the isolated quarter, and mixing the two silently corrupts every ratio from the second quarter onwards.</p>
+      <p>Fundamentals come from the regulator's standardised filings, carrying both the reference date and the date the filing was received. Only filings received on or before the decision date can enter. Trailing-twelve-month figures are bridged from the annual statement plus the current and comparative interim periods, using the year-to-date column only, the interim filing also publishes the isolated quarter, and mixing the two silently corrupts every ratio from the second quarter onwards.</p>
       <h3>2.3 Screen</h3>
-      <p>Assets must clear liquidity, profitability, returns on capital and solvency. Operating companies and financial institutions are screened on different quantities because their standardised statements are not comparable; solvency for operating companies is derived from the standardised accounts rather than left undefined, which is what previously caused an accidental sector concentration.</p>
+      <p>Assets must clear liquidity, profitability, returns on capital and solvency. Operating companies and financial institutions are screened on different quantities because their standardised statements are not comparable. Solvency for operating companies is derived from the standardised accounts rather than left undefined, which is what previously caused an accidental sector concentration.</p>
       <h3>2.4 Ranking and allocation</h3>
       <p>Survivors are ranked by a declared composite of quality, valuation yield and twelve-month momentum. The annual configuration is chosen only with years already closed. Deterministic code allocates inside the ceilings and holds the residual at the domestic overnight rate. MVO is an independent comparator, not the Benevente selector.</p>
       <h3>2.5 Explanation and human review</h3>
       <p>The sealed proposal carries the policy, rejection reasons, weights, order sizes and estimated cost. The language model turns those approved facts into a readable note but cannot modify them. A person records acceptance or rejection. No order is transmitted.</p>
 
       <h2>3 · Holding, cost and tax</h2>
-      <p>The book is bought in January and held. This is worth stating because the natural vectorised expression of a backtest — compounding the inner product of returns and weights — silently rebalances to fixed weights every session at no cost, which is neither the protocol being evaluated nor something an investor can execute.</p>
+      <p>The book is bought in January and held. This is worth stating because the natural vectorised expression of a backtest, compounding the inner product of returns and weights, silently rebalances to fixed weights every session at no cost, which is neither the protocol being evaluated nor something an investor can execute.</p>
       <p>Costs are the exchange's published fee plus a slippage term that grows with the position's participation in the asset's average traded volume, so a thinly traded name is not assumed to trade like a liquid one. Taxation follows the domestic regime: gains realised at a review are taxed at the equity rate, the cash sleeve at the fixed-income rate, and positions carried into the next year defer their liability exactly as the law allows.</p>
 
       <h2>4 · How the published rule was chosen</h2>
-      <p>This is the part that most backtests get wrong, and it was wrong here first. A grid of candidate rules was evaluated, the best was published, and its rank improved from 57th on the declared training criterion to 1st on the holdout — which is only possible if the holdout was read. Nothing downstream of that choice is out of sample.</p>
-      <p>The next correction was a nested protocol. For decision year <i>t</i>, the configuration was ranked using only years that had already closed, by Sharpe of the excess return over cash; year <i>t</i> was then evaluated once. Changing configuration was charged a full-turnover rebalance, because in a real book it means liquidating one portfolio to buy another. Three quantities were published alongside every result: the nested outcome, the full-sample winner, and the difference between them — the hindsight premium, 0.65 points a year over 36 configurations.</p>
-      <p>That fixed reading the holdout. It did not fix <i>searching</i>. In 2026 the same procedure was run over a wider grid — 256 candidates instead of 36, on identical inputs, code and window — and the result inverted the expectation. The nested outcome fell from 15.31% to 12.68% a year, and the deflated Sharpe fell from 0.957 to 0.777, below significance, because the expected maximum Sharpe under the null rose from 0.375 to 0.746. The selector wandered into noise: for 2018 it chose a low-volatility configuration that returned −7.2% in a year when cash returned 6.4%.</p>
+      <p>This is the part that most backtests get wrong, and it was wrong here first. A grid of candidate rules was evaluated, the best was published, and its rank improved from 57th on the declared training criterion to 1st on the holdout, which is only possible if the holdout was read. Nothing downstream of that choice is out of sample.</p>
+      <p>The next correction was a nested protocol. For decision year <i>t</i>, the configuration was ranked using only years that had already closed, by Sharpe of the excess return over cash. Year <i>t</i> was then evaluated once. Changing configuration was charged a full-turnover rebalance, because in a real book it means liquidating one portfolio to buy another. Three quantities were published alongside every result: the nested outcome, the full-sample winner, and the difference between them, the hindsight premium, 0.65 points a year over 36 configurations.</p>
+      <p>That fixed reading the holdout. It did not fix <i>searching</i>. In 2026 the same procedure was run over a wider grid, 256 candidates instead of 36, on identical inputs, code and window, and the result inverted the expectation. The nested outcome fell from 15.31% to 12.68% a year, and the deflated Sharpe fell from 0.957 to 0.777, below significance, because the expected maximum Sharpe under the null rose from 0.375 to 0.746. The selector wandered into noise: for 2018 it chose a low-volatility configuration that returned −7.2% in a year when cash returned 6.4%.</p>
       <div class="paper-metrics">
         <div class="paper-metric"><span>Cost of widening the search</span><b>−2.63 pp</b><small>per year, 36 → 256 candidates, identical inputs and window</small></div>
         <div class="paper-metric"><span>Deflated Sharpe</span><b>0.957 → 0.777</b><small>significant at 95% before widening, not after</small></div>
         <div class="paper-metric"><span>Tactical allocation</span><b>0 of 7</b><small>predictive rules beat the static weight over 118 months</small></div>
       </div>
-      <p>Ten annual observations cannot rank 256 candidates. Widening the search does not improve the system; it degrades the selector. Each profile's configuration is therefore <b>declared and frozen before the period</b>, with a public hash, rather than chosen by search. The nested search remains published as the experiment that established its own limit.</p>
+      <p>Ten annual observations cannot rank 256 candidates. Widening the search does not improve the system. It degrades the selector. Each profile's configuration is therefore <b>declared and frozen before the period</b>, with a public hash, rather than chosen by search. The nested search remains published as the experiment that established its own limit.</p>
       <h3>4.1 Does deciding more often help?</h3>
       <p>A distinct question from the one above, and the one most readers ask first: not whether the equity share should move more often, but whether the basket itself should be reselected more often. Holding the rule, the limits and the panel fixed and varying only the decision dates, annual reselection compounded at 18.58% before costs, quarterly at 16.37% and monthly at 13.92%. Paired by calendar year and measured after tax, quarterly trails the annual decision by 1.55 percentage points a year (p = 0.376) and monthly by 3.27 (p = 0.306). Eleven paired years cannot support the stronger claim. This sample provides no evidence that more frequent decisions help, but it does not reject a benefit in other periods, markets or signal families.</p>
-      <p>The mechanism is not the one usually assumed. The loss sits in the gross return, which falls 4.66 points from annual to monthly before any deduction; execution cost rises by only 0.08 points a year, and modelled tax actually falls, because each monthly review realises a smaller slice of the book. Reselecting monthly degrades the selection before it raises the bill. The tax model understates the monthly arm's liability, since it charges tax on each period's own gain rather than on the accumulated gain of the position actually sold — a bias in favour of the arm that lost anyway.</p>
-      <p>The last figure is a separate study. Perfect monthly timing of the equity-versus-cash split would have been worth roughly 50 percentage points a year, so the prize is real; none of seven predictive rules, fitted walk-forward on observable state, captured any of it, across three training-window lengths.</p>
+      <p>The mechanism is not the one usually assumed. The loss sits in the gross return, which falls 4.66 points from annual to monthly before any deduction. Execution cost rises by only 0.08 points a year, and modelled tax actually falls, because each monthly review realises a smaller slice of the book. Reselecting monthly degrades the selection before it raises the bill. The tax model understates the monthly arm's liability, since it charges tax on each period's own gain rather than on the accumulated gain of the position actually sold, a bias in favour of the arm that lost anyway.</p>
+      <p>The last figure is a separate study. Perfect monthly timing of the equity-versus-cash split would have been worth roughly 50 percentage points a year, so the prize is real. None of seven predictive rules, fitted walk-forward on observable state, captured any of it, across three training-window lengths.</p>
 
       <h2>5 · Everything that was tried</h2>
       <p>Seven hypotheses were tested against the published protocol. None survived. They are listed together because a reader assessing a method needs the failure inventory as much as the result, and because each one closes a specific objection that would otherwise remain open.</p>
       <table class="paper-table">
         <thead><tr><th>Hypothesis</th><th>How it was tested</th><th>Outcome</th></tr></thead>
         <tbody>
-          <tr><td>A wider search finds a better rule</td><td>The same nested procedure over 256 candidates instead of 36, identical inputs and window</td><td>−2.63 points a year; deflated Sharpe 0.957 → 0.777, below significance.</td></tr>
+          <tr><td>A wider search finds a better rule</td><td>The same nested procedure over 256 candidates instead of 36, identical inputs and window</td><td>−2.63 points a year. Deflated Sharpe 0.957 → 0.777, below significance.</td></tr>
           <tr><td>Positions should be sized by inverse volatility</td><td>Equal, inverse-volatility and geometric-blend sizing against the published confidence weighting, over 8 configurations</td><td>The published rule won 8 of 8. Inverse volatility bought 0.95 points of drawdown for 2.11 points of return.</td></tr>
           <tr><td>Risk can be sized from volatility observed in January</td><td>An annual volatility target scaling the equity sleeve at the decision date</td><td>Cut exposure in 5 of 13 years, always <i>after</i> a stress and never before one, and left the worst drawdown untouched.</td></tr>
           <tr><td>The year's regime can be forecast</td><td>Five January-observable predictors, expanding window, 8 years</td><td>Best predictor 3 of 4 live calls, p = 0.31. No signal.</td></tr>
-          <tr><td>The equity share should move more often</td><td>Seven continuous rules, 118 monthly and 521 weekly periods</td><td>None beat the static weight; mean-variance was significantly worse.</td></tr>
+          <tr><td>The equity share should move more often</td><td>Seven continuous rules, 118 monthly and 521 weekly periods</td><td>None beat the static weight. Mean-variance was significantly worse.</td></tr>
           <tr><td>The basket should be reselected more often</td><td>Same rule and limits, cadence varied to quarterly and monthly</td><td>−1.55 and −3.27 points a year after tax, p = 0.38 and 0.31.</td></tr>
           <tr><td>A language model adds return</td><td>Four arms over 13 years, named / anonymised / deterministic / monolithic</td><td>Three nulls. The model reproduces the deterministic ranking.</td></tr>
         </tbody>
@@ -115,7 +115,7 @@
           <tr><td>Recognising the company helps</td><td class="num">+0.38 pp</td><td class="num">0.91</td><td>Indistinguishable from zero</td></tr>
         </tbody>
       </table>
-      <div class="paper-callout warn"><b>The retrospective result is null</b>None of the three effects survives testing. The model reproduces the deterministic ranking. Direct model-generated weights failed to sum to one in five of thirteen years and silently omitted eligible names in two. This supports keeping language away from allocation, but it does not prove contamination absent or validate the model. The production system therefore restricts language to explanation; any future predictive role requires a new prospective arm.</div>
+      <div class="paper-callout warn"><b>The retrospective result is null</b>None of the three effects survives testing. The model reproduces the deterministic ranking. Direct model-generated weights failed to sum to one in five of thirteen years and silently omitted eligible names in two. This supports keeping language away from allocation, but it does not prove contamination absent or validate the model. The production system therefore restricts language to explanation. Any future predictive role requires a new prospective arm.</div>
 
       <h2>7 · Published strategies</h2>
       <table class="paper-table">
@@ -131,17 +131,17 @@
           <tr><td>Cash (CDI)</td><td class="num">—</td><td class="num">—</td><td class="num">9.61%</td><td class="num">0%</td></tr>
         </tbody>
       </table>
-      <p>There is no single Benevente number. Each profile declares an equity budget, an issuer count and a fifth of that budget in the global sleeve, and each pair of rows shows what the intra-year overlay costs and returns. Every profile beat cash in 8 of 11 years, and the risk ordering holds: the one that returned more also fell further. The overlay reduces drawdown by 6.7 to 8.6 points for under one point of annual return — a far better trade than inverse-volatility sizing, which bought 0.95 points of drawdown for 2.11 points of return.</p>
+      <p>There is no single Benevente number. Each profile declares an equity budget, an issuer count and a fifth of that budget in the global sleeve, and each pair of rows shows what the intra-year overlay costs and returns. Every profile beat cash in 8 of 11 years, and the risk ordering holds: the one that returned more also fell further. The overlay reduces drawdown by 6.7 to 8.6 points for under one point of annual return, a far better trade than inverse-volatility sizing, which bought 0.95 points of drawdown for 2.11 points of return.</p>
       <p>The evaluation window is also the window that developed the rule, so it describes the sample. The 2026 allocation predates the registered version and remains a shadow portfolio under the policy that decided it. Prospective evaluation starts with the January 2027 decision, made under a registered version that is not changed after outcomes are observed.</p>
 
 
       <h2>8 · Reproduction contract</h2>
-      <p>The repository publishes code, configuration grid, dated inputs where licensing permits, tests, raw experiment outputs and SHA-256 manifests. The website explains the method without exposing source code in the interface; the paper and supplementary package remain the scientific record. The frozen protocol cannot be changed after an outcome without creating a new version and a new prospective count.</p>
+      <p>The repository publishes code, configuration grid, dated inputs where licensing permits, tests, raw experiment outputs and SHA-256 manifests. The website explains the method without exposing source code in the interface. The paper and supplementary package remain the scientific record. The frozen protocol cannot be changed after an outcome without creating a new version and a new prospective count.</p>
 
       <h2>9 · Limitations</h2>
       <ul>
-        <li>Eleven annual evaluations for the strategy and thirteen for the model experiment. Every test is underpowered; effect sizes are reported with p-values rather than as findings.</li>
-        <li>Corporate actions for the delisted tail rest on a detector whose precision and recall are published but imperfect; distributions for issuers no provider still serves are imputed from the cross-section and flagged per ticker.</li>
+        <li>Eleven annual evaluations for the strategy and thirteen for the model experiment. Every test is underpowered. Effect sizes are reported with p-values rather than as findings.</li>
+        <li>Corporate actions for the delisted tail rest on a detector whose precision and recall are published but imperfect. Distributions for issuers no provider still serves are imputed from the cross-section and flagged per ticker.</li>
         <li>The named--anonymised gap cannot certify temporal purity. Identity may be inferred from fundamentals and pretrained memory is unobservable.</li>
         <li>Coverage is no longer Brazil only: a declared sleeve holds a B3-listed fund tracking the S&amp;P 500 in reais. Roughly a third of that fund's return over the window came from currency depreciation rather than the American market, so the sleeve is an unhedged long dollar position and must be read as one. Partial-year monitoring uses exchange closing prices and excludes distributions until corporate events are reconciled against primary records.</li>
         <li>The sector limit of three issuers is a governance constraint, not a performance improvement. Where it binds it cost 0.15 points a year and improved the excess Sharpe in none of the twenty configurations affected.</li>
@@ -151,6 +151,6 @@
       <p class="paper-foot">Benevente Quant AI · reproducible research. Figures on this page are read from the same files the engine writes. This is not investment advice, an offer, or a promise of return. Historical results describe the sample, not the future.</p>
     </main>
     <script src="./paper.js?v=a544313184"></script>
-    <script src="./tema.js?v=7f465dc3e6"></script>
+    <script src="./tema.js?v=0970e99313"></script>
   </body>
 </html>

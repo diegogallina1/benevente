@@ -52,7 +52,7 @@
   });
 
   // A limitação vem do artefato, que agora deriva os números da amostra. Repetir
-  // a contagem aqui produziria dois "erro padrão de X" no mesmo parágrafo — foi
+  // a contagem aqui produziria dois "erro padrão de X" no mesmo parágrafo, foi
   // o que aconteceu quando o texto do artefato ainda estava escrito à mão.
   host.append(el("p", "calib-nota",
     "<b>Acertar seis ou acertar oito não se distingue de sorte.</b> " + dados.limitation));
@@ -72,8 +72,8 @@
     anos.forEach((a, i) => {
       const cx = L + passo * (i + 0.5);
       // A faixa e so uma faixa: o eixo, a linha do zero e o traco da mediana
-      // sairam porque o grafico responde uma pergunta unica — o resultado caiu
-      // dentro do que foi projetado? — e nenhum dos tres ajudava a responder.
+      // sairam porque o grafico responde uma pergunta unica, o resultado caiu
+      // dentro do que foi projetado?, e nenhum dos tres ajudava a responder.
       partes.push("<line x1='" + cx + "' x2='" + cx + "' y1='" + y(a.p10) + "' y2='" + y(a.p90) +
         "' class='calib-faixa'/>");
       // O anel na cor do fundo separa o ponto da barra: sem ele o marcador some

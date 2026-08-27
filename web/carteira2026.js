@@ -1,5 +1,5 @@
 // A carteira do ano corrente na home. Lê os documentos que o monitor diário
-// publica — um por perfil — e mostra o que cada livro carrega e quanto rendeu
+// publica, um por perfil, e mostra o que cada livro carrega e quanto rendeu
 // desde a decisão de janeiro. Não recalcula nada: se o número aqui divergir do
 // arquivo, é o arquivo que manda.
 (() => {
@@ -19,8 +19,8 @@
   };
 
   // O resumo diário já traz retorno e data de cada perfil em 1,3 KB. Buscar as
-  // séries completas para mostrar três números custava 249 KB — quase metade do
-  // peso da página — e nenhum deles aparecia na tela.
+  // séries completas para mostrar três números custava 249 KB, quase metade do
+  // peso da página, e nenhum deles aparecia na tela.
   Promise.all([
     load("live_profiles_2026.json"),
     ...Object.keys(LABELS).map(p => load(`current_decision_2026_${p}.json`)),
@@ -44,10 +44,14 @@
     }).join("")}</div>`;
 
     if (note) {
-      note.textContent = `Decisão de ${dateBr(summary.decision_date)} sob a política ${summary.policy}, `
-        + `congelada por ${summary.approved_by}. Retorno parcial a preço de fechamento da B3, sem ajuste de `
-        + `proventos: subestima ações que pagaram dividendos. A amostra confirmatória da política começa no `
-        + `primeiro pregão de 2027 — este ano é reconstrução acompanhada, não validação prospectiva.`;
+      // Quatro frases curtas no lugar de um bloco só. O bloco anterior tinha
+      // aposto, dois pontos e oração encaixada na mesma sentença, e numa coluna
+      // estreita virava parede de texto.
+      note.textContent = `Decisão de ${dateBr(summary.decision_date)}, `
+        + `congelada por ${summary.approved_by}. O retorno é parcial e usa o preço de `
+        + `fechamento da B3. Não ajusta proventos, então subestima quem pagou dividendos. `
+        + `Este ano é reconstrução acompanhada. A validação prospectiva começa no primeiro `
+        + `pregão de 2027.`;
     }
   }).catch(() => {
     host.innerHTML = `<p class="carteira-2026-names">O acompanhamento de 2026 não pôde ser carregado agora.</p>`;

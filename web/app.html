@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Protótipo do aplicativo da Benevente: conecta a B3, quatro perguntas e dois planos. Dados sintéticos.">
 <link rel="canonical" href="https://benevente.dgo.fi/app">
-<link rel="stylesheet" href="./tokens.css?v=d35b6d0e18">
+<link rel="stylesheet" href="./tokens.css?v=170d149483">
 <title>Plano de carteira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,12 +23,12 @@
    reservar o branco para a única superfície de alta luminância da página.
 
    O guia manda ter um acento só. O produto precisa de vermelho para valor
-   negativo, que é requisito de leitura, não decoração — então são dois
+   negativo, que é requisito de leitura, não decoração, então são dois
    cromáticos e nada mais. Verde e amarelo saíram: o aviso de FGC passou a usar
    a borda de risco, e o selo de histórico usa indigo ou vermelho.
 
    E o vermelho tem contraste 1,01 contra o indigo: em escala de cinza os dois
-   são o mesmo tom. Por isso nenhuma informação depende só da cor — o selo diz
+   são o mesmo tom. Por isso nenhuma informação depende só da cor, o selo diz
    "foi" ou "NÃO foi" por escrito, e no gráfico a posição do ponto já revela se
    caiu fora da faixa.
 
@@ -116,7 +116,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .cols ul { margin: 8px 0 0; padding: 0; list-style: none; }
 /* O trilho de borda que ficava aqui virava uma linha vertical no meio da tela:
    em duas colunas, o trilho da segunda cai a poucos pixels do centro da página.
-   O marcador diz a mesma coisa sem desenhar a linha — e diz por forma, não por
+   O marcador diz a mesma coisa sem desenhar a linha, e diz por forma, não por
    cor, que é a regra da casa: o vermelho e o verde têm o mesmo cinza. */
 .cols li { font-size: 14px; line-height: 1.57; color: var(--fg-2);
            padding: 6px 0 6px 22px; position: relative; }
@@ -184,7 +184,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .veredito b.neg { color: var(--neg); }
 
 /* --- a régua --- */
-.regua { margin-top: 24px; border-top: 1px solid var(--line); padding-top: 24px; }
+.regua { margin-top: 40px; }
 .regua h3 { margin-bottom: 8px; }
 .regua p { margin: 0 0 16px; font-size: 14px; line-height: 1.57; color: var(--fg-2); }
 .regua p b { color: var(--fg); font-weight: 500; }
@@ -449,6 +449,6 @@ footer a { color: var(--acao); }
 </div>
 
 
-<script src="./plano.js?v=6890f8c49e"></script>
+<script src="./plano.js?v=7cf4473e7b"></script>
 </body>
 </html>

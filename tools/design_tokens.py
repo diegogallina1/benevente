@@ -14,7 +14,9 @@ documento só, recebe o mesmo bloco embutido. Um teste compara os três.
 Os papéis, porque nomear cor por aparência envelhece mal:
 
 * ``canvas``, ``card``, ``elev`` — a pilha de superfícies, do fundo da página
-  para cima. A elevação vem do degrau de luminância, não de sombra.
+  para cima. A elevação vem do degrau de luminância, não de sombra. Os três são
+  da mesma família do acento: cinza frio ao lado de verde lê como cor de outro
+  lugar, e foi assim que os fundos passaram a parecer "diferentes".
 * ``inverso`` — painel escuro sobre página clara. No tema escuro ele não pode
   continuar preto, senão some no fundo: vira superfície elevada.
 * ``fg``, ``fg-2`` — texto principal e secundário. ``fg-3`` é só para
@@ -25,6 +27,10 @@ Os papéis, porque nomear cor por aparência envelhece mal:
   foi escolhido por contraste: 5,35 no claro, 10,66 no escuro. O guia pede
   botão branco; verde predominante foi pedido explicitamente, e pedido vence
   guia — mas o par continua tendo de passar na medição.
+* ``acao-vivo`` — o verde de **preenchimento**, com ``acao-vivo-fg`` por cima.
+  Existe porque ``acao`` precisa ser escuro o bastante para servir de texto
+  sobre branco, e escuro demais para pintar barra: barra escura pesa mais que
+  o número que ela apresenta. O par foi medido: 5,57 no claro, 10,66 no escuro.
 * ``neg`` — perda. É o segundo cromático, e existe porque valor negativo em
   tela financeira é requisito de leitura, não decoração.
 """
@@ -38,21 +44,23 @@ CSS = ROOT / "web" / "tokens.css"
 #: O claro e o padrao. O guia do design system e escuro por definicao, mas o
 #: pedido foi explicito, e preferencia declarada vence guia de estilo.
 CLARO = {
-    "canvas": "#ffffff", "card": "#f6f7f9", "elev": "#eceef2", "inverso": "#0d2b22",
+    "canvas": "#ffffff", "card": "#f4faf7", "elev": "#e8f3ee", "inverso": "#0d2b22",
     "line": "#dcdfe5", "line-strong": "#b6bcc6", "inverso-linha": "#2c5a49",
     "fg": "#0a0a0a", "fg-2": "#52565e", "fg-3": "#767b85", "sobre-inverso": "#ffffff",
     # O verde da marca em duas intensidades: no claro ele precisa ser escuro o
     # bastante para servir de texto sobre branco (5,35 de contraste); o claro de
     # verdade fica reservado para o que vive dentro de painel escuro.
     "acao": "#0d7a52", "acao-inverso": "#79e1ce", "acao-fraco": "#e0f4ea",
+    "acao-vivo": "#1f9a6e", "acao-vivo-fg": "#0a0a0a",
     "neg": "#c8322f", "neg-fraco": "#fdecec",
     "btn": "#0d7a52", "btn-fg": "#ffffff",
 }
 ESCURO = {
-    "canvas": "#0a0a0a", "card": "#141414", "elev": "#1e1e1e", "inverso": "#1e1e1e",
+    "canvas": "#0a0a0a", "card": "#101915", "elev": "#17231e", "inverso": "#17231e",
     "line": "#313131", "line-strong": "#454545", "inverso-linha": "#454545",
     "fg": "#ffffff", "fg-2": "#a7a7a7", "fg-3": "#7c7c7c", "sobre-inverso": "#ffffff",
     "acao": "#5fd3a0", "acao-inverso": "#5fd3a0", "acao-fraco": "#0c2119",
+    "acao-vivo": "#5fd3a0", "acao-vivo-fg": "#0a0a0a",
     "neg": "#ff6b6b", "neg-fraco": "#241213",
     "btn": "#5fd3a0", "btn-fg": "#0a0a0a",
 }

@@ -9,8 +9,8 @@
  */
 :root {
   --canvas: #ffffff;
-  --card: #f6f7f9;
-  --elev: #eceef2;
+  --card: #f4faf7;
+  --elev: #e8f3ee;
   --inverso: #0d2b22;
   --line: #dcdfe5;
   --line-strong: #b6bcc6;
@@ -22,6 +22,8 @@
   --acao: #0d7a52;
   --acao-inverso: #79e1ce;
   --acao-fraco: #e0f4ea;
+  --acao-vivo: #1f9a6e;
+  --acao-vivo-fg: #0a0a0a;
   --neg: #c8322f;
   --neg-fraco: #fdecec;
   --btn: #0d7a52;
@@ -29,9 +31,9 @@
 }
 :root[data-theme="dark"] {
   --canvas: #0a0a0a;
-  --card: #141414;
-  --elev: #1e1e1e;
-  --inverso: #1e1e1e;
+  --card: #101915;
+  --elev: #17231e;
+  --inverso: #17231e;
   --line: #313131;
   --line-strong: #454545;
   --inverso-linha: #454545;
@@ -42,6 +44,8 @@
   --acao: #5fd3a0;
   --acao-inverso: #5fd3a0;
   --acao-fraco: #0c2119;
+  --acao-vivo: #5fd3a0;
+  --acao-vivo-fg: #0a0a0a;
   --neg: #ff6b6b;
   --neg-fraco: #241213;
   --btn: #5fd3a0;

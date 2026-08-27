@@ -105,8 +105,8 @@
  * Uma escada só é auditável se o leitor puder ver o que cada perfil carregou,
  * quanto, por que entrou e o que aconteceu depois. O retorno realizado fica numa
  * coluna à parte de propósito: é o único número que a decisão não podia ter
- * usado, e misturá-lo com o score e o retorno de doze meses — que eram
- * observáveis em janeiro — apagaria justamente a fronteira que o método defende.
+ * usado, e misturá-lo com o score e o retorno de doze meses, que eram
+ * observáveis em janeiro, apagaria justamente a fronteira que o método defende.
  */
 (async function () {
   const hosts = document.querySelectorAll("[data-alpha-composition]");
@@ -181,7 +181,7 @@
         const full = share < 0.1 ? short : `${name} ${short}`;
         return `<span style="width:${(share * 100).toFixed(2)}%" title="${name.replace("&amp;", "&")} ${short}"><i class="sf">${full}</i><i class="ss">${short}</i></span>`;
       }).join("")}</div>
-      <p class="ladder-note" style="margin:.2rem 0 .8rem">A fatia <b>S&amp;P 500</b> é a perna global declarada: um quinto do orçamento de ações num fundo listado na B3 que segue o S&amp;P 500 em reais (IVVB11), definido pela política — nunca selecionado pelo fator. O restante em <b>CDI</b> é o caixa remunerado do perfil.</p><div class="ladder-wrap"><table class="ladder-table alpha-table">
+      <p class="ladder-note" style="margin:.2rem 0 .8rem">A fatia <b>S&amp;P 500</b> é a perna global declarada: um quinto do orçamento de ações num fundo listado na B3 que segue o S&amp;P 500 em reais (IVVB11), definido pela política, nunca selecionado pelo fator. O restante em <b>CDI</b> é o caixa remunerado do perfil.</p><div class="ladder-wrap"><table class="ladder-table alpha-table">
         <caption>${LABELS[activeProfile]} · decisão de ${block.decision_date} · ${block.positions.length} emissores</caption>
         <thead><tr>
           <th scope="col">Emissor</th><th scope="col">Peso ant.</th><th scope="col">Peso</th><th scope="col">Ação</th>

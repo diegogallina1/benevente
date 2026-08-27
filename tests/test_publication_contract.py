@@ -70,7 +70,12 @@ def test_benevente_2_has_direct_benchmarks_and_shared_design_system() -> None:
         redirect = (ROOT / "web" / name).read_text(encoding="utf-8")
         assert "versoes.html" in redirect and "http-equiv=\"refresh\"" in redirect, name
     assert (ROOT / "web" / "btech.html").read_text(encoding="utf-8").count("para-escritorios.html") >= 1
-    assert 'data-ladder="benevente1"' in unified and 'data-ladder="benevente2"' in unified
+    # O site de produto publica só a política que está em uso. As duas escadas
+    # lado a lado eram duas tabelas quase iguais, e quem chega para contratar
+    # não precisa escolher entre elas: só uma existe. As duas continuam juntas
+    # nos manuscritos, que é onde comparar módulo com módulo faz sentido.
+    assert 'data-ladder="benevente2"' in unified
+    assert 'data-ladder="benevente1"' not in unified
     assert "data-ladder-seal" in unified
     assert 'data-version-metric="b1-cagr"' not in unified
     assert 'data-version-metric="b2-cagr"' not in unified

@@ -7,7 +7,7 @@
  *
  * Inverter isso foi o conserto de um defeito real: enquanto o escuro era o
  * :root, qualquer regra antiga que trouxesse cor literal em vez de token ficava
- * com a cor do escuro no tema claro — texto que somia no fundo e borda preta em
+ * com a cor do escuro no tema claro, texto que somia no fundo e borda preta em
  * volta de cartao branco. Com o claro no :root, uma regra esquecida erra para
  * o lado do tema que quase todo mundo ve.
  *

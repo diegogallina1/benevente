@@ -3,8 +3,7 @@
 
 /* Trava de conveniência, não de segurança. A comparação roda no navegador e o
    conteúdo é sintético: quem abrir o código passa. Ela existe para o visitante
-   casual não cair numa tela inacabada. Nada real pode ser protegido assim —
-   se um dia esta página mostrar carteira de cliente, a trava tem de sair e dar
+   casual não cair numa tela inacabada. Nada real pode ser protegido assim, se um dia esta página mostrar carteira de cliente, a trava tem de sair e dar
    lugar a autenticação de verdade no servidor.
    A senha não aparece em texto claro aqui só para não vazar por leitura casual
    do fonte; o hash não a torna secreta. */
@@ -63,7 +62,7 @@ const etapa = n => [...$("etapas").children].forEach((li, i) =>
 
 /* --- tema --- */
 // O claro é o padrão, e é o que o :root descreve. O guia é escuro por
-// definição, mas o padrão foi pedido claro — e a inversão também conserta um
+// definição, mas o padrão foi pedido claro, e a inversão também conserta um
 // defeito: enquanto o escuro era o :root, qualquer regra que tivesse escapado
 // com cor literal ficava com a cor do escuro dentro do tema claro, que é a
 // borda preta em volta de cartão branco e o texto que some no fundo.
@@ -113,7 +112,7 @@ $("conectar").onclick = () => {
   $("chegou-tit").textContent = b3.gaps.com_custo_defensavel + " de " + total +
     " posições completas";
   $("chegou-txt").textContent =
-    "A B3 manda o que você tem, mas não manda por quanto você comprou — esse dado não " +
+    "A B3 manda o que você tem, mas não manda por quanto você comprou, esse dado não " +
     "existe nas APIs dela. Ele é remontado a partir das suas negociações, e o histórico " +
     "começa em " + b3.base_starts.split("-").reverse().join("/") + ".";
 
@@ -132,7 +131,7 @@ $("conectar").onclick = () => {
     alerta.innerHTML = "<p><b>Falta saber por quanto você comprou " + ticker + ".</b> " +
       "Essa compra é anterior a " + b3.base_starts.split("-").reverse().join("/") +
       ", então não está no histórico que a B3 manda. Sem esse número não dá para calcular " +
-      "o imposto dessa venda — e ele não é chutado aqui, porque um imposto chutado tem a " +
+      "o imposto dessa venda, e ele não é chutado aqui, porque um imposto chutado tem a " +
       "mesma cara de um imposto calculado.</p>";
     alerta.append(campoDeCusto(ticker, jaSabe));
   }
@@ -199,7 +198,7 @@ function informar(ticker, jaSabe) {
     "O imposto fecha, e os dois planos abaixo já estão com ele. O valor foi declarado por " +
     "você e não conferido contra nota de corretagem.</p>";
   // Um dígito a mais muda o imposto em ordem de grandeza, e quem digitou errado
-  // precisa de caminho de volta — sem ele, o único recerto é recarregar a página.
+  // precisa de caminho de volta, sem ele, o único recerto é recarregar a página.
   const trocar = el("button", "link", "Corrigir o valor");
   trocar.type = "button";
   trocar.onclick = () => {
@@ -318,7 +317,7 @@ function avaliar() {
   const causas = escolha.map(q => respostas[q.key])
     .filter(o => o.caps_profile === perfil && o.note);
   const pior = DADOS.questionnaire.worst_measured_drawdown[perfil];
-  $("veredito").innerHTML = "Perfil <b>" + perfil + "</b> — " +
+  $("veredito").innerHTML = "Perfil <b>" + perfil + "</b>, " +
     (causas.length ? causas.map(o => o.note).join("; ")
                    : "nenhuma resposta impôs teto abaixo do máximo") +
     ". A pior queda já medida neste perfil foi de <b class='num neg'>" + PCT(pior) + "</b>.";
@@ -397,12 +396,12 @@ function regua(perfil) {
           "médio foi de " + Math.abs(vies).toFixed(1).replace(".", ",") + " ponto por ano.")));
   // Sem esta linha, "8 de 8" vira argumento de venda. Com oito observações e
   // erro padrão de catorze pontos, nenhuma contagem dessas se distingue de
-  // acaso — e é justamente o perfil que acertou tudo que precisa dizer isso.
+  // acaso, e é justamente o perfil que acertou tudo que precisa dizer isso.
   const ep = Math.round((c.cobertura.standard_error || 0) * 100);
   host.append(el("p", null,
     "<b>Oito anos é pouco.</b> A margem de erro dessa contagem é de cerca de " + ep +
     " pontos, então acertar 6 ou acertar 8 não se distingue de sorte. O que está " +
-    "medido aqui é a régua, não uma promessa de resultado — nenhuma tela deste " +
+    "medido aqui é a régua, não uma promessa de resultado, nenhuma tela deste " +
     "produto projeta o seu patrimônio."));
   host.append(grafico(c.anos));
   const chaves = el("div", "chaves",
@@ -413,7 +412,7 @@ function regua(perfil) {
 }
 
 function grafico(anos) {
-  const L = 30, R = 6, T = 10, B = 22, W = 320, H = 150;
+  const L = 8, R = 8, T = 12, B = 22, W = 320, H = 132;
   const baixo = Math.min(...anos.map(a => Math.min(a.p10, a.realised)));
   const alto = Math.max(...anos.map(a => Math.max(a.p90, a.realised)));
   const folga = (alto - baixo) * 0.08;
@@ -424,23 +423,15 @@ function grafico(anos) {
 
   const svg = ["<svg viewBox='0 0 " + W + " " + H + "' role='img' aria-label='" +
     "Para cada ano, a faixa projetada em janeiro e o retorno que de fato aconteceu.'>"];
-  // Linha do zero, que é a referência que importa num gráfico de retorno.
-  if (min < 0 && max > 0) {
-    svg.push("<line x1='" + L + "' x2='" + (W - R) + "' y1='" + y(0) + "' y2='" + y(0) +
-      "' stroke='var(--line)' stroke-width='1'/>");
-  }
-  [min + (max - min) * 0.02, max - (max - min) * 0.02].forEach(v => {
-    svg.push("<text x='" + (L - 5) + "' y='" + (y(v) + 3) + "' text-anchor='end' " +
-      "font-size='9' fill='var(--fg-2)'>" + Math.round(v * 100) + "%</text>");
-  });
+  // O eixo de porcentagem, a linha do zero e o traço da mediana saíram. O
+  // gráfico responde uma pergunta só, o resultado caiu dentro do que foi
+  // projetado?, e nenhum dos três ajudava a responder.
   anos.forEach((a, i) => {
     const cx = x(i);
     svg.push("<line x1='" + cx + "' x2='" + cx + "' y1='" + y(a.p10) + "' y2='" + y(a.p90) +
-      "' stroke='var(--line-strong)' stroke-width='7' stroke-linecap='butt'/>");
-    svg.push("<line x1='" + (cx - 4.5) + "' x2='" + (cx + 4.5) + "' y1='" + y(a.p50) +
-      "' y2='" + y(a.p50) + "' stroke='var(--card)' stroke-width='1.5'/>");
+      "' stroke='var(--acao-fraco)' stroke-width='9' stroke-linecap='round'/>");
     // Anel na cor do fundo: sem ele o ponto tem contraste 1,0 contra a barra no
-    // tema escuro, ou seja, some justamente quando cai dentro da faixa — que é
+    // tema escuro, ou seja, some justamente quando cai dentro da faixa, que é
     // o caso comum e o que o gráfico existe para mostrar.
     svg.push("<circle cx='" + cx + "' cy='" + y(a.realised) + "' r='4' fill='" +
       (a.inside ? "var(--acao)" : "var(--neg)") +
@@ -459,13 +450,13 @@ function grafico(anos) {
 
 function barra(id, partes) {
   // Cada faixa carrega o próprio par de cores, e não uma cor de texto só para
-  // todas. O rótulo era var(--canvas) — "o oposto do fundo da página" — o que
+  // todas. O rótulo era var(--canvas), "o oposto do fundo da página", o que
   // funcionava no escuro e reprovava no claro: branco sobre a faixa neutra dava
   // 1,91 de contraste, e o número sumia dentro da barra. Medidos, claro e
   // escuro: 5,35 e 10,66 na faixa de ações, 10,37 e 9,59 na neutra, 5,31 e
   // 7,13 na de perda.
   const faixas = [
-    ["var(--acao)", "var(--btn-fg)"],
+    ["var(--acao-vivo)", "var(--acao-vivo-fg)"],
     ["var(--line-strong)", "var(--fg)"],
     ["var(--neg)", "var(--canvas)"],
   ];
@@ -529,7 +520,7 @@ function planos(perfil, a, b) {
 
 /* --- o que muda no plano escolhido --- */
 // O que a tela entrega ao gerador do dossiê: respostas, custos declarados e a
-// escolha. Nenhum número atravessa — o gerador refaz as contas com o mesmo
+// escolha. Nenhum número atravessa, o gerador refaz as contas com o mesmo
 // módulo, e é isso que impede o PDF de discordar da tela por acidente.
 function registroDaDecisao(perfil, chave) {
   const respostasBrutas = {};
@@ -588,7 +579,7 @@ function razao(perfil, chave, rolar) {
   Object.entries(m.tax_by_bucket).forEach(([cesta, d]) => {
     const nome = { renda_variavel: "Ações e fundos", renda_fixa: "Renda fixa",
                    fora_do_escopo: "Fora da estratégia" }[cesta] || cesta;
-    // Prejuízo não é base de imposto, é crédito — mas só dentro da própria
+    // Prejuízo não é base de imposto, é crédito, mas só dentro da própria
     // cesta. O prejuízo de cripto não abate imposto de ação, e prometer isso
     // aqui contradiria a regra que o módulo implementa três telas atrás.
     const rotulo = d.realised_gain_brl >= 0
@@ -611,7 +602,7 @@ function razao(perfil, chave, rolar) {
     "prejuízos se compensam dentro do mesmo tipo e nunca entre tipos diferentes." +
     (m.exempt_month_assumed && (m.tax_by_bucket.renda_variavel || {}).realised_gain_brl > 0
       ? " O imposto sobre ações fica em zero porque o total vendido no mês cabe na isenção de " +
-        "R$ 20 mil — se houver outra venda no mesmo mês, ela deixa de valer."
+        "R$ 20 mil, se houver outra venda no mesmo mês, ela deixa de valer."
       : "") +
     (m.tax_by_bucket.fora_do_escopo
       ? " O zero em Fora da estratégia não é isenção: é uma conta que não é feita aqui, " +

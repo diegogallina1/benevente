@@ -53,23 +53,13 @@ SOBRE_ESCURO = {
     ".version-footer .shell", ".version-footer p", ".version-footer a",
     ".version-page .brand-mark", ".version-next, .version-footer .shell",
     ".live-chart-legend i", ".decision-ledger-intro", ".decision-ledger-intro span",
-    ".decision-ledger-intro strong", ".alpha-split span", ".alpha-split i",
-    ".alpha-split .ss", ".alpha-split .sf", ".alpha-split span:nth-child(1)",
-    ".alpha-split span:nth-child(2)", ".dossier-download",
+    ".decision-ledger-intro strong", ".dossier-download",
     ".eyebrow span", ".button-primary", ".footer", ".footer .shell", ".footer .brand",
     ".footer p", ".footer span:last-child", ".period.active", ".curve-toggle i",
     ".chart-source, .chart-add-button", ".chart-source.active, .chart-add-button",
     ".chart-add-button", ".chart-return-summary i", ".chart-sidepanel .chart-add-button",
-    ".chart-tools .chart-scale.active", ".wealth-card", ".wealth-card header",
-    ".wealth-card header b", ".wealth-card header small", ".wealth-card strong",
-    ".wealth-card-foot", ".wealth-card-foot .up", ".version-gateway-card.experimental",
+    ".chart-tools .chart-scale.active", ".version-gateway-card.experimental",
     ".experimental .version-tag", ".experimental > p", ".experimental > b",
-    ".hero-performance-pair > div:last-child",
-    ".hero-performance-pair > div:last-child small, .hero-performance-pair > div:last-child p",
-    ".hero-performance-pair > div:last-child strong", ".wealth-card.primary",
-    ".wealth-card.primary header b, .wealth-card.primary strong, .wealth-card.primary .wealth-card-foot",
-    ".wealth-card.primary header small, .wealth-card.primary .wealth-card-foot span",
-    ".wealth-card.primary strong", ".wealth-card strong.wealth-value",
     ".hero-performance-foot a, .text-link, .version-next a, .version-footer a, [data-event-radar] a, .quick-composition a",
 }
 
@@ -362,26 +352,82 @@ details > summary, .annual-decision summary, .live-holdings summary { color: var
    claro atravessando o grafico, que e o oposto de sumir. */
 .line-boundary { stroke: var(--canvas) !important; }
 
+/* O painel do herói tem fundo em gradiente de menta. O gerador nao alcança
+   gradiente, porque a declaração tem mais de uma cor, e por isso ele continuava
+   claro no tema escuro: cartões pretos dentro de uma moldura verde-clara. A
+   superfície inteira passa a seguir o tema. */
+.hero-performance { background: var(--card) !important;
+  border-color: var(--line) !important; }
+.hero-performance::before, .hero-performance::after { display: none !important; }
+
+/* As barras empilhadas e as de comparação levam o verde de preenchimento, que é
+   mais claro que o do texto: barra escura pesa mais que o número que apresenta.
+   O rótulo por cima é escuro, medido em 5,57 no claro e 10,66 no escuro. */
+.hero-performance-bars em, .hero-performance-bars > div:first-child em,
+.hero-performance-bars > div:nth-child(2) em, .bar i, .alpha-split span:nth-child(1),
+.alpha-split span:nth-child(2) { background: var(--acao-vivo) !important; }
+.alpha-split span, .alpha-split span *, .alpha-split .ss, .alpha-split .sf,
+.alpha-split i { color: var(--acao-vivo-fg) !important; }
+/* Os rotulos dentro da faixa traziam fundo proprio, verde escuro, por cima do
+   preenchimento claro do pai: davam 3,70 e reprovavam. Eles nao precisam de
+   fundo nenhum, porque ja estao sobre a faixa. */
+.alpha-split i, .alpha-split .sf, .alpha-split .ss {
+  background: transparent !important; }
+.alpha-split span:nth-child(2) { background: var(--acao-fraco) !important;
+  color: var(--fg) !important; }
+.alpha-split span:nth-child(3) { background: var(--elev) !important;
+  color: var(--fg) !important; }
+/* Uma linha do fundo entre as faixas: sem ela o limite entre duas cores claras
+   fica em 1,63 de contraste e some. */
+.alpha-split span { box-shadow: 1px 0 0 var(--canvas) !important; }
+
+/* Fios que a pagina nao precisa. Onde separar ainda importa, separa o espaço. */
+.calib-perfil, .calib-fig, .calib-nota { border: 0 !important; }
+.calib-perfil { margin-top: 40px; padding-top: 0; }
+.calib-nota { margin-top: 28px; }
+.proof div, .method-grid article { border-right: 0 !important; }
+
+/* Espaçamento: blocos encostavam no cartão de cima. */
+.governance-stack .go-card, .version-callout { margin-top: 22px; }
+.version-callout + *, .go-card + * { margin-top: 18px; }
+
+/* A nota da carteira caía numa coluna estreita do grid e virava uma tira de
+   texto de quarenta caracteres. Ela ocupa a linha inteira, com medida de leitura. */
+#carteira-2026-note, .carteira-2026-note { grid-column: 1 / -1; max-width: 68ch;
+  margin-top: 18px; }
+
+/* Um cartao escuro no meio de tres claros dentro do mesmo painel: era o
+   "fundo diferente" da reclamacao. O destaque passa a vir da borda e do peso,
+   nao de inverter a superficie. Fundo e texto mudam juntos, como sempre. */
+.wealth-card, .wealth-card.primary, .wealth-card.benchmark,
+.hero-performance-pair > div:last-child {
+  background: var(--card) !important; border: 1px solid var(--line) !important; }
+.wealth-card.primary { border-color: var(--acao) !important; }
+.wealth-card, .wealth-card *, .wealth-card.primary, .wealth-card.primary *,
+.hero-performance-pair > div:last-child,
+.hero-performance-pair > div:last-child * { color: var(--fg) !important; }
+.wealth-card header small, .wealth-card-foot span, .wealth-card-foot,
+.hero-performance-pair > div:last-child small,
+.hero-performance-pair > div:last-child p { color: var(--fg-2) !important; }
+.wealth-card .up, .wealth-card-foot .up { color: var(--acao) !important; }
+
 table, th, td { border-color: var(--line); }
 /* Paineis escuros cujo fundo o gerador nao alcanca — a cor vem de gradiente,
    que tem mais de um valor e ele ignora. Sem isto o texto deles fica marcado
    como "sobre escuro" (branco) enquanto a superficie ficou clara: branco sobre
    branco. Superficie e texto tem de concordar. */
-.wealth-card, .wealth-card.benchmark, .wealth-card.primary,
-.version-gateway-card.experimental, .chart-source.active, .chart-add-button,
-.hero-performance-pair > div:last-child {
+.version-gateway-card.experimental, .chart-source.active, .chart-add-button {
   background: var(--inverso) !important;
 }
-.wealth-card *, .version-gateway-card.experimental *, .chart-source.active,
+.version-gateway-card.experimental *, .chart-source.active,
 .chart-add-button { border-color: var(--inverso-linha); }
 /* E a contrapartida: superficie escura pede texto claro. Forcar so o fundo
    inverteu o defeito — de branco sobre branco para preto sobre preto. */
-.wealth-card, .wealth-card *, .version-gateway-card.experimental,
-.version-gateway-card.experimental *, .chart-source.active, .chart-add-button,
-.hero-performance-pair > div:last-child, .hero-performance-pair > div:last-child * {
+.version-gateway-card.experimental,
+.version-gateway-card.experimental *, .chart-source.active, .chart-add-button {
   color: var(--sobre-inverso) !important;
 }
-.wealth-card .up, .version-gateway-card.experimental .version-tag {
+.version-gateway-card.experimental .version-tag {
   color: var(--acao-inverso) !important; }
 
 /* As duas primeiras barras da comparacao eram blocos verde-escuros no meio de
