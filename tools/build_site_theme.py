@@ -66,9 +66,7 @@ SOBRE_ESCURO = {
     ".experimental .version-tag", ".experimental > p", ".experimental > b",
     ".hero-performance-pair > div:last-child",
     ".hero-performance-pair > div:last-child small, .hero-performance-pair > div:last-child p",
-    ".hero-performance-pair > div:last-child strong", ".hero-performance-bars em",
-    ".hero-performance-bars > div:first-child em",
-    ".hero-performance-bars > div:nth-child(2) em", ".wealth-card.primary",
+    ".hero-performance-pair > div:last-child strong", ".wealth-card.primary",
     ".wealth-card.primary header b, .wealth-card.primary strong, .wealth-card.primary .wealth-card-foot",
     ".wealth-card.primary header small, .wealth-card.primary .wealth-card-foot span",
     ".wealth-card.primary strong", ".wealth-card strong.wealth-value",
@@ -312,7 +310,58 @@ details > summary, .annual-decision summary, .live-holdings summary { color: var
 .line-chart-caption, .carteira-2026-note { color: var(--fg-2) !important; }
 .version-next a, .version-next .button { background: var(--btn) !important;
   color: var(--btn-fg) !important; border-color: var(--btn) !important; }
-.brand-mark { background: var(--acao) !important; color: var(--canvas) !important; }
+/* A marca leva a cor do favicon, para que a aba e a pagina sejam a mesma coisa.
+   O favicon e o quadrado azul-marinho com o B claro; a cor e dele. */
+.brand-mark { background: #102a43 !important; color: #f7fbf8 !important; }
+.brand { color: #102a43 !important; }
+:root[data-theme="dark"] .brand { color: var(--fg) !important; }
+
+/* Os selos da coluna AÇÃO saiam todos com a mesma menta: seis significados
+   diferentes com a mesma aparencia, que e o mesmo que nao ter selo. Cada um
+   ganha um sinal proprio, e o sinal e uma FORMA — seta, sinal, traco — porque
+   cor sozinha nao carrega significado: o vermelho e o verde da paleta tem
+   praticamente o mesmo cinza, e quem nao distingue os dois ficaria sem nada.
+   O tom entra depois, so para reforcar o que a forma ja diz.
+   "Reduziu" nao ganha vermelho de proposito: diminuir posicao e direcao, nao
+   prejuizo, e pintar de perda seria dizer uma coisa que o dado nao diz. */
+.alpha-action { display: inline-flex; align-items: center; gap: 5px;
+  border: 1px solid transparent; border-radius: 9999px; padding: 2px 9px;
+  font-variant-numeric: tabular-nums; }
+.alpha-action::before { font-family: var(--mono); font-weight: 500; }
+.alpha-entered { background-color: var(--acao) !important; color: var(--btn-fg) !important; }
+.alpha-entered::before { content: "+"; }
+.alpha-increased { background-color: var(--acao-fraco) !important; color: var(--acao) !important;
+  border-color: var(--acao) !important; }
+.alpha-increased::before { content: "\2191"; }
+.alpha-reduced { background-color: var(--card) !important; color: var(--fg) !important;
+  border-color: var(--line-strong) !important; }
+.alpha-reduced::before { content: "\2193"; }
+.alpha-maintained { background-color: transparent !important; color: var(--fg-2) !important;
+  border-color: var(--line) !important; }
+.alpha-maintained::before { content: "="; }
+.alpha-exited { background-color: var(--neg-fraco) !important; color: var(--neg) !important; }
+.alpha-exited::before { content: "\00d7"; }
+.alpha-not_held { background-color: transparent !important; color: var(--fg-2) !important;
+  border-style: dashed !important; border-color: var(--line-strong) !important; }
+.alpha-not_held::before { content: "\2013"; }
+
+/* A faixa projetada vira verde pastel e ganha corpo: era um fio cinza de 1px,
+   que num grafico de calibracao e justamente o elemento que precisa ser lido. */
+.calib-faixa { stroke: var(--acao-fraco) !important; stroke-width: 9;
+  stroke-linecap: round; }
+.calib-dentro { fill: var(--acao) !important; stroke: var(--canvas) !important;
+  stroke-width: 2; }
+.calib-fora { fill: var(--neg) !important; stroke: var(--canvas) !important;
+  stroke-width: 2; }
+/* A linha divisoria entre perfis sai: o espaco ja separa, e a pagina tinha
+   fio cinza demais. */
+.calib-perfil { border-top: 0 !important; margin-top: 34px; padding-top: 0; }
+
+/* A linha tracejada do "inicio da avaliacao" sai de vista, a pedido. Vai na cor
+   do fundo, e nao em branco literal: no tema escuro o branco viraria um risco
+   claro atravessando o grafico, que e o oposto de sumir. */
+.line-boundary { stroke: var(--canvas) !important; }
+
 table, th, td { border-color: var(--line); }
 /* Paineis escuros cujo fundo o gerador nao alcanca — a cor vem de gradiente,
    que tem mais de um valor e ele ignora. Sem isto o texto deles fica marcado
@@ -320,8 +369,7 @@ table, th, td { border-color: var(--line); }
    branco. Superficie e texto tem de concordar. */
 .wealth-card, .wealth-card.benchmark, .wealth-card.primary,
 .version-gateway-card.experimental, .chart-source.active, .chart-add-button,
-.hero-performance-pair > div:last-child,
-.hero-performance-bars > div:first-child, .hero-performance-bars > div:nth-child(2) {
+.hero-performance-pair > div:last-child {
   background: var(--inverso) !important;
 }
 .wealth-card *, .version-gateway-card.experimental *, .chart-source.active,
@@ -330,13 +378,29 @@ table, th, td { border-color: var(--line); }
    inverteu o defeito — de branco sobre branco para preto sobre preto. */
 .wealth-card, .wealth-card *, .version-gateway-card.experimental,
 .version-gateway-card.experimental *, .chart-source.active, .chart-add-button,
-.hero-performance-pair > div:last-child, .hero-performance-pair > div:last-child *,
-.hero-performance-bars > div:first-child, .hero-performance-bars > div:first-child *,
-.hero-performance-bars > div:nth-child(2), .hero-performance-bars > div:nth-child(2) * {
+.hero-performance-pair > div:last-child, .hero-performance-pair > div:last-child * {
   color: var(--sobre-inverso) !important;
 }
-.wealth-card .up, .version-gateway-card.experimental .version-tag,
-.hero-performance-bars em { color: var(--acao-inverso) !important; }
+.wealth-card .up, .version-gateway-card.experimental .version-tag {
+  color: var(--acao-inverso) !important; }
+
+/* As duas primeiras barras da comparacao eram blocos verde-escuros no meio de
+   uma pagina clara: pesavam mais que o numero que deviam apresentar, e eram
+   as unicas tres linhas do bloco a nao se parecerem entre si. Viram cartao
+   claro como a terceira, e o verde passa para o preenchimento, que e onde ele
+   diz alguma coisa.
+
+   Fundo e texto mudam na mesma edicao. Separar os dois foi como eu troquei
+   branco-sobre-branco por preto-sobre-preto da ultima vez. */
+.hero-performance-bars > div:first-child,
+.hero-performance-bars > div:nth-child(2) { background: var(--card) !important; }
+.hero-performance-bars > div:first-child, .hero-performance-bars > div:first-child *,
+.hero-performance-bars > div:nth-child(2), .hero-performance-bars > div:nth-child(2) * {
+  color: var(--fg) !important;
+}
+.hero-performance-bars i { background: var(--acao-fraco) !important; }
+.hero-performance-bars em, .hero-performance-bars > div:first-child em,
+.hero-performance-bars > div:nth-child(2) em { background: var(--acao) !important; }
 /* O ticker rapido tinha fundo branco fixo, que no tema escuro vira uma ilha
    clara com texto de acento por cima: 2,80 e reprova. */
 .quick-ticker { background: var(--card) !important; color: var(--fg) !important;

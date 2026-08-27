@@ -58,7 +58,7 @@
     "<b>Acertar seis ou acertar oito não se distingue de sorte.</b> " + dados.limitation));
 
   function grafico(anos) {
-    const L = 30, R = 6, T = 10, B = 22, W = 340, H = 150;
+    const L = 8, R = 8, T = 12, B = 22, W = 340, H = 132;
     const baixo = Math.min(...anos.map(a => Math.min(a.p10, a.realised)));
     const alto = Math.max(...anos.map(a => Math.max(a.p90, a.realised)));
     const folga = (alto - baixo) * 0.08;
@@ -69,20 +69,13 @@
     const partes = ["<svg viewBox='0 0 " + W + " " + H + "' role='img' aria-label='" +
       "Para cada ano, a faixa de oitenta por cento projetada em janeiro e o retorno que " +
       "de fato aconteceu.'>"];
-    if (min < 0 && max > 0) {
-      partes.push("<line x1='" + L + "' x2='" + (W - R) + "' y1='" + y(0) + "' y2='" + y(0) +
-        "' class='calib-zero'/>");
-    }
-    [min + (max - min) * 0.02, max - (max - min) * 0.02].forEach(v => {
-      partes.push("<text x='" + (L - 5) + "' y='" + (y(v) + 3) + "' text-anchor='end' " +
-        "class='calib-eixo'>" + Math.round(v * 100) + "%</text>");
-    });
     anos.forEach((a, i) => {
       const cx = L + passo * (i + 0.5);
+      // A faixa e so uma faixa: o eixo, a linha do zero e o traco da mediana
+      // sairam porque o grafico responde uma pergunta unica — o resultado caiu
+      // dentro do que foi projetado? — e nenhum dos tres ajudava a responder.
       partes.push("<line x1='" + cx + "' x2='" + cx + "' y1='" + y(a.p10) + "' y2='" + y(a.p90) +
         "' class='calib-faixa'/>");
-      partes.push("<line x1='" + (cx - 4.5) + "' x2='" + (cx + 4.5) + "' y1='" + y(a.p50) +
-        "' y2='" + y(a.p50) + "' class='calib-meio'/>");
       // O anel na cor do fundo separa o ponto da barra: sem ele o marcador some
       // justamente quando cai dentro da faixa, que é o caso comum.
       partes.push("<circle cx='" + cx + "' cy='" + y(a.realised) + "' r='4' class='" +
@@ -94,9 +87,8 @@
 
     const fig = el("figure", "calib-fig");
     fig.innerHTML = partes.join("") +
-      "<figcaption>Cada barra é a faixa de 80% projetada em janeiro daquele ano, com o traço " +
-      "no meio. O ponto é o retorno que aconteceu; vermelho quando ficou fora da faixa." +
-      "</figcaption>";
+      "<figcaption>Cada faixa é o que foi projetado em janeiro daquele ano. O ponto é o " +
+      "retorno que aconteceu: dentro da faixa ou fora dela.</figcaption>";
     return fig;
   }
 })();
