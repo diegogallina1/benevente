@@ -14,6 +14,7 @@ import json
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "artifacts" / "portfolio_mapping_v1" / "mapping_by_profile.json"
 CONEXAO = ROOT / "artifacts" / "b3_connection_v1" / "connection_example.json"
+CALIBRACAO = ROOT / "artifacts" / "forecast_calibration_v1" / "calibration.json"
 OUT = ROOT / "docs" / "desenho_tela_mapa.html"
 
 PERFIL_LABEL = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
@@ -209,6 +210,21 @@ details > summary b { color: var(--fg); font-weight: 600; }
 .veredito b { color: var(--fg); font-weight: 600; }
 .veredito b.neg { color: var(--erro); }
 
+/* --- a régua e o quanto ela erra --- */
+.regua { margin-top: 1.5rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
+.regua h3 { margin-bottom: .25rem; }
+.regua p { margin: 0 0 .75rem; font-size: .875rem; line-height: 1.43; color: var(--fg-2); }
+.regua p b { color: var(--fg); font-weight: 600; }
+.regua p b.neg { color: var(--erro); }
+.regua figure { margin: 1rem 0 0; }
+.regua svg { display: block; width: 100%; height: auto; }
+.regua figcaption { margin-top: .5rem; font-size: .75rem; line-height: 1.34;
+                    letter-spacing: .32px; color: var(--fg-3); }
+.regua .chaves { display: flex; flex-wrap: wrap; gap: .375rem 1rem; margin-top: .5rem;
+                 font-size: .75rem; letter-spacing: .32px; color: var(--fg-3); }
+.regua .chaves i { display: inline-block; width: .75rem; height: .75rem;
+                   margin-right: .375rem; vertical-align: -1px; }
+
 /* --- os dois planos --- */
 .planos { display: grid; gap: 1rem; }
 .plano { text-align: left; font: inherit; cursor: pointer; color: var(--fg);
@@ -380,6 +396,7 @@ footer a { color: var(--acao); }
     </div>
   </div>
   <div class="aviso" id="fgc"></div>
+  <div class="regua" id="regua"></div>
 </section>
 
 <section id="planos-sec" class="hidden">
@@ -717,7 +734,98 @@ function render(perfil) {
       "R$ 250.000 por CPF. Os dois planos mantêm essa posição: é risco de crédito assumido, " +
       "e assumi-lo precisa ser decisão registrada, não distração.</p>";
   }
+  regua(perfil);
   planos(perfil, a, b);
+}
+
+/* --- o quanto a régua erra ---------------------------------------------
+   Não é projeção de patrimônio, e a diferença é o produto inteiro. Todo
+   janeiro a regra projeta uma faixa para o ano seguinte usando só o que se
+   sabia até ali; depois o ano acontece e cai dentro ou fora. O que se publica
+   é a contagem, não a promessa. */
+function regua(perfil) {
+  const c = DADOS.calibracao[perfil];
+  if (!c) return;
+  const host = $("regua");
+  const dentro = c.cobertura.inside, total = c.cobertura.total;
+  const vies = c.vies_pp;
+  const otimista = vies < -0.5;
+
+  host.innerHTML = "";
+  host.append(el("h3", null, "O quanto esta régua erra"));
+  host.append(el("p", null,
+    "Todo janeiro a regra projeta uma faixa para os doze meses seguintes, usando só o " +
+    "que se sabia até aquele dia. Depois o ano acontece. Em <b>" + total + " anos</b>, o " +
+    "resultado caiu dentro da faixa em <b>" + dentro + "</b>."));
+  host.append(el("p", null, otimista
+    ? "E o meio da faixa ficou <b class='neg'>" + Math.abs(vies).toFixed(1).replace(".", ",") +
+      " pontos otimista por ano</b>: a régua erra para o lado que favorece quem vende. " +
+      "Está publicado aqui porque é o número que ninguém mostra."
+    : (vies > 0.5
+        ? "E o meio da faixa ficou <b>" + vies.toFixed(1).replace(".", ",") +
+          " pontos abaixo</b> do que aconteceu: aqui a régua erra para o lado conservador."
+        : "E o meio da faixa não puxou para lado nenhum de forma perceptível: o desvio " +
+          "médio foi de " + Math.abs(vies).toFixed(1).replace(".", ",") + " ponto por ano.")));
+  // Sem esta linha, "8 de 8" vira argumento de venda. Com oito observações e
+  // erro padrão de catorze pontos, nenhuma contagem dessas se distingue de
+  // acaso — e é justamente o perfil que acertou tudo que precisa dizer isso.
+  const ep = Math.round((c.cobertura.standard_error || 0) * 100);
+  host.append(el("p", null,
+    "<b>Oito anos é pouco.</b> A margem de erro dessa contagem é de cerca de " + ep +
+    " pontos, então acertar 6 ou acertar 8 não se distingue de sorte. O que está " +
+    "medido aqui é a régua, não uma promessa de resultado — nenhuma tela deste " +
+    "produto projeta o seu patrimônio."));
+  host.append(grafico(c.anos));
+  const chaves = el("div", "chaves",
+    "<span><i style='background:var(--line-strong)'></i>faixa projetada em janeiro</span>" +
+    "<span><i style='background:var(--btn)'></i>o que aconteceu</span>" +
+    "<span><i style='background:var(--erro)'></i>ficou fora da faixa</span>");
+  host.append(chaves);
+}
+
+function grafico(anos) {
+  const L = 30, R = 6, T = 10, B = 22, W = 320, H = 150;
+  const baixo = Math.min(...anos.map(a => Math.min(a.p10, a.realised)));
+  const alto = Math.max(...anos.map(a => Math.max(a.p90, a.realised)));
+  const folga = (alto - baixo) * 0.08;
+  const min = baixo - folga, max = alto + folga;
+  const y = v => T + (H - T - B) * (1 - (v - min) / (max - min));
+  const passo = (W - L - R) / anos.length;
+  const x = i => L + passo * (i + 0.5);
+
+  const svg = ["<svg viewBox='0 0 " + W + " " + H + "' role='img' aria-label='" +
+    "Para cada ano, a faixa projetada em janeiro e o retorno que de fato aconteceu.'>"];
+  // Linha do zero, que é a referência que importa num gráfico de retorno.
+  if (min < 0 && max > 0) {
+    svg.push("<line x1='" + L + "' x2='" + (W - R) + "' y1='" + y(0) + "' y2='" + y(0) +
+      "' stroke='var(--line)' stroke-width='1'/>");
+  }
+  [min + (max - min) * 0.02, max - (max - min) * 0.02].forEach(v => {
+    svg.push("<text x='" + (L - 5) + "' y='" + (y(v) + 3) + "' text-anchor='end' " +
+      "font-size='9' fill='var(--fg-3)'>" + Math.round(v * 100) + "%</text>");
+  });
+  anos.forEach((a, i) => {
+    const cx = x(i);
+    svg.push("<line x1='" + cx + "' x2='" + cx + "' y1='" + y(a.p10) + "' y2='" + y(a.p90) +
+      "' stroke='var(--line-strong)' stroke-width='7' stroke-linecap='butt'/>");
+    svg.push("<line x1='" + (cx - 4.5) + "' x2='" + (cx + 4.5) + "' y1='" + y(a.p50) +
+      "' y2='" + y(a.p50) + "' stroke='var(--layer)' stroke-width='1.5'/>");
+    // Anel na cor do fundo: sem ele o ponto tem contraste 1,0 contra a barra no
+    // tema escuro, ou seja, some justamente quando cai dentro da faixa — que é
+    // o caso comum e o que o gráfico existe para mostrar.
+    svg.push("<circle cx='" + cx + "' cy='" + y(a.realised) + "' r='4' fill='" +
+      (a.inside ? "var(--btn)" : "var(--erro)") +
+      "' stroke='var(--bg)' stroke-width='2'/>");
+    svg.push("<text x='" + cx + "' y='" + (H - 6) + "' text-anchor='middle' font-size='9' " +
+      "fill='var(--fg-3)'>" + String(a.year).slice(2) + "</text>");
+  });
+  svg.push("</svg>");
+
+  const fig = el("figure");
+  fig.innerHTML = svg.join("") +
+    "<figcaption>Cada barra é a faixa de 80% projetada em janeiro daquele ano, com o " +
+    "traço no meio. O ponto é o retorno que aconteceu.</figcaption>";
+  return fig;
 }
 
 function barra(id, partes) {
@@ -899,6 +1007,7 @@ function razao(perfil, chave, rolar) {
 def main() -> None:
     dados = json.loads(SOURCE.read_text(encoding="utf-8"))
     conexao = json.loads(CONEXAO.read_text(encoding="utf-8"))
+    calibracao = json.loads(CALIBRACAO.read_text(encoding="utf-8"))
     magro = {
         "questionnaire": dados["questionnaire"],
         "profiles": {nome: {"adequar": p["adequar"], "adaptar": p["adaptar"]}
@@ -908,6 +1017,15 @@ def main() -> None:
                "consent": {k: v for k, v in conexao["consent"].items()
                            if k in ("escopo", "revogavel_em", "credencial_armazenada")},
                "cost_basis": conexao["cost_basis"], "gaps": conexao["gaps"]},
+        # Calibração: o que se publica não é a projeção, é o quanto ela erra.
+        "calibracao": {
+            perfil: {"anos": [{k: dados[k] for k in ("year", "p10", "p50", "p90",
+                                                     "realised", "inside")}
+                              for dados in r["years"]],
+                     "cobertura": r["coverage"],
+                     "vies_pp": r["median_bias_pp"]}
+            for perfil, r in calibracao["profiles"].items()
+        },
     }
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(HTML.replace("__DADOS__", json.dumps(magro, ensure_ascii=False,
