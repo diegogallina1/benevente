@@ -18,7 +18,11 @@
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const dataBr = iso => iso ? iso.split("-").reverse().join("/") : "";
 
-  const desenho = (band, realised) => {
+  const desenho = (bandBruta, realised) => {
+  // No primeiro pregão o retorno acumulado é zero por definição, e a faixa tem
+  // largura zero junto. Sem esse ponto o desenho começa no pregão cinco e a
+  // linha aparece solta à esquerda da área, como se estivesse fora dela.
+    const band = [{ sessions: 0, p10: 0, p50: 0, p90: 0 }].concat(bandBruta);
     const W = 460, H = 150, T = 10, B = 20, L = 4, R = 4;
     const maxS = band[band.length - 1].sessions;
     const baixo = Math.min(...band.map(p => p.p10), ...realised.map(p => p.r));

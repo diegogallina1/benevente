@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "artifacts" / "portfolio_mapping_v1" / "mapping_by_profile.json"
 CONEXAO = ROOT / "artifacts" / "b3_connection_v1" / "connection_example.json"
 CALIBRACAO = ROOT / "artifacts" / "forecast_calibration_v1" / "calibration.json"
+ACOMPANHAMENTO = ROOT / "web" / "forecast_2026.json"
 OUT = ROOT / "docs" / "desenho_tela_mapa.html"
 
 PERFIL_LABEL = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
@@ -201,6 +202,13 @@ details > summary b { color: var(--fg); font-weight: 400; }
 
 /* --- a régua --- */
 .regua { margin-top: 40px; }
+
+/* --- acompanhar --- */
+.ac-fig { margin: 24px 0 0; }
+.ac-fig svg { display: block; width: 100%; height: auto; }
+.ac-fig figcaption { margin-top: 8px; font-size: 12px; line-height: 1.4; color: var(--fg-2); }
+#ac-frase { margin: 8px 0 0; font-size: 14px; line-height: 1.57; color: var(--fg-2); }
+#ac-frase b { color: var(--fg); font-weight: 500; }
 .regua h3 { margin-bottom: 8px; }
 .regua p { margin: 0 0 16px; font-size: 14px; line-height: 1.57; color: var(--fg-2); }
 .regua p b { color: var(--fg); font-weight: 500; }
@@ -350,6 +358,7 @@ footer a { color: var(--acao); }
   <li data-on="1"><b>1</b>Conectar</li>
   <li><b>2</b>Perguntas</li>
   <li><b>3</b>Seu plano</li>
+  <li><b>4</b>Acompanhar</li>
 </ol>
 
 <section id="conexao">
@@ -434,6 +443,22 @@ footer a { color: var(--acao); }
     <span>PDF com as contas, o plano que você não escolheu e o campo de assinatura.</span>
   </div>
   <div class="registro hidden" id="registro"></div>
+</section>
+
+<section id="acompanhar-sec" class="hidden">
+  <h2>Acompanhar</h2>
+  <p class="lede">O que a carteira do seu perfil rendeu neste ano, ao lado da faixa
+     que a regra projetou em janeiro. A faixa não se mexe. O que anda é a linha.</p>
+  <div class="painel">
+    <p class="label" id="ac-quando"></p>
+    <div class="big num" id="ac-numero"></div>
+    <p id="ac-frase"></p>
+  </div>
+  <figure class="ac-fig">
+    <div id="ac-grafico"></div>
+    <figcaption id="ac-legenda"></figcaption>
+  </figure>
+  <div class="aviso" id="ac-limite"></div>
 </section>
 
 <footer>
@@ -702,7 +727,7 @@ $("alterar").onclick = () => editar(!editando);
 function avaliar() {
   if (Object.keys(respostas).length < escolha.length) {
     $("veredito").textContent = "";
-    esconde("mapa", "planos-sec", "razao-sec");
+    esconde("mapa", "planos-sec", "razao-sec", "acompanhar-sec");
     return;
   }
   // Respondido, o formulário vira uma linha: no celular, deixá-lo aberto obriga
@@ -814,6 +839,68 @@ function regua(perfil) {
     "<span><i style='background:var(--acao)'></i>o que aconteceu</span>" +
     "<span><i style='background:var(--neg)'></i>ficou fora da faixa</span>");
   host.append(chaves);
+}
+
+/* --- acompanhar --- */
+// A faixa foi calculada no primeiro pregão do ano e não se mexe. Se ela se
+// ajustasse ao que foi acontecendo, nunca erraria, e uma faixa que nunca erra
+// não mede nada. O que anda é a linha do realizado.
+//
+// A comparação é por pregão decorrido, não por data: em agosto o realizado é
+// comparado com a faixa de agosto. Comparar meio ano com a faixa do ano
+// inteiro faria a carteira parecer atrasada só porque o ano não acabou.
+function acompanhar(perfil) {
+  const ac = DADOS.acompanhamento;
+  const r = ac.perfis[perfil];
+  if (!r) { esconde("acompanhar-sec"); return; }
+  mostra("acompanhar-sec");
+  etapa(3);
+
+  const n = r.agora;
+  $("ac-quando").textContent = n.sessions + " pregões de " + ac.ano +
+    " · até " + n.date.split("-").reverse().join("/");
+  $("ac-numero").textContent = PCT(n.realised);
+  $("ac-numero").className = "big num" + (n.realised < 0 ? " neg" : "");
+  $("ac-frase").innerHTML = "Para este ponto do ano, a faixa projetada em janeiro vai de <b>" +
+    PCT(n.p10) + "</b> a <b>" + PCT(n.p90) + "</b>. O resultado está <b>" +
+    (n.inside ? "dentro" : "fora") + "</b> dela.";
+  $("ac-grafico").innerHTML = cone(r.faixa, r.realizado);
+  $("ac-legenda").textContent =
+    "A área é o que foi projetado em janeiro para cada ponto do ano. A linha é o " +
+    "que aconteceu, do primeiro pregão até hoje.";
+  $("ac-limite").innerHTML = "<p>" + ac.limitacao + "</p>";
+}
+
+function cone(faixaBruta, realizado) {
+  // No primeiro pregão o retorno acumulado é zero por definição, e a faixa tem
+  // largura zero junto. Sem esse ponto o desenho começa no pregão cinco e a
+  // linha aparece solta à esquerda da área, como se estivesse fora dela.
+  const faixa = [{ sessions: 0, p10: 0, p50: 0, p90: 0 }].concat(faixaBruta);
+  const W = 320, H = 140, T = 10, B = 18, L = 4, R = 4;
+  const maxS = faixa[faixa.length - 1].sessions;
+  const baixo = Math.min(...faixa.map(p => p.p10), ...realizado.map(p => p.r));
+  const alto = Math.max(...faixa.map(p => p.p90), ...realizado.map(p => p.r));
+  const folga = (alto - baixo) * 0.08 || 0.01;
+  const min = baixo - folga, max = alto + folga;
+  const x = s => L + (W - L - R) * (s / maxS);
+  const y = v => T + (H - T - B) * (1 - (v - min) / (max - min));
+
+  // A faixa é um polígono só: o contorno de cima na ida, o de baixo na volta.
+  const area = faixa.map(p => x(p.sessions) + "," + y(p.p90)).join(" ") + " " +
+    faixa.slice().reverse().map(p => x(p.sessions) + "," + y(p.p10)).join(" ");
+  const linha = realizado.map(p => x(p.sessions) + "," + y(p.r)).join(" ");
+  const fim = realizado[realizado.length - 1];
+
+  return "<svg viewBox='0 0 " + W + " " + H + "' role='img' aria-label='" +
+    "A faixa projetada em janeiro e o retorno acumulado até agora, por pregão decorrido.'>" +
+    "<polygon points='" + area + "' fill='var(--acao-fraco)'/>" +
+    "<polyline points='" + linha + "' fill='none' stroke='var(--acao)' stroke-width='2' " +
+      "stroke-linejoin='round' stroke-linecap='round'/>" +
+    "<circle cx='" + x(fim.sessions) + "' cy='" + y(fim.r) + "' r='4' fill='var(--acao)' " +
+      "stroke='var(--canvas)' stroke-width='2'/>" +
+    "<text x='" + x(0) + "' y='" + (H - 5) + "' font-size='9' fill='var(--fg-2)'>janeiro</text>" +
+    "<text x='" + x(maxS) + "' y='" + (H - 5) + "' font-size='9' fill='var(--fg-2)' " +
+      "text-anchor='end'>fim do ano</text></svg>";
 }
 
 function grafico(anos) {
@@ -1033,6 +1120,7 @@ function razao(perfil, chave, rolar) {
     rolaPara(caixa, "nearest");
   };
 
+  acompanhar(perfil);
   if (rolar) rolaPara($("razao-sec"), "start");
 }
 </script>
@@ -1089,6 +1177,7 @@ def main() -> None:
     dados = json.loads(SOURCE.read_text(encoding="utf-8"))
     conexao = json.loads(CONEXAO.read_text(encoding="utf-8"))
     calibracao = json.loads(CALIBRACAO.read_text(encoding="utf-8"))
+    acompanhamento = json.loads(ACOMPANHAMENTO.read_text(encoding="utf-8"))
     magro = {
         "questionnaire": dados["questionnaire"],
         "profiles": {nome: {"adequar": p["adequar"], "adaptar": p["adaptar"]}
@@ -1106,6 +1195,24 @@ def main() -> None:
                      "cobertura": r["coverage"],
                      "vies_pp": r["median_bias_pp"]}
             for perfil, r in calibracao["profiles"].items()
+        },
+        # O ano corrente. A faixa vem congelada de janeiro; o realizado, do
+        # acompanhamento diário. O artefato é um documento só, então os dois
+        # vêm embutidos, e o realizado entra de cinco em cinco pregões: entre
+        # um pregão e o vizinho a linha não muda o suficiente para se enxergar,
+        # e a versão cheia dobraria o tamanho do arquivo.
+        "acompanhamento": {
+            "ano": acompanhamento["year"],
+            "limitacao": acompanhamento["limitation"],
+            "perfis": {
+                perfil: {
+                    "faixa": r["band"],
+                    "realizado": [x for i, x in enumerate(r["realised"])
+                                  if i % 5 == 0 or i == len(r["realised"]) - 1],
+                    "agora": r["now"],
+                }
+                for perfil, r in acompanhamento["profiles"].items()
+            },
         },
     }
     # O artefato precisa ser um documento so, entao recebe os tokens embutidos.

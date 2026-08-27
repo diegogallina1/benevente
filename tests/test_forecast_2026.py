@@ -84,3 +84,24 @@ def test_o_passo_diario_publica_o_arquivo():
              ).read_text(encoding="utf-8")
     assert "tools/build_forecast_2026_web.py" in fluxo
     assert "web/forecast_2026.json" in fluxo
+
+
+def test_o_app_mostra_o_mesmo_acompanhamento_do_site(publicado):
+    """Duas telas com o mesmo nome e números diferentes é o defeito que ninguém
+    reporta e todo mundo sente. O app embute porque precisa ser um documento só,
+    então o embutido tem de ser o mesmo dado."""
+    artefato = (ROOT / "docs" / "desenho_tela_mapa.html").read_text(encoding="utf-8")
+    for perfil in PERFIS:
+        n = publicado["profiles"][perfil]["now"]
+        # o payload do app é JSON compacto dentro do documento
+        assert f'"realised":{n["realised"]}' in artefato, perfil
+        assert f'"sessions":{n["sessions"]}' in artefato, perfil
+
+
+def test_o_app_ancora_a_faixa_na_origem():
+    """No primeiro pregão o retorno é zero e a faixa tem largura zero. Sem esse
+    ponto o desenho começa no pregão cinco e a linha aparece solta à esquerda,
+    como se estivesse fora da faixa quando não está."""
+    for caminho in (ROOT / "docs" / "desenho_tela_mapa.html", ROOT / "web" / "forecast2026.js"):
+        texto = caminho.read_text(encoding="utf-8")
+        assert "sessions: 0, p10: 0, p50: 0, p90: 0" in texto, caminho.name
