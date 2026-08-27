@@ -32,3 +32,15 @@ data/prices_b3_with_global_*.csv
 .vercel
 # Cache do dataset aberto do Tesouro, rebaixável por research_fixed_income_probe.py
 data/tesouro_direto_precos_taxas.csv
+
+# Material criptográfico da B3. O pacote de acesso chega em .p12 e vira PEM na
+# conversão; um deles é chave privada. Converter dentro do repositório é o
+# caminho natural, e sem estas linhas o commit seguinte vaza a chave.
+*.p12
+*.pfx
+*.jks
+*.pem
+*.key
+*.crt
+*.cer
+b3_ca*

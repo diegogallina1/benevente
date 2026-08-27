@@ -200,6 +200,44 @@ def classificar(agora: datetime, referencia_recebida: date | None,
     return Frescor.ATUAL if teve_movimentacao else Frescor.SEM_MOVIMENTO
 
 
+def sessao_mtls(credenciais: Credenciais):
+    """O transporte de verdade: TLS mútuo mais Bearer.
+
+    ``requests`` só aceita certificado em PEM, e o pacote da B3 chega em ``.p12``.
+    A conversão é feita fora daqui, por openssl, e o caminho dos dois arquivos
+    resultantes vem do ambiente — assim nenhuma senha passa por argumento de
+    linha de comando, onde ficaria visível na lista de processos:
+
+        openssl pkcs12 -in b3.p12 -clcerts -nokeys  -out b3_cert.pem
+        openssl pkcs12 -in b3.p12 -nocerts -nodes   -out b3_key.pem
+
+    ``verify`` aponta para a CA da B3, nunca para ``False``. Desligar a
+    verificação faria a conexão funcionar e deixaria de ser TLS mútuo de fato —
+    é o atalho que costuma sobreviver até produção.
+    """
+    import requests  # local: o módulo precisa importar sem rede instalada
+
+    sessao = requests.Session()
+    sessao.cert = (credenciais.certificado_p12, os.environ.get("B3_CERT_KEY_PEM", ""))
+    if not all(sessao.cert):
+        raise ConfiguracaoAusente(
+            "B3_CERT_P12 deve apontar para o certificado em PEM e B3_CERT_KEY_PEM para a "
+            "chave, ambos convertidos do .p12 que a B3 enviou. Veja o docstring.")
+    sessao.verify = credenciais.ca_bundle
+
+    def _transporte(metodo, url, headers, params):
+        resposta = sessao.request(metodo, url, headers=headers, params=params, timeout=30)
+        corpo = None
+        if resposta.content:
+            try:
+                corpo = resposta.json()
+            except ValueError:
+                corpo = None
+        return resposta.status_code, corpo
+
+    return _transporte
+
+
 class B3Client:
     """O cliente. Não faz rede sem certificado, caminho e consentimento.
 

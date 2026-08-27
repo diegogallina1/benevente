@@ -1,0 +1,26 @@
+{
+  "_leia_isto": [
+    "Os caminhos abaixo estão vazios de propósito. A especificação de cada API está",
+    "no portal developers.b3.com.br, atrás de login, e este projeto não adivinha URL:",
+    "um caminho chutado vira um cliente que compila, parece pronto e falha na primeira",
+    "chamada real com um 404 disfarçado de erro de rede.",
+    "",
+    "Depois de entrar no portal, abra a Documentação Técnica de cada API e copie o",
+    "path completo (sem o host). O host vem no pacote de acesso.",
+    "",
+    "Enquanto um campo estiver vazio, b3_client recusa a chamada correspondente e diz",
+    "qual é o campo. Isso é intencional."
+  ],
+  "_onde_encontrar": {
+    "posicao": "Home / APIs / Nova Área Logada / Posição — endpoint de Renda Variável",
+    "movimentacao": "Home / APIs / Nova Área Logada / Movimentação",
+    "negociacao": "Home / APIs / Nova Área Logada / Negociação de Ativos",
+    "guia": "Home / APIs / Nova Área Logada / API Guia (Produtos Atualizados)",
+    "autorizacao": "Home / APIs / Nova Área Logada / Autorização Fintech"
+  },
+  "posicao": "",
+  "movimentacao": "",
+  "negociacao": "",
+  "guia": "",
+  "autorizacao": ""
+}

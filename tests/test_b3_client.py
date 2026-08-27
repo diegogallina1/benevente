@@ -173,3 +173,35 @@ def test_a_guia_diz_quem_se_moveu():
 def test_guia_indisponivel_nao_inventa_lista():
     t = transporte({"/api/guia/v1": (500, None)})
     assert B3Client(t, COMPLETO).documentos_com_movimentacao(TOKEN, date(2026, 8, 26)) == set()
+
+
+# --- nada de material criptográfico no repositório ------------------------
+
+def test_o_repositorio_nao_versiona_certificado_nem_chave():
+    """O .p12 da B3 vira PEM na conversão, e um dos arquivos é chave privada.
+
+    Converter dentro do repositório é o caminho natural de quem está com pressa.
+    Este teste existe para que o commit seguinte não vaze a chave.
+    """
+    import subprocess
+    from pathlib import Path
+
+    raiz = Path(__file__).resolve().parents[1]
+    versionados = subprocess.run(["git", "ls-files"], cwd=raiz, capture_output=True,
+                                 text=True, check=True).stdout.splitlines()
+    perigosos = [f for f in versionados
+                 if f.lower().endswith((".p12", ".pfx", ".jks", ".pem", ".key",
+                                        ".crt", ".cer"))]
+    assert not perigosos, f"material criptográfico versionado: {perigosos}"
+
+    ignore = (raiz / ".gitignore").read_text(encoding="utf-8")
+    for padrao in ("*.p12", "*.pem", "*.key", "*.jks"):
+        assert padrao in ignore, f".gitignore não cobre {padrao}"
+
+
+def test_a_verificacao_de_certificado_nunca_e_desligada():
+    """verify=False faz a conexão funcionar e deixa de ser TLS mútuo de fato."""
+    from pathlib import Path
+    fonte = (Path(__file__).resolve().parents[1] / "b3_client.py").read_text(encoding="utf-8")
+    assert "verify = False" not in fonte and "verify=False" not in fonte
+    assert "sessao.verify = credenciais.ca_bundle" in fonte

@@ -111,6 +111,57 @@ configuração; enquanto estiverem vazias o cliente recusa a chamada com uma
 mensagem que diz o que falta, em vez de produzir um 404 disfarçado de erro de
 rede. Quem tiver acesso ao portal preenche um arquivo e a conexão fecha.
 
+## 4c. O cadastro: o que é seu e o que já está pronto
+
+O cadastro cria conta, vincula dados e aceita termos em nome de uma pessoa
+jurídica. É ato de quem assina, não de um programa — nenhuma automação deste
+repositório faz isso, e nenhuma deveria.
+
+**Certificação (o próximo passo, e é curto).** Online e 24/7 pelo portal B3 For
+Developers. O processo começa pela **API Pacote de Acesso**, que gera e envia
+por e-mail um `.zip` com o que autentica as demais. A documentação dela está em
+Home / APIs / Nova Área Logada / Pacote de Acesso. Não há contrato nem análise
+prévia nessa etapa.
+
+**Produção (bem mais longo, e vale saber agora).** Só **pessoa jurídica**
+contrata, e antes da assinatura há um **self-assessment** da B3: um questionário
+sobre governança de proteção de dados e segurança da informação, enviado por
+link com manual de apoio, mais uma avaliação da postura de segurança cibernética
+via **Security Scorecard**. Sai um relatório de vulnerabilidades a endereçar, e
+a B3 pode recusar a contratação a critério dela. Isso não se resolve na véspera.
+
+**Custo.** R$ 6,00 por autorização concedida por investidor, cobrados R$ 0,50
+por mês durante doze meses — com **franquia de 10 mil autorizações isentas por
+licenciado**, e desconto de 50% do sétimo ao vigésimo quarto mês. Para alfa e
+beta, o custo é zero.
+
+**Opt-out.** Ou o investidor revoga dentro da área logada da B3, ou o licenciado
+pede à B3 para não renovar a assinatura daquele investidor.
+
+**Contatos.** Contratação: `contratacao@b3.com.br`, 11 2565-5080. Suporte
+técnico: 11 2565-5120.
+
+**O que já está pronto deste lado**, para quando o pacote chegar:
+
+| Peça | Onde | Estado |
+| --- | --- | --- |
+| Transporte com TLS mútuo e Bearer | `b3_client.sessao_mtls` | pronto |
+| Portão de consentimento, limite diário, frescor | `b3_client.B3Client` | pronto, com 16 testes sem credencial |
+| Caminhos dos endpoints | `data/b3_endpoints.json` | vazio, à espera da especificação |
+| Conferência da ligação | `tools/b3_healthcheck.py` | pronto, roda com `--token` |
+
+O `.p12` do pacote precisa virar PEM antes de o Python usar:
+
+```
+openssl pkcs12 -in b3.p12 -clcerts -nokeys -out b3_cert.pem
+openssl pkcs12 -in b3.p12 -nocerts -nodes  -out b3_key.pem
+```
+
+Nenhuma dessas variáveis entra no repositório. O `verify` do cliente aponta para
+a CA da B3 e nunca para `False` — desligar a verificação faria a conexão
+funcionar e deixaria de ser TLS mútuo de fato, que é o atalho que costuma
+sobreviver até produção.
+
 ## 5. Condições operacionais
 
 - A API é **contratada** com a B3. O ambiente de certificação é autosserviço e
