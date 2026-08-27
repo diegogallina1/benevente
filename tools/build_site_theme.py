@@ -256,22 +256,9 @@ CABECALHO = """/* Camada de cor do site. Gerada por tools/build_site_theme.py â€
  * "cinza sobre branco" sao indistinguiveis pelo valor da cor, e foi o que
  * derrubou a primeira tentativa.
  */
-:root {
-  --canvas: #0a0a0a; --card: #141414; --elev: #1e1e1e; --inverso: #1e1e1e;
-  --line: #313131; --line-strong: #454545; --inverso-linha: #454545;
-  --fg: #ffffff; --fg-2: #a7a7a7; --sobre-inverso: #ffffff;
-  --acao: #6798ff; --acao-inverso: #6798ff; --acao-fraco: #101a2e;
-  --neg: #ff6b6b; --neg-fraco: #241213;
-  --btn: #ffffff; --btn-fg: #0a0a0a;
-}
-:root[data-theme="light"] {
-  --canvas: #ffffff; --card: #f6f7f9; --elev: #eceef2; --inverso: #0a0a0a;
-  --line: #dcdfe5; --line-strong: #b6bcc6; --inverso-linha: #313131;
-  --fg: #0a0a0a; --fg-2: #52565e; --sobre-inverso: #ffffff;
-  --acao: #2f5fd0; --acao-inverso: #a8c3ff; --acao-fraco: #eaf0ff;
-  --neg: #c8322f; --neg-fraco: #fdecec;
-  --btn: #0a0a0a; --btn-fg: #ffffff;
-}
+/* Os valores dos tokens vivem em tokens.css, gerado por tools/design_tokens.py
+   e carregado antes desta folha. Duas copias iguais hoje sao duas copias
+   divergentes amanha. */
 /* Rede de seguranca: os tokens da paleta antiga passam a apontar para os novos.
    O gerador reescreve as regras que consegue ler; o que escapar â€” declaracao com
    mais de uma cor, seletor exotico â€” ao menos segue o tema em vez de ficar preso
@@ -290,19 +277,11 @@ CABECALHO = """/* Camada de cor do site. Gerada por tools/build_site_theme.py â€
   --dark: var(--inverso); --v-dark: var(--inverso); --brand-dark: var(--inverso);
 }
 
-/* Os apelidos de fonte do design-system antigo apontam para as novas. Sem
-   isso, regras que usam var(--sans) continuam em Plus Jakarta. */
-:root, :root[data-theme="light"] {
-  --sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --display: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --serif: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
-  --mono: "Spline Sans Mono", ui-monospace, monospace;
-}
 body, body.version-page { background: var(--canvas); color: var(--fg);
-       font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif; }
+       font-family: var(--sans); }
 h1, h2, h3, h4, h5, .brand, .eyebrow, button, input, select, textarea {
-  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif; }
-code, kbd, pre, samp { font-family: "Spline Sans Mono", ui-monospace, monospace; }
+  font-family: var(--sans); }
+code, kbd, pre, samp { font-family: var(--mono); }
 /* No guia a profundidade vem do degrau entre superficies. Sombra preta sobre
    canvas preto nao comunica nada. */
 * { box-shadow: none !important; }
@@ -312,7 +291,7 @@ code, kbd, pre, samp { font-family: "Spline Sans Mono", ui-monospace, monospace;
   background: var(--btn) !important; color: var(--btn-fg) !important;
   border-color: var(--btn) !important;
 }
-.tema-toggle { font: inherit; font-family: "Spline Sans Mono", ui-monospace, monospace;
+.tema-toggle { font: inherit; font-family: var(--mono);
   font-size: 11px; letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2);
   background: transparent; border: 1px solid var(--line-strong); border-radius: 9999px;
   min-height: 34px; padding: 0 12px; cursor: pointer; display: inline-flex;

@@ -1,0 +1,54 @@
+/* Paleta da Benevente. Gerada por tools/design_tokens.py — não edite à mão.
+ * O site e o app leem este mesmo arquivo; o artefato recebe o mesmo bloco
+ * embutido, porque precisa ser um documento só. Um teste compara os três.
+ *
+ * O escuro é o padrão: o design system é escuro por definição, então a
+ * preferência do sistema não é consultada. O claro é escolha explícita e
+ * fica guardada no navegador de quem escolheu.
+ */
+:root {
+  --canvas: #0a0a0a;
+  --card: #141414;
+  --elev: #1e1e1e;
+  --inverso: #1e1e1e;
+  --line: #313131;
+  --line-strong: #454545;
+  --inverso-linha: #454545;
+  --fg: #ffffff;
+  --fg-2: #a7a7a7;
+  --fg-3: #7c7c7c;
+  --sobre-inverso: #ffffff;
+  --acao: #6798ff;
+  --acao-inverso: #6798ff;
+  --acao-fraco: #101a2e;
+  --neg: #ff6b6b;
+  --neg-fraco: #241213;
+  --btn: #ffffff;
+  --btn-fg: #0a0a0a;
+}
+:root[data-theme="light"] {
+  --canvas: #ffffff;
+  --card: #f6f7f9;
+  --elev: #eceef2;
+  --inverso: #0a0a0a;
+  --line: #dcdfe5;
+  --line-strong: #b6bcc6;
+  --inverso-linha: #313131;
+  --fg: #0a0a0a;
+  --fg-2: #52565e;
+  --fg-3: #767b85;
+  --sobre-inverso: #ffffff;
+  --acao: #2f5fd0;
+  --acao-inverso: #a8c3ff;
+  --acao-fraco: #eaf0ff;
+  --neg: #c8322f;
+  --neg-fraco: #fdecec;
+  --btn: #0a0a0a;
+  --btn-fg: #ffffff;
+}
+:root, :root[data-theme="light"] {
+  --sans: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --display: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --serif: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --mono: "Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}

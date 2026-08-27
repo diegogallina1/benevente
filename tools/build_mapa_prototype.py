@@ -10,6 +10,10 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from design_tokens import FONTES_LINK, css as tokens_css  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "artifacts" / "portfolio_mapping_v1" / "mapping_by_profile.json"
@@ -20,9 +24,7 @@ OUT = ROOT / "docs" / "desenho_tela_mapa.html"
 PERFIL_LABEL = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
 
 HTML = r"""<title>Plano de carteira</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500&display=swap">
+__FONTES__
 <style>
 /* Dovetail aplicado ao Benevente. Tokens do guia, adaptados ao layout que já
    existe: canvas quase preto sob uma grade de blueprint, tipo branco, uma única
@@ -46,25 +48,7 @@ HTML = r"""<title>Plano de carteira</title>
 
    O guia é escuro por definição. O tema claro aqui é adaptação, não parte
    dele: mantém o indigo e inverte a pilha de superfícies. */
-:root {
-  --canvas: #0a0a0a;   --card: #141414;    --elev: #1e1e1e;
-  --line: #313131;     --line-strong: #454545;
-  /* Ash para tudo que é secundário, inclusive legenda e metadado, como o guia
-     manda; Mist só para desabilitado. Usar Mist em legenda dava 4,25 de
-     contraste no tema claro, abaixo do mínimo. */
-  --fg: #ffffff;       --fg-2: #a7a7a7;    --fg-3: #7c7c7c;
-  --acao: #6798ff;     --acao-fraco: #101a2e;
-  --neg: #ff6b6b;      --neg-fraco: #241213;
-  --btn: #ffffff;      --btn-fg: #0a0a0a;
-}
-:root[data-theme="light"] {
-  --canvas: #ffffff;   --card: #f6f7f9;    --elev: #eceef2;
-  --line: #dcdfe5;     --line-strong: #b6bcc6;
-  --fg: #0a0a0a;       --fg-2: #52565e;    --fg-3: #767b85;
-  --acao: #2f5fd0;     --acao-fraco: #eaf0ff;
-  --neg: #c8322f;      --neg-fraco: #fdecec;
-  --btn: #0a0a0a;      --btn-fg: #ffffff;
-}
+__TOKENS__
 
 * { box-sizing: border-box; }
 body {
@@ -1080,17 +1064,26 @@ def main() -> None:
             for perfil, r in calibracao["profiles"].items()
         },
     }
-    pagina = HTML.replace("__DADOS__", json.dumps(magro, ensure_ascii=False,
-                                                  separators=(",", ":")))
+    # O artefato precisa ser um documento so, entao recebe os tokens embutidos.
+    # A versao do site le web/tokens.css, o mesmo arquivo que as paginas usam —
+    # e os dois saem de tools/design_tokens.py, que e a fonte unica.
+    pagina = (HTML.replace("__DADOS__", json.dumps(magro, ensure_ascii=False,
+                                                   separators=(",", ":")))
+                  .replace("__FONTES__", FONTES_LINK)
+                  .replace("__TOKENS__", tokens_css(com_cabecalho=False)))
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(pagina, encoding="utf-8")
 
     # --- versão do site: mesmo conteúdo, script fora do documento ---
     marcacao, script = _partes(pagina)
+    # No site o bloco embutido da lugar ao <link>: uma fonte, um arquivo.
+    marcacao = marcacao.replace(tokens_css(com_cabecalho=False),
+                                "/* tokens em ./tokens.css */")
     corpo = marcacao.replace('<div class="wrap">', TRAVA + '<div class="wrap hidden" id="app">', 1)
     corte = corpo.index("</style>") + len("</style>")
     SITE_HTML.write_text(
-        CABECALHO_SITE + corpo[:corte] + "\n</head>\n<body>\n" + corpo[corte:]
+        CABECALHO_SITE + '<link rel="stylesheet" href="./tokens.css">\n'
+        + corpo[:corte] + "\n</head>\n<body>\n" + corpo[corte:]
         + '\n<script src="./plano.js"></script>\n</body>\n</html>\n',
         encoding="utf-8")
     SITE_JS.write_text(

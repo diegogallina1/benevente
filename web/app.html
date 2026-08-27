@@ -6,10 +6,11 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Protótipo do aplicativo da Benevente: conecta a B3, quatro perguntas e dois planos. Dados sintéticos.">
 <link rel="canonical" href="https://benevente.dgo.fi/app">
+<link rel="stylesheet" href="./tokens.css?v=a8851f0e77">
 <title>Plano de carteira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap">
 <style>
 /* Dovetail aplicado ao Benevente. Tokens do guia, adaptados ao layout que já
    existe: canvas quase preto sob uma grade de blueprint, tipo branco, uma única
@@ -33,25 +34,7 @@
 
    O guia é escuro por definição. O tema claro aqui é adaptação, não parte
    dele: mantém o indigo e inverte a pilha de superfícies. */
-:root {
-  --canvas: #0a0a0a;   --card: #141414;    --elev: #1e1e1e;
-  --line: #313131;     --line-strong: #454545;
-  /* Ash para tudo que é secundário, inclusive legenda e metadado, como o guia
-     manda; Mist só para desabilitado. Usar Mist em legenda dava 4,25 de
-     contraste no tema claro, abaixo do mínimo. */
-  --fg: #ffffff;       --fg-2: #a7a7a7;    --fg-3: #7c7c7c;
-  --acao: #6798ff;     --acao-fraco: #101a2e;
-  --neg: #ff6b6b;      --neg-fraco: #241213;
-  --btn: #ffffff;      --btn-fg: #0a0a0a;
-}
-:root[data-theme="light"] {
-  --canvas: #ffffff;   --card: #f6f7f9;    --elev: #eceef2;
-  --line: #dcdfe5;     --line-strong: #b6bcc6;
-  --fg: #0a0a0a;       --fg-2: #52565e;    --fg-3: #767b85;
-  --acao: #2f5fd0;     --acao-fraco: #eaf0ff;
-  --neg: #c8322f;      --neg-fraco: #fdecec;
-  --btn: #0a0a0a;      --btn-fg: #ffffff;
-}
+/* tokens em ./tokens.css */
 
 * { box-sizing: border-box; }
 body {
