@@ -142,6 +142,12 @@ details > summary b { color: var(--fg); font-weight: 600; }
 
 /* --- painéis --- */
 .painel { background: var(--layer); padding: 1.25rem 1rem; }
+.quando { display: flex; flex-wrap: wrap; gap: .375rem .75rem; align-items: baseline;
+          font-size: .75rem; letter-spacing: .32px; color: var(--fg-3);
+          border-bottom: 1px solid var(--line); padding-bottom: .625rem; margin-bottom: .875rem; }
+.quando b { color: var(--fg); font-weight: 600; letter-spacing: 0; }
+.quando.velho { color: var(--erro); }
+.quando.velho b { color: var(--erro); }
 .painel .big { font-size: 1.75rem; line-height: 1.29; font-weight: 400; }
 .painel p { margin: .5rem 0 0; color: var(--fg-2); font-size: .875rem; line-height: 1.43; }
 
@@ -360,6 +366,7 @@ footer a { color: var(--acao); }
   <p class="lede">Cada posição mostra de onde o dado veio: extrato da B3, Open Finance ou
      lançamento manual.</p>
   <div class="painel">
+    <p class="quando" id="quando"></p>
     <div class="big num" id="aderencia"></div>
     <p id="aderencia-txt"></p>
   </div>
@@ -681,6 +688,16 @@ function render(perfil) {
   const a = resolvido(p.adequar), b = resolvido(p.adaptar);
   mostra("mapa", "planos-sec");
 
+  // "Sem movimentação" e "não atualizou" precisam ser distinguíveis aqui. Com
+  // 97% de SLA a carteira falha em chegar cerca de uma vez por mês, e tratar os
+  // dois casos igual mostra a posição de anteontem como se fosse a de ontem.
+  const carga = b3.freshness.example;
+  const faixa = $("quando");
+  faixa.className = "quando" + (carga.utilizavel ? "" : " velho");
+  faixa.innerHTML = "<span>Posição de <b>" +
+    carga.data_referencia.split("-").reverse().join("/") + "</b></span><span>" +
+    carga.explicacao + "</span>";
+
   $("aderencia").textContent = PCT(a.alignment) + " já serve";
   $("aderencia-txt").textContent =
     "De " + BRL(a.total_brl) + ", essa parte já está de acordo com o que a política declara " +
@@ -887,6 +904,7 @@ def main() -> None:
         "profiles": {nome: {"adequar": p["adequar"], "adaptar": p["adaptar"]}
                      for nome, p in dados["profiles"].items()},
         "b3": {"base_starts": conexao["base_starts"], "coverage": conexao["coverage"],
+               "freshness": conexao["freshness"],
                "consent": {k: v for k, v in conexao["consent"].items()
                            if k in ("escopo", "revogavel_em", "credencial_armazenada")},
                "cost_basis": conexao["cost_basis"], "gaps": conexao["gaps"]},

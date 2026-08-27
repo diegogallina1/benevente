@@ -86,6 +86,31 @@ encadeado como o log do monitor diário. Credencial não é armazenada, e o
 registro diz isso explicitamente num campo, porque a ausência de um campo não
 prova nada.
 
+## 4b. Como a conexão autentica, e por que ela ainda não liga
+
+O endpoint de negócio exige **TLS mútuo 1.2** — o cliente apresenta um
+certificado emitido pela B3 e valida o servidor contra a CA dela — e **OAuth 2.0**
+por cima, com Bearer no cabeçalho. O certificado chega no pacote de acesso, que
+a B3 envia depois do cadastro; em produção, depois do contrato.
+
+Isso torna o portão explícito: **sem certificado emitido pela B3 não existe
+conexão**, e nenhuma engenharia contorna isso. O ambiente de certificação é
+autosserviço e gratuito, em `https://apib3i-cert.b3.com.br` (porta 2443), com
+`POST /api/acesso/autosservico` para obter o pacote e
+`GET /api/healthcheck/{token}` para conferir a ligação.
+
+**O que este repositório implementa** (`b3_client.py`): o transporte com mTLS e
+Bearer, o portão de consentimento, o limite de uma chamada por investidor por
+dia e a classificação de frescor. Tudo exercitável sem credencial, porque o
+transporte é injetado e os testes usam respostas gravadas.
+
+**O que ele deliberadamente não implementa**: os caminhos exatos dos endpoints
+de Posição, Movimentação, Negociação e Guia. A especificação está no portal de
+desenvolvedores, atrás de login, e este projeto **não adivinha URL**. Elas são
+configuração; enquanto estiverem vazias o cliente recusa a chamada com uma
+mensagem que diz o que falta, em vez de produzir um 404 disfarçado de erro de
+rede. Quem tiver acesso ao portal preenche um arquivo e a conexão fecha.
+
 ## 5. Condições operacionais
 
 - A API é **contratada** com a B3. O ambiente de certificação é autosserviço e
@@ -96,8 +121,15 @@ prova nada.
   API Guia informa quais documentos tiveram movimentação, e é ela que evita
   varrer a base inteira.
 - SLA de disponibilidade de **97% ao mês**. Cerca de um dia por mês a carteira
-  pode simplesmente não chegar, e a tela precisa saber dizer "não atualizou
-  hoje" em vez de mostrar dado velho como se fosse novo.
+  simplesmente não chega.
+
+Essa última linha virou código. `b3_client.Frescor` separa quatro estados, e a
+distinção que importa é entre dois deles: **"sem movimentação"** significa que a
+posição de ontem continua valendo, e **"não atualizou"** significa que o dado
+exibido é de antes. Tratar os dois do mesmo jeito mostra a carteira de anteontem
+como se fosse a de ontem, uma vez por mês, sem avisar — e o cliente decide vender
+com base nela. A tela publica a data de referência junto do número, em vermelho
+quando o dado está velho.
 
 ## 6. LGPD
 
@@ -135,7 +167,7 @@ lançada por outro caminho, nunca como integração.
 | Fase | Entrega | Critério de saída |
 | --- | --- | --- |
 | 0 | Módulo de reconstrução e de lacunas rodando sobre extrato exportado à mão | O relatório de lacunas bate com a conferência manual em dez carteiras |
-| 1 | Ambiente de certificação da B3, sem cliente real | Uma carteira de teste percorre posição, negociação e reconstrução ponta a ponta |
+| 1 | Ambiente de certificação da B3, sem cliente real | Uma carteira de teste percorre posição, negociação e reconstrução ponta a ponta. Bloqueado em: pacote de acesso da B3 e os caminhos dos endpoints |
 | 2 | Contrato de produção e consentimento de verdade | Primeiro consentimento registrado, encadeado e revogável, conferido na tela da B3 |
 | 3 | Carga diária com API Guia e tratamento de indisponibilidade | A tela distingue "sem movimentação" de "não atualizou" |
 

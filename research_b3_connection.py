@@ -11,10 +11,11 @@ pede o dado, porque um imposto estimado tem a mesma aparência de um medido.
 """
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 import json
 
+from b3_client import B3Client, Endpoints, Frescor, classificar, referencia_esperada
 from b3_connection import (BASE_COMECA_EM, COBERTURA, Consentimento, Negociacao,
                            Qualidade, reconstruir_custo, relatorio_de_lacunas)
 
@@ -73,6 +74,18 @@ def main() -> None:
     for item in COBERTURA["nao_entrega"]:
         print(f"  · {item}")
 
+    # O estado da carga, que a tela precisa distinguir de "nada mudou".
+    agora = datetime(2026, 8, 27, 10, 21)
+    cenarios = {
+        "atual": classificar(agora, referencia_esperada(agora), True),
+        "sem_movimento": classificar(agora, referencia_esperada(agora), False),
+        "nao_atualizou": classificar(agora, date(2026, 8, 20), False),
+        "cedo": classificar(agora.replace(hour=7), None, False),
+    }
+    print("\nFRESCOR DA CARGA")
+    for nome, estado in cenarios.items():
+        print(f"  {nome:<15} {estado.value}")
+
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "connection_example.json").write_text(json.dumps({
         "status": "demonstration_only",
@@ -85,6 +98,19 @@ def main() -> None:
                            "cobertura": round(c.cobertura, 4), "observacao": c.observacao}
                        for t, c in sorted(custos.items())},
         "gaps": lacunas,
+        "freshness": {
+            "reference": "D-1, publicado a partir das 8h",
+            "sla_monthly": 0.97,
+            "why_it_matters": (
+                "Com 97% de disponibilidade ao mês, a carteira deixa de chegar por volta de uma "
+                "vez por mês. Uma tela que trata 'sem movimentação' e 'não atualizou' do mesmo "
+                "jeito mostra a posição de anteontem como se fosse a de ontem, sem avisar."),
+            "states": {nome: estado.value for nome, estado in cenarios.items()},
+            "example": {"state": "sem_movimento",
+                        "explicacao": cenarios["sem_movimento"].value,
+                        "data_referencia": referencia_esperada(agora).isoformat(),
+                        "utilizavel": True},
+        },
     }, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
