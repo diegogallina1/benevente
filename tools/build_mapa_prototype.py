@@ -22,7 +22,7 @@ PERFIL_LABEL = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arr
 HTML = r"""<title>Plano de carteira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600&family=Spline+Sans+Mono:wght@400;500&display=swap">
 <style>
 /* Dovetail aplicado ao Benevente. Tokens do guia, adaptados ao layout que já
    existe: canvas quase preto sob uma grade de blueprint, tipo branco, uma única
@@ -56,7 +56,6 @@ HTML = r"""<title>Plano de carteira</title>
   --acao: #6798ff;     --acao-fraco: #101a2e;
   --neg: #ff6b6b;      --neg-fraco: #241213;
   --btn: #ffffff;      --btn-fg: #0a0a0a;
-  --grade: #1e1e1e;
 }
 :root[data-theme="light"] {
   --canvas: #ffffff;   --card: #f6f7f9;    --elev: #eceef2;
@@ -65,36 +64,28 @@ HTML = r"""<title>Plano de carteira</title>
   --acao: #2f5fd0;     --acao-fraco: #eaf0ff;
   --neg: #c8322f;      --neg-fraco: #fdecec;
   --btn: #0a0a0a;      --btn-fg: #ffffff;
-  --grade: #eceef2;
 }
 
 * { box-sizing: border-box; }
 body {
   margin: 0; color: var(--fg); background: var(--canvas);
-  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
   font-size: 16px; line-height: 1.5; letter-spacing: -.25px;
   font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased; overflow-wrap: break-word;
-  /* A grade de blueprint: 1px a cada 48px, recuada o suficiente para orientar
-     sem competir. É a assinatura do sistema. */
-  background-image:
-    linear-gradient(to right, var(--grade) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--grade) 1px, transparent 1px);
-  background-size: 48px 48px;
-  background-attachment: fixed;
 }
 .wrap { max-width: 1200px; margin: 0 auto; padding: 24px 16px 96px; }
 @media (min-width: 42rem) { .wrap { max-width: 42rem; padding: 64px 24px 96px; } }
-.num { font-family: "JetBrains Mono", ui-monospace, monospace;
+.num { font-family: "Spline Sans Mono", ui-monospace, monospace;
        font-variant-numeric: tabular-nums; letter-spacing: 0; }
 .neg { color: var(--neg); }
 .hidden { display: none; }
 ::selection { background: var(--acao); color: var(--canvas); }
 
-/* JetBrains Mono em caixa alta com tracking largo: lê como metadado, não como
+/* O monoespaçado em caixa alta com tracking largo: lê como metadado, não como
    texto corrido. É o que o guia usa para rotular seção. */
 .label, .eyebrow {
-  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-family: "Spline Sans Mono", ui-monospace, monospace;
   font-size: 12px; line-height: 1.4; letter-spacing: .85px;
   text-transform: uppercase; color: var(--fg-2); font-weight: 400; margin: 0;
 }
@@ -108,13 +99,13 @@ h3 { font-size: 20px; line-height: 1.33; letter-spacing: -.42px; font-weight: 50
 header { padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }
 .topo { display: flex; align-items: center; justify-content: space-between;
         gap: 16px; margin-bottom: 24px; }
-.marca { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .85px;
+.marca { font-family: "Spline Sans Mono", monospace; font-size: 12px; letter-spacing: .85px;
          text-transform: uppercase; color: var(--fg); margin: 0; }
 .marca span { color: var(--fg-2); }
 header p:last-child { margin: 0; color: var(--fg-2); font-size: 16px; }
 
 /* Pílula: o guia reserva o raio total para navegação e controles do topo. */
-.tema { font: inherit; font-family: "JetBrains Mono", monospace; font-size: 12px;
+.tema { font: inherit; font-family: "Spline Sans Mono", monospace; font-size: 12px;
         letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2);
         background: transparent; border: 1px solid var(--line-strong); border-radius: 9999px;
         min-height: 44px; padding: 0 14px; cursor: pointer;
@@ -124,7 +115,7 @@ header p:last-child { margin: 0; color: var(--fg-2); font-size: 16px; }
 .etapas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
           list-style: none; margin: 0 0 40px; padding: 0; }
 .etapas li { border-top: 1px solid var(--line); padding-top: 8px;
-             font-family: "JetBrains Mono", monospace; font-size: 12px;
+             font-family: "Spline Sans Mono", monospace; font-size: 12px;
              letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2); }
 .etapas li[data-on="1"] { border-top-color: var(--acao); color: var(--fg); }
 .etapas b { display: block; font-weight: 400; color: var(--acao); }
@@ -138,7 +129,7 @@ section { margin-bottom: 80px; }
 .seguranca b { color: var(--fg); font-weight: 500; }
 details { margin-top: 24px; border-top: 1px solid var(--line); }
 details > summary { cursor: pointer; list-style: none; padding: 16px 0; min-height: 44px;
-                    font-family: "JetBrains Mono", monospace; font-size: 12px;
+                    font-family: "Spline Sans Mono", monospace; font-size: 12px;
                     letter-spacing: .85px; text-transform: uppercase; color: var(--acao);
                     display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 details > summary::-webkit-details-marker { display: none; }
@@ -158,7 +149,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .painel .big { font-size: 40px; line-height: 1.2; letter-spacing: -.84px; font-weight: 500; }
 .painel p { margin: 8px 0 0; color: var(--fg-2); font-size: 14px; line-height: 1.57; }
 .quando { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline;
-          font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .85px;
+          font-family: "Spline Sans Mono", monospace; font-size: 12px; letter-spacing: .85px;
           text-transform: uppercase; color: var(--fg-2);
           border-bottom: 1px solid var(--elev); padding-bottom: 16px; margin-bottom: 16px; }
 .quando b { color: var(--fg); font-weight: 400; }
@@ -172,11 +163,11 @@ details > summary b { color: var(--fg); font-weight: 400; }
 
 .barras { margin-top: 24px; }
 .barra-linha { margin-bottom: 16px; }
-.barra-linha > span { display: block; font-family: "JetBrains Mono", monospace;
+.barra-linha > span { display: block; font-family: "Spline Sans Mono", monospace;
                       font-size: 12px; letter-spacing: .85px; text-transform: uppercase;
                       color: var(--fg-2); margin-bottom: 8px; }
 .legenda { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 16px;
-           font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .85px;
+           font-family: "Spline Sans Mono", monospace; font-size: 12px; letter-spacing: .85px;
            text-transform: uppercase; color: var(--fg-2); }
 .legenda i { display: inline-block; width: 8px; height: 8px; border-radius: 2px;
              margin-right: 8px; vertical-align: 0; }
@@ -197,7 +188,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
                             border-color: var(--btn); font-weight: 500; }
 
 .resumo { border-top: 1px solid var(--line); padding-top: 16px; }
-.chips { margin: 0 0 8px; font-family: "JetBrains Mono", monospace; font-size: 12px;
+.chips { margin: 0 0 8px; font-family: "Spline Sans Mono", monospace; font-size: 12px;
          letter-spacing: .85px; text-transform: uppercase; color: var(--fg); }
 .chips span + span::before { content: " · "; color: var(--fg-2); }
 .link { font: inherit; font-size: 14px; color: var(--acao); background: none; border: 0;
@@ -218,7 +209,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .regua svg { display: block; width: 100%; height: auto; }
 .regua figcaption { margin-top: 8px; font-size: 12px; line-height: 1.4; color: var(--fg-2); }
 .regua .chaves { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 8px;
-                 font-family: "JetBrains Mono", monospace; font-size: 12px;
+                 font-family: "Spline Sans Mono", monospace; font-size: 12px;
                  letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2); }
 .regua .chaves i { display: inline-block; width: 8px; height: 8px; border-radius: 2px;
                    margin-right: 8px; vertical-align: 0; }
@@ -232,7 +223,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .plano:focus-visible { outline: 2px solid var(--acao); outline-offset: 2px; }
 .plano[aria-pressed="true"] { border-color: var(--acao); background: var(--acao-fraco); }
 .plano .custo { font-size: 40px; line-height: 1.2; letter-spacing: -.84px; font-weight: 500; }
-.plano .custo small { display: block; font-family: "JetBrains Mono", monospace;
+.plano .custo small { display: block; font-family: "Spline Sans Mono", monospace;
                       font-size: 12px; letter-spacing: .85px; text-transform: uppercase;
                       color: var(--fg-2); margin-top: 8px; }
 .plano dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 16px;
@@ -248,7 +239,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 
 /* --- o que muda --- */
 .razao { margin-top: 24px; }
-.grupo { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .85px;
+.grupo { font-family: "Spline Sans Mono", monospace; font-size: 12px; letter-spacing: .85px;
          text-transform: uppercase; color: var(--fg-2); margin: 24px 0 0;
          padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 .grupo:first-child { margin-top: 0; }
@@ -282,15 +273,15 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .registro { margin-top: 16px; background: var(--card); border: 1px solid var(--elev);
             border-radius: 8px; padding: 24px; }
 .registro p { margin: 0 0 16px; font-size: 14px; line-height: 1.57; color: var(--fg-2); }
-.registro pre { margin: 0; overflow-x: auto; font-family: "JetBrains Mono", monospace;
+.registro pre { margin: 0; overflow-x: auto; font-family: "Spline Sans Mono", monospace;
                 font-size: 12px; line-height: 1.6; color: var(--fg); }
 
 .informar { margin-top: 16px; }
-.informar label { display: block; font-family: "JetBrains Mono", monospace; font-size: 12px;
+.informar label { display: block; font-family: "Spline Sans Mono", monospace; font-size: 12px;
                   letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2);
                   margin-bottom: 8px; }
 .campo { display: flex; flex-wrap: wrap; gap: 8px; }
-.campo input { font: inherit; font-family: "JetBrains Mono", monospace; font-size: 16px;
+.campo input { font: inherit; font-family: "Spline Sans Mono", monospace; font-size: 16px;
                flex: 1 1 10rem; min-width: 0; min-height: 44px; padding: 8px 16px;
                color: var(--fg); background: var(--elev); border: 1px solid var(--line);
                border-radius: 8px; }
@@ -308,7 +299,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 footer { border-top: 1px solid var(--line); margin-top: 80px; padding-top: 24px;
          font-size: 12px; line-height: 1.4; color: var(--fg-2); }
 footer p { margin: 0 0 8px; }
-footer code { font-family: "JetBrains Mono", monospace; }
+footer code { font-family: "Spline Sans Mono", monospace; }
 footer a { color: var(--acao); }
 
 @media (min-width: 42rem) {
@@ -447,8 +438,7 @@ footer a { color: var(--acao); }
      da B3 de <code>b3_connection.py</code>. Nenhuma ordem é transmitida por esta tela.</p>
   <p>O custo aparece antes do benefício de propósito, e nenhuma tela deste projeto promete
      patrimônio futuro: o que a Benevente publica é o quanto a própria régua erra.</p>
-  <p>Desenho sobre o <a href="https://carbondesignsystem.com/">IBM Carbon Design System</a>
-     (Apache 2.0), com IBM Plex Sans e IBM Plex Mono.</p>
+  <p>Tipografia Schibsted Grotesk e Spline Sans Mono.</p>
 </footer>
 </div>
 
