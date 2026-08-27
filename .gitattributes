@@ -1,0 +1,12 @@
+# Os arquivos servidos de web/ tem o hash do proprio conteudo escrito no HTML
+# que os carrega (tools/stamp_assets.py, para invalidar cache). O hash e
+# calculado sobre os bytes do arquivo, entao ele depende do fim de linha.
+#
+# Com core.autocrlf=true e sem esta regra, um clone no Windows recebe CRLF,
+# os bytes mudam, e o hash carimbado deixa de bater com o arquivo — o teste
+# de carimbo quebra num clone limpo enquanto passa na CI, que roda em Linux.
+# Isso ja aconteceu uma vez, e o sintoma nao aponta para a causa.
+web/*.js   text eol=lf
+web/*.css  text eol=lf
+web/*.html text eol=lf
+web/*.json text eol=lf
