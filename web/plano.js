@@ -169,7 +169,7 @@ function campoDeCusto(ticker, jaSabe) {
     "placeholder='R$ 0,00' aria-describedby='custo-ajuda'>" +
     "<button class='btn' type='button' id='custo-ok'>Informar</button></div>" +
     "<p class='ajuda' id='custo-ajuda'>Some tudo que pagou pela posição, em todas as compras. " +
-    (jaSabe > 0 ? "Das compras que a B3 mandou já sabemos " + BRL(jaSabe) + "; falta somar as " +
+    (jaSabe > 0 ? "Das compras que a B3 mandou já sabemos " + BRL(jaSabe) + ". Falta somar as " +
                   "anteriores. " : "") +
     "O valor está na sua declaração de imposto de renda ou nas notas de corretagem.</p>";
   const campo = caixa.querySelector("#custo");
@@ -318,7 +318,7 @@ function avaliar() {
     .filter(o => o.caps_profile === perfil && o.note);
   const pior = DADOS.questionnaire.worst_measured_drawdown[perfil];
   $("veredito").innerHTML = "Perfil <b>" + perfil + "</b>, " +
-    (causas.length ? causas.map(o => o.note).join("; ")
+    (causas.length ? causas.map(o => o.note).join(", e ")
                    : "nenhuma resposta impôs teto abaixo do máximo") +
     ". A pior queda já medida neste perfil foi de <b class='num neg'>" + PCT(pior) + "</b>.";
   etapa(2);

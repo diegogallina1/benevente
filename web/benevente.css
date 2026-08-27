@@ -198,6 +198,9 @@ details > summary, .annual-decision summary, .live-holdings summary { color: var
 .section-heading, .proof, .method-grid { border-top: 0 !important;
   border-bottom: 0 !important; }
 .version-section { margin-top: 64px; }
+/* As duas linhas verticais que ladeavam o grafico: sao a borda do container
+   dele, com mil pixels de altura. Nao delimitam nada que a pessoa precise ver. */
+.ladder-wrap, .ladder-wrap > * { border-left: 0 !important; border-right: 0 !important; }
 
 table, th, td { border-color: var(--line); }
 /* Paineis escuros cujo fundo o gerador nao alcanca — a cor vem de gradiente,

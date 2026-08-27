@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="./design-system.css?v=dadaa2d82a" />
     <link rel="stylesheet" href="./ladder.css?v=2a8be89fde" />
     <link rel="stylesheet" href="./tokens.css?v=170d149483">
-    <link rel="stylesheet" href="./benevente.css?v=d1a8d3ea51">
+    <link rel="stylesheet" href="./benevente.css?v=67b66d2a7d">
   </head>
   <body class="version-page">
     <header class="version-nav shell">
@@ -63,7 +63,7 @@
       <p>As referências são calculadas nas mesmas datas da carteira e não exercem o mesmo papel. O CDI mede o custo de oportunidade do caixa. O MVO é uma otimização independente sobre o universo elegível de cada janeiro. O Ibovespa é o índice de retorno total da B3 e incorpora os proventos reinvestidos na carteira teórica.</p>
 
       <h2>3 · Custos e imposto</h2>
-      <p>Custo é a taxa da B3 mais um termo de deslizamento que cresce com a participação da ordem no volume médio diário do papel. Na seleção anual, o imposto usa 15% sobre ganho realizado em renda variável e a tabela regressiva na parcela em caixa. Para as vendas de renda variável, rebalanceamento anual, reduções e recomposições da camada de proteção e a perna em ETF, uma rotina própria reconstrói o livro diário de cada perfil e apura o imposto como a lei manda: por ativo, ao custo médio de aquisição, consolidado por mês-calendário, com isenção quando as vendas de ações do mês não superam R$ 20 mil, compensação de prejuízos acumulados e ETF sem isenção. Na janela 2015–2025, essa apuração custa entre 0,7 e 2,1 pontos percentuais ao ano conforme o perfil, e fica até 10% abaixo da estimativa agregada anterior, porque a agregação ignorava isenção e compensação. O que ainda falta é a conciliação com nota de corretagem, que exige operação real. A rotina e o razão mês a mês estão em artifacts/tax_lot_accounting.</p>
+      <p>Custo é a taxa da B3 mais um termo de deslizamento que cresce com a participação da ordem no volume médio diário do papel. Na seleção anual, o imposto usa 15% sobre ganho realizado em renda variável e a tabela regressiva na parcela em caixa. Para as vendas de renda variável, rebalanceamento anual, reduções e recomposições da camada de proteção e a perna em ETF, uma rotina própria reconstrói o livro diário de cada perfil e apura o imposto como a lei manda: por ativo, ao custo médio de aquisição, consolidado por mês-calendário, com isenção quando as vendas de ações do mês não superam R$ 20 mil, compensação de prejuízos acumulados e ETF sem isenção. Na janela 2015 a 2025, essa apuração custa entre 0,7 e 2,1 pontos percentuais ao ano conforme o perfil, e fica até 10% abaixo da estimativa agregada anterior, porque a agregação ignorava isenção e compensação. O que ainda falta é a conciliação com nota de corretagem, que exige operação real. A rotina e o razão mês a mês estão em artifacts/tax_lot_accounting.</p>
       <p>A parcela em caixa da política congelada é um instrumento sintético: 100% do CDI com capitalização diária, da série 12 do Banco Central. O CDI é um índice, e ninguém o compra, não tem custódia, não tem spread de compra e venda, não tem rolagem. Isso levanta uma pergunta que o projeto não podia deixar sem resposta: quanto do resultado publicado dependia de um caixa que não existe?</p>
       <p>Foi o que motivou a <b>versão 3 da política</b>, registrada em 26/08/2026. Ela troca uma única coisa em relação à v2, o instrumento de caixa, e nada mais: orçamento por perfil, número de emissores, tetos, fração global e todos os parâmetros da camada de proteção continuam idênticos. O caixa passa a ser <b>Tesouro Selic</b>, reconstruído do arquivo diário do Tesouro Transparente e líquido da custódia da B3 na tabela histórica (0,30% ao ano até 2018, 0,25% até 2021, 0,20% depois) e do spread cobrado em cada uma das onze rolagens. Uma versão que mexesse em várias coisas ao mesmo tempo não permitiria atribuir nada ao que mudou.</p>
       <table class="paper-table">
@@ -114,7 +114,7 @@
           <tr class="highlight"><td>Arrojado</td><td class="num">−35,6%</td><td class="num">−28,9%</td><td class="num">0,45 p.p.</td></tr>
         </tbody>
       </table>
-      <p>Os parâmetros da camada foram escolhidos observando 2015–2018, depois das crises presentes na amostra. A evidência é <b>redução de queda</b>, não alfa adicional: numa janela mais curta a diferença de retorno entre as versões não foi significativa. Um detalhe de medição: no livro completo o Sharpe do excesso melhora nos três perfis com a camada. Medida sobre a perna doméstica isolada, ela <i>piora</i> o Sharpe do conservador (0,418→0,338) cortando a queda pela metade, o benefício está na cauda, que o Sharpe não precifica.</p>
+      <p>Os parâmetros da camada foram escolhidos observando 2015 a 2018, depois das crises presentes na amostra. A evidência é <b>redução de queda</b>, não alfa adicional: numa janela mais curta a diferença de retorno entre as versões não foi significativa. Um detalhe de medição: no livro completo o Sharpe do excesso melhora nos três perfis com a camada. Medida sobre a perna doméstica isolada, ela <i>piora</i> o Sharpe do conservador (0,418→0,338) cortando a queda pela metade, o benefício está na cauda, que o Sharpe não precifica.</p>
       <div class="paper-callout warn"><b>Notícias e controle quantitativo são camadas diferentes</b>O teste histórico usa somente preço e volatilidade observados, com atraso de um pregão. O radar atual usa Gemini para resumir e classificar documentos oficiais e notícias a cada 12 horas, mas o alerta vai para revisão humana. Ele não muda pesos e não participa da rentabilidade histórica.</div>
 
       <h2>6 · O que foi tentado e não funcionou</h2>
@@ -197,7 +197,7 @@
         <li>Uso comercial exige licença de dados, enquadramento regulatório, suitability e aprovação formal. Nada disso existe hoje.</li>
         <li>O Benevente 2 foi concebido depois da Covid-19 e ainda não tem validação prospectiva. O imposto intranual agora é estimado de forma agregada, mas não conciliado por ativo.</li>
       </ul>
-      <p>Nenhuma reamostragem de 2015–2025 elimina simultaneamente a amostra pequena de decisões, a cobertura incompleta de eventos societários e a possível memória histórica dos modelos de linguagem. O registro de 16/08/2026 é a fronteira temporal verificável a partir da qual novas afirmações sobre a camada de linguagem poderão ser avaliadas.</p>
+      <p>Nenhuma reamostragem de 2015 a 2025 elimina simultaneamente a amostra pequena de decisões, a cobertura incompleta de eventos societários e a possível memória histórica dos modelos de linguagem. O registro de 16/08/2026 é a fronteira temporal verificável a partir da qual novas afirmações sobre a camada de linguagem poderão ser avaliadas.</p>
 
       <p>Os artefatos de reprodução, código, manifestos SHA-256, séries intermediárias e testes, vivem no repositório <b>github.com/diegogallina1/benevente</b>. O repositório é privado enquanto o produto está em desenvolvimento. Acesso para auditoria pode ser solicitado, e os hashes publicados nesta página permitem conferir qualquer artefato entregue.</p>
 
