@@ -332,18 +332,18 @@ details > summary, .annual-decision summary, .live-holdings summary { color: var
 .alpha-entered::before { content: "+"; }
 .alpha-increased { background-color: var(--acao-fraco) !important; color: var(--acao) !important;
   border-color: var(--acao) !important; }
-.alpha-increased::before { content: "\2191"; }
+.alpha-increased::before { content: "↑"; }
 .alpha-reduced { background-color: var(--card) !important; color: var(--fg) !important;
   border-color: var(--line-strong) !important; }
-.alpha-reduced::before { content: "\2193"; }
+.alpha-reduced::before { content: "↓"; }
 .alpha-maintained { background-color: transparent !important; color: var(--fg-2) !important;
   border-color: var(--line) !important; }
 .alpha-maintained::before { content: "="; }
 .alpha-exited { background-color: var(--neg-fraco) !important; color: var(--neg) !important; }
-.alpha-exited::before { content: "\00d7"; }
+.alpha-exited::before { content: "×"; }
 .alpha-not_held { background-color: transparent !important; color: var(--fg-2) !important;
   border-style: dashed !important; border-color: var(--line-strong) !important; }
-.alpha-not_held::before { content: "\2013"; }
+.alpha-not_held::before { content: "–"; }
 
 /* A faixa projetada vira verde pastel e ganha corpo: era um fio cinza de 1px,
    que num grafico de calibracao e justamente o elemento que precisa ser lido. */

@@ -116,3 +116,30 @@ def test_o_acento_e_legivel_como_texto_no_seu_tema():
 
 def test_gerar_de_novo_da_o_mesmo_arquivo():
     assert TOKENS_CSS.read_text(encoding="utf-8").replace("\r\n", "\n") == css()
+
+
+def test_a_folha_do_site_nao_carrega_caractere_de_controle():
+    """Um escape CSS dentro de string comum do Python vira outra coisa.
+
+    ``content: "\2191"`` escrito numa string normal do gerador é lido pelo
+    Python como escape **octal dele**: ``\21`` vira chr(0x11) e sobra "91". A
+    folha saiu com um caractere de controle e o selo da tabela mostrou "91" na
+    tela, publicado. O defeito não aparece na revisão do código, porque lá o
+    escape parece certo — só aparece no que foi gerado.
+    """
+    texto = SITE.read_text(encoding="utf-8")
+    suspeitos = [(i, hex(ord(c))) for i, c in enumerate(texto)
+                 if ord(c) < 32 and c not in "\n\r\t"]
+    assert not suspeitos, f"caractere de controle na folha gerada: {suspeitos[:3]}"
+
+
+def test_os_selos_de_acao_se_distinguem_por_forma():
+    """Cor sozinha não carrega significado: o verde e o vermelho da paleta têm
+    praticamente o mesmo cinza, e seis selos com a mesma aparência é o mesmo
+    que não ter selo."""
+    import re as _re
+    texto = SITE.read_text(encoding="utf-8")
+    marcas = dict(_re.findall(r'\.alpha-([a-z_]+)::before \{ content: "([^"]+)"', texto))
+    for acao in ("entered", "increased", "reduced", "maintained", "exited", "not_held"):
+        assert acao in marcas, f"o selo {acao} ficou sem sinal próprio"
+    assert len(set(marcas.values())) == len(marcas), f"sinais repetidos: {marcas}"
