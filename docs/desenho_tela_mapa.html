@@ -1,297 +1,316 @@
 <title>Plano de carteira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
 <style>
-/* Tokens do IBM Carbon Design System v11 (Apache 2.0), lidos do pacote
-   @carbon/themes 11.79.0: tema White para o claro, Gray 100 para o escuro.
-   Tipografia IBM Plex Sans e IBM Plex Mono, do próprio sistema.
+/* Dovetail aplicado ao Benevente. Tokens do guia, adaptados ao layout que já
+   existe: canvas quase preto sob uma grade de blueprint, tipo branco, uma única
+   faísca indigo.
 
-   Duas decisões vêm do Carbon e valem a pena nomear. Canto reto em tudo, sem
-   raio nenhum: é a assinatura do sistema e o contrário do arredondado que hoje
-   marca praticamente toda interface gerada. E aviso com barra de 3px à esquerda
-   em vez de ícone, que informa a gravidade sem pedir atenção.
+   Três decisões que o guia obriga e valem nomear.
 
-   Escrito a partir da tela pequena: as regras de base valem para o celular e só
-   crescem depois. O contrário — desenhar no monitor e apertar — é o que produz
-   alvo de toque de trinta pixels e tabela que sangra para fora da margem. */
+   O botão primário é branco com texto preto, não colorido. Não é estilo: texto
+   branco sobre o indigo #6798ff dá contraste 2,80 e reprova. O guia acerta ao
+   reservar o branco para a única superfície de alta luminância da página.
+
+   O guia manda ter um acento só. O produto precisa de vermelho para valor
+   negativo, que é requisito de leitura, não decoração — então são dois
+   cromáticos e nada mais. Verde e amarelo saíram: o aviso de FGC passou a usar
+   a borda de risco, e o selo de histórico usa indigo ou vermelho.
+
+   E o vermelho tem contraste 1,01 contra o indigo: em escala de cinza os dois
+   são o mesmo tom. Por isso nenhuma informação depende só da cor — o selo diz
+   "foi" ou "NÃO foi" por escrito, e no gráfico a posição do ponto já revela se
+   caiu fora da faixa.
+
+   O guia é escuro por definição. O tema claro aqui é adaptação, não parte
+   dele: mantém o indigo e inverte a pilha de superfícies. */
 :root {
-  --bg: #ffffff;         --layer: #f4f4f4;      --layer-2: #ffffff;
-  --line: #c6c6c6;       --line-strong: #8d8d8d;
-  --fg: #161616;         --fg-2: #525252;       --fg-3: #6f6f6f;
-  --on-color: #ffffff;
-  --acao: #0f62fe;       --acao-fraco: #edf5ff;   --btn: #0f62fe;
-  --erro: #da1e28;       --erro-fraco: #fff1f1;
-  --aviso: #f1c21b;      --aviso-fraco: #fcf4d6;
-  --ok: #24a148;         --ok-fraco: #defbe6;
+  --canvas: #0a0a0a;   --card: #141414;    --elev: #1e1e1e;
+  --line: #313131;     --line-strong: #454545;
+  /* Ash para tudo que é secundário, inclusive legenda e metadado, como o guia
+     manda; Mist só para desabilitado. Usar Mist em legenda dava 4,25 de
+     contraste no tema claro, abaixo do mínimo. */
+  --fg: #ffffff;       --fg-2: #a7a7a7;    --fg-3: #7c7c7c;
+  --acao: #6798ff;     --acao-fraco: #101a2e;
+  --neg: #ff6b6b;      --neg-fraco: #241213;
+  --btn: #ffffff;      --btn-fg: #0a0a0a;
+  --grade: #1e1e1e;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #161616;       --layer: #262626;      --layer-2: #393939;
-    --line: #525252;     --line-strong: #6f6f6f;
-    --fg: #f4f4f4;       --fg-2: #c6c6c6;       --fg-3: #a8a8a8;
-    --on-color: #ffffff;
-    --acao: #78a9ff;     --acao-fraco: #002d9c;   --btn: #0f62fe;
-    --erro: #fa4d56;     --erro-fraco: #520408;
-    --aviso: #f1c21b;    --aviso-fraco: #483700;
-    --ok: #42be65;       --ok-fraco: #022d0d;
-  }
-}
-:root[data-theme="dark"] {
-  --bg: #161616;         --layer: #262626;      --layer-2: #393939;
-  --line: #525252;       --line-strong: #6f6f6f;
-  --fg: #f4f4f4;         --fg-2: #c6c6c6;       --fg-3: #a8a8a8;
-  --on-color: #ffffff;
-  --acao: #78a9ff;       --acao-fraco: #002d9c;   --btn: #0f62fe;
-  --erro: #fa4d56;       --erro-fraco: #520408;
-  --aviso: #f1c21b;      --aviso-fraco: #483700;
-  --ok: #42be65;         --ok-fraco: #022d0d;
+:root[data-theme="light"] {
+  --canvas: #ffffff;   --card: #f6f7f9;    --elev: #eceef2;
+  --line: #dcdfe5;     --line-strong: #b6bcc6;
+  --fg: #0a0a0a;       --fg-2: #52565e;    --fg-3: #767b85;
+  --acao: #2f5fd0;     --acao-fraco: #eaf0ff;
+  --neg: #c8322f;      --neg-fraco: #fdecec;
+  --btn: #0a0a0a;      --btn-fg: #ffffff;
+  --grade: #eceef2;
 }
 
 * { box-sizing: border-box; }
 body {
-  margin: 0; background: var(--bg); color: var(--fg);
-  font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
-  font-size: 1rem; line-height: 1.5; letter-spacing: 0;
+  margin: 0; color: var(--fg); background: var(--canvas);
+  font-family: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  font-size: 16px; line-height: 1.5; letter-spacing: -.25px;
+  font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased; overflow-wrap: break-word;
+  /* A grade de blueprint: 1px a cada 48px, recuada o suficiente para orientar
+     sem competir. É a assinatura do sistema. */
+  background-image:
+    linear-gradient(to right, var(--grade) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grade) 1px, transparent 1px);
+  background-size: 48px 48px;
+  background-attachment: fixed;
 }
-.wrap { max-width: 42rem; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
-.num { font-family: "IBM Plex Mono", ui-monospace, monospace;
-       font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
-.neg { color: var(--erro); }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 24px 16px 96px; }
+@media (min-width: 42rem) { .wrap { max-width: 42rem; padding: 64px 24px 96px; } }
+.num { font-family: "JetBrains Mono", ui-monospace, monospace;
+       font-variant-numeric: tabular-nums; letter-spacing: 0; }
+.neg { color: var(--neg); }
 .hidden { display: none; }
-::selection { background: var(--btn); color: var(--on-color); }
+::selection { background: var(--acao); color: var(--canvas); }
 
-/* Tipografia na escala do Carbon: label-01, body-01, body-02, heading-03/04. */
-.label { font-size: .75rem; line-height: 1.34; letter-spacing: .32px;
-         color: var(--fg-3); font-weight: 400; margin: 0; }
-h1 { font-size: 1.75rem; line-height: 1.29; font-weight: 400; letter-spacing: 0;
-     margin: 0 0 .5rem; text-wrap: balance; }
-h2 { font-size: 1.25rem; line-height: 1.4; font-weight: 400; margin: 0 0 .25rem; }
-h3 { font-size: 1rem; line-height: 1.5; font-weight: 600; margin: 0; }
-.lede { color: var(--fg-2); font-size: .875rem; line-height: 1.43; margin: 0 0 1.5rem; }
+/* JetBrains Mono em caixa alta com tracking largo: lê como metadado, não como
+   texto corrido. É o que o guia usa para rotular seção. */
+.label, .eyebrow {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px; line-height: 1.4; letter-spacing: .85px;
+  text-transform: uppercase; color: var(--fg-2); font-weight: 400; margin: 0;
+}
+h1 { font-size: 40px; line-height: 1.2; letter-spacing: -.84px; font-weight: 500;
+     margin: 0 0 8px; text-wrap: balance; }
+@media (min-width: 42rem) { h1 { font-size: 56px; line-height: 1.14; letter-spacing: -1.74px; } }
+h2 { font-size: 24px; line-height: 1.29; letter-spacing: -.6px; font-weight: 500; margin: 0 0 8px; }
+h3 { font-size: 20px; line-height: 1.33; letter-spacing: -.42px; font-weight: 500; margin: 0; }
+.lede { color: var(--fg-2); font-size: 16px; line-height: 1.5; margin: 0 0 24px; }
 
-header { padding-bottom: 1.5rem; margin-bottom: 1.5rem;
-         border-bottom: 1px solid var(--line); }
+header { padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }
 .topo { display: flex; align-items: center; justify-content: space-between;
-        gap: 1rem; margin-bottom: 1rem; }
-.marca { font-size: .875rem; font-weight: 600; letter-spacing: .16px; margin: 0; }
-.marca span { color: var(--fg-3); font-weight: 400; }
-header p:last-child { margin: 0; color: var(--fg-2); font-size: .875rem; line-height: 1.43; }
+        gap: 16px; margin-bottom: 24px; }
+.marca { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .85px;
+         text-transform: uppercase; color: var(--fg); margin: 0; }
+.marca span { color: var(--fg-2); }
+header p:last-child { margin: 0; color: var(--fg-2); font-size: 16px; }
 
-.tema { font: inherit; font-size: .75rem; letter-spacing: .32px; color: var(--fg-2);
-        background: none; border: 1px solid var(--line); border-radius: 0;
-        min-height: 2.75rem; padding: 0 .75rem; cursor: pointer;
-        display: flex; align-items: center; gap: .5rem; white-space: nowrap; }
-.tema:focus-visible { outline: 2px solid var(--acao); outline-offset: -2px; }
+/* Pílula: o guia reserva o raio total para navegação e controles do topo. */
+.tema { font: inherit; font-family: "JetBrains Mono", monospace; font-size: 12px;
+        letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2);
+        background: transparent; border: 1px solid var(--line-strong); border-radius: 9999px;
+        min-height: 44px; padding: 0 14px; cursor: pointer;
+        display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.tema:focus-visible { outline: 2px solid var(--acao); outline-offset: 2px; }
 
-/* Indicador de etapa: régua no topo de cada item, como no Carbon. Serve para
-   responder "quanto falta", que é a pergunta que faz alguém abandonar. */
-.etapas { display: grid; grid-template-columns: repeat(3, 1fr); gap: .25rem;
-          list-style: none; margin: 0 0 2.5rem; padding: 0; }
-.etapas li { border-top: 2px solid var(--line); padding-top: .5rem;
-             font-size: .75rem; letter-spacing: .32px; color: var(--fg-3); }
-.etapas li[data-on="1"] { border-top-color: var(--acao); color: var(--fg); font-weight: 600; }
-.etapas b { display: block; font-weight: inherit; }
+.etapas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+          list-style: none; margin: 0 0 40px; padding: 0; }
+.etapas li { border-top: 1px solid var(--line); padding-top: 8px;
+             font-family: "JetBrains Mono", monospace; font-size: 12px;
+             letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2); }
+.etapas li[data-on="1"] { border-top-color: var(--acao); color: var(--fg); }
+.etapas b { display: block; font-weight: 400; color: var(--acao); }
 
-section { margin-bottom: 3rem; }
+section { margin-bottom: 80px; }
 
 /* --- conexão --- */
-.seguranca { list-style: none; margin: 0 0 1.5rem; padding: 0;
-             border-top: 1px solid var(--line); }
-.seguranca li { border-bottom: 1px solid var(--line); padding: .75rem 0;
-                font-size: .875rem; line-height: 1.43; color: var(--fg-2); }
-.seguranca b { color: var(--fg); font-weight: 600; }
-details { margin-top: 1.5rem; border-top: 1px solid var(--line); }
-details > summary { cursor: pointer; list-style: none; padding: .875rem 0;
-                    font-size: .875rem; color: var(--acao); min-height: 2.75rem;
-                    display: flex; align-items: center; justify-content: space-between;
-                    gap: 1rem; }
+.seguranca { list-style: none; margin: 0 0 24px; padding: 0; border-top: 1px solid var(--line); }
+.seguranca li { border-bottom: 1px solid var(--line); padding: 16px 0;
+                font-size: 14px; line-height: 1.57; color: var(--fg-2); }
+.seguranca b { color: var(--fg); font-weight: 500; }
+details { margin-top: 24px; border-top: 1px solid var(--line); }
+details > summary { cursor: pointer; list-style: none; padding: 16px 0; min-height: 44px;
+                    font-family: "JetBrains Mono", monospace; font-size: 12px;
+                    letter-spacing: .85px; text-transform: uppercase; color: var(--acao);
+                    display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 details > summary::-webkit-details-marker { display: none; }
-details > summary::after { content: "+"; font-family: "IBM Plex Mono", monospace;
-                           font-size: 1.125rem; color: var(--fg-3); }
+details > summary::after { content: "+"; color: var(--fg-2); font-size: 16px; }
 details[open] > summary::after { content: "–"; }
 details > summary:focus-visible { outline: 2px solid var(--acao); outline-offset: -2px; }
-details > summary b { color: var(--fg); font-weight: 600; }
+details > summary b { color: var(--fg); font-weight: 400; }
+.cols { display: grid; gap: 24px; margin-top: 0; }
+.cols ul { margin: 8px 0 0; padding: 0; list-style: none; }
+.cols li { font-size: 14px; line-height: 1.57; color: var(--fg-2);
+           padding: 8px 0 8px 16px; border-left: 1px solid var(--line); }
+.cols .nao li { border-left-color: var(--neg); }
 
-.cols { display: grid; gap: 1.5rem; margin-top: 0; }
-.cols ul { margin: .5rem 0 0; padding: 0; list-style: none; }
-.cols li { font-size: .875rem; line-height: 1.43; color: var(--fg-2);
-           padding: .5rem 0 .5rem .875rem; border-left: 2px solid var(--line); }
-.cols .nao li { border-left-color: var(--erro); }
+/* --- superfícies --- */
+.painel { background: var(--card); border: 1px solid var(--elev); border-radius: 8px;
+          padding: 24px; }
+.painel .big { font-size: 40px; line-height: 1.2; letter-spacing: -.84px; font-weight: 500; }
+.painel p { margin: 8px 0 0; color: var(--fg-2); font-size: 14px; line-height: 1.57; }
+.quando { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline;
+          font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .85px;
+          text-transform: uppercase; color: var(--fg-2);
+          border-bottom: 1px solid var(--elev); padding-bottom: 16px; margin-bottom: 16px; }
+.quando b { color: var(--fg); font-weight: 400; }
+.quando.velho, .quando.velho b { color: var(--neg); }
 
-/* --- painéis --- */
-.painel { background: var(--layer); padding: 1.25rem 1rem; }
-.quando { display: flex; flex-wrap: wrap; gap: .375rem .75rem; align-items: baseline;
-          font-size: .75rem; letter-spacing: .32px; color: var(--fg-3);
-          border-bottom: 1px solid var(--line); padding-bottom: .625rem; margin-bottom: .875rem; }
-.quando b { color: var(--fg); font-weight: 600; letter-spacing: 0; }
-.quando.velho { color: var(--erro); }
-.quando.velho b { color: var(--erro); }
-.painel .big { font-size: 1.75rem; line-height: 1.29; font-weight: 400; }
-.painel p { margin: .5rem 0 0; color: var(--fg-2); font-size: .875rem; line-height: 1.43; }
-
-/* Campo do Carbon: fundo de camada, só borda inferior, altura de 48px. */
-.informar { margin-top: 1rem; }
-.informar label { display: block; font-size: .75rem; letter-spacing: .32px;
-                  color: var(--fg-2); margin-bottom: .5rem; }
-.campo { display: flex; flex-wrap: wrap; gap: .5rem; }
-.campo input { font: inherit; font-family: "IBM Plex Mono", monospace; font-size: 1rem;
-               flex: 1 1 10rem; min-width: 0; min-height: 3rem; padding: 0 1rem;
-               color: var(--fg); background: var(--layer); border: 0; border-radius: 0;
-               border-bottom: 1px solid var(--line-strong); }
-.campo input:focus { outline: 2px solid var(--btn); outline-offset: -2px; }
-.campo input[aria-invalid="true"] { border-bottom: 2px solid var(--erro); }
-.campo .btn { flex: 0 0 auto; width: auto; min-width: 9rem; padding: .875rem 1rem; }
-.informar .ajuda { font-size: .75rem; line-height: 1.34; color: var(--fg-3); margin: .5rem 0 0; }
-.informar .ajuda.ruim { color: var(--erro); }
-.resolvido { border-left: 3px solid var(--ok); background: var(--ok-fraco);
-             padding: 1rem; margin-top: 1.5rem; font-size: .875rem; line-height: 1.43; }
-.resolvido p { margin: 0; color: var(--fg-2); }
-.resolvido b { color: var(--fg); font-weight: 600; }
-
-.aviso { border-left: 3px solid var(--aviso); background: var(--aviso-fraco);
-         padding: 1rem; margin-top: 1.5rem; font-size: .875rem; line-height: 1.43; }
-.aviso.erro { border-left-color: var(--erro); background: var(--erro-fraco); }
+.aviso { border-left: 2px solid var(--acao); background: var(--card); border-radius: 0 8px 8px 0;
+         padding: 16px; margin-top: 24px; font-size: 14px; line-height: 1.57; }
+.aviso.erro { border-left-color: var(--neg); }
 .aviso p { margin: 0; color: var(--fg-2); }
-.aviso b { color: var(--fg); font-weight: 600; }
+.aviso b { color: var(--fg); font-weight: 500; }
 
-.barras { margin-top: 1.5rem; }
-.barra-linha { margin-bottom: 1rem; }
-.barra-linha > span { display: block; font-size: .75rem; letter-spacing: .32px;
-                      color: var(--fg-3); margin-bottom: .375rem; }
-.legenda { display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; margin-top: .75rem;
-           font-size: .75rem; letter-spacing: .32px; color: var(--fg-3); }
-.legenda i { display: inline-block; width: .75rem; height: .75rem;
-             margin-right: .375rem; vertical-align: -1px; }
+.barras { margin-top: 24px; }
+.barra-linha { margin-bottom: 16px; }
+.barra-linha > span { display: block; font-family: "JetBrains Mono", monospace;
+                      font-size: 12px; letter-spacing: .85px; text-transform: uppercase;
+                      color: var(--fg-2); margin-bottom: 8px; }
+.legenda { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 16px;
+           font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .85px;
+           text-transform: uppercase; color: var(--fg-2); }
+.legenda i { display: inline-block; width: 8px; height: 8px; border-radius: 2px;
+             margin-right: 8px; vertical-align: 0; }
 
 /* --- perguntas --- */
-.q { padding: 1.25rem 0; border-top: 1px solid var(--line); }
+.q { padding: 24px 0; border-top: 1px solid var(--line); }
 .q:first-of-type { border-top: none; padding-top: 0; }
-.q > p { margin: 0 0 .25rem; font-size: 1rem; font-weight: 600; text-wrap: pretty; }
-.q .help { color: var(--fg-2); font-size: .875rem; line-height: 1.43; margin: 0 0 1rem; }
-.opts { display: flex; flex-direction: column; gap: 1px; background: var(--line); }
-.opt { font: inherit; font-size: .875rem; text-align: left; cursor: pointer;
-       min-height: 3rem; padding: .75rem 1rem; border: 0; border-radius: 0;
-       background: var(--layer); color: var(--fg);
-       transition: background .11s, box-shadow .11s; }
-.opt:focus-visible { outline: 2px solid var(--acao); outline-offset: -2px; }
-.opt[aria-pressed="true"] { background: var(--btn); color: var(--on-color); font-weight: 600; }
+.q > p { margin: 0 0 8px; font-size: 20px; line-height: 1.33; letter-spacing: -.42px;
+         font-weight: 500; text-wrap: pretty; }
+.q .help { color: var(--fg-2); font-size: 14px; line-height: 1.57; margin: 0 0 16px; }
+.opts { display: flex; flex-direction: column; gap: 8px; }
+.opt { font: inherit; font-size: 14px; text-align: left; cursor: pointer;
+       min-height: 44px; padding: 8px 16px; border-radius: 8px;
+       border: 1px solid var(--line); background: var(--card); color: var(--fg);
+       transition: border-color .12s, background .12s; }
+.opt:focus-visible { outline: 2px solid var(--acao); outline-offset: 2px; }
+.opt[aria-pressed="true"] { background: var(--btn); color: var(--btn-fg);
+                            border-color: var(--btn); font-weight: 500; }
 
-.resumo { border-top: 1px solid var(--line); padding-top: 1rem; }
-.chips { margin: 0 0 .25rem; font-size: .875rem; }
-.chips span + span::before { content: " · "; color: var(--fg-3); }
-.link { font: inherit; font-size: .875rem; color: var(--acao); background: none;
-        border: 0; padding: .625rem 0; min-height: 2.75rem; cursor: pointer;
-        text-decoration: underline; text-underline-offset: 2px; }
+.resumo { border-top: 1px solid var(--line); padding-top: 16px; }
+.chips { margin: 0 0 8px; font-family: "JetBrains Mono", monospace; font-size: 12px;
+         letter-spacing: .85px; text-transform: uppercase; color: var(--fg); }
+.chips span + span::before { content: " · "; color: var(--fg-2); }
+.link { font: inherit; font-size: 14px; color: var(--acao); background: none; border: 0;
+        padding: 8px 0; min-height: 44px; cursor: pointer;
+        text-decoration: underline; text-underline-offset: 3px; }
 .link:focus-visible { outline: 2px solid var(--acao); outline-offset: 2px; }
-.veredito { font-size: .875rem; line-height: 1.43; color: var(--fg-2); margin: 1.5rem 0 0; }
-.veredito b { color: var(--fg); font-weight: 600; }
-.veredito b.neg { color: var(--erro); }
+.veredito { font-size: 14px; line-height: 1.57; color: var(--fg-2); margin: 24px 0 0; }
+.veredito b { color: var(--fg); font-weight: 500; }
+.veredito b.neg { color: var(--neg); }
 
-/* --- a régua e o quanto ela erra --- */
-.regua { margin-top: 1.5rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
-.regua h3 { margin-bottom: .25rem; }
-.regua p { margin: 0 0 .75rem; font-size: .875rem; line-height: 1.43; color: var(--fg-2); }
-.regua p b { color: var(--fg); font-weight: 600; }
-.regua p b.neg { color: var(--erro); }
-.regua figure { margin: 1rem 0 0; }
+/* --- a régua --- */
+.regua { margin-top: 24px; border-top: 1px solid var(--line); padding-top: 24px; }
+.regua h3 { margin-bottom: 8px; }
+.regua p { margin: 0 0 16px; font-size: 14px; line-height: 1.57; color: var(--fg-2); }
+.regua p b { color: var(--fg); font-weight: 500; }
+.regua p b.neg { color: var(--neg); }
+.regua figure { margin: 16px 0 0; }
 .regua svg { display: block; width: 100%; height: auto; }
-.regua figcaption { margin-top: .5rem; font-size: .75rem; line-height: 1.34;
-                    letter-spacing: .32px; color: var(--fg-3); }
-.regua .chaves { display: flex; flex-wrap: wrap; gap: .375rem 1rem; margin-top: .5rem;
-                 font-size: .75rem; letter-spacing: .32px; color: var(--fg-3); }
-.regua .chaves i { display: inline-block; width: .75rem; height: .75rem;
-                   margin-right: .375rem; vertical-align: -1px; }
+.regua figcaption { margin-top: 8px; font-size: 12px; line-height: 1.4; color: var(--fg-2); }
+.regua .chaves { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 8px;
+                 font-family: "JetBrains Mono", monospace; font-size: 12px;
+                 letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2); }
+.regua .chaves i { display: inline-block; width: 8px; height: 8px; border-radius: 2px;
+                   margin-right: 8px; vertical-align: 0; }
 
 /* --- os dois planos --- */
-.planos { display: grid; gap: 1rem; }
+.planos { display: grid; gap: 16px; }
 .plano { text-align: left; font: inherit; cursor: pointer; color: var(--fg);
-         background: var(--layer); border: 0; border-radius: 0;
-         border-left: 3px solid transparent; padding: 1.25rem 1rem;
-         display: flex; flex-direction: column; gap: .75rem;
-         transition: background .11s, border-color .11s; }
-.plano:focus-visible { outline: 2px solid var(--acao); outline-offset: -2px; }
-.plano[aria-pressed="true"] { border-left-color: var(--acao); background: var(--acao-fraco); }
-.plano .custo { font-size: 2rem; line-height: 1.2; font-weight: 400; }
-.plano .custo small { display: block; font-size: .75rem; letter-spacing: .32px;
-                      color: var(--fg-3); margin-top: .25rem; }
-.plano dl { margin: 0; display: grid; grid-template-columns: auto 1fr;
-            gap: .375rem .75rem; font-size: .875rem; }
+         background: var(--card); border: 1px solid var(--elev); border-radius: 8px;
+         padding: 24px; display: flex; flex-direction: column; gap: 16px;
+         transition: border-color .12s, background .12s; }
+.plano:focus-visible { outline: 2px solid var(--acao); outline-offset: 2px; }
+.plano[aria-pressed="true"] { border-color: var(--acao); background: var(--acao-fraco); }
+.plano .custo { font-size: 40px; line-height: 1.2; letter-spacing: -.84px; font-weight: 500; }
+.plano .custo small { display: block; font-family: "JetBrains Mono", monospace;
+                      font-size: 12px; letter-spacing: .85px; text-transform: uppercase;
+                      color: var(--fg-2); margin-top: 8px; }
+.plano dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 16px;
+            font-size: 14px; }
 .plano dt { color: var(--fg-2); } .plano dd { margin: 0; text-align: right; }
-.falta { border-left: 3px solid var(--erro); background: var(--bg); padding: .75rem;
-         font-size: .8125rem; line-height: 1.4; color: var(--fg-2); }
-.falta b { display: block; color: var(--erro); font-weight: 600; margin-bottom: .125rem; }
-.selo { font-size: .8125rem; line-height: 1.4; padding: .625rem .75rem; margin-top: auto;
-        border-left: 3px solid var(--ok); background: var(--ok-fraco); color: var(--fg); }
-.selo.nao { border-left-color: var(--erro); background: var(--erro-fraco); }
+.falta { border-left: 2px solid var(--neg); background: var(--canvas); border-radius: 0 4px 4px 0;
+         padding: 16px; font-size: 14px; line-height: 1.57; color: var(--fg-2); }
+.falta b { display: block; color: var(--neg); font-weight: 500; margin-bottom: 8px; }
+.selo { font-size: 12px; line-height: 1.4; padding: 8px 16px; margin-top: auto;
+        border-left: 2px solid var(--acao); background: var(--canvas);
+        border-radius: 0 4px 4px 0; color: var(--fg-2); }
+.selo.nao { border-left-color: var(--neg); color: var(--neg); }
 
 /* --- o que muda --- */
-.razao { margin-top: 1.5rem; }
-.grupo { font-size: .75rem; letter-spacing: .32px; color: var(--fg-3);
-         margin: 1.5rem 0 0; padding-bottom: .5rem; border-bottom: 1px solid var(--line); }
+.razao { margin-top: 24px; }
+.grupo { font-family: "JetBrains Mono", monospace; font-size: 12px; letter-spacing: .85px;
+         text-transform: uppercase; color: var(--fg-2); margin: 24px 0 0;
+         padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 .grupo:first-child { margin-top: 0; }
-.linha { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .125rem 1rem;
-         padding: .75rem 0; border-bottom: 1px solid var(--line); align-items: baseline; }
-.linha b { font-weight: 600; font-size: .875rem; }
-.linha .porque { grid-column: 1 / -1; color: var(--fg-3); font-size: .8125rem;
-                 line-height: 1.4; }
-.linha .val { grid-column: 2; grid-row: 1; text-align: right; font-size: .875rem;
-              white-space: nowrap; }
-.linha .val small { display: block; color: var(--fg-3); font-size: .75rem; }
+.linha { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px;
+         padding: 16px 0; border-bottom: 1px solid var(--line); align-items: baseline; }
+.linha b { font-weight: 500; font-size: 16px; }
+.linha .porque { grid-column: 1 / -1; color: var(--fg-2); font-size: 12px; line-height: 1.4; }
+.linha .val { grid-column: 2; grid-row: 1; text-align: right; font-size: 16px; white-space: nowrap; }
+.linha .val small { display: block; color: var(--fg-2); font-size: 12px; }
 
-.conta { margin-top: 1.5rem; background: var(--layer); padding: .25rem 1rem 1rem; }
-.conta div { display: flex; flex-wrap: wrap; justify-content: space-between;
-             gap: .125rem 1rem; padding: .75rem 0; font-size: .875rem;
-             border-bottom: 1px solid var(--line); line-height: 1.43; }
+.conta { margin-top: 24px; background: var(--card); border: 1px solid var(--elev);
+         border-radius: 8px; padding: 8px 24px 24px; }
+.conta div { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px;
+             padding: 16px 0; font-size: 14px; line-height: 1.57;
+             border-bottom: 1px solid var(--elev); }
 .conta div span:last-child { margin-left: auto; }
-.conta .total { font-weight: 600; border-bottom: 0; }
-.conta p { margin: 1rem 0 0; font-size: .8125rem; line-height: 1.4; color: var(--fg-3); }
+.conta .total { font-weight: 500; border-bottom: 0; color: var(--fg); }
+.conta p { margin: 16px 0 0; font-size: 12px; line-height: 1.4; color: var(--fg-2); }
 
-/* Botão do Carbon: retangular, texto à esquerda, altura de 48px. */
-.registro { margin-top: 1rem; background: var(--layer); padding: 1rem; }
-.registro p { margin: 0 0 .75rem; font-size: .8125rem; line-height: 1.4; color: var(--fg-2); }
-.registro pre { margin: 0; overflow-x: auto; font-family: "IBM Plex Mono", monospace;
-                font-size: .75rem; line-height: 1.5; color: var(--fg); }
+/* Botão do guia: fundo branco, texto preto, raio 8. É o único elemento de alta
+   luminância da página, e é isso que o torna a ação óbvia. */
+.acoes { margin-top: 24px; display: flex; flex-direction: column; gap: 16px; }
+.btn { font: inherit; font-size: 14px; font-weight: 500; cursor: pointer;
+       border: 1px solid var(--btn); border-radius: 8px; min-height: 44px;
+       padding: 8px 16px; background: var(--btn); color: var(--btn-fg); width: 100%; }
+.btn:focus-visible { outline: 2px solid var(--acao); outline-offset: 2px; }
+.btn:disabled { background: transparent; color: var(--fg-3); border-color: var(--line-strong);
+                cursor: default; }
+.acoes span { font-size: 12px; line-height: 1.4; color: var(--fg-2); }
 
-.acoes { margin-top: 1.5rem; display: flex; flex-direction: column; gap: .75rem; }
-.btn { font: inherit; font-size: .875rem; text-align: left; cursor: pointer;
-       border: 0; border-radius: 0; min-height: 3rem; padding: .875rem 4rem .875rem 1rem;
-       background: var(--btn); color: var(--on-color); width: 100%;
-       transition: background .11s; }
-.btn:focus-visible { outline: 2px solid var(--acao); outline-offset: -4px;
-                     box-shadow: inset 0 0 0 1px var(--on-color); }
-.btn:disabled { background: var(--layer-2); color: var(--fg-3); cursor: default; }
-.acoes span { font-size: .8125rem; line-height: 1.4; color: var(--fg-3); }
+.registro { margin-top: 16px; background: var(--card); border: 1px solid var(--elev);
+            border-radius: 8px; padding: 24px; }
+.registro p { margin: 0 0 16px; font-size: 14px; line-height: 1.57; color: var(--fg-2); }
+.registro pre { margin: 0; overflow-x: auto; font-family: "JetBrains Mono", monospace;
+                font-size: 12px; line-height: 1.6; color: var(--fg); }
 
-footer { border-top: 1px solid var(--line); margin-top: 3rem; padding-top: 1.5rem;
-         font-size: .8125rem; line-height: 1.4; color: var(--fg-3); }
-footer p { margin: 0 0 .75rem; }
-footer code { font-family: "IBM Plex Mono", monospace; font-size: .95em; }
+.informar { margin-top: 16px; }
+.informar label { display: block; font-family: "JetBrains Mono", monospace; font-size: 12px;
+                  letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2);
+                  margin-bottom: 8px; }
+.campo { display: flex; flex-wrap: wrap; gap: 8px; }
+.campo input { font: inherit; font-family: "JetBrains Mono", monospace; font-size: 16px;
+               flex: 1 1 10rem; min-width: 0; min-height: 44px; padding: 8px 16px;
+               color: var(--fg); background: var(--elev); border: 1px solid var(--line);
+               border-radius: 8px; }
+.campo input:focus { outline: 2px solid var(--acao); outline-offset: -1px; }
+.campo input[aria-invalid="true"] { border-color: var(--neg); }
+.campo .btn { flex: 0 0 auto; width: auto; min-width: 9rem; }
+.informar .ajuda { font-size: 12px; line-height: 1.4; color: var(--fg-2); margin: 8px 0 0; }
+.informar .ajuda.ruim { color: var(--neg); }
+.resolvido { border-left: 2px solid var(--acao); background: var(--card);
+             border-radius: 0 8px 8px 0; padding: 16px; margin-top: 24px;
+             font-size: 14px; line-height: 1.57; }
+.resolvido p { margin: 0; color: var(--fg-2); }
+.resolvido b { color: var(--fg); font-weight: 500; }
+
+footer { border-top: 1px solid var(--line); margin-top: 80px; padding-top: 24px;
+         font-size: 12px; line-height: 1.4; color: var(--fg-2); }
+footer p { margin: 0 0 8px; }
+footer code { font-family: "JetBrains Mono", monospace; }
 footer a { color: var(--acao); }
 
 @media (min-width: 42rem) {
-  .wrap { padding: 3rem 1.5rem 5rem; }
-  h1 { font-size: 2.625rem; line-height: 1.199; }
-  .lede, header p:last-child, footer p { max-width: 58ch; }
-  .cols { grid-template-columns: 1fr 1fr; gap: 2rem; }
-  .planos { grid-template-columns: 1fr 1fr; }
-  .barra-linha { display: grid; grid-template-columns: 5rem 1fr; gap: 1rem;
-                 align-items: center; }
+  .lede, header p:last-child, footer p { max-width: 640px; }
+  .opts { flex-direction: row; flex-wrap: wrap; }
+  .opt { padding: 8px 16px; }
+  .barra-linha { display: grid; grid-template-columns: 96px 1fr; gap: 16px; align-items: center; }
   .barra-linha > span { text-align: right; margin-bottom: 0; }
+  .cols { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .planos { grid-template-columns: 1fr 1fr; }
   .linha .porque { grid-column: 1; }
   .acoes { flex-direction: row; align-items: center; flex-wrap: wrap; }
   .btn { width: auto; min-width: 14rem; }
 }
 @media (hover: hover) and (pointer: fine) {
-  /* Encolher alvo de toque é decisão sobre o ponteiro, não sobre a largura: um
-     tablet é largo e continua sendo dedo. */
-  .tema { min-height: 2rem; } .link { min-height: 0; }
-  .opt:hover { background: var(--layer-2); }
+  /* Encolher alvo de toque é decisão sobre o ponteiro, não sobre a largura. */
+  .tema, .link { min-height: 32px; }
+  .btn { min-height: 36px; }
+  .opt:hover { border-color: var(--line-strong); background: var(--elev); }
   .opt[aria-pressed="true"]:hover { background: var(--btn); }
-  .plano:hover { background: var(--layer-2); }
-  .btn:hover:not(:disabled) { filter: brightness(1.12); }
-  .tema:hover { border-color: var(--line-strong); color: var(--fg); }
+  .plano:hover { border-color: var(--line-strong); }
+  .btn:hover:not(:disabled) { opacity: .88; }
+  .tema:hover { color: var(--fg); border-color: var(--fg-2); }
 }
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; scroll-behavior: auto !important; }
@@ -369,9 +388,9 @@ footer a { color: var(--acao); }
     <div class="barra-linha"><span>hoje</span><div id="bar-hoje"></div></div>
     <div class="barra-linha"><span>seu perfil</span><div id="bar-alvo"></div></div>
     <div class="legenda">
-      <span><i style="background:var(--btn)"></i>ações</span>
+      <span><i style="background:var(--acao)"></i>ações</span>
       <span><i style="background:var(--line-strong)"></i>renda fixa e caixa</span>
-      <span><i style="background:var(--erro)"></i>fora da estratégia</span>
+      <span><i style="background:var(--neg)"></i>fora da estratégia</span>
     </div>
   </div>
   <div class="aviso" id="fgc"></div>
@@ -432,26 +451,22 @@ const etapa = n => [...$("etapas").children].forEach((li, i) =>
   i <= n ? li.setAttribute("data-on", "1") : li.removeAttribute("data-on"));
 
 /* --- tema --- */
-// Sem escolha salva a página segue o sistema, que é o certo por padrão. A
-// escolha explícita carimba data-theme e ganha das duas media queries.
+// O Dovetail é escuro por definição: o escuro é o padrão, não uma resposta à
+// preferência do sistema. O claro continua existindo porque foi pedido antes,
+// mas é adaptação — o guia não o traz.
 const temaBtn = $("tema");
 const guardado = (() => { try { return localStorage.getItem("tema"); } catch (e) { return null; } })();
-const escuroDoSistema = () => matchMedia("(prefers-color-scheme: dark)").matches;
 function aplicaTema(valor) {
-  if (valor) document.documentElement.setAttribute("data-theme", valor);
+  const claro = valor === "light";
+  if (claro) document.documentElement.setAttribute("data-theme", "light");
   else document.documentElement.removeAttribute("data-theme");
-  const escuro = valor ? valor === "dark" : escuroDoSistema();
-  $("tema-icone").textContent = escuro ? "☾" : "☀";
-  $("tema-txt").textContent = escuro ? "Escuro" : "Claro";
-  temaBtn.setAttribute("aria-pressed", String(escuro));
+  $("tema-icone").textContent = claro ? "☀" : "☾";
+  $("tema-txt").textContent = claro ? "Claro" : "Escuro";
+  temaBtn.setAttribute("aria-pressed", String(!claro));
 }
-aplicaTema(guardado);
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-  if (!document.documentElement.hasAttribute("data-theme")) aplicaTema(null);
-});
+aplicaTema(guardado === "light" ? "light" : "dark");
 temaBtn.onclick = () => {
-  const atual = document.documentElement.getAttribute("data-theme");
-  const novo = (atual ? atual === "dark" : escuroDoSistema()) ? "light" : "dark";
+  const novo = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
   aplicaTema(novo);
   try { localStorage.setItem("tema", novo); } catch (e) { /* janela anônima: segue sem salvar */ }
 };
@@ -757,8 +772,8 @@ function regua(perfil) {
   host.append(grafico(c.anos));
   const chaves = el("div", "chaves",
     "<span><i style='background:var(--line-strong)'></i>faixa projetada em janeiro</span>" +
-    "<span><i style='background:var(--btn)'></i>o que aconteceu</span>" +
-    "<span><i style='background:var(--erro)'></i>ficou fora da faixa</span>");
+    "<span><i style='background:var(--acao)'></i>o que aconteceu</span>" +
+    "<span><i style='background:var(--neg)'></i>ficou fora da faixa</span>");
   host.append(chaves);
 }
 
@@ -781,22 +796,22 @@ function grafico(anos) {
   }
   [min + (max - min) * 0.02, max - (max - min) * 0.02].forEach(v => {
     svg.push("<text x='" + (L - 5) + "' y='" + (y(v) + 3) + "' text-anchor='end' " +
-      "font-size='9' fill='var(--fg-3)'>" + Math.round(v * 100) + "%</text>");
+      "font-size='9' fill='var(--fg-2)'>" + Math.round(v * 100) + "%</text>");
   });
   anos.forEach((a, i) => {
     const cx = x(i);
     svg.push("<line x1='" + cx + "' x2='" + cx + "' y1='" + y(a.p10) + "' y2='" + y(a.p90) +
       "' stroke='var(--line-strong)' stroke-width='7' stroke-linecap='butt'/>");
     svg.push("<line x1='" + (cx - 4.5) + "' x2='" + (cx + 4.5) + "' y1='" + y(a.p50) +
-      "' y2='" + y(a.p50) + "' stroke='var(--layer)' stroke-width='1.5'/>");
+      "' y2='" + y(a.p50) + "' stroke='var(--card)' stroke-width='1.5'/>");
     // Anel na cor do fundo: sem ele o ponto tem contraste 1,0 contra a barra no
     // tema escuro, ou seja, some justamente quando cai dentro da faixa — que é
     // o caso comum e o que o gráfico existe para mostrar.
     svg.push("<circle cx='" + cx + "' cy='" + y(a.realised) + "' r='4' fill='" +
-      (a.inside ? "var(--btn)" : "var(--erro)") +
-      "' stroke='var(--bg)' stroke-width='2'/>");
+      (a.inside ? "var(--acao)" : "var(--neg)") +
+      "' stroke='var(--canvas)' stroke-width='2'/>");
     svg.push("<text x='" + cx + "' y='" + (H - 6) + "' text-anchor='middle' font-size='9' " +
-      "fill='var(--fg-3)'>" + String(a.year).slice(2) + "</text>");
+      "fill='var(--fg-2)'>" + String(a.year).slice(2) + "</text>");
   });
   svg.push("</svg>");
 
@@ -808,7 +823,9 @@ function grafico(anos) {
 }
 
 function barra(id, partes) {
-  const cores = ["var(--btn)", "var(--line-strong)", "var(--erro)"];
+  // A barra de ações usa o indigo com texto escuro em cima: branco sobre o
+  // indigo dá contraste 2,80 e reprova.
+  const cores = ["var(--acao)", "var(--line-strong)", "var(--neg)"];
   const host = $(id);
   host.innerHTML = "";
   host.style.cssText = "display:flex;height:2rem;overflow:hidden;gap:1px";
@@ -816,7 +833,7 @@ function barra(id, partes) {
     if (v <= 0.001) return;
     const s = el("div");
     s.style.cssText = "flex:" + v + ";background:" + cores[i] +
-      ";display:grid;place-items:center;font-size:.75rem;color:var(--on-color)";
+      ";display:grid;place-items:center;font-size:12px;color:var(--canvas)";
     s.className = "num";
     s.textContent = v > 0.09 ? PCT(v, 0) : "";
     s.title = PCT(v);

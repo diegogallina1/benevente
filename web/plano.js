@@ -62,26 +62,22 @@ const etapa = n => [...$("etapas").children].forEach((li, i) =>
   i <= n ? li.setAttribute("data-on", "1") : li.removeAttribute("data-on"));
 
 /* --- tema --- */
-// Sem escolha salva a página segue o sistema, que é o certo por padrão. A
-// escolha explícita carimba data-theme e ganha das duas media queries.
+// O Dovetail é escuro por definição: o escuro é o padrão, não uma resposta à
+// preferência do sistema. O claro continua existindo porque foi pedido antes,
+// mas é adaptação — o guia não o traz.
 const temaBtn = $("tema");
 const guardado = (() => { try { return localStorage.getItem("tema"); } catch (e) { return null; } })();
-const escuroDoSistema = () => matchMedia("(prefers-color-scheme: dark)").matches;
 function aplicaTema(valor) {
-  if (valor) document.documentElement.setAttribute("data-theme", valor);
+  const claro = valor === "light";
+  if (claro) document.documentElement.setAttribute("data-theme", "light");
   else document.documentElement.removeAttribute("data-theme");
-  const escuro = valor ? valor === "dark" : escuroDoSistema();
-  $("tema-icone").textContent = escuro ? "☾" : "☀";
-  $("tema-txt").textContent = escuro ? "Escuro" : "Claro";
-  temaBtn.setAttribute("aria-pressed", String(escuro));
+  $("tema-icone").textContent = claro ? "☀" : "☾";
+  $("tema-txt").textContent = claro ? "Claro" : "Escuro";
+  temaBtn.setAttribute("aria-pressed", String(!claro));
 }
-aplicaTema(guardado);
-matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
-  if (!document.documentElement.hasAttribute("data-theme")) aplicaTema(null);
-});
+aplicaTema(guardado === "light" ? "light" : "dark");
 temaBtn.onclick = () => {
-  const atual = document.documentElement.getAttribute("data-theme");
-  const novo = (atual ? atual === "dark" : escuroDoSistema()) ? "light" : "dark";
+  const novo = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
   aplicaTema(novo);
   try { localStorage.setItem("tema", novo); } catch (e) { /* janela anônima: segue sem salvar */ }
 };
@@ -387,8 +383,8 @@ function regua(perfil) {
   host.append(grafico(c.anos));
   const chaves = el("div", "chaves",
     "<span><i style='background:var(--line-strong)'></i>faixa projetada em janeiro</span>" +
-    "<span><i style='background:var(--btn)'></i>o que aconteceu</span>" +
-    "<span><i style='background:var(--erro)'></i>ficou fora da faixa</span>");
+    "<span><i style='background:var(--acao)'></i>o que aconteceu</span>" +
+    "<span><i style='background:var(--neg)'></i>ficou fora da faixa</span>");
   host.append(chaves);
 }
 
@@ -411,22 +407,22 @@ function grafico(anos) {
   }
   [min + (max - min) * 0.02, max - (max - min) * 0.02].forEach(v => {
     svg.push("<text x='" + (L - 5) + "' y='" + (y(v) + 3) + "' text-anchor='end' " +
-      "font-size='9' fill='var(--fg-3)'>" + Math.round(v * 100) + "%</text>");
+      "font-size='9' fill='var(--fg-2)'>" + Math.round(v * 100) + "%</text>");
   });
   anos.forEach((a, i) => {
     const cx = x(i);
     svg.push("<line x1='" + cx + "' x2='" + cx + "' y1='" + y(a.p10) + "' y2='" + y(a.p90) +
       "' stroke='var(--line-strong)' stroke-width='7' stroke-linecap='butt'/>");
     svg.push("<line x1='" + (cx - 4.5) + "' x2='" + (cx + 4.5) + "' y1='" + y(a.p50) +
-      "' y2='" + y(a.p50) + "' stroke='var(--layer)' stroke-width='1.5'/>");
+      "' y2='" + y(a.p50) + "' stroke='var(--card)' stroke-width='1.5'/>");
     // Anel na cor do fundo: sem ele o ponto tem contraste 1,0 contra a barra no
     // tema escuro, ou seja, some justamente quando cai dentro da faixa — que é
     // o caso comum e o que o gráfico existe para mostrar.
     svg.push("<circle cx='" + cx + "' cy='" + y(a.realised) + "' r='4' fill='" +
-      (a.inside ? "var(--btn)" : "var(--erro)") +
-      "' stroke='var(--bg)' stroke-width='2'/>");
+      (a.inside ? "var(--acao)" : "var(--neg)") +
+      "' stroke='var(--canvas)' stroke-width='2'/>");
     svg.push("<text x='" + cx + "' y='" + (H - 6) + "' text-anchor='middle' font-size='9' " +
-      "fill='var(--fg-3)'>" + String(a.year).slice(2) + "</text>");
+      "fill='var(--fg-2)'>" + String(a.year).slice(2) + "</text>");
   });
   svg.push("</svg>");
 
@@ -438,7 +434,9 @@ function grafico(anos) {
 }
 
 function barra(id, partes) {
-  const cores = ["var(--btn)", "var(--line-strong)", "var(--erro)"];
+  // A barra de ações usa o indigo com texto escuro em cima: branco sobre o
+  // indigo dá contraste 2,80 e reprova.
+  const cores = ["var(--acao)", "var(--line-strong)", "var(--neg)"];
   const host = $(id);
   host.innerHTML = "";
   host.style.cssText = "display:flex;height:2rem;overflow:hidden;gap:1px";
@@ -446,7 +444,7 @@ function barra(id, partes) {
     if (v <= 0.001) return;
     const s = el("div");
     s.style.cssText = "flex:" + v + ";background:" + cores[i] +
-      ";display:grid;place-items:center;font-size:.75rem;color:var(--on-color)";
+      ";display:grid;place-items:center;font-size:12px;color:var(--canvas)";
     s.className = "num";
     s.textContent = v > 0.09 ? PCT(v, 0) : "";
     s.title = PCT(v);
