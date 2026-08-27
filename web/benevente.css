@@ -1,0 +1,866 @@
+/* Camada de cor do site. Gerada por tools/build_site_theme.py — nao edite a mao.
+ *
+ * So redeclara cor, fundo e borda; geometria nao e tocada. Carrega por ultimo e
+ * vale apenas nas paginas que a incluem, entao remover o <link> desfaz tudo.
+ *
+ * A decisao de qual token cada regra recebe usa um dado que so o DOM tem: se
+ * aquele seletor vive sobre painel escuro. Sem isso, "texto claro de painel" e
+ * "cinza sobre branco" sao indistinguiveis pelo valor da cor, e foi o que
+ * derrubou a primeira tentativa.
+ */
+:root {
+  --canvas: #0a0a0a; --card: #141414; --elev: #1e1e1e; --inverso: #1e1e1e;
+  --line: #313131; --line-strong: #454545; --inverso-linha: #454545;
+  --fg: #ffffff; --fg-2: #a7a7a7; --sobre-inverso: #ffffff;
+  --acao: #6798ff; --acao-inverso: #6798ff; --acao-fraco: #101a2e;
+  --neg: #ff6b6b; --neg-fraco: #241213;
+  --btn: #ffffff; --btn-fg: #0a0a0a;
+}
+:root[data-theme="light"] {
+  --canvas: #ffffff; --card: #f6f7f9; --elev: #eceef2; --inverso: #0a0a0a;
+  --line: #dcdfe5; --line-strong: #b6bcc6; --inverso-linha: #313131;
+  --fg: #0a0a0a; --fg-2: #52565e; --sobre-inverso: #ffffff;
+  --acao: #2f5fd0; --acao-inverso: #a8c3ff; --acao-fraco: #eaf0ff;
+  --neg: #c8322f; --neg-fraco: #fdecec;
+  --btn: #0a0a0a; --btn-fg: #ffffff;
+}
+/* Os apelidos de fonte do design-system antigo apontam para as novas. Sem
+   isso, regras que usam var(--sans) continuam em Plus Jakarta. */
+:root, :root[data-theme="light"] {
+  --sans: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --display: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --serif: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --mono: "Spline Sans Mono", ui-monospace, monospace;
+}
+body, body.version-page { background: var(--canvas); color: var(--fg);
+       font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif; }
+h1, h2, h3, h4, h5, .brand, .eyebrow, button, input, select, textarea {
+  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif; }
+code, kbd, pre, samp { font-family: "Spline Sans Mono", ui-monospace, monospace; }
+/* No guia a profundidade vem do degrau entre superficies. Sombra preta sobre
+   canvas preto nao comunica nada. */
+* { box-shadow: none !important; }
+/* A acao primaria e branca com texto preto: e o unico elemento de alta
+   luminancia da pagina, e texto branco sobre o indigo da 2,80 e reprova. */
+.button-primary, .dossier-download, .button.button-primary, .alpha-split i, .alpha-split .ss {
+  background: var(--btn) !important; color: var(--btn-fg) !important;
+  border-color: var(--btn) !important;
+}
+.tema-toggle { font: inherit; font-family: "Spline Sans Mono", ui-monospace, monospace;
+  font-size: 11px; letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2);
+  background: transparent; border: 1px solid var(--line-strong); border-radius: 9999px;
+  min-height: 34px; padding: 0 12px; cursor: pointer; display: inline-flex;
+  align-items: center; gap: 6px; white-space: nowrap; }
+.tema-toggle:hover { color: var(--fg); border-color: var(--fg-2); }
+.tema-toggle:focus-visible { outline: 2px solid var(--acao); outline-offset: 2px; }
+@media (max-width: 780px) { .tema-toggle { min-height: 44px; } }
+
+/* Ajustes a mao: regras que o gerador nao alcanca porque a cor vem de forma
+   abreviada com mais de um valor, ou de seletor que ele nao percorre. Sao
+   poucas e ficam nomeadas aqui em vez de espalhadas. */
+/* !important aqui e deliberado: as regras originais tem especificidade maior, e
+   este bloco existe justamente para vencer as poucas que o gerador nao alcanca.
+   Fora dele, a camada usa o mesmo seletor da regra original e ganha por ordem. */
+details > summary, .annual-decision summary, .live-holdings summary { color: var(--acao) !important; }
+.allocation-disclaimer, .live-quality, .research-note, .candidate-disclosure,
+.line-chart-caption, .carteira-2026-note { color: var(--fg-2) !important; }
+.version-next a, .version-next .button { background: var(--btn) !important;
+  color: var(--btn-fg) !important; border-color: var(--btn) !important; }
+.brand-mark { background: var(--acao) !important; color: var(--canvas) !important; }
+table, th, td { border-color: var(--line); }
+/* Paineis escuros cujo fundo o gerador nao alcanca — a cor vem de gradiente,
+   que tem mais de um valor e ele ignora. Sem isto o texto deles fica marcado
+   como "sobre escuro" (branco) enquanto a superficie ficou clara: branco sobre
+   branco. Superficie e texto tem de concordar. */
+.wealth-card, .wealth-card.benchmark, .wealth-card.primary,
+.version-gateway-card.experimental, .chart-source.active, .chart-add-button,
+.hero-performance-pair > div:last-child,
+.hero-performance-bars > div:first-child, .hero-performance-bars > div:nth-child(2) {
+  background: var(--inverso) !important;
+}
+.wealth-card *, .version-gateway-card.experimental *, .chart-source.active,
+.chart-add-button { border-color: var(--inverso-linha); }
+/* E a contrapartida: superficie escura pede texto claro. Forcar so o fundo
+   inverteu o defeito — de branco sobre branco para preto sobre preto. */
+.wealth-card, .wealth-card *, .version-gateway-card.experimental,
+.version-gateway-card.experimental *, .chart-source.active, .chart-add-button,
+.hero-performance-pair > div:last-child, .hero-performance-pair > div:last-child *,
+.hero-performance-bars > div:first-child, .hero-performance-bars > div:first-child *,
+.hero-performance-bars > div:nth-child(2), .hero-performance-bars > div:nth-child(2) * {
+  color: var(--sobre-inverso) !important;
+}
+.wealth-card .up, .version-gateway-card.experimental .version-tag,
+.hero-performance-bars em { color: var(--acao-inverso) !important; }
+/* O ticker rapido tinha fundo branco fixo, que no tema escuro vira uma ilha
+   clara com texto de acento por cima: 2,80 e reprova. */
+.quick-ticker { background: var(--card) !important; color: var(--fg) !important;
+  border-color: var(--line) !important; }
+
+.audience-shell{background-color:var(--inverso);color:var(--fg-2)}
+.audience-intro p:not(.eyebrow){color:var(--fg-2)}
+.audience-grid{background-color:var(--canvas)}
+.audience-grid article{background-color:var(--inverso)}
+.audience-grid span{color:var(--acao)}
+.audience-grid h3{color:var(--fg-2)}
+.audience-grid p{color:var(--fg-2)}
+.institutional-proof>div>p:not(.eyebrow){color:var(--fg-2)}
+.proof-list{border-color:var(--line)}
+.proof-list>div{border-color:var(--line)}
+.proof-list b{color:var(--acao)}
+.proof-list span{color:var(--fg-2)}
+.start-shell{background-color:var(--inverso);color:var(--fg-2)}
+.start-section>div>p:not(.eyebrow){color:var(--fg-2)}
+.start-steps{background-color:var(--canvas)}
+.start-steps article{background-color:var(--inverso)}
+.start-steps span{color:var(--acao)}
+.start-steps h3{color:var(--fg-2)}
+.start-steps p{color:var(--fg-2)}
+.commercial-grid article{border-color:var(--line)}
+.commercial-grid small{color:var(--acao)}
+.commercial-grid p{color:var(--fg-2)}
+.commercial-grid span{color:var(--acao);border-color:var(--line)}
+.about-shell{background-color:var(--acao-fraco)}
+.about-section>div:last-child p{color:var(--fg)}
+.about-section b{color:var(--fg)}
+.contact-shell{background-color:var(--inverso);color:var(--fg-2)}
+.contact-section>div>p:not(.eyebrow){color:var(--fg-2)}
+.contact-aside{border-color:var(--line)}
+.contact-aside span{color:var(--fg-2)}
+.demo-form label{color:var(--fg-2)}
+.demo-form input,.demo-form select,.demo-form textarea{background-color:var(--inverso);color:var(--fg-2);border-color:var(--line)}
+.demo-form select option{color:var(--fg)}
+.demo-form small{color:var(--fg-2)}
+.form-response{color:var(--fg-2)}
+.research-disclosure>p:not(.eyebrow){color:var(--fg-2)}
+.hero .lede{color:var(--fg-2)}
+.hero-performance{border-color:var(--acao)}
+.hero-performance::before{background-color:var(--elev)}
+.hero-performance::after{background-color:var(--canvas)}
+.hero-performance-head{color:var(--fg-2)}
+.hero-performance-pair > div{background-color:var(--canvas);border-color:var(--line-strong)}
+.hero-performance-pair > div:last-child{background-color:var(--inverso)}
+.hero-performance-pair small{color:var(--fg-2)}
+.hero-performance-pair > div:last-child small, .hero-performance-pair > div:last-child p{color:var(--sobre-inverso)}
+.hero-performance-pair strong{color:var(--fg)}
+.hero-performance-pair > div:last-child strong{color:var(--sobre-inverso)}
+.hero-performance-pair p{color:var(--fg-2)}
+.hero-performance-bars{background-color:var(--canvas);border-color:var(--line-strong)}
+.hero-performance-bars header{color:var(--fg)}
+.hero-performance-bars i{background-color:var(--acao-fraco)}
+.hero-performance-bars em{background-color:var(--acao)}
+.hero-performance-bars > div:first-child em{background-color:var(--elev)}
+.hero-performance-bars > div:nth-child(2) em{background-color:var(--acao)}
+.hero-performance-foot{color:var(--fg-2)}
+.hero-performance-foot span{background-color:var(--canvas)}
+.hero-performance-foot a{color:var(--acao)}
+/* Dense comparison: controls on the left and all outcomes on the right. */
+.wealth-panel{background-color:var(--canvas)}
+.wealth-card.primary{background-color:var(--inverso);color:var(--sobre-inverso)}
+.wealth-card.primary header b, .wealth-card.primary strong, .wealth-card.primary .wealth-card-foot{color:var(--sobre-inverso)}
+.wealth-card.primary header small, .wealth-card.primary .wealth-card-foot span{color:var(--sobre-inverso)}
+.policy-split{background-color:var(--canvas);border-color:var(--line)}
+.policy-split th, .policy-split td{border-color:var(--line)}
+.policy-split thead th{color:var(--fg-2)}
+.policy-split-wrap > p{color:var(--fg-2)}
+.pilot-form label{color:var(--fg-2)}
+.pilot-form input, .pilot-form select, .pilot-form textarea{background-color:var(--canvas);border-color:var(--line)}
+#demo-form-response{color:var(--fg-2)}
+.pilot-note{color:var(--fg-2)}
+.version-nav nav a,
+  .version-nav nav a:not([aria-current="page"]):not(.version-back){border-color:var(--line)}
+.text-link:hover,
+.hero-performance-foot a:hover,
+.version-next a:hover{color:var(--acao)}
+.quick-composition{color:var(--fg-2)}
+.quick-composition a{color:var(--acao)}
+.wealth-card.benchmark{background-color:var(--canvas)}
+.wealth-tax-note{border-color:var(--line)}
+/* Benevente 2 gets an explicit benchmark story before the long-form method. */
+.version-benchmark{background-color:var(--canvas)}
+.version-benchmark-copy > span{color:var(--acao)}
+.version-benchmark-copy h2{color:var(--fg)}
+.version-benchmark-copy p{color:var(--fg-2)}
+.version-benchmark-copy a{color:var(--acao)}
+.version-benchmark-grid article{background-color:var(--canvas);border-color:var(--line)}
+.version-benchmark-grid article.primary{color:var(--fg-2);background-color:var(--inverso);border-color:var(--line-strong)}
+.version-benchmark-grid span{color:var(--fg-2)}
+.version-benchmark-grid .primary span, .version-benchmark-grid .primary small{color:var(--fg-2)}
+.version-benchmark-grid strong{color:var(--fg)}
+.version-benchmark-grid .primary strong{color:var(--fg-2)}
+.version-benchmark-grid small{color:var(--fg-2)}
+.version-benchmark-grid i{background-color:var(--elev)}
+.version-benchmark-grid em{background-color:var(--acao)}
+.version-benchmark-grid article:nth-child(2) em{background-color:var(--elev)}
+.version-benchmark-grid article:nth-child(3) em{background-color:var(--acao)}
+.chart-title small::after{color:var(--fg-2)}
+.carteira-2026-card{background-color:var(--canvas);border-color:var(--line)}
+.carteira-2026-card header b{color:var(--fg)}
+.carteira-2026-card header small{color:var(--fg-2)}
+.carteira-2026-card strong{color:var(--fg)}
+.carteira-2026-card strong.up{color:var(--acao)}
+.carteira-2026-card strong.down{color:var(--neg)}
+.carteira-2026-since{color:var(--fg-2)}
+.carteira-2026-names{color:var(--fg-2)}
+.carteira-2026-split{color:var(--fg);border-color:var(--line)}
+.carteira-2026-note{color:var(--fg-2)}
+.comparison h2,.model-heading h2{color:var(--fg)}
+.comparison-head>p{color:var(--fg-2)}
+.comparison-card{background-color:var(--canvas);border-color:var(--line)}
+.comparison-controls{border-color:var(--line)}
+.control-label{color:var(--fg-2)}
+.period{background-color:var(--canvas);color:var(--fg-2);border-color:var(--line)}
+.period.active{background-color:var(--inverso);color:var(--sobre-inverso);border-color:var(--inverso-linha)}
+.comparison-controls p{color:var(--fg-2)}
+.comparison-summary{background-color:var(--canvas);color:var(--acao)}
+.return-chart{border-color:var(--line)}
+.chart-title{color:var(--fg)}
+.chart-title small{color:var(--fg-2)}
+.perf-row{color:var(--fg)}
+.perf-track{background-color:var(--acao-fraco)}
+.perf-bar{background-color:var(--elev)}
+.perf-row.benevente .perf-bar{background-color:var(--acao)}
+.perf-row.mvo .perf-bar{background-color:var(--elev)}
+.perf-row b{color:var(--fg)}
+.comparison-table-wrap th{color:var(--fg-2)}
+.comparison-table-wrap td{color:var(--fg-2);border-color:var(--line)}
+.comparison-table-wrap td:first-child{color:var(--fg)}
+.comparison-foot{color:var(--fg-2);border-color:var(--line)}
+.comparison-foot i{color:var(--acao)}
+.research-note{color:var(--fg-2)}
+.model-shell{background-color:var(--inverso);color:var(--fg-2)}
+.model-heading h2{color:var(--fg-2)}
+.model-steps{border-color:var(--line)}
+.model-step{color:var(--fg-2)}
+.model-step span{color:var(--acao)}
+.model-step small{color:var(--fg-2)}
+.model-step.active{background-color:var(--acao);color:var(--fg-2);border-color:var(--acao)}
+.model-detail{background-color:var(--canvas);color:var(--fg)}
+.detail-number{color:var(--acao)}
+.model-detail h3{color:var(--fg)}
+.model-detail>p{color:var(--fg-2)}
+.detail-grid div{border-color:var(--line)}
+.detail-grid small{color:var(--fg-2)}
+.detail-grid b{color:var(--fg)}
+.detail-rule{color:var(--fg);border-color:var(--line)}
+.detail-rule strong{color:var(--acao)}
+.curve-toggle{background-color:var(--canvas);color:var(--fg-2);border-color:var(--line)}
+.curve-toggle[data-kind="Benevente Quant AI"]{color:var(--acao)}
+.curve-toggle[data-kind="CDI"]{color:var(--acao)}
+.curve-toggle[data-kind="Ibovespa"]{color:var(--fg-2)}
+.curve-toggle[data-kind="MVO clássico"]{color:var(--fg-2)}
+.line-grid{stroke:var(--line)}
+.line-grid-label{fill:var(--fg-2)}
+.line-chart-caption{color:var(--fg-2)}
+.research-status{background-color:var(--canvas);color:var(--fg);border-color:var(--line)}
+.research-status b{color:var(--acao)}
+.portfolio-controls{background-color:var(--inverso);color:var(--fg-2)}
+.portfolio-controls .period{color:var(--fg-2);border-color:var(--line)}
+.portfolio-controls .period.active{background-color:var(--acao);color:var(--fg);border-color:var(--acao)}
+.policy-tuner{background-color:var(--elev);border-color:var(--line)}
+.policy-tuner label{background-color:var(--canvas);color:var(--fg)}
+.policy-tuner output{color:var(--fg)}
+.asset-summary{background-color:var(--elev);border-color:var(--line)}
+.asset-summary>div{background-color:var(--canvas)}
+.asset-summary small,.asset-card small{color:var(--fg-2)}
+.asset-summary strong{color:var(--fg)}
+.asset-summary span{color:var(--fg-2)}
+.asset-card{background-color:var(--canvas);border-color:var(--line)}
+.asset-card.blocked{background-color:var(--canvas)}
+.asset-card h3{color:var(--fg)}
+.asset-status{background-color:var(--acao-fraco);color:var(--acao)}
+.asset-status.blocked{background-color:var(--neg-fraco);color:var(--neg)}
+.asset-metrics div{border-color:var(--line)}
+.asset-metrics b{color:var(--fg)}
+.asset-card p{color:var(--fg-2)}
+.asset-card p b{color:var(--fg)}
+.asset-weight{color:var(--fg-2);border-color:var(--line)}
+.asset-weight strong{color:var(--fg)}
+.asset-action-panel{background-color:var(--canvas);border-color:var(--line)}
+.asset-action-panel p{color:var(--fg)}
+.asset-action-panel b{color:var(--acao)}
+.workbench-foot div{border-color:var(--acao)}
+.workbench-foot b{color:var(--acao)}
+.workbench-foot span{color:var(--fg-2)}
+.benchmark-panel{background-color:var(--canvas);border-color:var(--line)}
+.benchmark-panel p{color:var(--fg-2)}
+.benchmark-actions span{color:var(--fg-2)}
+.button-secondary{color:var(--acao);background-color:var(--canvas);border-color:var(--acao)}
+.dossier-policy{color:var(--fg-2)}
+.annual-protocol-card{background-color:var(--canvas);border-color:var(--line)}
+.annual-protocol-card p{color:var(--fg-2)}
+.annual-protocol-card li{border-color:var(--line)}
+.annual-protocol-card li b{color:var(--acao)}
+.annual-protocol-card li span{color:var(--fg-2)}
+.research-signal{background-color:var(--elev);border-color:var(--line)}
+.research-signal>div,.research-signal>a{background-color:var(--canvas)}
+.research-signal span{color:var(--acao)}
+.research-signal strong{color:var(--fg)}
+.research-signal p{color:var(--fg-2)}
+.decision-select-label{color:var(--fg-2)}
+.decision-select-label select{background-color:var(--inverso);color:var(--fg-2);border-color:var(--line)}
+.asset-return{background-color:var(--canvas);color:var(--fg);border-color:var(--acao)}
+.asset-return b{color:var(--acao)}
+.asset-card.blocked .asset-return{background-color:var(--neg-fraco);border-color:var(--neg)}
+.asset-action-panel .action-label{color:var(--acao)}
+.lab-custom-policy{background-color:var(--canvas)}
+.lab-custom-policy label{color:var(--fg-2)}
+.lab-custom-policy output{color:var(--fg-2)}
+.chart-add{background-color:var(--canvas);border-color:var(--line)}
+.chart-source,.chart-add-button{background-color:var(--canvas);color:var(--acao);border-color:var(--line)}
+.chart-source.active,.chart-add-button{background-color:var(--inverso);color:var(--fg-2);border-color:var(--acao)}
+.chart-add label{color:var(--fg-2)}
+.chart-add input{background-color:var(--canvas);color:var(--fg);border-color:var(--line)}
+.chart-add-help{color:var(--fg-2)}
+.line-cursor{stroke:var(--acao)}
+.chart-inspector{background-color:var(--canvas);color:var(--fg-2)}
+.chart-inspector b{color:var(--fg)}
+/* Declared profile ladder. Three policies where the site used to state one. */
+.ladder-wrap{background-color:var(--canvas);border-color:var(--line)}
+.ladder-table caption{color:var(--fg-2)}
+.ladder-table th,
+.ladder-table td{border-color:var(--line)}
+.ladder-table thead th{color:var(--fg-2);border-color:var(--line)}
+.ladder-table th[scope="row"],
+.ladder-table thead th:first-child{color:var(--fg)}
+.ladder-strong{color:var(--fg)}
+.ladder-reference th[scope="row"],
+.ladder-reference td{color:var(--fg-2)}
+.ladder-note{color:var(--fg-2)}
+.ladder-error{color:var(--fg-2)}
+/* The seal is the page's claim to being generated rather than typed. */
+.ladder-seal{color:var(--fg-2);border-color:var(--line)}
+.ladder-seal span strong{color:var(--fg)}
+.alpha-controls button{background-color:var(--canvas);color:var(--fg-2);border-color:var(--line-strong)}
+.alpha-controls button.on{background-color:var(--acao-fraco);color:var(--acao);border-color:var(--acao)}
+.alpha-controls label{color:var(--fg-2)}
+.alpha-controls select{background-color:var(--canvas);color:var(--fg);border-color:var(--line-strong)}
+/* A divisão da carteira antes da lista: a proporção é a primeira coisa que
+   um revisor confere, e ela some numa tabela de pesos individuais. */
+.alpha-split{border-color:var(--line)}
+.alpha-split span{color:var(--sobre-inverso)}
+}
+.alpha-split span:nth-child(1){background-color:var(--acao)}
+.alpha-split span:nth-child(2){background-color:var(--acao)}
+.alpha-split span:nth-child(3){background-color:var(--elev);color:var(--fg)}
+.alpha-action{background-color:var(--acao-fraco);color:var(--fg-2)}
+.alpha-entered{background-color:var(--acao-fraco);color:var(--acao)}
+.alpha-exited{background-color:var(--neg-fraco);color:var(--neg)}
+.alpha-policy{background-color:var(--acao-fraco);color:var(--acao)}
+.alpha-policy-row th[scope="row"], .alpha-policy-row td{color:var(--fg-2)}
+.alpha-policy-row{border-color:var(--line-strong)}
+.dossier-download{background-color:var(--acao);color:var(--sobre-inverso)}
+.dossier-download:hover{background-color:var(--acao)}
+/* O retorno seguinte é o único número que a decisão não podia usar, então ele
+   fica visualmente separado em vez de alinhado com o que era observável. */
+.alpha-after{color:var(--fg-2);border-color:var(--line-strong)}
+/* Calibração do forecast: a faixa projetada contra o que aconteceu.
+   Vive junto do ladder porque as duas coisas saem do mesmo registro. */
+.calib-perfil{border-color:var(--line)}
+.calib-perfil h3{color:var(--fg)}
+.calib-perfil p{color:var(--fg-2)}
+.calib-perfil p b{color:var(--fg)}
+.calib-fig figcaption{color:var(--fg-2)}
+.calib-eixo{fill:var(--fg-2)}
+.calib-zero{stroke:var(--line)}
+.calib-faixa{stroke:var(--line)}
+.calib-meio{stroke:var(--line)}
+.calib-dentro{fill:var(--acao);stroke:var(--line)}
+.calib-fora{fill:var(--neg);stroke:var(--line)}
+.calib-nota{color:var(--fg-2);border-color:var(--line)}
+/* Shared shell for the two paper-facing pages. They are argument pages, not
+   product pages: a reader arrives from a call for papers or a committee and
+   wants the claim, the evidence and the limits, in that order. */
+.paper-nav{border-color:var(--line)}
+.paper-nav a{color:var(--acao)}
+.paper-nav a.current{color:var(--acao);border-color:var(--acao)}
+.paper-page h2{color:var(--fg)}
+.paper-page h3{color:var(--acao)}
+.paper-page p,.paper-page li{color:var(--fg)}
+.paper-lede{color:var(--fg)}
+.paper-callout{background-color:var(--acao-fraco);border-color:var(--acao)}
+.paper-callout b{color:var(--acao)}
+.paper-callout.warn{background-color:var(--acao-fraco);border-color:var(--acao)}
+.paper-callout.warn b{color:var(--acao)}
+.paper-table th{color:var(--fg-2)}
+.paper-table td{color:var(--fg);border-color:var(--line)}
+.paper-table td:first-child{color:var(--fg)}
+.paper-table tr.highlight td{background-color:var(--canvas)}
+.paper-metric{background-color:var(--canvas);border-color:var(--line)}
+.paper-metric span{color:var(--fg-2)}
+.paper-metric b{color:var(--acao)}
+.paper-metric small{color:var(--fg-2)}
+.paper-metric.negative b{color:var(--neg)}
+.paper-portfolio{background-color:var(--canvas);border-color:var(--line)}
+.paper-holding b{color:var(--fg)}
+.paper-holding .bar{background-color:var(--acao-fraco)}
+.paper-holding .bar i{background-color:var(--acao)}
+.paper-holding .bar.cash i{background-color:var(--acao)}
+.paper-holding span{color:var(--fg-2)}
+.live-card-head p{color:var(--fg-2)}
+.live-status{color:var(--acao)}
+.live-version-tab{color:var(--acao);border-color:var(--line)}
+.live-chart{background-color:var(--canvas);border-color:var(--line)}
+.live-chart-legend{color:var(--fg-2)}
+.live-chart-legend b{color:var(--fg)}
+.live-chart-readout{color:var(--fg)}
+.live-grid line{stroke:var(--line)}
+.live-grid text{fill:var(--fg-2)}
+.live-cursor{stroke:var(--acao)}
+.live-chart-axis{color:var(--fg-2)}
+.live-holdings summary{color:var(--acao)}
+.live-quality{color:var(--fg-2)}
+.live-allocation-full{border-color:var(--line)}
+.allocation-heading span{color:var(--acao)}
+.allocation-heading h4{color:var(--fg)}
+.allocation-heading small{color:var(--fg-2)}
+.allocation-table{background-color:var(--canvas)}
+.allocation-table th,.allocation-table td{border-color:var(--line)}
+.allocation-table th{color:var(--fg-2)}
+.allocation-action.hold{background-color:var(--acao-fraco);color:var(--fg)}
+.allocation-action.reduce{background-color:var(--acao-fraco);color:var(--acao)}
+.allocation-action.increase{background-color:var(--acao-fraco);color:var(--acao)}
+.risk-decision-log h4{color:var(--fg)}
+.risk-decision-log li{background-color:var(--canvas);border-color:var(--line)}
+.risk-decision-log time{color:var(--acao)}
+.risk-decision-log strong{color:var(--fg)}
+.allocation-disclaimer{color:var(--fg-2)}
+.live-error{color:var(--neg);background-color:var(--canvas);border-color:var(--neg)}
+.decision-ledger-intro{background-color:var(--inverso);color:var(--sobre-inverso)}
+.decision-ledger-intro span{color:var(--acao-inverso)}
+.annual-decision{background-color:var(--canvas);border-color:var(--line)}
+.annual-decision summary strong{color:var(--fg)}
+.annual-decision summary span{color:var(--fg-2)}
+.annual-result b{color:var(--acao)}
+.annual-result small{color:var(--fg-2)}
+.annual-decision-body{border-color:var(--line)}
+.annual-comparison span{color:var(--fg-2)}
+.annual-comparison b{color:var(--fg)}
+.annual-allocation span{background-color:var(--acao-fraco);color:var(--fg)}
+.annual-meta span{color:var(--fg-2)}
+.historical-transitions{background-color:var(--canvas)}
+.historical-transitions h5{color:var(--fg)}
+.historical-transitions time{color:var(--acao)}
+.historical-transitions strong{color:var(--fg)}
+.historical-transitions p{color:var(--fg-2)}
+.no-transition{color:var(--fg-2)}
+.decision-hash{color:var(--fg-2)}
+.transition-allocation span{color:var(--fg-2)}
+.radar-summary{background-color:var(--canvas);border-color:var(--line)}
+.radar-summary>div{border-color:var(--line)}
+.radar-summary span{color:var(--fg-2)}
+.radar-summary strong{color:var(--fg)}
+.radar-summary small{color:var(--fg-2)}
+.radar-state.normal{color:var(--acao)}
+.radar-state.atencao{color:var(--acao)}
+.radar-state.alerta,.radar-state.critico{color:var(--neg)}
+.radar-event{background-color:var(--canvas);border-color:var(--line);border-left-color:var(--line-strong)}
+.radar-event.atencao{border-color:var(--acao)}
+.radar-event.alerta,.radar-event.critico{border-color:var(--neg)}
+.radar-event-top span{color:var(--acao)}
+.radar-event-top time{color:var(--fg-2)}
+.radar-event h4{color:var(--fg)}
+.radar-event p{color:var(--fg-2)}
+.radar-event-meta{color:var(--fg-2)}
+.radar-event a{color:var(--acao)}
+.radar-sources{background-color:var(--acao-fraco)}
+.radar-sources h4{color:var(--fg)}
+.radar-sources li{border-color:var(--line)}
+.radar-sources li span{color:var(--fg-2)}
+.radar-sources li b{color:var(--acao)}
+.radar-sources li b.indisponivel{color:var(--acao)}
+.radar-sources p{color:var(--fg-2)}
+.radar-sources code{color:var(--fg-2)}
+.radar-empty{color:var(--fg-2);border-color:var(--line)}
+.paper-foot{color:var(--fg-2);border-color:var(--line)}
+.orientation-intro h2,.flow-heading h2{color:var(--fg)}
+.orientation-intro p:not(.eyebrow){color:var(--fg-2)}
+.definition-grid{border-color:var(--line)}
+.definition-grid article{border-color:var(--line)}
+.definition-grid span,.mvo-explainer .control-label{color:var(--acao)}
+.definition-grid h3{color:var(--fg)}
+.definition-grid p{color:var(--fg-2)}
+.definition-grid a{color:var(--acao)}
+.use-flow{background-color:var(--inverso);color:var(--fg-2)}
+.flow-heading h2{color:var(--fg-2)}
+.flow-heading p:not(.eyebrow){color:var(--fg-2)}
+.flow-steps{border-color:var(--line)}
+.flow-steps li{border-color:var(--line)}
+.flow-steps a{color:var(--fg-2)}
+.flow-steps a:hover{background-color:var(--acao)}
+.flow-steps b{color:var(--acao)}
+.flow-steps span{color:var(--fg-2)}
+.mvo-explainer{background-color:var(--canvas);border-color:var(--line)}
+.mvo-explainer h3{color:var(--fg)}
+.mvo-explainer>div>p{color:var(--fg-2)}
+.mvo-columns p{background-color:var(--canvas)}
+.mvo-columns b{color:var(--fg)}
+.mvo-columns span{color:var(--fg-2)}
+.portfolio-controls .portfolio-mode{color:var(--fg-2);border-color:var(--line)}
+.portfolio-controls .portfolio-mode:hover{color:var(--fg-2);border-color:var(--acao)}
+.portfolio-controls .portfolio-mode.active{background-color:var(--acao);color:var(--fg);border-color:var(--acao)}
+.research-signal>div{border-color:var(--line)}
+.research-signal>div:first-child{background-color:var(--canvas)}
+.research-signal span{color:var(--fg-2)}
+.research-signal strong{color:var(--fg)}
+.research-signal p{color:var(--fg-2)}
+.chart-return-summary span{color:var(--fg)}
+.chart-return-summary strong{color:var(--fg)}
+.chart-sidepanel{border-color:var(--line)}
+.chart-sidepanel .chart-add{background-color:var(--canvas);border-color:var(--line)}
+.chart-scale-label{color:var(--fg-2)}
+.chart-tools .chart-scale.active{background-color:var(--inverso);border-color:var(--inverso-linha)}
+.quick-compare span{color:var(--fg-2)}
+.quick-ticker{color:var(--acao);border-color:var(--line)}
+.line-axis-title{fill:var(--fg-2)}
+.profile-history{background-color:var(--canvas);border-color:var(--line)}
+.profile-history-head b{color:var(--fg)}
+.profile-history-head small{color:var(--fg-2)}
+.profile-history-head>span{color:var(--acao);border-color:var(--line)}
+.profile-year{color:var(--fg);border-color:var(--line)}
+.profile-year:hover{border-color:var(--acao)}
+.profile-year.active{background-color:var(--inverso);border-color:var(--line-strong)}
+.chart-tools button{background-color:var(--canvas);color:var(--acao);border-color:var(--line)}
+.chart-tools button:hover{background-color:var(--acao-fraco)}
+.chart-tools span{color:var(--acao)}
+.chart-tools small{color:var(--fg-2)}
+.asset-card.defensive{background-color:var(--canvas);border-color:var(--line)}
+.asset-card.defensive .asset-status{background-color:var(--acao-fraco);color:var(--acao)}
+.asset-card.defensive .asset-return{background-color:var(--canvas);border-color:var(--acao)}
+.asset-status.entered,.asset-status.increased{background-color:var(--acao-fraco);color:var(--acao)}
+.asset-status.reduced{background-color:var(--acao-fraco);color:var(--acao)}
+.asset-status.exited{background-color:var(--acao-fraco);color:var(--fg-2)}
+.asset-status.maintained{background-color:var(--acao-fraco);color:var(--acao)}
+.embedded-dossier{background-color:var(--canvas);color:var(--fg)}
+.embedded-dossier-head h3{color:var(--fg)}
+.embedded-dossier-head p{color:var(--fg-2)}
+.dossier-details{border-color:var(--line)}
+.dossier-details summary{color:var(--acao)}
+.fund-preset-button{background-color:var(--canvas);color:var(--acao);border-color:var(--acao)}
+.fund-preset-button:hover{background-color:var(--acao-fraco)}
+.forecast-shell{background-color:var(--inverso);color:var(--fg-2)}
+.forecast-head p:not(.eyebrow){color:var(--fg-2)}
+.forecast-card{background-color:var(--canvas);color:var(--fg)}
+.research-chip{background-color:var(--acao-fraco);color:var(--acao)}
+.scenario-summary div{border-color:var(--line)}
+.scenario-summary small,.suggestion-assets small{color:var(--fg-2)}
+.scenario-summary b{color:var(--fg)}
+.scenario-track{background-color:var(--elev)}
+.scenario-range{background-color:var(--acao)}
+.scenario-marker{color:var(--fg)}
+.scenario-marker i{background-color:var(--canvas);border-color:var(--line-strong)}
+.scenario-scale{color:var(--fg-2)}
+.scenario-caption,.universe-foot{color:var(--fg-2)}
+.suggestion-asset{border-color:var(--line)}
+.suggestion-row strong{color:var(--acao)}
+.suggestion-asset p{color:var(--fg-2)}
+.scenario-limitations span{color:var(--fg-2);border-color:var(--line)}
+.universe-head{color:var(--fg)}
+.universe-head p:not(.eyebrow){color:var(--fg-2)}
+.universe-summary div{background-color:var(--canvas);border-color:var(--line)}
+.universe-summary b{color:var(--fg)}
+.universe-summary span{color:var(--fg-2)}
+.universe-controls label{color:var(--fg-2)}
+.universe-controls input,.universe-controls select{background-color:var(--canvas);color:var(--fg);border-color:var(--line)}
+.universe-table-wrap{border-color:var(--line)}
+.universe-table th{background-color:var(--canvas);color:var(--fg-2)}
+.universe-table td{color:var(--fg);border-color:var(--line)}
+.universe-table td:first-child{color:var(--fg)}
+.universe-class{background-color:var(--canvas);color:var(--fg-2)}
+.universe-status.blocked{color:var(--acao)}
+.universe-status.covered{color:var(--acao)}
+}
+/* Keep the site compact and typographically coherent at 100% zoom. */
+.candidate-shell{background-color:var(--inverso);color:var(--fg-2)}
+.candidate-grid>div>p:not(.eyebrow){color:var(--fg-2)}
+.candidate-card{background-color:var(--canvas);color:var(--fg)}
+.candidate-rule{border-color:var(--line)}
+.candidate-rule span{color:var(--acao)}
+.candidate-rule small{color:var(--fg-2)}
+.candidate-warning{background-color:var(--canvas);color:var(--acao);border-color:var(--acao)}
+.final-strategy-select{background-color:var(--canvas);color:var(--fg);border-color:var(--line)}
+.profile-picker .choice{background-color:var(--canvas);color:var(--fg);border-color:var(--line)}
+.profile-picker .choice.active{background-color:var(--acao);color:var(--fg-2);border-color:var(--acao)}
+.profile-picker .choice:hover{border-color:var(--acao)}
+.chart-return-summary{background-color:var(--canvas);border-color:var(--line)}
+.chart-inspector .inspector-item strong{color:var(--fg)}
+.single-policy-note{color:var(--fg-2)}
+.hero-answers li{color:var(--fg)}
+.hero-answers li::before{background-color:var(--acao)}
+.hero-answers b{color:var(--fg)}
+.line-boundary{stroke:var(--line-strong)}
+.line-boundary-label{fill:var(--fg-2)}
+/* Quanto o patrimônio teria virado. Três cards, uma linha, sem gráfico próprio:
+   a comparação é entre três números e não precisa de mais nada para ser lida. */
+.wealth-panel{background-color:var(--canvas);border-color:var(--line)}
+.wealth-form label{color:var(--fg)}
+.wealth-form output{color:var(--acao)}
+.wealth-cards-lede{color:var(--fg)}
+.wealth-card{background-color:var(--canvas);border-color:var(--inverso-linha);border-top-color:var(--acao)}
+.wealth-card header b{color:var(--sobre-inverso)}
+.wealth-card header small{color:var(--sobre-inverso)}
+.wealth-card strong{color:var(--sobre-inverso)}
+.wealth-card-foot{color:var(--sobre-inverso)}
+.wealth-card-foot .up{color:var(--acao-inverso)}
+.wealth-card-foot .down{color:var(--neg)}
+/* A faixa de parâmetros tinha raio só no primeiro cartão e nenhum no último, o
+   que produzia um canto arredondado solto contra três cantos retos. A moldura
+   passa a ser do bloco inteiro, e os cartões apenas se dividem por dentro. */
+.research-signal{background-color:var(--canvas);border-color:var(--line)}
+.research-signal .text-link{border-color:var(--line)}
+/* Comparar com um ativo externo é uma ação de quem já leu o placar, não a
+   primeira coisa a se ver. Recolhida, ela deixa o gráfico e a tabela sozinhos. */
+.chart-add-details{background-color:var(--canvas);border-color:var(--line)}
+.chart-add-details > summary{color:var(--acao)}
+.chart-add-details > summary::after{color:var(--fg-2)}
+.chart-add-details[open] > summary{border-color:var(--line)}
+.version-panel{border-color:var(--line)}
+.version-copy h3{color:var(--fg)}
+.version-copy p{color:var(--fg-2)}
+.version-copy small{color:var(--fg-2)}
+.version-metrics>div{background-color:var(--canvas);border-color:var(--line)}
+.version-metrics span,.version-metrics small{color:var(--fg-2)}
+.version-metrics strong{color:var(--acao)}
+.version-metrics b{color:var(--fg)}
+.version-gateway-head h2{color:var(--fg)}
+.version-gateway-head>p{color:var(--fg-2)}
+.version-gateway-card{background-color:var(--canvas);color:var(--fg);border-color:var(--line)}
+.version-gateway-card:hover{border-color:var(--acao)}
+.version-gateway-card.experimental{background-color:var(--inverso);color:var(--sobre-inverso);border-color:var(--inverso-linha)}
+.version-tag{color:var(--acao)}
+.experimental .version-tag{color:var(--acao-inverso)}
+.version-gateway-card>p{color:var(--fg-2)}
+.experimental>p{color:var(--fg-2)}
+.version-gateway-card>b{color:var(--acao)}
+.experimental>b{color:var(--fg-2)}
+/* Evidence-first release: compact rhythm, explicit research stage and mobile-safe cards. */
+.stage-ribbon{background-color:var(--inverso);color:var(--fg-2)}
+.stage-ribbon span{color:var(--fg-2)}
+.evidence-board{border-color:var(--line)}
+.evidence-board-head>p{color:var(--fg-2)}
+.evidence-card{background-color:var(--canvas);border-color:var(--line)}
+.evidence-card span,.protocol-card>span{color:var(--fg-2)}
+.evidence-card p,.protocol-card p{color:var(--fg-2)}
+.evidence-card.proven{border-color:var(--acao)}
+.evidence-card.observed{border-color:var(--acao)}
+.evidence-card.pending{border-color:var(--acao)}
+.evidence-card.tracking{border-color:var(--line-strong)}
+.audit-block,.protocol-card{background-color:var(--canvas);border-color:var(--line)}
+.audit-block summary{color:var(--fg)}
+.audit-block li{color:var(--fg-2)}
+.protocol-card code{background-color:var(--acao-fraco);color:var(--fg)}
+.protocol-card a{color:var(--acao)}
+.fixed-comparators{background-color:var(--canvas);border-color:var(--line)}
+.fixed-comparators summary{color:var(--fg)}
+.fixed-comparators-wrap{border-color:var(--line)}
+.fixed-comparators th,.fixed-comparators td{border-color:var(--line)}
+.fixed-comparators th{color:var(--fg-2)}
+.fixed-comparators>p{color:var(--fg-2)}
+/* Evidence contract release, 2026-08-23. One type family, shorter sections and
+   explicit boundaries between calculation, explanation and human decision. */
+.role-contract{background-color:var(--elev);border-color:var(--line)}
+.role-contract div{background-color:var(--canvas)}
+.role-contract span{color:var(--acao)}
+.role-contract p{color:var(--fg)}
+.evidence-matrix-wrap{background-color:var(--canvas);border-color:var(--line)}
+.evidence-matrix th{background-color:var(--canvas);color:var(--fg-2)}
+.evidence-matrix td{color:var(--fg);border-color:var(--line)}
+.evidence-matrix td:first-child{color:var(--fg)}
+.evidence-status.demonstrated{background-color:var(--acao-fraco);color:var(--acao)}
+.evidence-status.not-demonstrated{background-color:var(--acao-fraco);color:var(--acao)}
+.evidence-status.sensitivity{background-color:var(--acao-fraco);color:var(--fg)}
+.evidence-status.observed{background-color:var(--acao-fraco);color:var(--acao)}
+.explanation-quality{background-color:var(--inverso);color:var(--fg-2);border-color:var(--line)}
+.explanation-quality>div>span{color:var(--acao)}
+.explanation-quality p{color:var(--fg-2)}
+.explanation-quality li{background-color:var(--canvas);border-color:var(--line)}
+.explanation-quality li span{color:var(--fg-2)}
+.contamination-note{background-color:var(--acao-fraco);color:var(--fg);border-color:var(--line-strong)}
+.audit-impact{background-color:var(--canvas);color:var(--neg)}
+.wealth-tax-note{color:var(--fg-2)}
+.dossier-strategy-button{background-color:var(--canvas);color:var(--fg);border-color:var(--line)}
+.dossier-strategy-button:hover{border-color:var(--acao)}
+.dossier-strategy-button.active{background-color:var(--inverso);color:var(--fg-2);border-color:var(--line-strong)}
+.dossier-year-control{border-color:var(--line)}
+.asset-allocation-path{background-color:var(--canvas)}
+.asset-allocation-path span{color:var(--fg-2)}
+.asset-allocation-path b{color:var(--fg)}
+.asset-card.defensive .asset-allocation-path{background-color:var(--canvas)}
+.asset-card.defensive .asset-allocation-path b{color:var(--acao)}
+.page-stage{background-color:var(--canvas);color:var(--fg);border-color:var(--line)}
+.page-stage strong{color:var(--acao)}
+body{background-color:var(--canvas);color:var(--fg)}
+.brand{color:var(--fg)}
+.brand-mark{background-color:var(--inverso);color:var(--fg-2)}
+.nav nav a,.text-link{color:var(--fg)}
+.nav-cta{background-color:var(--acao-fraco);color:var(--fg)}
+.nav-cta span{color:var(--acao)}
+.eyebrow{color:var(--acao)}
+.hero h1,.section-heading h2,.lab-head h2,.governance h2{color:var(--fg)}
+.lede{color:var(--fg-2)}
+.button-primary{color:var(--sobre-inverso);background-color:var(--acao)}
+.text-link{color:var(--fg)}
+.text-link span{color:var(--acao)}
+.trust-row{color:var(--fg-2)}
+.trust-row span:before{color:var(--acao)}
+.hero-panel{background-color:var(--inverso);color:var(--fg-2)}
+.hero-panel:after{border-color:var(--line)}
+.panel-top,.proposal-kicker{color:var(--fg-2)}
+.status{color:var(--fg-2)}
+.status i{background-color:var(--elev)}
+.panel-meta{color:var(--fg-2)}
+.allocation-ring:before{background-color:var(--inverso)}
+.ring-center small{color:var(--fg-2)}
+.legend span{color:var(--fg-2)}
+.legend b{color:var(--fg-2)}
+.equity{background-color:var(--acao)}
+.fixed{background-color:var(--inverso)}
+.panel-foot{color:var(--fg-2);border-color:var(--line)}
+.panel-foot b{color:var(--fg-2)}
+.proof{border-color:var(--line)}
+.proof div{border-color:var(--line)}
+.proof strong{color:var(--fg)}
+.proof span{color:var(--fg-2)}
+.proof p{color:var(--fg-2)}
+.section-heading>p{color:var(--fg-2)}
+.method-grid{border-color:var(--line)}
+.method-grid article{border-color:var(--line)}
+.step{color:var(--acao)}
+.method-grid h3{color:var(--fg)}
+.method-grid p{color:var(--fg-2)}
+.arrow{color:var(--acao)}
+.lab-section{background-color:var(--inverso);color:var(--fg-2)}
+.light{color:var(--acao)}
+.lab-head h2{color:var(--fg-2)}
+.lab-head>p{color:var(--fg-2)}
+.lab-form,.proposal{background-color:var(--canvas);color:var(--fg)}
+.form-title{border-color:var(--line)}
+.form-title>span{color:var(--acao);border-color:var(--line)}
+.form-title p{color:var(--fg-2)}
+.lab-form output{color:var(--acao)}
+input[type=range]{background-color:var(--elev)}
+input[type=range]::-webkit-slider-thumb{background-color:var(--acao);border-color:var(--line)}
+.choice{color:var(--fg-2);background-color:var(--canvas);border-color:var(--line)}
+.choice.active{background-color:var(--acao-fraco);color:var(--acao);border-color:var(--acao)}
+.form-note{color:var(--fg-2)}
+.form-note i{background-color:var(--acao-fraco);color:var(--acao)}
+.empty-mark{color:var(--acao)}
+.proposal-empty h3{color:var(--fg)}
+.proposal-empty p{color:var(--fg-2)}
+.proposal-content h3{color:var(--fg)}
+.result-metrics{border-color:var(--line)}
+.result-metrics small{color:var(--fg-2)}
+.result-metrics strong{color:var(--fg)}
+.weight-row{color:var(--fg)}
+.bar{background-color:var(--card)}
+.bar i{background-color:var(--acao)}
+.weight-row b{color:var(--fg)}
+.result-callout{background-color:var(--canvas);border-color:var(--acao)}
+.result-callout span{color:var(--acao)}
+.result-callout p{color:var(--fg)}
+.disclaimer{color:var(--fg-2)}
+.governance-copy>p:not(.eyebrow){color:var(--fg-2)}
+.rule{background-color:var(--acao-fraco);color:var(--acao)}
+.evidence{background-color:var(--acao-fraco);color:var(--acao)}
+.human{background-color:var(--elev);color:var(--fg)}
+.footer{background-color:var(--inverso);color:var(--sobre-inverso)}
+.footer .brand{color:var(--sobre-inverso)}
+.footer .brand-mark{background-color:var(--canvas);color:var(--fg)}
+.footer span:last-child{color:var(--sobre-inverso)}
+body.version-page{background-color:var(--canvas);color:var(--fg)}
+.version-nav nav a{color:var(--fg-2)}
+.version-nav nav a[aria-current="page"]{background-color:var(--acao-fraco);color:var(--acao)}
+.version-back{color:var(--fg)}
+.version-hero{border-color:var(--line)}
+.version-kicker{color:var(--acao)}
+.version-hero h1{color:var(--fg)}
+.version-lede{color:var(--fg-2)}
+.version-status{background-color:var(--canvas);border-color:var(--line)}
+.version-status span{color:var(--acao)}
+.version-status strong{color:var(--fg)}
+.version-status p{color:var(--fg-2)}
+.version-scoreboard{background-color:var(--canvas);border-color:var(--line)}
+.version-metric{border-color:var(--line)}
+.version-metric span,.version-label{color:var(--fg-2)}
+.version-metric strong{color:var(--fg)}
+.version-metric small{color:var(--fg-2)}
+.version-section{border-color:var(--line)}
+.version-section-heading h2{color:var(--fg)}
+.version-section-heading p{color:var(--fg-2)}
+.version-step{background-color:var(--canvas);border-color:var(--line)}
+.version-step span{color:var(--acao)}
+.version-step h3{color:var(--fg)}
+.version-step p{color:var(--fg-2)}
+.version-callout{background-color:var(--acao-fraco);border-color:var(--acao)}
+.version-callout h3{color:var(--acao)}
+.version-callout p{color:var(--fg)}
+.weight-rule{border-color:var(--line)}
+.weight-rule strong{color:var(--fg)}
+.weight-rule p{color:var(--fg-2)}
+.comparison-matrix{background-color:var(--canvas);border-color:var(--line)}
+.comparison-matrix th,.comparison-matrix td{border-color:var(--line)}
+.comparison-matrix th{color:var(--fg-2)}
+.comparison-matrix td:first-child{color:var(--fg)}
+.evidence-card{background-color:var(--inverso);color:var(--fg-2)}
+.evidence-card.secondary{background-color:var(--canvas);color:var(--fg);border-color:var(--line)}
+.evidence-card span{color:var(--acao)}
+.evidence-card.secondary span{color:var(--acao)}
+.evidence-card p{color:var(--fg-2)}
+.evidence-card.secondary p{color:var(--fg-2)}
+.version-limitations li{background-color:var(--canvas);color:var(--fg-2);border-color:var(--line)}
+.version-limitations li::before{background-color:var(--acao-fraco);color:var(--acao)}
+.version-next{background-color:var(--inverso);color:var(--sobre-inverso)}
+.version-next span{color:var(--sobre-inverso)}
+.version-next a{background-color:var(--canvas);color:var(--fg)}
+.version-footnote{color:var(--fg-2)}
+.version-footer{background-color:var(--inverso);color:var(--sobre-inverso)}
+.version-footer a{color:var(--sobre-inverso)}
+.stress-timeline{background-color:var(--elev);border-color:var(--line)}
+.stress-timeline article{background-color:var(--canvas)}
+.stress-timeline span{color:var(--acao)}
+.stress-timeline h3{color:var(--fg)}
+.stress-timeline p{color:var(--fg-2)}
+.version-page .brand{color:var(--fg)}
+.version-page .brand-mark{background-color:var(--inverso);color:var(--sobre-inverso)}
+@media(max-width:780px){
+.comparison-grid .return-chart{border-color:var(--line)}
+.research-signal>div,.research-signal>div:first-child{border-color:var(--line)}
+.method-grid article,.method-grid article:not(:first-child){border-color:var(--line)}
+}
+@media(max-width:640px){
+.radar-summary>div{border-color:var(--line)}
+}
+@media(max-width:900px){
+.chart-sidepanel{border-color:var(--line)}
+.definition-grid article:nth-child(-n+2){border-color:var(--line)}
+.flow-steps li:nth-child(-n+4){border-color:var(--line)}
+.chart-sidepanel{border-color:var(--line)}
+}
+@media(max-width:720px){
+.embedded-dossier .asset-summary>div{border-color:var(--line)}
+.nav nav a{border-color:var(--line)}
+}
+@media(max-width:560px){
+.definition-grid article,.definition-grid article:nth-child(2),.flow-steps li,.flow-steps li:nth-child(2){border-color:var(--line)}
+.flow-steps li{border-color:var(--line)}
+}
+@media (max-width: 780px){
+.research-signal .text-link{border-color:var(--line)}
+}
+@media(max-width:1050px){
+.research-signal .text-link{border-color:var(--line)}
+}
+@media (max-width: 640px){
+.paper-nav a{border-color:var(--line)}
+}
+@media(max-width:680px){
+.version-nav nav a{border-color:var(--line)}
+}
+@media(max-width:430px){
+.version-metric{border-color:var(--line)}
+}
+@media(max-width:800px){
+.version-metric:nth-child(-n+2){border-color:var(--line)}
+}
+@media(max-width:480px){
+.version-metric{border-color:var(--line)}
+}
