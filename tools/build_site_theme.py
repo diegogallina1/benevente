@@ -35,6 +35,15 @@ PAGINAS = {
               "paper.css", "refinements.css", "design-system.css"],
     "versoes": ["versions.css", "paper.css", "site-polish.css", "design-system.css",
                 "ladder.css"],
+    # As quatro carregam exatamente as folhas de /versoes. As tres restantes
+    # (btech, benevente-1, benevente-2) sao redirecionamentos de 400 bytes sem
+    # estilo nenhum: nao ha o que tematizar.
+    "metodo": ["versions.css", "paper.css", "site-polish.css", "design-system.css", "ladder.css"],
+    "quant-ai": ["versions.css", "paper.css", "site-polish.css", "design-system.css", "ladder.css"],
+    "para-escritorios": ["versions.css", "paper.css", "site-polish.css", "design-system.css",
+                         "ladder.css"],
+    "limitacoes": ["versions.css", "paper.css", "site-polish.css", "design-system.css",
+                   "ladder.css"],
 }
 
 #: Medido no navegador: seletores cujos elementos ficam sobre painel escuro.
@@ -63,6 +72,7 @@ SOBRE_ESCURO = {
     ".wealth-card.primary header b, .wealth-card.primary strong, .wealth-card.primary .wealth-card-foot",
     ".wealth-card.primary header small, .wealth-card.primary .wealth-card-foot span",
     ".wealth-card.primary strong", ".wealth-card strong.wealth-value",
+    ".hero-performance-foot a, .text-link, .version-next a, .version-footer a, [data-event-radar] a, .quick-composition a",
 }
 
 BORDAS = ("border-color", "border-top-color", "border-bottom-color",
@@ -262,6 +272,24 @@ CABECALHO = """/* Camada de cor do site. Gerada por tools/build_site_theme.py �
   --neg: #c8322f; --neg-fraco: #fdecec;
   --btn: #0a0a0a; --btn-fg: #ffffff;
 }
+/* Rede de seguranca: os tokens da paleta antiga passam a apontar para os novos.
+   O gerador reescreve as regras que consegue ler; o que escapar — declaracao com
+   mais de uma cor, seletor exotico — ao menos segue o tema em vez de ficar preso
+   numa cor fixa. Foi assim que um span com --v-muted sobrou em /para-escritorios. */
+:root, :root[data-theme="light"] {
+  --navy: var(--fg); --ink: var(--fg); --ink-strong: var(--fg);
+  --v-navy: var(--fg); --v-ink: var(--fg);
+  --muted: var(--fg-2); --ink-soft: var(--fg-2); --ink-muted: var(--fg-2);
+  --ink-faint: var(--fg-2); --v-muted: var(--fg-2);
+  --teal: var(--acao); --brand-green: var(--acao); --v-teal: var(--acao);
+  --series-color: var(--acao); --gold: var(--acao); --v-gold: var(--acao);
+  --v-line: var(--line); --hairline: var(--line); --hairline-strong: var(--line-strong);
+  --cream: var(--canvas); --v-cream: var(--canvas); --surface: var(--canvas);
+  --v-white: var(--canvas); --surface-soft: var(--card); --surface-sunk: var(--card);
+  --mint: var(--acao-fraco); --surface-mint: var(--acao-fraco); --v-teal-soft: var(--acao-fraco);
+  --dark: var(--inverso); --v-dark: var(--inverso); --brand-dark: var(--inverso);
+}
+
 /* Os apelidos de fonte do design-system antigo apontam para as novas. Sem
    isso, regras que usam var(--sans) continuam em Plus Jakarta. */
 :root, :root[data-theme="light"] {
@@ -333,6 +361,11 @@ table, th, td { border-color: var(--line); }
    clara com texto de acento por cima: 2,80 e reprova. */
 .quick-ticker { background: var(--card) !important; color: var(--fg) !important;
   border-color: var(--line) !important; }
+/* Link dentro de texto corrido. O gerador cobre os que tem classe; estes vem
+   de seletores como ".paper-page p" que definem so a cor do paragrafo, e o
+   link herdava a cor antiga de marca — 1,85 de contraste no tema escuro. */
+p a, li a, td a, dd a, figcaption a { color: var(--acao) !important; }
+p a:hover, li a:hover, td a:hover { color: var(--acao-inverso) !important; }
 """
 
 
