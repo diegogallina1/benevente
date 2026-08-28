@@ -202,6 +202,30 @@ details > summary, .annual-decision summary, .live-holdings summary { color: var
    dele, com mil pixels de altura. Nao delimitam nada que a pessoa precise ver. */
 .ladder-wrap, .ladder-wrap > * { border-left: 0 !important; border-right: 0 !important; }
 
+/* Painel branco sobre página branca.
+ *
+ * No desenho original a página e os painéis eram os dois brancos, e o que
+ * separava um do outro era a borda. O gerador, que classifica por luminância,
+ * mapeou os dois para --canvas, e enquanto --canvas foi branco ninguém notou.
+ *
+ * Quando a página virou menta e o cartão virou branco, esses painéis ficaram
+ * com a cor exata da página. Sem borda, que também tinha saído, o contêiner
+ * desapareceu e o conteúdo passou a flutuar solto. É a mesma lição de sempre:
+ * luminância não distingue "página" de "painel", só o DOM sabe qual é qual.
+ *
+ * A lista abaixo veio de medir a página renderizada. Estes contêm conteúdo,
+ * então são cartão, e o degrau de superfície faz o trabalho que a borda fazia. */
+.comparison-card, .wealth-panel, .chart-return-summary, .chart-add-details,
+.fixed-comparators, .radar-summary, .paper-metric, .version-step,
+.benchmark-panel, .comparison-foot, .quick-composition {
+  background: var(--card) !important;
+  border-radius: 14px !important;
+}
+/* Os que vivem dentro de um cartão não precisam de superfície própria: dois
+   brancos encostados viram um branco só, com uma emenda no meio. */
+.return-chart, .chart-sidepanel, .comparison-controls, .chart-tools,
+.comparison-card .chart-legend { background: transparent !important; }
+
 /* Fios em coisa que nao e card.
  *
  * Levantei no navegador toda borda visivel das seis paginas e separei em tres
