@@ -94,11 +94,12 @@ Cadência anual não significa ignorar o risco por doze meses: preço, concentra
 
 ### 3.6 Custos, imposto e execução
 
-O sistema modela três parcelas de custo, deduzidas do retorno bruto.
+Duas parcelas de custo são deduzidas do retorno bruto.
 
 - Taxas da B3 e corretagem por ordem.
 - Deslizamento por participação no volume, proporcional ao tamanho da ordem em relação ao volume médio diário do papel, de modo que uma ordem grande em papel ilíquido recebe custo maior.
-- Imposto de renda brasileiro, com 15% sobre ganho realizado em renda variável e 17,5% sobre renda fixa na faixa de 361 a 720 dias, cobrado no ano em que a revisão seguinte efetivamente realiza o ganho, e com liquidação integral assumida no último ano avaliado. Essa é a hipótese terminal conservadora, em vez de um diferimento indefinido que embelezaria a série.
+
+O imposto de renda é modelado à parte e **não** é deduzido: toda taxa anualizada neste artigo é bruta de imposto. O modelo aplica 15% sobre ganho realizado em renda variável e 17,5% sobre renda fixa de 361 a 720 dias, no ano da revisão que realiza o ganho, com liquidação integral no último ano — hipótese terminal conservadora, não diferimento indefinido.
 
 O sistema recusa, por regra, ordens que ultrapassem 5% do volume médio diário do papel; a ordem não é enviada.
 
