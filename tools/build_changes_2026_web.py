@@ -23,6 +23,8 @@ ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
 DESTINO = WEB / "mudancas_2026.json"
 PERFIS = ("conservador", "equilibrado", "arrojado")
+#: A perna global não é tocada pela camada: o sinal é doméstico.
+GLOBAL = "IVVB11"
 
 
 def _motivo(ponto: dict, cfg: dict) -> str:
@@ -55,6 +57,16 @@ def build() -> dict:
         cfg = livro["overlay"]["config"]
         serie = json.loads((WEB / f"live_performance_{perfil}.json").read_text(encoding="utf-8"))["series"]
 
+        # O peso de cada ação hoje. A camada não escolhe ativo: ela multiplica a
+        # perna de ações inteira por um fator, igual para todas, e o que sai vai
+        # para o CDI. A perna global fica parada, porque o sinal é doméstico.
+        acoes = [h for h in livro["holdings"] if h["ticker"] != GLOBAL]
+        globais = [h for h in livro["holdings"] if h["ticker"] == GLOBAL]
+        br_janeiro = sum(h["weight"] for h in acoes)
+        peso_global = sum(h["weight"] for h in globais)
+        br_hoje = serie[-1]["benevente2_equity_weight"]
+        fator = br_hoje / br_janeiro if br_janeiro else 1.0
+
         mudancas = []
         for i, ponto in enumerate(serie):
             if i == 0 or ponto["risk_state"] == serie[i - 1]["risk_state"]:
@@ -67,6 +79,12 @@ def build() -> dict:
                 "to_state": ponto["risk_state"],
                 "from_equity": round(anterior["benevente2_equity_weight"], 4),
                 "to_equity": round(ponto["benevente2_equity_weight"], 4),
+                # O que sai das ações vai para o CDI, e é isso que a pessoa vê
+                # no extrato. O fator é o mesmo para todas as ações.
+                "factor": round(ponto["benevente2_equity_weight"] / br_janeiro, 4)
+                          if br_janeiro else None,
+                "from_cdi": round(1.0 - anterior["benevente2_equity_weight"] - peso_global, 4),
+                "to_cdi": round(1.0 - ponto["benevente2_equity_weight"] - peso_global, 4),
                 # O sinal é do fechamento anterior: é ele que dispara a ordem.
                 "why": _motivo(anterior, cfg),
             })
@@ -74,6 +92,23 @@ def build() -> dict:
             "through": serie[-1]["date"],
             "thresholds": cfg,
             "changes": mudancas,
+            # O estado de hoje, calculado aqui e não na página: é aritmética de
+            # política, e política não se recalcula em três lugares diferentes.
+            "now": {
+                "date": serie[-1]["date"],
+                "risk_state": serie[-1]["risk_state"],
+                "factor": round(fator, 4),
+                "equity_br": round(br_hoje, 4),
+                "equity_br_january": round(br_janeiro, 4),
+                "global": round(peso_global, 4),
+                # O CDI é o resto: é ele que recebe o que sai das ações.
+                "cdi": round(1.0 - br_hoje - peso_global, 4),
+                "cdi_january": round(livro["cdi_weight"], 4),
+                "holdings": [{"ticker": h["ticker"],
+                              "january": round(h["weight"], 4),
+                              "now": round(h["weight"] * (1.0 if h["ticker"] == GLOBAL else fator), 4)}
+                             for h in livro["holdings"]],
+            },
         }
     DESTINO.write_text(json.dumps(documento, ensure_ascii=False, separators=(",", ":")) + "\n",
                        encoding="utf-8")
@@ -85,9 +120,14 @@ def main() -> None:
     print(f"{DESTINO.relative_to(ROOT)}: {DESTINO.stat().st_size} bytes")
     for perfil, r in d["profiles"].items():
         print(f"  {perfil:<13} {len(r['changes'])} mudança(s) até {r['through']}")
+        n = r["now"]
+        print(f"     hoje: ações {n['equity_br'] * 100:.1f}% · global "
+              f"{n['global'] * 100:.1f}% · CDI {n['cdi'] * 100:.1f}% "
+              f"(fator {n['factor']:.2f} sobre janeiro)")
         for m in r["changes"]:
             print(f"     {m['date']}: ações {m['from_equity'] * 100:.1f}% para "
-                  f"{m['to_equity'] * 100:.1f}% · {m['why']}")
+                  f"{m['to_equity'] * 100:.1f}%, CDI {m['from_cdi'] * 100:.1f}% para "
+                  f"{m['to_cdi'] * 100:.1f}% · {m['why']}")
 
 
 if __name__ == "__main__":

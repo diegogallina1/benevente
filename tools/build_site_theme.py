@@ -537,6 +537,9 @@ body > #bolinha { z-index: 0; }
   color: var(--fg-2); font-weight: 500; text-align: left; padding: 0 0 6px; }
 .c26-tab td { padding: 5px 0; border-top: 1px solid var(--line); }
 .c26-tab .num { text-align: right; font-family: var(--mono); }
+/* A coluna de janeiro e referencia, nao o numero que a pessoa foi buscar. */
+.c26-tab .c26-antes { color: var(--fg-2); }
+.c26-tab .c26-total td { border-top: 1px solid var(--line-strong); font-weight: 500; }
 .c26-motivo { font-size: 12px; line-height: 1.5; color: var(--fg-2); margin: 0 0 6px; }
 .c26-mudancas { margin: 0; padding-left: 16px; font-size: 12px; line-height: 1.55;
   color: var(--fg-2); display: flex; flex-direction: column; gap: 8px; }

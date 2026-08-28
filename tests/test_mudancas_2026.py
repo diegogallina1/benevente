@@ -68,3 +68,43 @@ def test_a_pagina_le_o_arquivo_resumido_e_nao_a_serie():
     js = (WEB / "carteira2026.js").read_text(encoding="utf-8")
     assert "mudancas_2026.json" in js
     assert "live_performance_" not in js
+
+
+@pytest.mark.parametrize("perfil", PERFIS)
+def test_o_estado_de_hoje_fecha_em_cem_por_cento(resumo, perfil):
+    """Ações mais global mais CDI é a carteira inteira. Se não fechar, algum dos
+    três está sendo publicado errado, e o erro apareceria como um peso que a
+    pessoa não consegue conciliar com o extrato."""
+    n = resumo["profiles"][perfil]["now"]
+    assert abs(n["equity_br"] + n["global"] + n["cdi"] - 1.0) < 1e-3, perfil
+    assert abs(n["equity_br_january"] + n["global"] + n["cdi_january"] - 1.0) < 1e-3, perfil
+
+
+@pytest.mark.parametrize("perfil", PERFIS)
+def test_a_camada_multiplica_todas_as_acoes_pelo_mesmo_fator(resumo, perfil):
+    """A camada não escolhe ativo: ela reduz a perna de ações inteira na mesma
+    proporção. Um fator por ativo significaria seleção durante o ano, que é
+    exatamente o que a política declara não fazer."""
+    n = resumo["profiles"][perfil]["now"]
+    acoes = [h for h in n["holdings"] if h["ticker"] != "IVVB11"]
+    for h in acoes:
+        assert abs(h["now"] - h["january"] * n["factor"]) < 5e-4, (perfil, h["ticker"])
+    globais = [h for h in n["holdings"] if h["ticker"] == "IVVB11"]
+    for h in globais:
+        assert h["now"] == h["january"], "a perna global não é tocada pelo sinal doméstico"
+
+
+@pytest.mark.parametrize("perfil", PERFIS)
+def test_o_que_sai_das_acoes_entra_no_cdi(resumo, perfil):
+    for m in resumo["profiles"][perfil]["changes"]:
+        saiu = m["from_equity"] - m["to_equity"]
+        entrou = m["to_cdi"] - m["from_cdi"]
+        assert abs(saiu - entrou) < 1e-3, (perfil, m["date"])
+
+
+def test_a_pagina_mostra_o_peso_de_hoje_e_nao_so_o_de_janeiro():
+    """O defeito que este teste impede: a tabela mostrar a decisão de janeiro
+    com cara de posição atual, depois que a camada já mexeu nos pesos."""
+    js = (WEB / "carteira2026.js").read_text(encoding="utf-8")
+    assert "Composição de hoje" in js
+    assert "agora.cdi" in js and "h.now" in js

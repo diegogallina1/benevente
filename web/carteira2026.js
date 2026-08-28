@@ -18,37 +18,84 @@
   //
   // O motivo da seleção é o mesmo para todas as ações, então aparece uma vez
   // embaixo da tabela em vez de repetido em treze linhas.
+  // A linha de divisão do cartão. Ela mostrava sempre os pesos de janeiro, e
+  // depois que a camada de proteção dispara isso deixa de ser a carteira atual.
+  const divisao = (perfil, livro, mudancas) => {
+    const m = mudancas && mudancas.profiles ? mudancas.profiles[perfil] : null;
+    if (!m || !m.now) {
+      const br = livro.holdings.filter(h => h.ticker !== "IVVB11")
+        .reduce((s, h) => s + h.weight, 0);
+      const gl = livro.holdings.filter(h => h.ticker === "IVVB11")
+        .reduce((s, h) => s + h.weight, 0);
+      return `<p class="carteira-2026-split">Em janeiro: ações ${pct(br, 0)} ·
+        S&amp;P 500 ${pct(gl, 0)} · CDI ${pct(livro.cdi_weight, 0)}</p>`;
+    }
+    const n = m.now;
+    const rotulo = n.factor === 1 ? "Hoje, como em janeiro" : "Hoje";
+    return `<p class="carteira-2026-split">${rotulo}: ações ${pct(n.equity_br, 0)} ·
+      S&amp;P 500 ${pct(n.global, 0)} · CDI ${pct(n.cdi, 0)}</p>`;
+  };
+
   const detalhe = (perfil, livro, mudancas) => {
-    const linhas = livro.holdings.map(h => `<tr>
-      <td>${escapeHtml(h.ticker)}</td>
-      <td class="num">${pct(h.weight, 1)}</td>
-      <td class="num">${h.score == null ? "—" : h.score.toFixed(2)}</td></tr>`).join("");
-
-    const motivos = [...new Set(livro.holdings.map(h => h.why))]
-      .map(m => `<p class="c26-motivo">${escapeHtml(m)}</p>`).join("");
-
     const m = mudancas && mudancas.profiles ? mudancas.profiles[perfil] : null;
     const ano = mudancas ? mudancas.year : "";
+    const agora = m ? m.now : null;
+    // Sem o arquivo de mudanças não dá para dizer o peso de hoje. Nesse caso a
+    // tabela mostra só janeiro e diz que é janeiro, em vez de deixar o leitor
+    // supor que está vendo a posição atual.
+    const mudou = agora ? agora.factor !== 1 : false;
+    const hoje = agora
+      ? Object.fromEntries(agora.holdings.map(h => [h.ticker, h.now]))
+      : null;
+
+    const linhas = livro.holdings.map(h => `<tr>
+      <td>${escapeHtml(h.ticker)}</td>
+      ${mudou ? `<td class="num c26-antes">${pct(h.weight, 1)}</td>` : ""}
+      <td class="num">${pct(hoje ? hoje[h.ticker] : h.weight, 1)}</td>
+      <td class="num">${h.score == null ? "—" : h.score.toFixed(2)}</td></tr>`).join("");
+
+    const rodape = agora ? `<tr class="c26-total">
+      <td>CDI</td>
+      ${mudou ? `<td class="num c26-antes">${pct(agora.cdi_january, 1)}</td>` : ""}
+      <td class="num">${pct(agora.cdi, 1)}</td><td></td></tr>` : "";
+
+    const cabecalho = mudou
+      ? `<tr><th>Ativo</th><th class="num">Janeiro</th><th class="num">Hoje</th>
+         <th class="num">Nota</th></tr>`
+      : `<tr><th>Ativo</th><th class="num">Peso</th><th class="num">Nota</th></tr>`;
+
+    const motivos = [...new Set(livro.holdings.map(h => h.why))]
+      .map(x => `<p class="c26-motivo">${escapeHtml(x)}</p>`).join("");
+
     let historico;
     if (!m) {
-      historico = `<p class="c26-motivo">O histórico de mudanças não pôde ser carregado.</p>`;
+      historico = `<p class="c26-motivo">O histórico de mudanças não pôde ser carregado,
+        então os pesos acima são os de janeiro.</p>`;
     } else if (!m.changes.length) {
       historico = `<p class="c26-motivo">Nada mudou desde a decisão de janeiro. A carteira
         não é rebalanceada durante o ano, e a camada de proteção não foi acionada.</p>`;
     } else {
       historico = `<ul class="c26-mudancas">${m.changes.map(c => `<li>
-        <b>${dateBr(c.date)}</b> · ações de ${pct(c.from_equity, 0)} para ${pct(c.to_equity, 0)}.
-        ${escapeHtml(c.why[0].toUpperCase() + c.why.slice(1))}, no fechamento de
-        ${dateBr(c.observed_on)}. A ordem entra no pregão seguinte, que é quando dá
-        para negociar o que o fechamento mostrou.</li>`).join("")}</ul>`;
+        <b>${dateBr(c.date)}</b> · ${escapeHtml(c.why)}, no fechamento de
+        ${dateBr(c.observed_on)}. Cada ação passou a valer
+        <b>${(c.factor * 100).toFixed(0)}%</b> do peso de janeiro, a mesma proporção para
+        todas: as ações caíram de ${pct(c.from_equity, 1)} para ${pct(c.to_equity, 1)} do
+        total e o CDI subiu de ${pct(c.from_cdi, 1)} para ${pct(c.to_cdi, 1)}. A perna
+        global não se mexeu, porque o sinal é do mercado brasileiro. A ordem entra no
+        pregão seguinte, que é quando dá para negociar o que o fechamento mostrou.</li>`)
+        .join("")}</ul>`;
     }
+
+    const titulo = mudou
+      ? `Composição de hoje, ao lado da de janeiro`
+      : `Composição`;
 
     return `<details class="c26-det">
       <summary>Abrir a carteira</summary>
       <div class="c26-corpo">
-        <p class="c26-titulo">Composição</p>
-        <table class="c26-tab"><thead><tr><th>Ativo</th><th class="num">Peso</th>
-          <th class="num">Nota</th></tr></thead><tbody>${linhas}</tbody></table>
+        <p class="c26-titulo">${titulo}</p>
+        <table class="c26-tab"><thead>${cabecalho}</thead>
+          <tbody>${linhas}${rodape}</tbody></table>
         <p class="c26-titulo">Por que estes</p>
         ${motivos}
         <p class="c26-titulo">O que mudou em ${ano}</p>
@@ -85,11 +132,11 @@
       const retorno = l.portfolio_return;
       const nomes = acoes.map(h => escapeHtml(h.ticker)).join(" · ");
       return `<article class="carteira-2026-card">
-        <header><b>${LABELS[p]}</b><small>${pct(b.declared.maximum_equity_weight, 0)} em ações · ${acoes.length} emissores</small></header>
+        <header><b>${LABELS[p]}</b><small>teto de ${pct(b.declared.maximum_equity_weight, 0)} em ações · ${acoes.length} emissores</small></header>
         <strong class="${retorno >= 0 ? "up" : "down"}">${retorno >= 0 ? "+" : ""}${pct(retorno)}</strong>
         <span class="carteira-2026-since">desde ${dateBr(b.decision_date)} · até ${dateBr(l.through)}</span>
         <p class="carteira-2026-names">${nomes}</p>
-        <p class="carteira-2026-split">Ações ${pct(acoes.reduce((t, h) => t + h.weight, 0), 0)} · S&amp;P 500 ${pct(b.holdings.filter(h => h.ticker === "IVVB11").reduce((t, h) => t + h.weight, 0), 0)} · CDI ${pct(b.cdi_weight, 0)}</p>
+        ${divisao(p, b, mudancas)}
         ${detalhe(p, b, mudancas)}
       </article>`;
     }).join("")}</div>`;
