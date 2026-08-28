@@ -544,6 +544,14 @@ body > #bolinha { z-index: 0; }
 .c26-mudancas { margin: 0; padding-left: 16px; font-size: 12px; line-height: 1.55;
   color: var(--fg-2); display: flex; flex-direction: column; gap: 8px; }
 .c26-mudancas b { color: var(--fg); }
+.c26-evento { display: flex; flex-direction: column; gap: 10px; }
+.c26-evento + .c26-evento { margin-top: 18px; }
+.c26-evento > p { font-size: 12px; line-height: 1.55; color: var(--fg-2); margin: 0; }
+.c26-evento > p b { color: var(--fg); }
+/* Variacao nao depende de cor para ser lida: o sinal vem antes do numero, e o
+   vermelho e o verde tem o mesmo cinza para quem nao distingue os dois. */
+.c26-baixa { color: var(--neg); }
+.c26-alta { color: var(--acao); }
 
 /* A pastilha "entrou" e preenchida, entao leva o verde de preenchimento e nao
    o de texto: com o escuro por baixo e o rotulo escuro por cima dava 3,70. */

@@ -108,3 +108,25 @@ def test_a_pagina_mostra_o_peso_de_hoje_e_nao_so_o_de_janeiro():
     js = (WEB / "carteira2026.js").read_text(encoding="utf-8")
     assert "Composição de hoje" in js
     assert "agora.cdi" in js and "h.now" in js
+
+
+@pytest.mark.parametrize("perfil", PERFIS)
+def test_cada_mudanca_abre_ativo_por_ativo(resumo, perfil):
+    """"As ações caíram de 28% para 15%" não diz quanto saiu de cada posição,
+    que é o número conferido contra a corretora."""
+    livro = json.loads((WEB / f"current_decision_2026_{perfil}.json").read_text(encoding="utf-8"))
+    esperados = {h["ticker"] for h in livro["holdings"]} | {"CDI"}
+    for m in resumo["profiles"][perfil]["changes"]:
+        assert {h["ticker"] for h in m["holdings"]} == esperados, (perfil, m["date"])
+        # A carteira inteira, antes e depois, fecha em cem por cento.
+        for lado in ("before", "after"):
+            assert abs(sum(h[lado] for h in m["holdings"]) - 1.0) < 2e-3, (perfil, lado)
+        por_ativo = {h["ticker"]: h for h in m["holdings"]}
+        assert por_ativo["IVVB11"]["before"] == por_ativo["IVVB11"]["after"]
+        assert por_ativo["CDI"]["after"] > por_ativo["CDI"]["before"], "o que sai vai para o CDI"
+
+
+def test_a_pagina_mostra_a_variacao_por_ativo():
+    js = (WEB / "carteira2026.js").read_text(encoding="utf-8")
+    assert "c26-evento" in js and "Variação" in js
+    assert "sem mudança" in js, "posição intocada precisa dizer isso, não mostrar zero"

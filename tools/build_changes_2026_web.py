@@ -50,6 +50,30 @@ def _motivo(ponto: dict, cfg: dict) -> str:
     return " e ".join(razoes)
 
 
+def _por_ativo(holdings: list[dict], peso_global: float,
+               antes: float, depois: float) -> list[dict]:
+    """O peso de cada posição antes e depois de uma mudança.
+
+    A camada multiplica a perna de ações inteira pelo mesmo fator, então o peso
+    de cada ação é o de janeiro vezes o fator do momento. A perna global não é
+    tocada, e o CDI é o resto: ele entra na lista como linha para que a soma
+    feche em cem por cento na tela, sem a pessoa ter de fazer a conta.
+    """
+    linhas = []
+    for h in holdings:
+        f_antes = 1.0 if h["ticker"] == GLOBAL else antes
+        f_depois = 1.0 if h["ticker"] == GLOBAL else depois
+        linhas.append({"ticker": h["ticker"],
+                       "before": round(h["weight"] * f_antes, 4),
+                       "after": round(h["weight"] * f_depois, 4)})
+    br_antes = sum(l["before"] for l in linhas if l["ticker"] != GLOBAL)
+    br_depois = sum(l["after"] for l in linhas if l["ticker"] != GLOBAL)
+    linhas.append({"ticker": "CDI",
+                   "before": round(1.0 - br_antes - peso_global, 4),
+                   "after": round(1.0 - br_depois - peso_global, 4)})
+    return linhas
+
+
 def build() -> dict:
     documento = {"year": 2026, "profiles": {}}
     for perfil in PERFIS:
@@ -83,8 +107,17 @@ def build() -> dict:
                 # no extrato. O fator é o mesmo para todas as ações.
                 "factor": round(ponto["benevente2_equity_weight"] / br_janeiro, 4)
                           if br_janeiro else None,
+                "from_factor": round(anterior["benevente2_equity_weight"] / br_janeiro, 4)
+                               if br_janeiro else None,
                 "from_cdi": round(1.0 - anterior["benevente2_equity_weight"] - peso_global, 4),
                 "to_cdi": round(1.0 - ponto["benevente2_equity_weight"] - peso_global, 4),
+                # Ativo a ativo, porque "as ações caíram de 28% para 15%" não diz
+                # quanto saiu de cada posição, que é o número que a pessoa
+                # confere contra a corretora.
+                "holdings": _por_ativo(
+                    livro["holdings"], peso_global,
+                    anterior["benevente2_equity_weight"] / br_janeiro if br_janeiro else 1.0,
+                    ponto["benevente2_equity_weight"] / br_janeiro if br_janeiro else 1.0),
                 # O sinal é do fechamento anterior: é ele que dispara a ordem.
                 "why": _motivo(anterior, cfg),
             })

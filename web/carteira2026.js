@@ -75,15 +75,26 @@
       historico = `<p class="c26-motivo">Nada mudou desde a decisão de janeiro. A carteira
         não é rebalanceada durante o ano, e a camada de proteção não foi acionada.</p>`;
     } else {
-      historico = `<ul class="c26-mudancas">${m.changes.map(c => `<li>
-        <b>${dateBr(c.date)}</b> · ${escapeHtml(c.why)}, no fechamento de
+      historico = m.changes.map(c => `<div class="c26-evento">
+        <p><b>${dateBr(c.date)}</b> · ${escapeHtml(c.why)}, no fechamento de
         ${dateBr(c.observed_on)}. Cada ação passou a valer
         <b>${(c.factor * 100).toFixed(0)}%</b> do peso de janeiro, a mesma proporção para
-        todas: as ações caíram de ${pct(c.from_equity, 1)} para ${pct(c.to_equity, 1)} do
-        total e o CDI subiu de ${pct(c.from_cdi, 1)} para ${pct(c.to_cdi, 1)}. A perna
-        global não se mexeu, porque o sinal é do mercado brasileiro. A ordem entra no
-        pregão seguinte, que é quando dá para negociar o que o fechamento mostrou.</li>`)
-        .join("")}</ul>`;
+        todas. A perna global não se mexeu, porque o sinal é do mercado brasileiro. A
+        ordem entra no pregão seguinte, que é quando dá para negociar o que o fechamento
+        mostrou.</p>
+        ${c.holdings ? `<table class="c26-tab"><thead><tr><th>Ativo</th>
+          <th class="num">Antes</th><th class="num">Depois</th>
+          <th class="num">Variação</th></tr></thead><tbody>${c.holdings.map(h => {
+            const d = h.after - h.before;
+            const classe = h.ticker === "CDI" ? " c26-total" : "";
+            return `<tr class="${classe.trim()}"><td>${escapeHtml(h.ticker)}</td>
+              <td class="num c26-antes">${pct(h.before, 2)}</td>
+              <td class="num">${pct(h.after, 2)}</td>
+              <td class="num ${d < 0 ? "c26-baixa" : d > 0 ? "c26-alta" : ""}">${
+                Math.abs(d) < 5e-5 ? "sem mudança"
+                : (d > 0 ? "+" : "−") + pct(Math.abs(d), 2)}</td></tr>`;
+          }).join("")}</tbody></table>` : ""}
+      </div>`).join("");
     }
 
     const titulo = mudou
