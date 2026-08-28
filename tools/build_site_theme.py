@@ -503,14 +503,18 @@ th, td { border-left: 0 !important; border-right: 0 !important; }
    por cima de secao com fundo transparente. */
 #bolinha {
   position: fixed; top: 0; left: 0;
-  width: 150px; height: 150px; margin: -75px 0 0 -75px;
+  width: 100px; height: 100px; margin: -50px 0 0 -50px;
   border-radius: 50%;
-  background: radial-gradient(circle, var(--acao-vivo) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(13, 122, 82, .13) 0%, transparent 70%);
   opacity: 0; transition: opacity .35s ease;
   pointer-events: none; z-index: 0; will-change: transform;
-  mix-blend-mode: multiply;
 }
-:root[data-theme="dark"] #bolinha { mix-blend-mode: screen; }
+/* No escuro o verde precisa ser o claro, senao o halo some no fundo. A mistura
+   de camadas saiu: com o verde ja fraco no proprio valor, multiply so escurecia
+   o texto por baixo sem acrescentar nada. */
+:root[data-theme="dark"] #bolinha {
+  background: radial-gradient(circle, rgba(95, 211, 160, .15) 0%, transparent 70%);
+}
 body > * { position: relative; z-index: 1; }
 body > #bolinha { z-index: 0; }
 @media (hover: none), (prefers-reduced-motion: reduce) { #bolinha { display: none; } }
