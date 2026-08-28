@@ -28,10 +28,15 @@ Os papéis, porque nomear cor por aparência envelhece mal:
   desabilitado, e usá-lo em legenda reprova no contraste.
 * ``sobre-inverso``, ``acao-inverso`` — texto e acento **dentro** de painel
   invertido, que não seguem a mesma inversão do resto.
-* ``btn`` — fundo de ação com ``btn-fg`` por cima. É o verde da marca, e o par
-  foi escolhido por contraste: 5,35 no claro, 10,66 no escuro. O guia pede
-  botão branco; verde predominante foi pedido explicitamente, e pedido vence
-  guia — mas o par continua tendo de passar na medição.
+* ``btn`` — fundo de ação com ``btn-fg`` por cima. Leva um verde bem mais claro
+  que ``acao``, com rótulo escuro: 5.85 de contraste no claro, 10,66 no escuro.
+  Ele não clareia mais que isto porque precisa se separar da própria
+  página: em 3.20 contra ela, já está no limite do que um elemento
+  não-textual pode ter de contorno.
+  A razão é que ``acao`` não pode clarear. Verde como **texto** sobre fundo
+  claro trava perto de 5,0 de contraste, e clarear a menta não ajuda porque aí
+  quem passa a travar é a própria página. Então o que clareia é tudo o que não
+  é texto: botão, barra e halo. É onde está a área de verde que se enxerga.
 * ``acao-vivo`` — o verde de **preenchimento**, com ``acao-vivo-fg`` por cima.
   Existe porque ``acao`` precisa ser escuro o bastante para servir de texto
   sobre branco, e escuro demais para pintar barra: barra escura pesa mais que
@@ -55,10 +60,10 @@ CLARO = {
     # O verde da marca em duas intensidades: no claro ele precisa ser escuro o
     # bastante para servir de texto sobre branco (5,35 de contraste); o claro de
     # verdade fica reservado para o que vive dentro de painel escuro.
-    "acao": "#0d7a52", "acao-inverso": "#79e1ce", "acao-fraco": "#e4f4ec",
-    "acao-vivo": "#1f9a6e", "acao-vivo-fg": "#0a0a0a",
+    "acao": "#0d7a52", "acao-inverso": "#79e1ce", "acao-fraco": "#eaf7f1",
+    "acao-vivo": "#35bd87", "acao-vivo-fg": "#0a0a0a",
     "neg": "#c8322f", "neg-fraco": "#fdecec",
-    "btn": "#0d7a52", "btn-fg": "#ffffff",
+    "btn": "#2a9d7b", "btn-fg": "#0a0a0a",
 }
 ESCURO = {
     "canvas": "#0a0a0a", "card": "#101915", "elev": "#17231e", "inverso": "#17231e",

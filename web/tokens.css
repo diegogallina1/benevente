@@ -21,13 +21,13 @@
   --sobre-inverso: #ffffff;
   --acao: #0d7a52;
   --acao-inverso: #79e1ce;
-  --acao-fraco: #e4f4ec;
-  --acao-vivo: #1f9a6e;
+  --acao-fraco: #eaf7f1;
+  --acao-vivo: #35bd87;
   --acao-vivo-fg: #0a0a0a;
   --neg: #c8322f;
   --neg-fraco: #fdecec;
-  --btn: #0d7a52;
-  --btn-fg: #ffffff;
+  --btn: #2a9d7b;
+  --btn-fg: #0a0a0a;
 }
 :root[data-theme="dark"] {
   --canvas: #0a0a0a;

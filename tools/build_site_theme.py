@@ -505,7 +505,7 @@ th, td { border-left: 0 !important; border-right: 0 !important; }
   position: fixed; top: 0; left: 0;
   width: 100px; height: 100px; margin: -50px 0 0 -50px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(13, 122, 82, .13) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(53, 189, 135, .30) 0%, transparent 70%);
   opacity: 0; transition: opacity .35s ease;
   pointer-events: none; z-index: 0; will-change: transform;
 }
@@ -513,11 +513,39 @@ th, td { border-left: 0 !important; border-right: 0 !important; }
    de camadas saiu: com o verde ja fraco no proprio valor, multiply so escurecia
    o texto por baixo sem acrescentar nada. */
 :root[data-theme="dark"] #bolinha {
-  background: radial-gradient(circle, rgba(95, 211, 160, .15) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(95, 211, 160, .16) 0%, transparent 70%);
 }
 body > * { position: relative; z-index: 1; }
 body > #bolinha { z-index: 0; }
 @media (hover: none), (prefers-reduced-motion: reduce) { #bolinha { display: none; } }
+
+/* Abrir a carteira. O detalhe vive dentro do cartao, entao nao ganha superficie
+   propria: ele e separado do resumo pelo espaco e pelo peso do rotulo. */
+.c26-det { margin-top: 14px; }
+.c26-det > summary { cursor: pointer; font-family: var(--mono); font-size: 11px;
+  letter-spacing: .8px; text-transform: uppercase; color: var(--acao);
+  padding: 8px 0; list-style: none; }
+.c26-det > summary::-webkit-details-marker { display: none; }
+.c26-det > summary::after { content: " +"; }
+.c26-det[open] > summary::after { content: " –"; }
+.c26-corpo { display: flex; flex-direction: column; gap: 6px; padding-top: 6px; }
+.c26-titulo { font-family: var(--mono); font-size: 10px; letter-spacing: .8px;
+  text-transform: uppercase; color: var(--fg-2); margin: 12px 0 2px; }
+.c26-tab { width: 100%; border-collapse: collapse; font-size: 12px;
+  font-variant-numeric: tabular-nums; }
+.c26-tab th { font-size: 10px; text-transform: uppercase; letter-spacing: .5px;
+  color: var(--fg-2); font-weight: 500; text-align: left; padding: 0 0 6px; }
+.c26-tab td { padding: 5px 0; border-top: 1px solid var(--line); }
+.c26-tab .num { text-align: right; font-family: var(--mono); }
+.c26-motivo { font-size: 12px; line-height: 1.5; color: var(--fg-2); margin: 0 0 6px; }
+.c26-mudancas { margin: 0; padding-left: 16px; font-size: 12px; line-height: 1.55;
+  color: var(--fg-2); display: flex; flex-direction: column; gap: 8px; }
+.c26-mudancas b { color: var(--fg); }
+
+/* A pastilha "entrou" e preenchida, entao leva o verde de preenchimento e nao
+   o de texto: com o escuro por baixo e o rotulo escuro por cima dava 3,70. */
+.alpha-action.alpha-entered { background: var(--acao-vivo) !important;
+  color: var(--acao-vivo-fg) !important; }
 
 table, th, td { border-color: var(--line); }
 /* Paineis escuros cujo fundo o gerador nao alcanca — a cor vem de gradiente,
