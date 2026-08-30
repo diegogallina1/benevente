@@ -10,12 +10,49 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 FONTE = ROOT / "artifacts" / "forecast_calibration_v1" / "calibration.json"
 DESTINO = ROOT / "web" / "calibracao.json"
 
 CAMPOS = ("year", "p10", "p50", "p90", "realised", "inside")
+
+
+#: Abaixo deste peso em ações, o retorno do perfil é dominado pelo caixa.
+DOMINADO_POR_CAIXA = 0.20
+
+
+def nota_do_instrumento(perfil: str, r: dict) -> str:
+    """Por que a faixa erra tanto em perfil dominado por caixa.
+
+    A faixa é reamostrada dos retornos diários passados do próprio perfil, e
+    esses retornos carregam o nível de Selic que existia então. Num perfil que é
+    quase todo caixa, a incerteza que manda é a Selic futura, e reamostrar o
+    passado não a captura: entre 2018 e 2025 a Selic foi de dois dígitos a 2% e
+    voltou, e o realizado ficou fora da faixa dos dois lados, para baixo
+    enquanto ela caía e para cima enquanto subia.
+
+    Isso não é ruído amostral, é o instrumento fora do domínio dele. Ele foi
+    construído para perfil com ação suficiente para a variância da ação dominar.
+    """
+    from profile_ladder_v2 import LADDER_V2
+    teto = LADDER_V2.get(perfil, {}).get("maximum_equity_weight", 1.0)
+    if teto > DOMINADO_POR_CAIXA:
+        return ""
+    return (
+        f"A faixa deste perfil acertou {r['coverage']['inside']} de "
+        f"{r['coverage']['total']}, muito abaixo dos 80% nominais, e isso não é "
+        f"azar. Com {teto * 100:.0f}% em ações o retorno é quase todo caixa, e a "
+        f"faixa é reamostrada dos retornos passados, que carregam a Selic de "
+        f"então. A incerteza que manda aqui é a Selic futura, que este método não "
+        f"modela. Entre 2018 e 2025 ela foi de dois dígitos a 2% e voltou, e o "
+        f"realizado ficou fora da faixa dos dois lados. Para este perfil, a régua "
+        f"não mede: use-a nos perfis com ação suficiente para a variância da ação "
+        f"dominar."
+    )
 
 
 def build() -> dict:
@@ -35,6 +72,10 @@ def build() -> dict:
                 "nominal": r["coverage"]["nominal"],
                 "standard_error": r["coverage"]["standard_error"],
                 "median_bias_pp": r["median_bias_pp"],
+                # Quando a cobertura fica muito abaixo do nominal, publicar só o
+                # número deixa o leitor achar que foi azar. No caso conhecido não
+                # foi: o método não transfere para carteira dominada por caixa.
+                "instrument_note": nota_do_instrumento(perfil, r),
             } for perfil, r in bruto["profiles"].items()
         },
     }

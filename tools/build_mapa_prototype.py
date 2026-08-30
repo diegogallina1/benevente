@@ -13,6 +13,7 @@ import json
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from build_calibration_web import nota_do_instrumento  # noqa: E402
 from design_tokens import FONTES_LINK, css as tokens_css  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -549,7 +550,11 @@ footer a { color: var(--acao); }
 const DADOS = __DADOS__;
 const BRL = v => "R$ " + Math.round(v).toLocaleString("pt-BR");
 const PCT = (v, c = 1) => (v * 100).toFixed(c).replace(".", ",") + "%";
-const RANK = { conservador: 0, equilibrado: 1, arrojado: 2 };
+// A ordem da escada vem do payload, do mais apertado ao mais solto. Escrita
+// à mão ela ficou com três degraus: quando a escada ganhou o quarto, a
+// resposta que apertava para ele dava RANK indefinido, a comparação virava
+// falsa e o perfil caía silenciosamente no degrau de cima.
+const RANK = Object.fromEntries(Object.keys(DADOS.profiles).map((n, i) => [n, i]));
 const respostas = {};
 
 const $ = id => document.getElementById(id);
@@ -902,8 +907,10 @@ function regua(perfil) {
   // acaso, e é justamente o perfil que acertou tudo que precisa dizer isso.
   const ep = Math.round((c.cobertura.standard_error || 0) * 100);
   host.append(el("p", null,
-    "<b>Oito anos é pouco.</b> A margem de erro é de " + ep + " pontos: acertar 6 ou 8 " +
-    "não se distingue de sorte. Isto mede a régua, não promete resultado."));
+    c.nota
+      ? "<b>A régua não mede este perfil.</b> " + c.nota
+      : "<b>Oito anos é pouco.</b> A margem de erro é de " + ep + " pontos: acertar 6 ou 8 " +
+        "não se distingue de sorte. Isto mede a régua, não promete resultado."));
   host.append(grafico(c.anos));
   const chaves = el("div", "chaves",
     "<span><i style='background:var(--line-strong)'></i>faixa projetada em janeiro</span>" +
@@ -1428,7 +1435,11 @@ def main() -> None:
                                                      "realised", "inside")}
                               for dados in r["years"]],
                      "cobertura": r["coverage"],
-                     "vies_pp": r["median_bias_pp"]}
+                     "vies_pp": r["median_bias_pp"],
+                     # A mesma função do publicador do site: a explicação de
+                     # por que a régua não vale para um perfil não pode
+                     # existir em duas versões que divergem.
+                     "nota": nota_do_instrumento(perfil, r)}
             for perfil, r in calibracao["profiles"].items()
         },
         # O ano corrente. A faixa vem congelada de janeiro; o realizado, do

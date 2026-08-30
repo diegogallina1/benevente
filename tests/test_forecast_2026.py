@@ -105,3 +105,32 @@ def test_o_app_ancora_a_faixa_na_origem():
     for caminho in (ROOT / "docs" / "desenho_tela_mapa.html", ROOT / "web" / "forecast2026.js"):
         texto = caminho.read_text(encoding="utf-8")
         assert "sessions: 0, p10: 0, p50: 0, p90: 0" in texto, caminho.name
+
+
+def test_a_regua_declara_quando_nao_vale_para_o_perfil():
+    """Cobertura de 1 em 8 publicada sem explicação lê como azar amostral.
+
+    Não é. A faixa é reamostrada dos retornos passados do próprio perfil, e eles
+    carregam a Selic de então. Num perfil quase todo caixa, a incerteza que manda
+    é a Selic futura, que este método não modela: entre 2018 e 2025 ela foi de
+    dois dígitos a 2% e voltou, e o realizado saiu da faixa dos dois lados.
+    """
+    import sys
+    if str(ROOT / "tools") not in sys.path:
+        sys.path.insert(0, str(ROOT / "tools"))
+    from build_calibration_web import DOMINADO_POR_CAIXA, nota_do_instrumento
+    from profile_ladder_v2 import LADDER_V2
+
+    web = json.loads((ROOT / "web" / "calibracao.json").read_text(encoding="utf-8"))
+    for perfil, r in web["profiles"].items():
+        teto = LADDER_V2[perfil]["maximum_equity_weight"]
+        nota = r.get("instrument_note", "")
+        if teto <= DOMINADO_POR_CAIXA:
+            assert nota, f"{perfil} é dominado por caixa e não declara o limite da régua"
+            assert "não é azar" in nota, perfil
+        else:
+            assert not nota, f"{perfil} não é dominado por caixa e não deveria trazer a nota"
+
+    # A mesma explicação, nas duas telas: duas versões divergem em silêncio.
+    artefato = (ROOT / "docs" / "desenho_tela_mapa.html").read_text(encoding="utf-8")
+    assert "A régua não mede este perfil" in artefato
