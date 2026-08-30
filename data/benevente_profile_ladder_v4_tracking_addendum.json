@@ -1,0 +1,30 @@
+{
+  "addendum": "benevente_profile_ladder_v4_tracking_2026",
+  "registered_at": "2026-08-30",
+  "amends": "benevente_profile_ladder_v4",
+  "amends_sha256": "4d8fb114c92188239d456370550b173cab8fadbdd5f5a2ab1cfc1bd8648400ba",
+  "why_an_addendum": "A declaração da política foi congelada e o hash dela já está publicado. Reescrever o texto dela para caber uma decisão posterior desfaria a própria propriedade que ela existe para ter. Então ela fica como está, e o que mudou depois entra aqui, com data própria.",
+  "what_changed": "A declaração diz que o ultraconservador não carrega acompanhamento de 2026 porque não houve. Continua não havendo acompanhamento: o monitor diário nunca seguiu este degrau, porque ele não existia. O que passou a existir em 30/08/2026 é uma reconstrução da série de 2026, publicada ao lado das outras três e marcada como reconstruída.",
+  "reconstruction": {
+    "what_it_is": "A cesta do ultraconservador é a seleção congelada do conservador em 02/01/2026, com os pesos multiplicados pelo fator do degrau. A série de 2026 é essa cesta marcada a mercado pelos mesmos preços, pela mesma função que produz as séries dos outros três perfis, e com a mesma camada de proteção.",
+    "what_is_free_here": "Nada. A seleção vem de janeiro, o fator vem da regra do degrau e a camada vem do registro. Não há escolha nesta reconstrução que pudesse ter sido feita olhando o resultado de 2026.",
+    "what_it_still_is_not": "Não é evidência prospectiva. Uma série reconstruída depois do fato não prova que alguém teria segurado a posição durante a queda de maio: prova o que a regra teria mandado fazer. Os outros três perfis também não provam isso, mas pelo menos foram marcados a mercado enquanto o ano acontecia, sem ninguém saber o fim.",
+    "derived_on": "2026-08-30T13:38:13.367905-03:00",
+    "selection_decided_on": "2026-01-02",
+    "factor": 0.114286,
+    "through": "2026-08-27",
+    "portfolio_return": 0.088291492,
+    "record_sha256": "b9f603877e899c32d2eacfd426573dff683cf71b04671e3a79c6b33582e7923c"
+  },
+  "band": {
+    "what_changed": "O cone de 2026 foi desenhado em janeiro e não foi reaberto. Acrescentar um perfil nele moveria as faixas dos outros três, porque o gerador sorteia com um contador único e a ordem dos perfis decide os sorteios de todos. A faixa deste degrau ficou num arquivo separado, com gerador derivado do nome.",
+    "estimator": "caixa de doze meses mais bootstrap de blocos na perna de risco",
+    "why_this_estimator": "A reamostragem em blocos, que serve para os outros três, acerta uma vez em oito num perfil que é 96% caixa: os blocos carregam o nível de Selic que existia então. Está medido em research_forecast_calibration.",
+    "drawn_on": "2026-08-30",
+    "point_in_time": "só dados anteriores ao primeiro pregão de 2026",
+    "declared_before_year": false,
+    "why_it_matters": "As faixas dos outros três foram declaradas antes do primeiro pregão de 2026. Esta não foi: nenhum dado de 2026 entrou nela, mas ninguém a desenhou antes do ano. Por isso ela enquadra o resultado e não entra em contagem de cobertura, que continua sendo dos anos fechados de 2015 a 2025."
+  },
+  "asymmetry_that_remains": "Três perfis com série acompanhada e um com série reconstruída não são a mesma coisa, e a diferença viaja com o número em cada tela que o mostra.",
+  "addendum_sha256": "c4c14a3ac667e571f84175feba550e7eaa719267669d8816323fb9a7155ae62c"
+}

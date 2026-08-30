@@ -28,15 +28,21 @@ conversa, então a fila já nasce no formato que a entrega vai exigir.
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 import argparse
 import hashlib
 import json
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from politica import escada
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
 OUT = ROOT / "artifacts" / "notification_queue"
-PROFILES = ("conservador", "equilibrado", "arrojado")
-PERFIL_LABEL = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
+#: Os degraus vêm da política. Escritos à mão aqui, quem seguisse um degrau
+#: declarado depois nunca receberia aviso de mudança de carteira, e nada no
+#: programa reclamaria: ele simplesmente não olharia para esse perfil.
+PROFILES = tuple(escada())
+PERFIL_LABEL = {p: p.capitalize() for p in PROFILES}
 ESTADO_LABEL = {"normal": "normal", "alerta": "alerta", "severo": "severo"}
 
 #: Modelos, com os campos que a entrega vai preencher. O texto fica aqui em
@@ -56,6 +62,18 @@ TEMPLATES = {
                   "{emissores} emissores e {acoes} em ações. O dossiê completo está no "
                   "site. Nenhuma ordem foi transmitida — a decisão é sua."),
         "campos": ("perfil", "data", "emissores", "acoes"),
+    },
+    # Um degrau declarado depois de janeiro herda a seleção de janeiro, e o
+    # aviso não pode anunciar "a decisão de 02/01" para uma carteira que não
+    # existia naquele dia. As duas datas aparecem, e cada uma diz o que é.
+    "decisao_anual_derivada": {
+        "categoria": "utilitaria",
+        "texto": ("Benevente · {perfil}: a carteira está disponível, com {emissores} "
+                  "emissores e {acoes} em ações. A seleção é a de {data}; este perfil "
+                  "foi declarado em {declarado} e usa a mesma seleção com peso menor. "
+                  "O dossiê completo está no site. Nenhuma ordem foi transmitida — a "
+                  "decisão é sua."),
+        "campos": ("perfil", "data", "emissores", "acoes", "declarado"),
     },
     "radar_revisao": {
         "categoria": "utilitaria",
@@ -139,17 +157,23 @@ def annual_events(previous_keys: set[str]) -> list[tuple[str, str, dict, Path]]:
         if not path.exists():
             continue
         book = json.loads(path.read_text(encoding="utf-8"))
-        key = f"decisao:{profile}:{book['decision_date']}"
+        derivacao = book.get("derivation")
+        # derived_on é carimbo de tempo, e o resto do programa fala em datas. Sem
+        # cortar aqui, o aviso saía com o horário picado no meio da data.
+        declarado_em = derivacao["derived_on"][:10] if derivacao else None
+        marco = declarado_em or book["decision_date"]
+        key = f"decisao:{profile}:{marco}"
         if key in previous_keys:
             continue
         acoes = [h for h in book["holdings"] if h["ticker"] != "IVVB11"]
+        campos = {"perfil": PERFIL_LABEL[profile],
+                  "data": "/".join(reversed(book["decision_date"].split("-"))),
+                  "emissores": str(len(acoes)),
+                  "acoes": _pct(sum(h["weight"] for h in acoes))}
+        if derivacao:
+            campos["declarado"] = "/".join(reversed(declarado_em.split("-")))
         found.append((
-            "decisao_anual", key,
-            {"perfil": PERFIL_LABEL[profile],
-             "data": "/".join(reversed(book["decision_date"].split("-"))),
-             "emissores": str(len(acoes)),
-             "acoes": _pct(sum(h["weight"] for h in acoes))},
-            path))
+            "decisao_anual_derivada" if derivacao else "decisao_anual", key, campos, path))
     return found
 
 

@@ -5,26 +5,37 @@
   "approved_by": "Diego Gallina",
   "honesty": "A política é declarada e foi congelada antes desta execução, então aplicá-la a uma data passada não escolhe nada: orçamento, número de nomes, tetos e fatores já estavam assinados. A amostra confirmatória continua começando no primeiro pregão de 2027 — este livro é reconstrução, não validação prospectiva.",
   "profiles": {
+    "ultraconservador": {
+      "through": "2026-08-27",
+      "portfolio_return": 0.088291492,
+      "equity_weight": 0.04,
+      "issuers": 12,
+      "record_sha256": "b9f603877e899c32d2eacfd426573dff683cf71b04671e3a79c6b33582e7923c",
+      "reconstructed": true
+    },
     "conservador": {
       "through": "2026-08-27",
       "portfolio_return": 0.0633562369,
       "equity_weight": 0.35,
       "issuers": 12,
-      "record_sha256": "01b762efdfcc6db63f8be0f583f878ad172cfd2fec24a02e82411adaf41e3c0c"
+      "record_sha256": "01b762efdfcc6db63f8be0f583f878ad172cfd2fec24a02e82411adaf41e3c0c",
+      "reconstructed": false
     },
     "equilibrado": {
       "through": "2026-08-27",
       "portfolio_return": 0.055545014,
       "equity_weight": 0.55,
       "issuers": 8,
-      "record_sha256": "dfce09055f799ceba40f6736d2eb7ec5b2f8c0bf96038ee855c84350c19d7fb5"
+      "record_sha256": "dfce09055f799ceba40f6736d2eb7ec5b2f8c0bf96038ee855c84350c19d7fb5",
+      "reconstructed": false
     },
     "arrojado": {
       "through": "2026-08-27",
       "portfolio_return": 0.030735036,
       "equity_weight": 0.75,
       "issuers": 5,
-      "record_sha256": "eab99a7587d740453c4b380dc1a1bbef6a4b277e665a3f4c788e97958f2fb6e7"
+      "record_sha256": "eab99a7587d740453c4b380dc1a1bbef6a4b277e665a3f4c788e97958f2fb6e7",
+      "reconstructed": false
     }
   }
 }

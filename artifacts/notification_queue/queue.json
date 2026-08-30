@@ -26,6 +26,17 @@
         "acoes"
       ]
     },
+    "decisao_anual_derivada": {
+      "categoria": "utilitaria",
+      "texto": "Benevente · {perfil}: a carteira está disponível, com {emissores} emissores e {acoes} em ações. A seleção é a de {data}; este perfil foi declarado em {declarado} e usa a mesma seleção com peso menor. O dossiê completo está no site. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "campos": [
+        "perfil",
+        "data",
+        "emissores",
+        "acoes",
+        "declarado"
+      ]
+    },
     "radar_revisao": {
       "categoria": "utilitaria",
       "texto": "Benevente · radar: {quantidade} item(ns) sobre {tickers} marcado(s) para revisão humana em {data}. O radar não altera pesos e não participa do sinal de proteção.",
@@ -159,6 +170,105 @@
       "previous_record_sha256": "dd5e7c1678f24af4148f3369b1422900d00d7cf59cff148acb87ac6598908097",
       "state": "queued_dry_run",
       "record_sha256": "b804d04aad7d68b78ab2c604e067ee0c4feda905fb66d1521afee1a541c95744"
+    },
+    {
+      "key": "camada:ultraconservador:2026-05-14:1",
+      "template": "camada_mudou",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Ultraconservador",
+        "de": "normal",
+        "para": "alerta",
+        "data": "14/05/2026",
+        "exposicao_antes": "3,2%",
+        "exposicao_depois": "1,8%",
+        "motivo": "queda de alerta"
+      },
+      "preview": "Benevente · Ultraconservador: a camada de proteção passou de normal para alerta em 14/05/2026. Exposição em ações vai de 3,2% para 1,8% no próximo pregão. Motivo observado: queda de alerta. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "live_performance_ultraconservador.json",
+        "sha256": "75de948572e8c2ab0bdfa96f23226ce4d784381177113bf7ef983ee833e4829c"
+      },
+      "previous_record_sha256": "b804d04aad7d68b78ab2c604e067ee0c4feda905fb66d1521afee1a541c95744",
+      "state": "queued_dry_run",
+      "record_sha256": "38a998bbb07ebe5e41a8e7960df5ba247aaf039f0e440ff22cdc93091cfa0622"
+    },
+    {
+      "key": "decisao:ultraconservador:2026-01-02",
+      "template": "decisao_anual",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Ultraconservador",
+        "data": "02/01/2026",
+        "emissores": "12",
+        "acoes": "3,2%"
+      },
+      "preview": "Benevente · Ultraconservador: a decisão de 02/01/2026 está disponível, com 12 emissores e 3,2% em ações. O dossiê completo está no site. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "current_decision_2026_ultraconservador.json",
+        "sha256": "c1eab874f9555e42528ebb46262762b1ee1bffadcf479acca8a1966a8e0ac01d"
+      },
+      "previous_record_sha256": "38a998bbb07ebe5e41a8e7960df5ba247aaf039f0e440ff22cdc93091cfa0622",
+      "state": "queued_dry_run",
+      "record_sha256": "dfdeb20a2089d2751571d7f1ff0004532c8bc2c34593cc6bf1c3dacef3e1ea6d"
+    },
+    {
+      "key": "radar:2026-08-30:4",
+      "template": "radar_revisao",
+      "category": "utilitaria",
+      "variables": {
+        "quantidade": "4",
+        "tickers": "BBSE3, CMIN3, CSNA3",
+        "data": "30/08/2026"
+      },
+      "preview": "Benevente · radar: 4 item(ns) sobre BBSE3, CMIN3, CSNA3 marcado(s) para revisão humana em 30/08/2026. O radar não altera pesos e não participa do sinal de proteção.",
+      "source": {
+        "file": "event_radar.json",
+        "sha256": "112750c7cb8584ff7b21c1e2d83c54b933d5e103342a0bfa4556b744014fe096"
+      },
+      "previous_record_sha256": "dfdeb20a2089d2751571d7f1ff0004532c8bc2c34593cc6bf1c3dacef3e1ea6d",
+      "state": "queued_dry_run",
+      "record_sha256": "2c495f58c5a212f967f27b78d6cee25818ad49b1fe979ea9ac114677ace6d65c"
+    },
+    {
+      "key": "decisao:ultraconservador:2026-08-30T13:38:13.367905-03:00",
+      "template": "decisao_anual_derivada",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Ultraconservador",
+        "data": "02/01/2026",
+        "emissores": "12",
+        "acoes": "3,2%",
+        "declarado": "03:00/30T13:38:13.367905/08/2026"
+      },
+      "preview": "Benevente · Ultraconservador: a carteira está disponível, com 12 emissores e 3,2% em ações. A seleção é a de 02/01/2026; este perfil foi declarado em 03:00/30T13:38:13.367905/08/2026 e usa a mesma seleção com peso menor. O dossiê completo está no site. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "current_decision_2026_ultraconservador.json",
+        "sha256": "c1eab874f9555e42528ebb46262762b1ee1bffadcf479acca8a1966a8e0ac01d"
+      },
+      "previous_record_sha256": "2c495f58c5a212f967f27b78d6cee25818ad49b1fe979ea9ac114677ace6d65c",
+      "state": "queued_dry_run",
+      "record_sha256": "5ac6fc8a1636f616d01d2a79f32b61aeefb700b66fa21a2fb3675984a34facf5"
+    },
+    {
+      "key": "decisao:ultraconservador:2026-08-30",
+      "template": "decisao_anual_derivada",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Ultraconservador",
+        "data": "02/01/2026",
+        "emissores": "12",
+        "acoes": "3,2%",
+        "declarado": "30/08/2026"
+      },
+      "preview": "Benevente · Ultraconservador: a carteira está disponível, com 12 emissores e 3,2% em ações. A seleção é a de 02/01/2026; este perfil foi declarado em 30/08/2026 e usa a mesma seleção com peso menor. O dossiê completo está no site. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "current_decision_2026_ultraconservador.json",
+        "sha256": "c1eab874f9555e42528ebb46262762b1ee1bffadcf479acca8a1966a8e0ac01d"
+      },
+      "previous_record_sha256": "5ac6fc8a1636f616d01d2a79f32b61aeefb700b66fa21a2fb3675984a34facf5",
+      "state": "queued_dry_run",
+      "record_sha256": "d7d08403b1863306f67f73d1f75462a591fd9745956b4b5094256aa7e33891e3"
     }
   ]
 }

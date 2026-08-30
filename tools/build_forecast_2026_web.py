@@ -21,12 +21,18 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
+from politica import escada
 
 ROOT = Path(__file__).resolve().parents[1]
 CONE = ROOT / "artifacts" / "forecast_2026_cone_v1" / "cone.json"
+#: A faixa dos degraus declarados depois de janeiro, que não podia entrar
+#: no cone congelado sem mover as faixas dos outros. Ver
+#: research_forecast_2026_cone_tardio.py.
+CONE_TARDIO = ROOT / "artifacts" / "forecast_2026_cone_v1" / "cone_tardio.json"
 WEB = ROOT / "web"
 DESTINO = WEB / "forecast_2026.json"
-PERFIS = ("conservador", "equilibrado", "arrojado")
+#: Os degraus vêm da política. Ver tools/politica.py.
+PERFIS = escada()
 
 
 def _faixa_em(band: list[dict], sessoes: int) -> dict:
@@ -52,12 +58,20 @@ def _faixa_em(band: list[dict], sessoes: int) -> dict:
 
 def build() -> dict:
     cone = json.loads(CONE.read_text(encoding="utf-8"))
+    tardio = json.loads(CONE_TARDIO.read_text(encoding="utf-8"))
+    # As duas origens ficam juntas para o gráfico e separadas para quem lê: a
+    # faixa de janeiro foi declarada antes do ano, a tardia foi desenhada depois
+    # que o degrau existiu, com dados anteriores a 2026. Misturar as duas sem
+    # dizer qual é qual daria ao degrau novo um mérito que ele não tem.
+    faixas = {**cone["profiles"], **tardio["profiles"]}
     documento = {
         "status": cone["status"],
         "year": cone["year"],
         "question": cone["question"],
         "limitation": cone["limitation"],
         "method": cone["method"],
+        "late_band": {"method": tardio["method"], "limitation": tardio["limitation"],
+                      "profiles": sorted(tardio["profiles"])},
         "profiles": {},
     }
 
@@ -70,9 +84,11 @@ def build() -> dict:
                       "r": round(ponto["portfolio"] / base - 1.0, 6)}
                      for i, ponto in enumerate(serie)]
         agora = realizado[-1]
-        faixa = _faixa_em(cone["profiles"][perfil]["band"], agora["sessions"])
+        faixa = _faixa_em(faixas[perfil]["band"], agora["sessions"])
         documento["profiles"][perfil] = {
-            "band": cone["profiles"][perfil]["band"],
+            "band": faixas[perfil]["band"],
+            "band_drawn_on": faixas[perfil].get("drawn_on", cone.get("drawn_on", "2026-01-02")),
+            "band_declared_before_year": perfil in cone["profiles"],
             "realised": realizado,
             "now": {
                 "sessions": agora["sessions"],

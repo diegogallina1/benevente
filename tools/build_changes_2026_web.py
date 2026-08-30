@@ -18,11 +18,13 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
+from politica import escada
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
 DESTINO = WEB / "mudancas_2026.json"
-PERFIS = ("conservador", "equilibrado", "arrojado")
+#: Os degraus vêm da política. Ver tools/politica.py.
+PERFIS = escada()
 #: A perna global não é tocada pela camada: o sinal é doméstico.
 GLOBAL = "IVVB11"
 

@@ -30,7 +30,11 @@
     return;
   }
 
-  const ordem = ["conservador", "equilibrado", "arrojado"];
+  // A ordem vem do próprio artefato, que já sai da política do degrau mais
+  // apertado ao mais solto. Escrita à mão aqui ela tinha três nomes, e o
+  // "if (!r) return" logo abaixo fazia o quarto degrau sumir sem erro nenhum:
+  // a página carregava a calibração dele e não desenhava.
+  const ordem = Object.keys(dados.profiles);
   ordem.forEach(perfil => {
     const r = dados.profiles[perfil];
     if (!r) return;

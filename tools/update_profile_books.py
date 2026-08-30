@@ -1,11 +1,11 @@
-"""Acompanhamento diário dos três livros de 2026, um por perfil declarado.
+"""Acompanhamento diário dos livros de 2026, um por perfil declarado.
 
 O monitor publicava um livro só, herdado da configuração que a busca aninhada
 deixou viva antes de a política existir. Enquanto isso, o site mostrava onze
 anos reconstruídos nos três perfis — e 2026 era outra coisa, sem que nada
 avisasse o leitor.
 
-Este programa converte a decisão de janeiro de 2026 nos três perfis para o
+Este programa converte a decisão de janeiro de 2026 nos perfis para o
 formato que o monitor já entende e roda o acompanhamento para cada um. Não
 seleciona ativo, não altera peso e não chama modelo de linguagem: marca a
 mercado uma decisão já registrada.
@@ -31,13 +31,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from portfolio_risk import risk_profile_spec  # noqa: E402
+from politica import escada  # noqa: E402
 from update_live_performance import update  # noqa: E402
 BOOKS = ROOT / "artifacts" / "profile_books_2026" / "profile_books_2026.json"
 WEB = ROOT / "web"
 GLOBAL_TICKER = "IVVB11"
-PROFILES = ("conservador", "equilibrado", "arrojado")
-
-
 def overlay_for(profile: str, registration: dict) -> tuple[dict, list[float]]:
     """Gatilhos e ação da camada, lidos do registro congelado."""
     spec = risk_profile_spec(profile)
@@ -97,22 +95,45 @@ def main() -> None:
                "registration_sha256": source["registration_sha256"],
                "approved_by": source["approved_by"], "honesty": source["honesty"],
                "profiles": {}}
-    for profile in PROFILES:
-        document = decision_document(source["books"][profile], source)
+    for profile in escada():
         decision_path = WEB / f"current_decision_2026_{profile}.json"
-        decision_path.write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n",
-                                 encoding="utf-8")
+        if profile in source["books"]:
+            document = decision_document(source["books"][profile], source)
+            decision_path.write_text(json.dumps(document, ensure_ascii=False, indent=2) + "\n",
+                                     encoding="utf-8")
+            emissores = len(source["books"][profile]["positions"])
+        else:
+            # Um degrau declarado depois de janeiro não tem livro congelado em
+            # janeiro, e não pode ganhar um agora: o livro dele é derivado do
+            # conservador, e quem deriva é o gerador do degrau. Aqui só se lê, e
+            # só se o arquivo disser de onde veio. Sem essa marca ele ficaria
+            # indistinguível de uma decisão tomada na época, que é justamente a
+            # confusão que este projeto existe para não cometer.
+            document = json.loads(decision_path.read_text(encoding="utf-8"))
+            if "derivation" not in document:
+                raise SystemExit(
+                    f"{profile}: sem livro em janeiro e sem procedência declarada em "
+                    f"{decision_path.name}. Rode tools/build_ultraconservador_book.py.")
+            emissores = sum(1 for h in document["holdings"] if h["ticker"] != GLOBAL_TICKER)
         live = update(decision_path, WEB / f"live_performance_{profile}.json",
                       args.as_of, args.force)
         summary["profiles"][profile] = {
             "through": live["through"],
             "portfolio_return": live["summary"]["portfolio_return"],
             "equity_weight": document["declared"]["maximum_equity_weight"],
-            "issuers": len(source["books"][profile]["positions"]),
+            "issuers": emissores,
             "record_sha256": live["record_sha256"],
+            # Os três primeiros foram marcados a mercado dia a dia enquanto o ano
+            # acontecia. O quarto foi reconstruído de uma vez, depois. Mesma
+            # seleção, mesmos preços, mesma função: procedência diferente, e ela
+            # viaja junto do número em vez de ficar só no texto ao lado.
+            "reconstructed": profile not in source["books"],
         }
-        print(f"{profile:<12} até {live['through']} · "
-              f"{live['summary']['portfolio_return']:+.2%} · registro {live['record_sha256'][:12]}")
+        marca = "" if profile in source["books"] else " · reconstruído"
+        print(f"{profile:<17} até {live['through']} · "
+              f"{live['summary']['portfolio_return']:+.2%} · "
+              f"registro {live['record_sha256'][:12]}{marca}")
+
 
     (WEB / "live_profiles_2026.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

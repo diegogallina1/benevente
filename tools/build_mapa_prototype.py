@@ -24,7 +24,6 @@ ACOMPANHAMENTO = ROOT / "web" / "forecast_2026.json"
 MUDANCAS = ROOT / "web" / "mudancas_2026.json"
 OUT = ROOT / "docs" / "desenho_tela_mapa.html"
 
-PERFIL_LABEL = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
 
 HTML = r"""<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -523,7 +522,7 @@ footer a { color: var(--acao); }
 
 <section id="acompanhar-sec" class="hidden">
   <h2>Acompanhar</h2>
-  <p class="lede">O ano contra a faixa projetada em janeiro. A faixa não se mexe.</p>
+  <p class="lede">O ano contra a faixa projetada para ele. A faixa não se mexe.</p>
   <div class="painel">
     <p class="label" id="ac-quando"></p>
     <div class="big num" id="ac-numero"></div>
@@ -1091,12 +1090,16 @@ function acompanhar(perfil) {
     " · até " + n.date.split("-").reverse().join("/");
   $("ac-numero").textContent = PCT(n.realised);
   $("ac-numero").className = "big num" + (n.realised < 0 ? " neg" : "");
-  $("ac-frase").innerHTML = "Para este ponto do ano, a faixa projetada em janeiro vai de <b>" +
+  const quando = r.faixa_de_janeiro ? "projetada em janeiro"
+    : "desenhada em " + r.faixa_desenhada.split("-").reverse().join("/") + ", com dados anteriores a " + ac.ano;
+  $("ac-frase").innerHTML = "Para este ponto do ano, a faixa " + quando + " vai de <b>" +
     PCT(n.p10) + "</b> a <b>" + PCT(n.p90) + "</b>. O resultado está <b>" +
     (n.inside ? "dentro" : "fora") + "</b> dela.";
   $("ac-grafico").innerHTML = cone(r.faixa, r.realizado);
-  $("ac-legenda").textContent = "Área: o projetado em janeiro. Linha: o que aconteceu.";
-  $("ac-limite").innerHTML = "<p>" + ac.limitacao + "</p>";
+  $("ac-legenda").textContent = r.faixa_de_janeiro
+    ? "Área: o projetado em janeiro. Linha: o que aconteceu."
+    : "Área: o projetado para o ano. Linha: o que aconteceu. Esta carteira foi declarada com o ano em curso, e a série dela é reconstruída.";
+  $("ac-limite").innerHTML = "<p>" + (r.faixa_de_janeiro ? ac.limitacao : ac.limitacao_tardia) + "</p>";
 }
 
 function cone(faixaBruta, realizado) {
@@ -1120,7 +1123,7 @@ function cone(faixaBruta, realizado) {
   const fim = realizado[realizado.length - 1];
 
   return "<svg viewBox='0 0 " + W + " " + H + "' role='img' aria-label='" +
-    "A faixa projetada em janeiro e o retorno acumulado até agora, por pregão decorrido.'>" +
+    "A faixa projetada para o ano e o retorno acumulado até agora, por pregão decorrido.'>" +
     "<polygon points='" + area + "' fill='var(--acao-fraco)'/>" +
     "<polyline points='" + linha + "' fill='none' stroke='var(--acao)' stroke-width='2' " +
       "stroke-linejoin='round' stroke-linecap='round'/>" +
@@ -1450,9 +1453,18 @@ def main() -> None:
         "acompanhamento": {
             "ano": acompanhamento["year"],
             "limitacao": acompanhamento["limitation"],
+            # A ressalva de quem foi declarado com o ano em curso é outra, e o
+            # rodapé da tela dizia "calculada em janeiro" para ele também.
+            "limitacao_tardia": acompanhamento["late_band"]["limitation"],
             "perfis": {
                 perfil: {
                     "faixa": r["band"],
+                    # Se a faixa foi declarada antes do ano ou desenhada depois
+                    # que o degrau passou a existir. A tela dizia "projetada em
+                    # janeiro" para todos, e para o degrau declarado em agosto
+                    # isso seria falso.
+                    "faixa_de_janeiro": r["band_declared_before_year"],
+                    "faixa_desenhada": r["band_drawn_on"],
                     "realizado": [x for i, x in enumerate(r["realised"])
                                   if i % 5 == 0 or i == len(r["realised"]) - 1],
                     "agora": r["now"],

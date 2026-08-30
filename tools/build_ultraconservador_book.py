@@ -18,8 +18,14 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
+for _caminho in (ROOT, ROOT / "tools"):
+    if str(_caminho) not in sys.path:
+        sys.path.insert(0, str(_caminho))
+
+from update_live_performance import update  # noqa: E402
 WEB = ROOT / "web"
 REGISTRO = ROOT / "data" / "benevente_profile_ladder_v4_registration.json"
 ORIGEM = "conservador"
@@ -62,6 +68,23 @@ def build() -> dict:
     return livro
 
 
+def acompanhar() -> dict:
+    """A série de 2026 do degrau, pelo mesmo monitor que roda os outros três.
+
+    O livro é derivado, a série não: ela sai da mesma função que produz as dos
+    demais perfis, sobre os mesmos preços. O que difere é a procedência, e ela
+    fica registrada: os outros três foram acompanhados dia a dia enquanto o ano
+    acontecia, e este foi reconstruído de uma vez em 30/08/2026, com a seleção
+    que já estava congelada desde janeiro.
+
+    A reconstrução não tem liberdade nenhuma. A seleção é a do conservador, o
+    fator vem da regra do degrau, e a camada de proteção é a mesma: não há
+    escolha a fazer aqui que pudesse ser feita olhando o resultado.
+    """
+    destino = WEB / f"live_performance_{DESTINO_PERFIL}.json"
+    return update(WEB / f"current_decision_2026_{DESTINO_PERFIL}.json", destino, None, True)
+
+
 def main() -> None:
     livro = build()
     acoes = [h for h in livro["holdings"] if h["ticker"] != "IVVB11"]
@@ -72,6 +95,9 @@ def main() -> None:
           f"global {sum(h['weight'] for h in globais) * 100:.1f}% · "
           f"CDI {livro['cdi_weight'] * 100:.1f}% · "
           f"soma {(sum(h['weight'] for h in livro['holdings']) + livro['cdi_weight']) * 100:.1f}%")
+    live = acompanhar()
+    print(f"  2026 até {live['through']}: "
+          f"{live['summary']['portfolio_return'] * 100:+.2f}% (reconstruído, não acompanhado)")
 
 
 if __name__ == "__main__":

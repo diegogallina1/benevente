@@ -16,7 +16,14 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     # banner. A alegação de estágio continua obrigatória — no rodapé.
     assert "stage-ribbon" not in home and "PROTÓTIPO DE PESQUISA" not in home
     assert "Protótipo de pesquisa" in home
-    assert "A política vigente declara três perfis" in home
+    # Quantos perfis a home declara vem da política, e não de um número escrito
+    # aqui. A frase dizia "três" enquanto a escada já tinha quatro, e um teste
+    # que repetisse o número teria confirmado a frase errada.
+    import sys
+    sys.path.insert(0, str(ROOT / "tools"))
+    from politica import escada
+    quantos = {3: "três", 4: "quatro", 5: "cinco"}[len(escada())]
+    assert f"A política vigente declara {quantos} perfis" in home
     assert "diagnóstico retrospectivo, não validação prospectiva" in home
     assert "Reproduzir no GitHub" not in home
     # A separação continua sendo a tese, mas deixou de ser a primeira frase: a

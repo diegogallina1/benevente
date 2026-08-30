@@ -6,7 +6,11 @@
   const host = document.querySelector("#carteira-2026-cards");
   if (!host) return;
   const note = document.querySelector("#carteira-2026-note");
-  const LABELS = { conservador: "Conservador", equilibrado: "Equilibrado", arrojado: "Arrojado" };
+  // A escada vem do resumo diário, na ordem em que a política a declara, do
+  // degrau mais apertado ao mais solto. Escrita à mão aqui ela ficou com três
+  // nomes, e quando a política ganhou o quarto esta página seguiu mostrando
+  // três sem avisar ninguém.
+  const rotulo = p => p.charAt(0).toUpperCase() + p.slice(1);
   const pct = (v, d = 2) => `${(v * 100).toLocaleString("pt-BR", { minimumFractionDigits: d, maximumFractionDigits: d })}%`;
   const escapeHtml = value => String(value).replace(/[&<>"']/g, c =>
     ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -126,16 +130,15 @@
   // peso da página, e nenhum deles aparecia na tela.
   Promise.all([
     load("live_profiles_2026.json"),
-    ...Object.keys(LABELS).map(p => load(`current_decision_2026_${p}.json`)),
     // As mudanças vêm de um arquivo próprio, de um kilobyte. A série diária que
     // as contém tem 249 KB por perfil, e a página precisa só dos dias em que
     // alguma coisa mudou.
     load("mudancas_2026.json").catch(() => null),
-  ]).then(([summary, ...rest]) => {
-    const mudancas = rest.pop();
-    const perfis = Object.keys(LABELS);
+  ]).then(async ([summary, mudancas]) => {
+    const perfis = Object.keys(summary.profiles);
     const live = summary.profiles;
-    const books = Object.fromEntries(perfis.map((p, i) => [p, rest[i]]));
+    const carregados = await Promise.all(perfis.map(p => load(`current_decision_2026_${p}.json`)));
+    const books = Object.fromEntries(perfis.map((p, i) => [p, carregados[i]]));
 
     host.innerHTML = `<div class="carteira-2026-grid">${perfis.map(p => {
       const l = live[p], b = books[p];
@@ -143,9 +146,10 @@
       const retorno = l.portfolio_return;
       const nomes = acoes.map(h => escapeHtml(h.ticker)).join(" · ");
       return `<article class="carteira-2026-card">
-        <header><b>${LABELS[p]}</b><small>teto de ${pct(b.declared.maximum_equity_weight, 0)} em ações · ${acoes.length} emissores</small></header>
+        <header><b>${rotulo(p)}</b><small>teto de ${pct(b.declared.maximum_equity_weight, 0)} em ações · ${acoes.length} emissores</small></header>
         <strong class="${retorno >= 0 ? "up" : "down"}">${retorno >= 0 ? "+" : ""}${pct(retorno)}</strong>
         <span class="carteira-2026-since">desde ${dateBr(b.decision_date)} · até ${dateBr(l.through)}</span>
+        ${l.reconstructed ? `<span class="carteira-2026-marca">Série reconstruída em 30/08/2026, quando o degrau foi declarado. Mesma cesta, mesmos preços, mesma regra dos outros. O que ela não tem é a marcação a mercado feita enquanto o ano acontecia.</span>` : ""}
         <p class="carteira-2026-names">${nomes}</p>
         ${divisao(p, b, mudancas)}
         ${detalhe(p, b, mudancas)}

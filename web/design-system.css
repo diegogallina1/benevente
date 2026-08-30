@@ -407,7 +407,9 @@ h1, h2, h3, h4,
 
 /* A carteira do ano corrente: três livros lado a lado, com o que carregam e
    quanto renderam desde janeiro. O verde/vermelho é do retorno, não do cartão. */
-.carteira-2026-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.4rem; }
+/* Colunas por largura disponível, não por quantidade de perfis. Fixo em três,
+   o quarto degrau caía sozinho numa segunda linha, encostado à esquerda. */
+.carteira-2026-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr)); gap: 1rem; margin-top: 1.4rem; }
 .carteira-2026-card { padding: 1.15rem 1.25rem; border: 1px solid var(--hairline, #dbe4e8); border-radius: 12px; background: #fff; }
 .carteira-2026-card header { display: grid; gap: .15rem; margin-bottom: .7rem; }
 .carteira-2026-card header b { color: var(--brand-dark, #102a43); font-size: 1rem; }
@@ -416,6 +418,13 @@ h1, h2, h3, h4,
 .carteira-2026-card strong.up { color: #0b8377; }
 .carteira-2026-card strong.down { color: #8f2f2f; }
 .carteira-2026-since { display: block; margin-top: .1rem; font-size: .72rem; color: var(--ink-soft, #5b6f7c); }
+/* A marca de procedência. Sem borda e sem cor de alerta: não é aviso de erro,
+   é a diferença entre uma série acompanhada e uma reconstruída, e ela precisa
+   ser lida junto do número, não gritar por cima dele. */
+.carteira-2026-marca {
+  display: block; margin-top: .5rem; padding: .55rem .7rem; border-radius: 10px;
+  background: var(--acao-fraco); color: var(--fg-2); font-size: .72rem; line-height: 1.45;
+}
 .carteira-2026-names { margin: .8rem 0 .4rem; font-size: .72rem; line-height: 1.6; color: var(--ink-soft, #5b6f7c); }
 .carteira-2026-split { margin: 0; padding-top: .6rem; border-top: 1px solid var(--hairline, #dbe4e8); font-size: .74rem; font-weight: 700; color: var(--brand-dark, #102a43); }
 .carteira-2026-note { margin-top: 1.1rem; max-width: 760px; font-size: .78rem; line-height: 1.7; color: var(--ink-soft, #5b6f7c); }
