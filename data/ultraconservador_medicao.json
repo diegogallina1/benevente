@@ -1,0 +1,22 @@
+{
+  "ultraconservador": {
+    "cagr": 0.10915132427203145,
+    "max_drawdown": -0.044840327891848664,
+    "annual_volatility": 0.029867569621744135
+  },
+  "conservador": {
+    "cagr": 0.12339247833468137,
+    "max_drawdown": -0.09172635677263774,
+    "annual_volatility": 0.05845755213490517
+  },
+  "equilibrado": {
+    "cagr": 0.15391007176268867,
+    "max_drawdown": -0.1787525153576992,
+    "annual_volatility": 0.10514133482826384
+  },
+  "arrojado": {
+    "cagr": 0.19794505344855473,
+    "max_drawdown": -0.28947482333140107,
+    "annual_volatility": 0.1694796125034894
+  }
+}

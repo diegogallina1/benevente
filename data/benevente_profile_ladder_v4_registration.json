@@ -1,0 +1,136 @@
+{
+  "policy": "benevente_profile_ladder_v4",
+  "approved_by": "Diego Gallina",
+  "approval_source": "explicit",
+  "supersedes": "benevente_profile_ladder_v3",
+  "status": "registered_not_prospectively_validated",
+  "registered_at": "2026-08-30T13:38:13.367905-03:00",
+  "confirmatory_sample_starts": "first B3 trading session of 2027",
+  "confirmatory_count_rationale": "A contagem não recomeça porque nenhuma observação prospectiva foi consumida: a amostra confirmatória da v2 começa no primeiro pregão de 2027 e esta versão é registrada em 2026. Se algum dia da amostra já tivesse sido gasto, trocar de política obrigaria a zerar a contagem e a v3 começaria depois. A regra é essa e está escrita antes de custar caro.",
+  "selection_method": "declared, not searched",
+  "signal_family": "triple_factor",
+  "review_frequency": "annual",
+  "maximum_names_per_sector": 3,
+  "change_from_previous": "Acrescenta um quarto perfil, o ultraconservador, abaixo do conservador. Os três perfis existentes não mudam: nenhum parâmetro deles foi tocado.",
+  "cash_sleeve": {
+    "instrument": "Tesouro Selic (LFT) via Tesouro Direto",
+    "source": "https://www.tesourotransparente.gov.br/ckan/dataset/taxas-dos-titulos-ofertados-pelo-tesouro-direto",
+    "holding_rule": "vencimento mais curto com pelo menos 180 dias restantes, rolado ao cair abaixo disso",
+    "custody_fee_annual_by_period": {
+      "até 2018": 0.003,
+      "2019-2021": 0.0025,
+      "2022+": 0.002
+    },
+    "exemption_first_10k_applied": false,
+    "why_not_a_bank_product": "Um CDB a 118% do CDI entrega perto de 101% dele depois da tabela regressiva, e depende de emissor, de faixa e de grade que nenhuma fonte pública arquiva. Declarar como caixa um produto cuja série histórica não existe seria inventar história. O catálogo de renda fixa com rendimento líquido e limite do FGC é ferramenta de alocação do escritório, não insumo desta política."
+  },
+  "global_sleeve": {
+    "instrument": "IVVB11",
+    "share_of_equity_budget": 0.2,
+    "status": "declared exposure, never selected; no CVM filing and no fundamental screen",
+    "unhedged_currency_warning": "About a third of this instrument's return over 2015-2025 came from BRL depreciation, not from the American market. It is an unhedged long dollar position and must be described as one."
+  },
+  "intrayear_overlay": {
+    "config": {
+      "alert_drawdown": 0.1,
+      "severe_drawdown": 0.2,
+      "alert_volatility": 0.3,
+      "severe_volatility": 0.5,
+      "recovery_days": 10,
+      "cost_bps": 10.0,
+      "volatility_window": 20,
+      "peak_window": 126
+    },
+    "applies_to": "domestic sleeve only",
+    "why": "The fund is held because it does not follow the Ibovespa. Cutting it on a domestic stress signal sells the one asset the signal does not apply to.",
+    "liquidity_requirement": "A camada move exposição para o caixa dentro do ano, então o caixa precisa liquidar em D+0. O Tesouro Selic atende; um papel de prazo travado, não. É uma restrição da política, não uma preferência de alocação."
+  },
+  "trials_disclosure": "Nenhuma busca foi feita para esta versão. O instrumento de caixa não foi escolhido entre candidatos por desempenho: foi escolhido por ser comprável e por ter série primária publicada. A troca foi medida depois de decidida, e o resultado é pior em retorno.",
+  "profiles": {
+    "conservador": {
+      "maximum_equity_weight": 0.35,
+      "top_assets": 12,
+      "maximum_asset_weight": 0.046667,
+      "domestic_budget_solved": 0.301075,
+      "global_share_of_portfolio": 0.07,
+      "rationale": "Widest basket at the smallest budget. With the two layers the worst calendar year measured in sample was positive and the drawdown halved."
+    },
+    "equilibrado": {
+      "maximum_equity_weight": 0.55,
+      "top_assets": 8,
+      "maximum_asset_weight": 0.11,
+      "domestic_budget_solved": 0.494382,
+      "global_share_of_portfolio": 0.11,
+      "rationale": "The published budget with a wider basket, at the count where diversification stops costing efficiency."
+    },
+    "arrojado": {
+      "maximum_equity_weight": 0.75,
+      "top_assets": 5,
+      "maximum_asset_weight": 0.24,
+      "domestic_budget_solved": 0.705882,
+      "global_share_of_portfolio": 0.15,
+      "rationale": "Concentration, at the budget the measurement supports. 95% returned 0.87 points more a year for 5.5 points more drawdown and a worse excess Sharpe."
+    },
+    "ultraconservador": {
+      "maximum_equity_weight": 0.04,
+      "top_assets": 12,
+      "maximum_asset_weight": 0.005333,
+      "global_share_of_portfolio": 0.008,
+      "rationale": "A perna de ações cabe no carrego de um trimestre, na pior queda já medida dela. Existe para quem quer ficar acima do caixa sentindo quase nada.",
+      "declared_on": "2026-08-30T13:38:13.367905-03:00",
+      "status_note": "Declarado em 30/08/2026, não no primeiro pregão de 2026 como os outros três. A série de 2026 dele é simulada, não acompanhada: o monitor diário nunca o seguiu. A amostra confirmatória dele começa junto com a dos demais, no primeiro pregão de 2027."
+    }
+  },
+  "inputs": {
+    "prices": "9ae1bb5816a5859ffef4310579a418878fff720888a4d8abcd72da881eed6ff4",
+    "total_return_manifest": "4fd698253cfc71246660dfd264532307ccb75982d5b5859d7249a0fb9a63e9c7",
+    "fundamentals": "c2e41b5285cac91568434b41bc75657d3da889bd1bec3ea7a57a88768224456f",
+    "universe": "b4315cbd7bbfd21781f1252a21437cda8bdb603963ad040539997ea3bcf15d83",
+    "mapping": "34915dbade0df919b2c5350331acef9ff3c4a0537d08c91b5e14f5d9744f0385",
+    "benchmarks": "658697bf27e9988f1e8cafdf564acacac0038969f743073dcdec0f9eea343c1b",
+    "cash_series": "a0c02f414d6fb8a39deab6795b53a3f1b888680bbb9918d39f94372eae43a4b4",
+    "cash_series_manifest": "501e6d45896c366b659faa7e643d198fb542705e7d1578e5dae2a8ae6c7b388e"
+  },
+  "code": {
+    "annual_walk_forward.py": "da664570088a10afee85a26264e87ead60eef3abb5d612ed9744c22089cf5baf",
+    "portfolio_risk.py": "5d6a46dd329b154788c762562b2dff4bd9d082068cb592968d0e2b48b6f040bf",
+    "profile_ladder.py": "a5074512297d85450e53a7fba11653339175d373060aa15b8cc590f9dd8c6ae0",
+    "profile_ladder_v2.py": "5afe66aa0d5519dc285d3940e5e1281df251ad0d2412295785b7632016f141cb",
+    "profile_ladder_v3.py": "748539cb892636bec4d2190477367e3d0d80ab7df25e0537b00b5742adf4ecf9",
+    "tesouro_selic_series.py": "7db6a0d2edfe2b6155a1819c629c4544bc7b9ddefce21bfbc6b456c5d474fbb7"
+  },
+  "success_criterion": {
+    "minimum_years": 3,
+    "must_beat_cash_instrument_after_tax": true,
+    "must_beat_investable_market_etf": true,
+    "profile_ordering_must_hold": "conservador <= equilibrado <= arrojado in realised risk and return",
+    "falsification": "A profile that fails to clear its own declared cash instrument after tax over the full prospective window, or a ladder whose realised risk ordering inverts, refutes the policy."
+  },
+  "non_negotiable_gates": {
+    "no_parameter_change_after_sample_start": true,
+    "in_sample_window_is_exploratory": "2015-2025",
+    "equity_tax_apurado_por_lote": true,
+    "intrayear_tax_reconciled_with_broker_note": false
+  },
+  "rung_rule": {
+    "declared_at": "2026-08-30T13:38:13.367905-03:00",
+    "rule": "A perna de ações do degrau é dimensionada para que a pior queda já medida nela caiba no carrego de um trimestre. O teto sai dessa conta, arredondado para baixo em ponto inteiro.",
+    "derivation": {
+      "worst_measured_equity_drawdown": 0.5345,
+      "quarterly_carry": 0.023425,
+      "raw": "0.023425 / 0.5345 = 0.043826",
+      "maximum_equity_weight": 0.04,
+      "top_assets": "igual ao conservador: 12",
+      "maximum_asset_weight": "mesma concentração permitida dentro da perna que o conservador: 0.04 x 0.133334",
+      "global_share_of_portfolio": "0.04 x 0.2"
+    },
+    "why_this_rule": "Ela não olha a queda da carteira, olha quanto de ação o carrego paga. É a diferença entre declarar um parâmetro e calibrá-lo no resultado: um teto escolhido porque a queda medida ficou bonita seria ajuste à mesma janela que construiu a estratégia, e valeria menos que os outros três degraus.",
+    "rejected_alternative": "Foi considerado e recusado declarar o teto pelo maior valor cuja queda medida ficasse em 2%. Daria 8%, com queda de 1,89%, e seria calibração ao resultado.",
+    "correction": "A primeira derivação usou teto dividido por número de emissores, o que suporia peso igual. Os livros não são de peso igual, e o conservador declara 4,6667% num teto de 35%, ou seja, 13,33% da perna. O teste de composição pegou: as posições derivadas passavam do limite que eu tinha escrito."
+  },
+  "asymmetry_disclosure": "Os três primeiros perfis foram congelados antes do primeiro pregão de 2026 e acompanhados desde então. O ultraconservador foi declarado em 30/08/2026, com o ano já em curso. Ele carrega retrospectivo como os outros, e não carrega acompanhamento de 2026, porque não houve.",
+  "drawdown_disclosure": "A camada de proteção reage à queda e à volatilidade do mercado, e nunca observa a queda da própria carteira. Nenhum mecanismo limita quanto este perfil pode cair. A queda de 0,81% é o que se mediu de 2015 a 2025, e é descrição do passado, não promessa nem teto.",
+  "tax_disclosure": "Cerca de 92% deste perfil fica em caixa tributado. Líquido de imposto ele rende aproximadamente 8,1% ao ano, contra cerca de 8,9% de uma LCA a 95% do CDI, isenta. Nesta ponta da escada, renda fixa isenta rende mais e é mais simples: o que este perfil oferece a mais é liquidez diária e a mesma governança dos outros.",
+  "position_size_disclosure": "Com teto de 4% em 12 emissores, cada posição vale 0.333% da carteira. Numa carteira de R$ 100 mil isso é R$ 333 por papel, abaixo do que costuma ser negociável sem que a corretagem pese mais que a posição. O degrau só é implementável a partir de cerca de R$ 300 mil, onde cada posição passa de R$ 1.000. Abaixo disso a recomendação honesta é renda fixa isenta, não este perfil.",
+  "registration_sha256": "4d8fb114c92188239d456370550b173cab8fadbdd5f5a2ab1cfc1bd8648400ba"
+}

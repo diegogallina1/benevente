@@ -1,6 +1,6 @@
 {
   "public_name": "Benevente",
-  "registration_sha256": "ca2476d4d5ce8dac3796bd20aceefd5437ba7b71fc9e126f2493f6f0beba563b",
+  "registration_sha256": "4d8fb114c92188239d456370550b173cab8fadbdd5f5a2ab1cfc1bd8648400ba",
   "window": {
     "first_decision_year": 2015,
     "last_decision_year": 2025,
@@ -8,6 +8,1680 @@
     "last_session": "2025-12-30"
   },
   "profiles": {
+    "ultraconservador": [
+      {
+        "decision_year": 2015,
+        "decision_date": "2015-01-02",
+        "global_row": {
+          "trailing_12m": null,
+          "trailing_vol": null,
+          "realised_next_year": 0.4894
+        },
+        "cash_row": {
+          "trailing_12m": 0.1023,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.1298
+        },
+        "positions": [
+          {
+            "ticker": "CIEL3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9744,
+            "trailing_12m": 0.2934,
+            "trailing_vol": 0.2668,
+            "eligible": true,
+            "realised_next_year": -0.1344
+          },
+          {
+            "ticker": "CMIG4.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 1.0,
+            "trailing_12m": 0.1921,
+            "trailing_vol": 0.4206,
+            "eligible": true,
+            "realised_next_year": -0.5058
+          },
+          {
+            "ticker": "ITUB4.SA",
+            "weight": 0.003424,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9487,
+            "trailing_12m": 0.2616,
+            "trailing_vol": 0.3375,
+            "eligible": true,
+            "realised_next_year": -0.1004
+          },
+          {
+            "ticker": "BBSE3.SA",
+            "weight": 0.003248,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9231,
+            "trailing_12m": 0.3704,
+            "trailing_vol": 0.2718,
+            "eligible": true,
+            "realised_next_year": -0.1529
+          },
+          {
+            "ticker": "ITSA4.SA",
+            "weight": 0.003069,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8974,
+            "trailing_12m": 0.2093,
+            "trailing_vol": 0.3313,
+            "eligible": true,
+            "realised_next_year": -0.1264
+          },
+          {
+            "ticker": "BBDC4.SA",
+            "weight": 0.002907,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8718,
+            "trailing_12m": 0.2682,
+            "trailing_vol": 0.3628,
+            "eligible": true,
+            "realised_next_year": -0.2833
+          },
+          {
+            "ticker": "PSSA3.SA",
+            "weight": 0.002384,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8205,
+            "trailing_12m": 0.1355,
+            "trailing_vol": 0.2968,
+            "eligible": true,
+            "realised_next_year": -0.0221
+          },
+          {
+            "ticker": "ABEV3.SA",
+            "weight": 0.001689,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7949,
+            "trailing_12m": 0.003,
+            "trailing_vol": 0.2433,
+            "eligible": true,
+            "realised_next_year": 0.2144
+          },
+          {
+            "ticker": "EQTL3.SA",
+            "weight": 0.001431,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7692,
+            "trailing_12m": 0.231,
+            "trailing_vol": 0.2291,
+            "eligible": true,
+            "realised_next_year": 0.2763
+          },
+          {
+            "ticker": "MRVE3.SA",
+            "weight": 0.001162,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7436,
+            "trailing_12m": -0.1195,
+            "trailing_vol": 0.4328,
+            "eligible": true,
+            "realised_next_year": 0.2664
+          },
+          {
+            "ticker": "LREN3.SA",
+            "weight": 0.001113,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7179,
+            "trailing_12m": 0.257,
+            "trailing_vol": 0.2771,
+            "eligible": true,
+            "realised_next_year": 0.1483
+          },
+          {
+            "ticker": "TOTS3.SA",
+            "weight": 0.000993,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.6923,
+            "trailing_12m": -0.0017,
+            "trailing_vol": 0.2876,
+            "eligible": true,
+            "realised_next_year": -0.1034
+          }
+        ],
+        "domestic_equity": 0.032,
+        "global_sleeve": 0.008,
+        "cash": 0.96,
+        "declared_equity": 0.04
+      },
+      {
+        "decision_year": 2016,
+        "decision_date": "2016-01-04",
+        "global_row": {
+          "trailing_12m": 0.4881,
+          "trailing_vol": 0.2182,
+          "realised_next_year": -0.0538
+        },
+        "cash_row": {
+          "trailing_12m": 0.1279,
+          "trailing_vol": 0.0013,
+          "realised_next_year": 0.1343
+        },
+        "positions": [
+          {
+            "ticker": "SMLE3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 1.0,
+            "trailing_12m": -0.2251,
+            "trailing_vol": 0.4352,
+            "eligible": true,
+            "realised_next_year": 0.2811
+          },
+          {
+            "ticker": "BRSR6.SA",
+            "weight": 0.004566,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9697,
+            "trailing_12m": -0.5057,
+            "trailing_vol": 0.4626,
+            "eligible": true,
+            "realised_next_year": 0.9885
+          },
+          {
+            "ticker": "CMIG4.SA",
+            "weight": 0.004022,
+            "previous_weight": 0.002334,
+            "action": "increased",
+            "score": 0.9394,
+            "trailing_12m": -0.4806,
+            "trailing_vol": 0.4389,
+            "eligible": true,
+            "realised_next_year": 0.4954
+          },
+          {
+            "ticker": "ENBR3.SA",
+            "weight": 0.002777,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9091,
+            "trailing_12m": 0.3855,
+            "trailing_vol": 0.3623,
+            "eligible": true,
+            "realised_next_year": 0.2001
+          },
+          {
+            "ticker": "LREN3.SA",
+            "weight": 0.002476,
+            "previous_weight": 0.001141,
+            "action": "increased",
+            "score": 0.8788,
+            "trailing_12m": 0.1778,
+            "trailing_vol": 0.3223,
+            "eligible": true,
+            "realised_next_year": 0.4649
+          },
+          {
+            "ticker": "ITUB4.SA",
+            "weight": 0.002424,
+            "previous_weight": 0.00275,
+            "action": "reduced",
+            "score": 0.8485,
+            "trailing_12m": -0.1115,
+            "trailing_vol": 0.3216,
+            "eligible": true,
+            "realised_next_year": 0.5704
+          },
+          {
+            "ticker": "EQTL3.SA",
+            "weight": 0.002375,
+            "previous_weight": 0.001631,
+            "action": "increased",
+            "score": 0.8182,
+            "trailing_12m": 0.3104,
+            "trailing_vol": 0.2859,
+            "eligible": true,
+            "realised_next_year": 0.6842
+          },
+          {
+            "ticker": "BBAS3.SA",
+            "weight": 0.002289,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7879,
+            "trailing_12m": -0.3011,
+            "trailing_vol": 0.481,
+            "eligible": true,
+            "realised_next_year": 1.0641
+          },
+          {
+            "ticker": "ITSA4.SA",
+            "weight": 0.00222,
+            "previous_weight": 0.002394,
+            "action": "reduced",
+            "score": 0.7576,
+            "trailing_12m": -0.1446,
+            "trailing_vol": 0.3009,
+            "eligible": true,
+            "realised_next_year": 0.4943
+          },
+          {
+            "ticker": "RADL3.SA",
+            "weight": 0.001585,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7273,
+            "trailing_12m": 0.5614,
+            "trailing_vol": 0.3437,
+            "eligible": true,
+            "realised_next_year": 0.758
+          },
+          {
+            "ticker": "ABEV3.SA",
+            "weight": 0.001112,
+            "previous_weight": 0.001831,
+            "action": "reduced",
+            "score": 0.697,
+            "trailing_12m": 0.2381,
+            "trailing_vol": 0.2245,
+            "eligible": true,
+            "realised_next_year": -0.0123
+          },
+          {
+            "ticker": "PSSA3.SA",
+            "weight": 0.000864,
+            "previous_weight": 0.002082,
+            "action": "reduced",
+            "score": 0.6364,
+            "trailing_12m": 0.0657,
+            "trailing_vol": 0.3595,
+            "eligible": true,
+            "realised_next_year": -0.0178
+          }
+        ],
+        "domestic_equity": 0.032,
+        "global_sleeve": 0.008,
+        "cash": 0.96,
+        "declared_equity": 0.04
+      },
+      {
+        "decision_year": 2017,
+        "decision_date": "2017-01-02",
+        "global_row": {
+          "trailing_12m": -0.0351,
+          "trailing_vol": 0.2035,
+          "realised_next_year": 0.1714
+        },
+        "cash_row": {
+          "trailing_12m": 0.1302,
+          "trailing_vol": 0.0029,
+          "realised_next_year": 0.0989
+        },
+        "positions": [
+          {
+            "ticker": "CMIG4.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.005246,
+            "action": "increased",
+            "score": 0.9744,
+            "trailing_12m": 0.4061,
+            "trailing_vol": 0.6125,
+            "eligible": true,
+            "realised_next_year": -0.0696
+          },
+          {
+            "ticker": "SMLE3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.005912,
+            "action": "reduced",
+            "score": 1.0,
+            "trailing_12m": 0.3517,
+            "trailing_vol": 0.4887,
+            "eligible": true,
+            "realised_next_year": 1.0015
+          },
+          {
+            "ticker": "SAPR4.SA",
+            "weight": 0.00413,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9487,
+            "trailing_12m": 2.6542,
+            "trailing_vol": 0.4457,
+            "eligible": true,
+            "realised_next_year": 0.1463
+          },
+          {
+            "ticker": "ELET3.SA",
+            "weight": 0.003576,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9231,
+            "trailing_12m": 3.1418,
+            "trailing_vol": 0.5279,
+            "eligible": true,
+            "realised_next_year": -0.1308
+          },
+          {
+            "ticker": "CPLE6.SA",
+            "weight": 0.003527,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8974,
+            "trailing_12m": 0.1275,
+            "trailing_vol": 0.4864,
+            "eligible": true,
+            "realised_next_year": -0.0819
+          },
+          {
+            "ticker": "ITUB4.SA",
+            "weight": 0.001884,
+            "previous_weight": 0.003321,
+            "action": "reduced",
+            "score": 0.8718,
+            "trailing_12m": 0.4901,
+            "trailing_vol": 0.357,
+            "eligible": true,
+            "realised_next_year": 0.3176
+          },
+          {
+            "ticker": "BBDC4.SA",
+            "weight": 0.001865,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8462,
+            "trailing_12m": 0.7261,
+            "trailing_vol": 0.4192,
+            "eligible": true,
+            "realised_next_year": 0.3438
+          },
+          {
+            "ticker": "CVCB3.SA",
+            "weight": 0.001592,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7949,
+            "trailing_12m": 0.9885,
+            "trailing_vol": 0.394,
+            "eligible": true,
+            "realised_next_year": 1.1315
+          },
+          {
+            "ticker": "ITSA4.SA",
+            "weight": 0.001574,
+            "previous_weight": 0.002893,
+            "action": "reduced",
+            "score": 0.7692,
+            "trailing_12m": 0.4089,
+            "trailing_vol": 0.3431,
+            "eligible": true,
+            "realised_next_year": 0.389
+          },
+          {
+            "ticker": "BBAS3.SA",
+            "weight": 0.00127,
+            "previous_weight": 0.004121,
+            "action": "reduced",
+            "score": 0.7436,
+            "trailing_12m": 0.9793,
+            "trailing_vol": 0.5606,
+            "eligible": true,
+            "realised_next_year": 0.1918
+          },
+          {
+            "ticker": "SUZB5.SA",
+            "weight": 0.001079,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7179,
+            "trailing_12m": -0.2204,
+            "trailing_vol": 0.4527,
+            "eligible": true,
+            "realised_next_year": 0.4769
+          },
+          {
+            "ticker": "CSAN3.SA",
+            "weight": 0.000923,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.6667,
+            "trailing_12m": 0.6508,
+            "trailing_vol": 0.3436,
+            "eligible": true,
+            "realised_next_year": 0.1459
+          }
+        ],
+        "domestic_equity": 0.032,
+        "global_sleeve": 0.008,
+        "cash": 0.96,
+        "declared_equity": 0.04
+      },
+      {
+        "decision_year": 2018,
+        "decision_date": "2018-01-02",
+        "global_row": {
+          "trailing_12m": 0.2131,
+          "trailing_vol": 0.1557,
+          "realised_next_year": 0.0912
+        },
+        "cash_row": {
+          "trailing_12m": 0.095,
+          "trailing_vol": 0.002,
+          "realised_next_year": 0.0618
+        },
+        "positions": [
+          {
+            "ticker": "MGLU3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 1.0,
+            "trailing_12m": 5.1346,
+            "trailing_vol": 0.7028,
+            "eligible": true,
+            "realised_next_year": 1.2897
+          },
+          {
+            "ticker": "ITSA3.SA",
+            "weight": 0.004201,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9773,
+            "trailing_12m": 0.4427,
+            "trailing_vol": 0.2325,
+            "eligible": true,
+            "realised_next_year": 0.4543
+          },
+          {
+            "ticker": "CVCB3.SA",
+            "weight": 0.003987,
+            "previous_weight": 0.003072,
+            "action": "increased",
+            "score": 0.9545,
+            "trailing_12m": 1.2192,
+            "trailing_vol": 0.2885,
+            "eligible": true,
+            "realised_next_year": 0.2373
+          },
+          {
+            "ticker": "BRSR6.SA",
+            "weight": 0.003472,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9318,
+            "trailing_12m": 0.5884,
+            "trailing_vol": 0.4672,
+            "eligible": true,
+            "realised_next_year": 0.6115
+          },
+          {
+            "ticker": "SAPR4.SA",
+            "weight": 0.002858,
+            "previous_weight": 0.004285,
+            "action": "reduced",
+            "score": 0.9091,
+            "trailing_12m": 0.24,
+            "trailing_vol": 0.3801,
+            "eligible": true,
+            "realised_next_year": -0.0149
+          },
+          {
+            "ticker": "BBSE3.SA",
+            "weight": 0.002779,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8864,
+            "trailing_12m": 0.1163,
+            "trailing_vol": 0.2536,
+            "eligible": true,
+            "realised_next_year": 0.0765
+          },
+          {
+            "ticker": "ITUB3.SA",
+            "weight": 0.002336,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8636,
+            "trailing_12m": 0.4134,
+            "trailing_vol": 0.2236,
+            "eligible": true,
+            "realised_next_year": 0.2619
+          },
+          {
+            "ticker": "BRAP4.SA",
+            "weight": 0.001878,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8409,
+            "trailing_12m": 1.2779,
+            "trailing_vol": 0.4571,
+            "eligible": true,
+            "realised_next_year": 0.1476
+          },
+          {
+            "ticker": "BBDC3.SA",
+            "weight": 0.001695,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7955,
+            "trailing_12m": 0.3708,
+            "trailing_vol": 0.2732,
+            "eligible": true,
+            "realised_next_year": 0.1935
+          },
+          {
+            "ticker": "GRND3.SA",
+            "weight": 0.001206,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7273,
+            "trailing_12m": 0.7502,
+            "trailing_vol": 0.2866,
+            "eligible": true,
+            "realised_next_year": -0.1101
+          },
+          {
+            "ticker": "ABEV3.SA",
+            "weight": 0.001199,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7045,
+            "trailing_12m": 0.383,
+            "trailing_vol": 0.1692,
+            "eligible": true,
+            "realised_next_year": -0.2678
+          },
+          {
+            "ticker": "EGIE3.SA",
+            "weight": 0.001099,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.6818,
+            "trailing_12m": 0.1266,
+            "trailing_vol": 0.1805,
+            "eligible": true,
+            "realised_next_year": 0.3627
+          }
+        ],
+        "domestic_equity": 0.032,
+        "global_sleeve": 0.008,
+        "cash": 0.96,
+        "declared_equity": 0.04
+      },
+      {
+        "decision_year": 2019,
+        "decision_date": "2019-01-02",
+        "global_row": {
+          "trailing_12m": 0.0699,
+          "trailing_vol": 0.1948,
+          "realised_next_year": 0.3987
+        },
+        "cash_row": {
+          "trailing_12m": 0.0602,
+          "trailing_vol": 0.0011,
+          "realised_next_year": 0.0575
+        },
+        "positions": [
+          {
+            "ticker": "BRSR6.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.005217,
+            "action": "increased",
+            "score": 0.9792,
+            "trailing_12m": 0.6202,
+            "trailing_vol": 0.3842,
+            "eligible": true,
+            "realised_next_year": -0.0012
+          },
+          {
+            "ticker": "MGLU3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.011293,
+            "action": "reduced",
+            "score": 1.0,
+            "trailing_12m": 1.608,
+            "trailing_vol": 0.4782,
+            "eligible": true,
+            "realised_next_year": 1.0603
+          },
+          {
+            "ticker": "CSNA3.SA",
+            "weight": 0.004886,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9583,
+            "trailing_12m": 0.1362,
+            "trailing_vol": 0.4941,
+            "eligible": true,
+            "realised_next_year": 0.6413
+          },
+          {
+            "ticker": "IRBR3.SA",
+            "weight": 0.002696,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9375,
+            "trailing_12m": 1.6674,
+            "trailing_vol": 0.2737,
+            "eligible": true,
+            "realised_next_year": 0.4485
+          },
+          {
+            "ticker": "CMIG3.SA",
+            "weight": 0.002333,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9167,
+            "trailing_12m": 1.4823,
+            "trailing_vol": 0.3987,
+            "eligible": true,
+            "realised_next_year": 0.0439
+          },
+          {
+            "ticker": "ITUB4.SA",
+            "weight": 0.002268,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8958,
+            "trailing_12m": 0.3866,
+            "trailing_vol": 0.2978,
+            "eligible": true,
+            "realised_next_year": 0.083
+          },
+          {
+            "ticker": "BBSE3.SA",
+            "weight": 0.00224,
+            "previous_weight": 0.002789,
+            "action": "reduced",
+            "score": 0.875,
+            "trailing_12m": 0.0964,
+            "trailing_vol": 0.2524,
+            "eligible": true,
+            "realised_next_year": 0.3992
+          },
+          {
+            "ticker": "TEND3.SA",
+            "weight": 0.001645,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8542,
+            "trailing_12m": 0.7189,
+            "trailing_vol": 0.3134,
+            "eligible": true,
+            "realised_next_year": 0.9155
+          },
+          {
+            "ticker": "EGIE3.SA",
+            "weight": 0.001522,
+            "previous_weight": 0.001397,
+            "action": "increased",
+            "score": 0.8333,
+            "trailing_12m": 0.3723,
+            "trailing_vol": 0.2044,
+            "eligible": true,
+            "realised_next_year": 0.5412
+          },
+          {
+            "ticker": "BBDC3.SA",
+            "weight": 0.001426,
+            "previous_weight": 0.001887,
+            "action": "reduced",
+            "score": 0.8125,
+            "trailing_12m": 0.3004,
+            "trailing_vol": 0.3543,
+            "eligible": true,
+            "realised_next_year": 0.2083
+          },
+          {
+            "ticker": "SLCE3.SA",
+            "weight": 0.001387,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7917,
+            "trailing_12m": 0.7711,
+            "trailing_vol": 0.4693,
+            "eligible": true,
+            "realised_next_year": 0.1703
+          },
+          {
+            "ticker": "ITSA4.SA",
+            "weight": 0.001016,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.7708,
+            "trailing_12m": 0.3779,
+            "trailing_vol": 0.3209,
+            "eligible": true,
+            "realised_next_year": 0.2209
+          }
+        ],
+        "domestic_equity": 0.031999,
+        "global_sleeve": 0.008,
+        "cash": 0.960001,
+        "declared_equity": 0.04
+      },
+      {
+        "decision_year": 2020,
+        "decision_date": "2020-01-02",
+        "global_row": {
+          "trailing_12m": 0.3969,
+          "trailing_vol": 0.1572,
+          "realised_next_year": 0.4993
+        },
+        "cash_row": {
+          "trailing_12m": 0.056,
+          "trailing_vol": 0.0008,
+          "realised_next_year": 0.0232
+        },
+        "positions": [
+          {
+            "ticker": "AZUL4.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 1.0,
+            "trailing_12m": 0.7796,
+            "trailing_vol": 0.3626,
+            "eligible": true,
+            "realised_next_year": -0.3204
+          },
+          {
+            "ticker": "MRFG3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9851,
+            "trailing_12m": 0.9224,
+            "trailing_vol": 0.4153,
+            "eligible": true,
+            "realised_next_year": 0.4664
+          },
+          {
+            "ticker": "BBSE3.SA",
+            "weight": 0.00451,
+            "previous_weight": 0.00293,
+            "action": "increased",
+            "score": 0.9701,
+            "trailing_12m": 0.509,
+            "trailing_vol": 0.2313,
+            "eligible": true,
+            "realised_next_year": -0.1237
+          },
+          {
+            "ticker": "EQTL3.SA",
+            "weight": 0.003216,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9552,
+            "trailing_12m": 0.6351,
+            "trailing_vol": 0.2248,
+            "eligible": true,
+            "realised_next_year": -0.0038
+          },
+          {
+            "ticker": "CMIG3.SA",
+            "weight": 0.003122,
+            "previous_weight": 0.002277,
+            "action": "increased",
+            "score": 0.9403,
+            "trailing_12m": 0.1423,
+            "trailing_vol": 0.3035,
+            "eligible": true,
+            "realised_next_year": 0.1308
+          },
+          {
+            "ticker": "LIGT3.SA",
+            "weight": 0.002342,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9254,
+            "trailing_12m": 0.4613,
+            "trailing_vol": 0.3265,
+            "eligible": true,
+            "realised_next_year": 0.0167
+          },
+          {
+            "ticker": "BPAN4.SA",
+            "weight": 0.002077,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9104,
+            "trailing_12m": 4.7672,
+            "trailing_vol": 0.7009,
+            "eligible": true,
+            "realised_next_year": -0.1094
+          },
+          {
+            "ticker": "IRBR3.SA",
+            "weight": 0.002061,
+            "previous_weight": 0.00365,
+            "action": "reduced",
+            "score": 0.8955,
+            "trailing_12m": 0.4968,
+            "trailing_vol": 0.3076,
+            "eligible": true,
+            "realised_next_year": -0.7772
+          },
+          {
+            "ticker": "BRAP4.SA",
+            "weight": 0.001344,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8806,
+            "trailing_12m": 0.4084,
+            "trailing_vol": 0.3559,
+            "eligible": true,
+            "realised_next_year": 0.8182
+          },
+          {
+            "ticker": "POSI3.SA",
+            "weight": 0.000977,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8657,
+            "trailing_12m": 3.5695,
+            "trailing_vol": 0.5268,
+            "eligible": true,
+            "realised_next_year": -0.4944
+          },
+          {
+            "ticker": "TEND3.SA",
+            "weight": 0.000892,
+            "previous_weight": 0.002946,
+            "action": "reduced",
+            "score": 0.8507,
+            "trailing_12m": 1.033,
+            "trailing_vol": 0.3346,
+            "eligible": true,
+            "realised_next_year": -0.0256
+          },
+          {
+            "ticker": "CSAN3.SA",
+            "weight": 0.000879,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8358,
+            "trailing_12m": 1.2202,
+            "trailing_vol": 0.3107,
+            "eligible": true,
+            "realised_next_year": 0.0785
+          }
+        ],
+        "domestic_equity": 0.032,
+        "global_sleeve": 0.008,
+        "cash": 0.96,
+        "declared_equity": 0.04
+      },
+      {
+        "decision_year": 2021,
+        "decision_date": "2021-01-04",
+        "global_row": {
+          "trailing_12m": 0.4892,
+          "trailing_vol": 0.3301,
+          "realised_next_year": 0.4089
+        },
+        "cash_row": {
+          "trailing_12m": 0.0222,
+          "trailing_vol": 0.0038,
+          "realised_next_year": 0.0436
+        },
+        "positions": [
+          {
+            "ticker": "BBSE3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.003868,
+            "action": "increased",
+            "score": 0.9722,
+            "trailing_12m": -0.1153,
+            "trailing_vol": 0.4053,
+            "eligible": true,
+            "realised_next_year": -0.2644
+          },
+          {
+            "ticker": "MRFG3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.007593,
+            "action": "reduced",
+            "score": 0.9861,
+            "trailing_12m": 0.5552,
+            "trailing_vol": 0.7,
+            "eligible": true,
+            "realised_next_year": 0.5859
+          },
+          {
+            "ticker": "TASA4.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 1.0,
+            "trailing_12m": 1.7928,
+            "trailing_vol": 0.8781,
+            "eligible": true,
+            "realised_next_year": 0.5848
+          },
+          {
+            "ticker": "EQTL3.SA",
+            "weight": 0.003458,
+            "previous_weight": 0.003136,
+            "action": "increased",
+            "score": 0.9583,
+            "trailing_12m": 0.0511,
+            "trailing_vol": 0.4371,
+            "eligible": true,
+            "realised_next_year": 0.0231
+          },
+          {
+            "ticker": "CSMG3.SA",
+            "weight": 0.00277,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9444,
+            "trailing_12m": -0.0965,
+            "trailing_vol": 0.5611,
+            "eligible": true,
+            "realised_next_year": -0.17
+          },
+          {
+            "ticker": "BEEF3.SA",
+            "weight": 0.002263,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9306,
+            "trailing_12m": -0.1237,
+            "trailing_vol": 0.6042,
+            "eligible": true,
+            "realised_next_year": 0.1576
+          },
+          {
+            "ticker": "WEGE3.SA",
+            "weight": 0.001803,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9167,
+            "trailing_12m": 1.2554,
+            "trailing_vol": 0.5745,
+            "eligible": true,
+            "realised_next_year": -0.1059
+          },
+          {
+            "ticker": "CMIG3.SA",
+            "weight": 0.001499,
+            "previous_weight": 0.003455,
+            "action": "reduced",
+            "score": 0.9028,
+            "trailing_12m": 0.1653,
+            "trailing_vol": 0.587,
+            "eligible": true,
+            "realised_next_year": 0.3705
+          },
+          {
+            "ticker": "BMGB4.SA",
+            "weight": 0.001486,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8889,
+            "trailing_12m": -0.2835,
+            "trailing_vol": 0.6117,
+            "eligible": true,
+            "realised_next_year": -0.4283
+          },
+          {
+            "ticker": "JHSF3.SA",
+            "weight": 0.001032,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.875,
+            "trailing_12m": 0.1906,
+            "trailing_vol": 0.7464,
+            "eligible": true,
+            "realised_next_year": -0.2023
+          },
+          {
+            "ticker": "ELET3.SA",
+            "weight": 0.00094,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8611,
+            "trailing_12m": 0.0367,
+            "trailing_vol": 0.7364,
+            "eligible": true,
+            "realised_next_year": -0.0364
+          },
+          {
+            "ticker": "B3SA3.SA",
+            "weight": 0.000878,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8472,
+            "trailing_12m": 0.315,
+            "trailing_vol": 0.5692,
+            "eligible": true,
+            "realised_next_year": -0.4263
+          }
+        ],
+        "domestic_equity": 0.031999,
+        "global_sleeve": 0.008,
+        "cash": 0.960001,
+        "declared_equity": 0.04
+      },
+      {
+        "decision_year": 2022,
+        "decision_date": "2022-01-03",
+        "global_row": {
+          "trailing_12m": 0.4487,
+          "trailing_vol": 0.1801,
+          "realised_next_year": -0.234
+        },
+        "cash_row": {
+          "trailing_12m": 0.043,
+          "trailing_vol": 0.0016,
+          "realised_next_year": 0.1226
+        },
+        "positions": [
+          {
+            "ticker": "FHER3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 1.0,
+            "trailing_12m": 5.1644,
+            "trailing_vol": 1.2127,
+            "eligible": true,
+            "realised_next_year": -0.0303
+          },
+          {
+            "ticker": "GOAU4.SA",
+            "weight": 0.004609,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9888,
+            "trailing_12m": 0.2592,
+            "trailing_vol": 0.351,
+            "eligible": true,
+            "realised_next_year": 0.2785
+          },
+          {
+            "ticker": "UNIP6.SA",
+            "weight": 0.004246,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9775,
+            "trailing_12m": 1.7309,
+            "trailing_vol": 0.4778,
+            "eligible": true,
+            "realised_next_year": 0.0991
+          },
+          {
+            "ticker": "USIM5.SA",
+            "weight": 0.003804,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9663,
+            "trailing_12m": 0.1529,
+            "trailing_vol": 0.4993,
+            "eligible": true,
+            "realised_next_year": -0.4959
+          },
+          {
+            "ticker": "TASA4.SA",
+            "weight": 0.003673,
+            "previous_weight": 0.00802,
+            "action": "reduced",
+            "score": 0.9551,
+            "trailing_12m": 0.6856,
+            "trailing_vol": 0.5265,
+            "eligible": true,
+            "realised_next_year": -0.4199
+          },
+          {
+            "ticker": "BRAP4.SA",
+            "weight": 0.00296,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9438,
+            "trailing_12m": 0.2148,
+            "trailing_vol": 0.3691,
+            "eligible": true,
+            "realised_next_year": 0.3614
+          },
+          {
+            "ticker": "PETR4.SA",
+            "weight": 0.002123,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9326,
+            "trailing_12m": 0.2954,
+            "trailing_vol": 0.4345,
+            "eligible": true,
+            "realised_next_year": 0.349
+          },
+          {
+            "ticker": "CSNA3.SA",
+            "weight": 0.001907,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9213,
+            "trailing_12m": -0.1564,
+            "trailing_vol": 0.5069,
+            "eligible": true,
+            "realised_next_year": -0.304
+          },
+          {
+            "ticker": "VALE3.SA",
+            "weight": 0.001201,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8989,
+            "trailing_12m": 0.0559,
+            "trailing_vol": 0.3506,
+            "eligible": true,
+            "realised_next_year": 0.2489
+          },
+          {
+            "ticker": "ENAT3.SA",
+            "weight": 0.001149,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8876,
+            "trailing_12m": 0.2361,
+            "trailing_vol": 0.4739,
+            "eligible": true,
+            "realised_next_year": 0.0416
+          },
+          {
+            "ticker": "MRFG3.SA",
+            "weight": 0.000549,
+            "previous_weight": 0.008026,
+            "action": "reduced",
+            "score": 0.8652,
+            "trailing_12m": 0.5723,
+            "trailing_vol": 0.3776,
+            "eligible": true,
+            "realised_next_year": -0.5786
+          },
+          {
+            "ticker": "SIMH3.SA",
+            "weight": 0.000488,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8427,
+            "trailing_12m": 0.6022,
+            "trailing_vol": 0.4652,
+            "eligible": true,
+            "realised_next_year": -0.3497
+          }
+        ],
+        "domestic_equity": 0.031999,
+        "global_sleeve": 0.008,
+        "cash": 0.960001,
+        "declared_equity": 0.04
+      },
+      {
+        "decision_year": 2023,
+        "decision_date": "2023-01-02",
+        "global_row": {
+          "trailing_12m": -0.2359,
+          "trailing_vol": 0.2458,
+          "realised_next_year": 0.1385
+        },
+        "cash_row": {
+          "trailing_12m": 0.1219,
+          "trailing_vol": 0.0015,
+          "realised_next_year": 0.1284
+        },
+        "positions": [
+          {
+            "ticker": "VIVA3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 1.0,
+            "trailing_12m": -0.0918,
+            "trailing_vol": 0.4405,
+            "eligible": true,
+            "realised_next_year": 0.6795
+          },
+          {
+            "ticker": "UNIP6.SA",
+            "weight": 0.00505,
+            "previous_weight": 0.004179,
+            "action": "increased",
+            "score": 0.9888,
+            "trailing_12m": 0.1221,
+            "trailing_vol": 0.3241,
+            "eligible": true,
+            "realised_next_year": -0.0618
+          },
+          {
+            "ticker": "KEPL3.SA",
+            "weight": 0.004891,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9775,
+            "trailing_12m": 0.7899,
+            "trailing_vol": 0.4169,
+            "eligible": true,
+            "realised_next_year": 0.2228
+          },
+          {
+            "ticker": "BRAP4.SA",
+            "weight": 0.003371,
+            "previous_weight": 0.003609,
+            "action": "reduced",
+            "score": 0.9663,
+            "trailing_12m": 0.3697,
+            "trailing_vol": 0.3448,
+            "eligible": true,
+            "realised_next_year": -0.0283
+          },
+          {
+            "ticker": "CURY3.SA",
+            "weight": 0.002944,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9551,
+            "trailing_12m": 0.9617,
+            "trailing_vol": 0.5193,
+            "eligible": true,
+            "realised_next_year": 0.6368
+          },
+          {
+            "ticker": "BBSE3.SA",
+            "weight": 0.002304,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9438,
+            "trailing_12m": 0.7457,
+            "trailing_vol": 0.2516,
+            "eligible": true,
+            "realised_next_year": 0.1176
+          },
+          {
+            "ticker": "PRIO3.SA",
+            "weight": 0.001807,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9326,
+            "trailing_12m": 0.8559,
+            "trailing_vol": 0.4745,
+            "eligible": true,
+            "realised_next_year": 0.2547
+          },
+          {
+            "ticker": "RECV3.SA",
+            "weight": 0.001736,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9213,
+            "trailing_12m": 0.9385,
+            "trailing_vol": 0.4958,
+            "eligible": true,
+            "realised_next_year": -0.3024
+          },
+          {
+            "ticker": "PETR3.SA",
+            "weight": 0.001423,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9101,
+            "trailing_12m": 0.4726,
+            "trailing_vol": 0.4113,
+            "eligible": true,
+            "realised_next_year": 0.8821
+          },
+          {
+            "ticker": "TASA4.SA",
+            "weight": 0.00136,
+            "previous_weight": 0.001908,
+            "action": "reduced",
+            "score": 0.8989,
+            "trailing_12m": -0.4016,
+            "trailing_vol": 0.3975,
+            "eligible": true,
+            "realised_next_year": 0.3343
+          },
+          {
+            "ticker": "FESA4.SA",
+            "weight": 0.001141,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8764,
+            "trailing_12m": 0.1678,
+            "trailing_vol": 0.4286,
+            "eligible": true,
+            "realised_next_year": -0.0526
+          },
+          {
+            "ticker": "GOAU4.SA",
+            "weight": 0.000681,
+            "previous_weight": 0.005277,
+            "action": "reduced",
+            "score": 0.8539,
+            "trailing_12m": 0.283,
+            "trailing_vol": 0.3649,
+            "eligible": true,
+            "realised_next_year": -0.0462
+          }
+        ],
+        "domestic_equity": 0.031998,
+        "global_sleeve": 0.008,
+        "cash": 0.960002,
+        "declared_equity": 0.04
+      },
+      {
+        "decision_year": 2024,
+        "decision_date": "2024-01-02",
+        "global_row": {
+          "trailing_12m": 0.1826,
+          "trailing_vol": 0.1535,
+          "realised_next_year": 0.5566
+        },
+        "cash_row": {
+          "trailing_12m": 0.1313,
+          "trailing_vol": 0.0008,
+          "realised_next_year": 0.1053
+        },
+        "positions": [
+          {
+            "ticker": "CURY3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.004259,
+            "action": "increased",
+            "score": 0.9888,
+            "trailing_12m": 0.5937,
+            "trailing_vol": 0.377,
+            "eligible": true,
+            "realised_next_year": 0.0803
+          },
+          {
+            "ticker": "VIVA3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.007854,
+            "action": "reduced",
+            "score": 1.0,
+            "trailing_12m": 0.6278,
+            "trailing_vol": 0.3635,
+            "eligible": true,
+            "realised_next_year": -0.4248
+          },
+          {
+            "ticker": "CMIN3.SA",
+            "weight": 0.00387,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9775,
+            "trailing_12m": 1.2281,
+            "trailing_vol": 0.3619,
+            "eligible": true,
+            "realised_next_year": -0.2675
+          },
+          {
+            "ticker": "BBSE3.SA",
+            "weight": 0.003614,
+            "previous_weight": 0.002276,
+            "action": "increased",
+            "score": 0.9663,
+            "trailing_12m": 0.1109,
+            "trailing_vol": 0.1994,
+            "eligible": true,
+            "realised_next_year": 0.151
+          },
+          {
+            "ticker": "PLPL3.SA",
+            "weight": 0.002897,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9551,
+            "trailing_12m": 1.9985,
+            "trailing_vol": 0.5306,
+            "eligible": true,
+            "realised_next_year": -0.1588
+          },
+          {
+            "ticker": "LEVE3.SA",
+            "weight": 0.002711,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9438,
+            "trailing_12m": 0.6574,
+            "trailing_vol": 0.4303,
+            "eligible": true,
+            "realised_next_year": -0.1355
+          },
+          {
+            "ticker": "KEPL3.SA",
+            "weight": 0.002593,
+            "previous_weight": 0.005286,
+            "action": "reduced",
+            "score": 0.9326,
+            "trailing_12m": 0.1712,
+            "trailing_vol": 0.3661,
+            "eligible": true,
+            "realised_next_year": -0.0431
+          },
+          {
+            "ticker": "TEND3.SA",
+            "weight": 0.001822,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9213,
+            "trailing_12m": 2.2857,
+            "trailing_vol": 0.6895,
+            "eligible": true,
+            "realised_next_year": -0.1094
+          },
+          {
+            "ticker": "PETR4.SA",
+            "weight": 0.001119,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9101,
+            "trailing_12m": 0.9195,
+            "trailing_vol": 0.3232,
+            "eligible": true,
+            "realised_next_year": 0.1738
+          },
+          {
+            "ticker": "CEAB3.SA",
+            "weight": 0.001016,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8989,
+            "trailing_12m": 2.6083,
+            "trailing_vol": 0.7589,
+            "eligible": true,
+            "realised_next_year": 0.0705
+          },
+          {
+            "ticker": "UNIP6.SA",
+            "weight": 0.000892,
+            "previous_weight": 0.004188,
+            "action": "reduced",
+            "score": 0.8876,
+            "trailing_12m": -0.1037,
+            "trailing_vol": 0.2864,
+            "eligible": true,
+            "realised_next_year": -0.2497
+          },
+          {
+            "ticker": "WEGE3.SA",
+            "weight": 0.000885,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8764,
+            "trailing_12m": -0.0257,
+            "trailing_vol": 0.2517,
+            "eligible": true,
+            "realised_next_year": 0.4688
+          }
+        ],
+        "domestic_equity": 0.031999,
+        "global_sleeve": 0.008,
+        "cash": 0.960001,
+        "declared_equity": 0.04
+      },
+      {
+        "decision_year": 2025,
+        "decision_date": "2025-01-02",
+        "global_row": {
+          "trailing_12m": 0.565,
+          "trailing_vol": 0.1436,
+          "realised_next_year": 0.0522
+        },
+        "cash_row": {
+          "trailing_12m": 0.1062,
+          "trailing_vol": 0.0012,
+          "realised_next_year": 0.1398
+        },
+        "positions": [
+          {
+            "ticker": "CURY3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.005206,
+            "action": "increased",
+            "score": 0.9896,
+            "trailing_12m": 0.0676,
+            "trailing_vol": 0.3011,
+            "eligible": true,
+            "realised_next_year": 1.1277
+          },
+          {
+            "ticker": "VIVA3.SA",
+            "weight": 0.00529,
+            "previous_weight": 0.002772,
+            "action": "increased",
+            "score": 1.0,
+            "trailing_12m": -0.426,
+            "trailing_vol": 0.3646,
+            "eligible": true,
+            "realised_next_year": 0.892
+          },
+          {
+            "ticker": "BBSE3.SA",
+            "weight": 0.00481,
+            "previous_weight": 0.003788,
+            "action": "increased",
+            "score": 0.9792,
+            "trailing_12m": 0.1686,
+            "trailing_vol": 0.1536,
+            "eligible": true,
+            "realised_next_year": 0.1153
+          },
+          {
+            "ticker": "STBP3.SA",
+            "weight": 0.002987,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9688,
+            "trailing_12m": 0.4115,
+            "trailing_vol": 0.3787,
+            "eligible": true,
+            "realised_next_year": 0.1747
+          },
+          {
+            "ticker": "CMIN3.SA",
+            "weight": 0.002538,
+            "previous_weight": 0.002582,
+            "action": "reduced",
+            "score": 0.9583,
+            "trailing_12m": -0.2543,
+            "trailing_vol": 0.3853,
+            "eligible": true,
+            "realised_next_year": 0.1691
+          },
+          {
+            "ticker": "PLPL3.SA",
+            "weight": 0.002329,
+            "previous_weight": 0.00222,
+            "action": "increased",
+            "score": 0.9479,
+            "trailing_12m": -0.1461,
+            "trailing_vol": 0.482,
+            "eligible": true,
+            "realised_next_year": 0.7258
+          },
+          {
+            "ticker": "WEGE3.SA",
+            "weight": 0.002198,
+            "previous_weight": 0.001184,
+            "action": "increased",
+            "score": 0.9375,
+            "trailing_12m": 0.458,
+            "trailing_vol": 0.2526,
+            "eligible": true,
+            "realised_next_year": -0.0294
+          },
+          {
+            "ticker": "LEVE3.SA",
+            "weight": 0.002007,
+            "previous_weight": 0.002135,
+            "action": "reduced",
+            "score": 0.9271,
+            "trailing_12m": -0.1576,
+            "trailing_vol": 0.252,
+            "eligible": true,
+            "realised_next_year": 0.4062
+          },
+          {
+            "ticker": "EMBR3.SA",
+            "weight": 0.001294,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9167,
+            "trailing_12m": 1.5483,
+            "trailing_vol": 0.3992,
+            "eligible": true,
+            "realised_next_year": 0.6022
+          },
+          {
+            "ticker": "VBBR3.SA",
+            "weight": 0.001225,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.9062,
+            "trailing_12m": -0.1575,
+            "trailing_vol": 0.2649,
+            "eligible": true,
+            "realised_next_year": 0.6532
+          },
+          {
+            "ticker": "RECV3.SA",
+            "weight": 0.001081,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8958,
+            "trailing_12m": -0.1406,
+            "trailing_vol": 0.3598,
+            "eligible": true,
+            "realised_next_year": -0.2704
+          },
+          {
+            "ticker": "BRFS3.SA",
+            "weight": 0.000951,
+            "previous_weight": 0.0,
+            "action": "entered",
+            "score": 0.8854,
+            "trailing_12m": 0.8872,
+            "trailing_vol": 0.3967,
+            "eligible": true,
+            "realised_next_year": -0.2171
+          }
+        ],
+        "domestic_equity": 0.032,
+        "global_sleeve": 0.008,
+        "cash": 0.96,
+        "declared_equity": 0.04
+      }
+    ],
     "conservador": [
       {
         "decision_year": 2015,

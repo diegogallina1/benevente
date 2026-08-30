@@ -33,7 +33,8 @@ OUT_DOCX = ROOT / "artifacts" / "decision_dossiers" / "docx"
 NAVY = RGBColor(0x10, 0x2A, 0x43)
 TEAL = RGBColor(0x0C, 0x80, 0x76)
 MUTED = RGBColor(0x5B, 0x6F, 0x7C)
-LABELS = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
+LABELS = {"ultraconservador": "Ultraconservador", "conservador": "Conservador",
+          "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
 ACTIONS = {"entered": "entrou", "maintained": "mantido", "increased": "aumentou",
            "reduced": "reduziu", "exited": "saiu", "not_held": "fora"}
 

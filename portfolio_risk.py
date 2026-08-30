@@ -55,7 +55,15 @@ PROFILE_SPECS: dict[str, RiskProfileSpec] = {
         maximum_drawdown_tolerance=.40,
     ),
 }
-PROFILE_ALIASES = {"moderado": "equilibrado", "moderate": "equilibrado", "conservative": "conservador", "aggressive": "arrojado"}
+PROFILE_ALIASES = {
+    "moderado": "equilibrado", "moderate": "equilibrado",
+    "conservative": "conservador", "aggressive": "arrojado",
+    # O degrau declarado em 30/08/2026 herda a camada de proteção do conservador.
+    # Fica como apelido, e não como espécie nova, para deixar explícito que ele
+    # não ganhou multiplicadores próprios escolhidos depois de ver resultado: a
+    # regra do degrau moveu o teto de ações, e só ele.
+    "ultraconservador": "conservador",
+}
 
 
 def resolve_profile_spec(profile: "str | RiskProfileSpec") -> RiskProfileSpec:

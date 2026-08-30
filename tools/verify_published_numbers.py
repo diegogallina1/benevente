@@ -109,7 +109,7 @@ def main() -> int:
     # queda que estes valores travam — se um dia subirem sem uma nova versão
     # registrada, alguma entrada mudou sem passar pelo rito.
     L = json.loads((ROOT / "web/ladder_v2.json").read_text(encoding="utf-8"))
-    R = json.loads((ROOT / "data/benevente_profile_ladder_v3_registration.json").read_text(encoding="utf-8"))
+    R = json.loads((ROOT / "data/benevente_profile_ladder_v4_registration.json").read_text(encoding="utf-8"))
     esperado = {"conservador": (.35, 12, .1322, -.1671, .1234, -.0917),
                 "equilibrado": (.55, 8, .1625, -.2654, .1539, -.1788),
                 "arrojado": (.75, 5, .2026, -.3564, .1979, -.2895)}
@@ -129,9 +129,14 @@ def main() -> int:
           and close(L["references"]["Ibovespa"]["cagr"], .1174, 5e-4))
     check("a referência de caixa é nomeada pelo instrumento, não pelo índice",
           "Tesouro Selic" in L["references"] and "CDI" not in L["references"])
-    check("selo e assinatura: evidência == registro v3",
+    check("selo e assinatura: evidência == registro vigente",
           L["registration_sha256"] == R["registration_sha256"] and L["approved_by"] == R["approved_by"]
-          and R["policy"].endswith("_v3") and R["supersedes"].endswith("_v2"))
+          # A cadeia importa mais que o número da versão: cada registro tem de
+          # dizer qual sucede, para que a linhagem seja seguível. Fixar "_v3"
+          # travava a versão em vez de conferir a cadeia.
+          and R["policy"].startswith("benevente_profile_ladder_v")
+          and R["supersedes"].startswith("benevente_profile_ladder_v")
+          and R["policy"] != R["supersedes"])
     forbidden = json.dumps(R).lower()
     # Parâmetros de política com "drawdown" no nome (limiares do overlay) são
     # permitidos; estatísticas de resultado, não.

@@ -26,7 +26,7 @@ from fixed_income_catalog import FGC_PER_CONGLOMERATE_BRL  # noqa: E402
 
 APP = ROOT / "artifacts" / "portfolio_mapping_v1" / "mapping_by_profile.json"
 TELA = ROOT / "docs" / "desenho_tela_mapa.html"
-REGISTRO = ROOT / "data" / "benevente_profile_ladder_v3_registration.json"
+REGISTRO = ROOT / "data" / "benevente_profile_ladder_v4_registration.json"
 INDEX = ROOT / "web" / "index.html"
 
 #: Palavras que o site define em algum canto e que o app não pode usar sem

@@ -21,7 +21,12 @@ def test_every_profile_year_has_a_dossier() -> None:
                 for profile, blocks in composition["profiles"].items() for block in blocks}
     published = {path.name for path in DOSSIERS.glob("*.pdf")}
     assert expected == published
-    assert len(expected) == 33
+    # A contagem vem da composição publicada, não escrita aqui: fixá-la em 33
+    # fez este teste quebrar quando a escada ganhou um quarto degrau, por uma
+    # mudança que não tem relação com o que ele protege, que é não faltar
+    # dossiê para nenhum par de perfil e ano.
+    anos = {b["decision_year"] for blocos in composition["profiles"].values() for b in blocos}
+    assert len(expected) == len(composition["profiles"]) * len(anos)
     small = [path.name for path in DOSSIERS.glob("*.pdf") if path.stat().st_size < 40_000]
     assert not small, f"PDF suspeito de truncado: {small}"
 

@@ -26,13 +26,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-PROFILES = ("conservador", "equilibrado", "arrojado")
+#: Do mais apertado ao mais solto. A ordem e o que faz o perfil ser o menor
+#: teto entre as respostas, em vez de uma soma de pontos.
+PROFILES = ("ultraconservador", "conservador", "equilibrado", "arrojado")
 RANK = {name: i for i, name in enumerate(PROFILES)}
 
 #: Piores quedas medidas na janela declarada (2015–2025, política v3). São elas
 #: que dão sentido à pergunta central — e publicá-las é o oposto de perguntar
 #: "qual o seu apetite a risco?".
-WORST_DRAWDOWN = {"conservador": -0.0917, "equilibrado": -0.1788, "arrojado": -0.2895}
+WORST_DRAWDOWN = {"ultraconservador": -0.0081, "conservador": -0.0917,
+                  "equilibrado": -0.1788, "arrojado": -0.2895}
 
 
 @dataclass(frozen=True)
@@ -72,9 +75,13 @@ QUESTIONS: tuple[Question, ...] = (
     Question(
         "queda",
         "Qual a maior queda que você aguentaria sem vender?",
-        "Na janela medida, o conservador caiu 9,2%, o equilibrado 17,9% e o arrojado 28,9% "
-        "no pior momento. Vender no fundo é o que transforma queda em prejuízo.",
-        (Option("ate_10", "Até 10% — abaixo disso eu não durmo", "conservador",
+        "Na janela medida, o ultraconservador caiu 0,8%, o conservador 9,2%, o equilibrado "
+        "17,9% e o arrojado 28,9% no pior momento. Vender no fundo é o que transforma queda "
+        "em prejuízo.",
+        (Option("ate_2", "Até 2% — quero quase não sentir", "ultraconservador",
+                "só o ultraconservador ficou dentro desse limite na janela medida",
+                "queda até 2%"),
+         Option("ate_10", "Até 10% — abaixo disso eu não durmo", "conservador",
                 "só o conservador ficou dentro desse limite na janela medida", "queda até 10%"),
          Option("ate_20", "Até 20% — incomoda, mas eu seguro", "equilibrado",
                 "o arrojado passou de 28% na pior queda, além do que foi declarado",

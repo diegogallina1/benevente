@@ -54,6 +54,14 @@ CONFIRMATORY_FROM_YEAR = 2027
 GLOBAL_FRACTION = .20
 
 LADDER_V2: dict[str, dict] = {
+    # Declarado em 30/08/2026: a perna de ações cabe no carrego de um trimestre,
+    # na pior queda já medida dela. A regra não olha a queda da carteira, olha
+    # quanto de ação o carrego paga. Herda a camada do conservador.
+    "ultraconservador": {
+        "maximum_equity_weight": 0.04,
+        "top_assets": 12,
+        "rationale": "A perna de ações cabe no carrego de um trimestre.",
+    },
     "conservador": {
         "maximum_equity_weight": .35, "top_assets": 12,
         "rationale": "Widest basket at the smallest budget. With the two layers the worst calendar "

@@ -45,8 +45,10 @@ PUBLIC_NAME = "Benevente"
 CASH_LABEL = "Tesouro Selic"
 # A política vigente é a v3: mesma escada da v2 com o caixa declarado como
 # instrumento comprável. A v2 fica publicada como linhagem, não como vigente.
-REGISTRATION = ROOT / "data" / "benevente_profile_ladder_v3_registration.json"
-SUPERSEDED_REGISTRATION = ROOT / "data" / "benevente_profile_ladder_v2_registration.json"
+# A v4 acrescenta o ultraconservador e não toca nos três anteriores. O arquivo da
+# v3 fica como está: registro congelado não se reescreve, ele é sucedido.
+REGISTRATION = ROOT / "data" / "benevente_profile_ladder_v4_registration.json"
+SUPERSEDED_REGISTRATION = ROOT / "data" / "benevente_profile_ladder_v3_registration.json"
 BENCHMARKS = ROOT / "data" / "benchmarks_market_2011_2025.csv"
 
 
@@ -176,7 +178,12 @@ def _years_beating_cash(track: pd.Series, daily: pd.DataFrame) -> dict:
     return {"years_beating_cdi": int((annual.r > annual.c).sum())}
 
 
-LABELS = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
+# O retrospectivo cobre os quatro degraus. O acompanhamento de 2026, que vive em
+# carteira2026.js, continua com três: o ultraconservador foi declarado em
+# 30/08/2026 e o monitor diário nunca o seguiu. As duas listas são diferentes de
+# propósito, e fundi-las publicaria um acompanhamento que não existe.
+LABELS = {"ultraconservador": "Ultraconservador", "conservador": "Conservador",
+          "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
 
 
 def _monthly_curve(daily_dates: pd.Series, tracks: dict[str, pd.Series]) -> dict:

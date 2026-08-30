@@ -20,8 +20,10 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
 EVIDENCE = json.loads((WEB / "ladder_v2.json").read_text(encoding="utf-8"))
+# A v4 sucede a v3 e acrescenta o ultraconservador sem tocar nos três anteriores.
+# O arquivo da v3 continua no repositório: registro congelado não se reescreve.
 REGISTRATION = json.loads(
-    (ROOT / "data" / "benevente_profile_ladder_v3_registration.json").read_text(encoding="utf-8"))
+    (ROOT / "data" / "benevente_profile_ladder_v4_registration.json").read_text(encoding="utf-8"))
 PAGES = {path.name: path.read_text(encoding="utf-8") for path in sorted(WEB.glob("*.html"))}
 
 # Figures produced by the nested search that the declared ladder replaced. They
@@ -253,7 +255,15 @@ def test_home_summary_selects_profiles_by_name_not_by_copy() -> None:
     curvas dos três perfis. O discriminador agora é o nome da série.
     """
     source = (ROOT / "web" / "app.js").read_text(encoding="utf-8")
-    assert 'const PROFILE_SERIES = ["Conservador", "Equilibrado", "Arrojado"]' in source
+    # A propriedade é o discriminador ser o nome da série, não a lista ter três
+    # entradas: fixar a lista fez este teste quebrar quando a escada ganhou um
+    # quarto degrau, por uma mudança que não tinha relação com o que ele protege.
+    lista = re.search(r"const PROFILE_SERIES = \[(.*?)\]", source)
+    assert lista, "o resumo da home precisa discriminar os perfis por nome"
+    rotulos = {x.strip().strip('"') for x in lista.group(1).split(",")}
+    evidencia = json.loads((ROOT / "web" / "ladder_v2.json").read_text(encoding="utf-8"))
+    assert rotulos == {p.capitalize() for p in evidencia["profiles"]}, (
+        "a lista do resumo e a escada publicada divergiram")
     assert "PROFILE_SERIES.includes(name)" in source
     assert 'noteFor[name]?.startsWith(' not in source
     # E o texto de reserva da política aposentada não pode existir para ser exibido.
@@ -319,5 +329,9 @@ def test_the_home_finds_the_cash_series_instead_of_naming_it() -> None:
     assert 'baseRows.find(([name]) => name === "CDI")' not in app
     evidence = json.loads((ROOT / "web" / "ladder_v2.json").read_text(encoding="utf-8"))
     series = list(evidence["monthly_curve"]["series"])
-    caixa = [s for s in series if s not in ("Conservador", "Equilibrado", "Arrojado", "Ibovespa", "BOVA11")]
+    # Os perfis vêm da própria evidência, não de uma lista repetida aqui: foi a
+    # lista repetida em app.js que quebrou quando a escada ganhou um degrau.
+    perfis = {evidence["profiles"][p].get("label") or p.capitalize()
+              for p in evidence["profiles"]}
+    caixa = [s for s in series if s not in perfis | {"Ibovespa", "BOVA11"}]
     assert len(caixa) == 1, f"a heurística do caixa precisa de exatamente uma sobra: {series}"

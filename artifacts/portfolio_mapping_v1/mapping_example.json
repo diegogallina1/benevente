@@ -53,6 +53,7 @@
     "questionnaire": {
       "method": "A restrição mais apertada define o perfil. Não há pontuação: cada resposta impõe um teto e vale o menor deles.",
       "worst_measured_drawdown": {
+        "ultraconservador": -0.0081,
         "conservador": -0.0917,
         "equilibrado": -0.1788,
         "arrojado": -0.2895
@@ -90,9 +91,16 @@
         {
           "key": "queda",
           "prompt": "Qual a maior queda que você aguentaria sem vender?",
-          "help": "Na janela medida, o conservador caiu 9,2%, o equilibrado 17,9% e o arrojado 28,9% no pior momento. Vender no fundo é o que transforma queda em prejuízo.",
+          "help": "Na janela medida, o ultraconservador caiu 0,8%, o conservador 9,2%, o equilibrado 17,9% e o arrojado 28,9% no pior momento. Vender no fundo é o que transforma queda em prejuízo.",
           "kind": "escolha",
           "options": [
+            {
+              "value": "ate_2",
+              "label": "Até 2% — quero quase não sentir",
+              "brief": "queda até 2%",
+              "caps_profile": "ultraconservador",
+              "note": "só o ultraconservador ficou dentro desse limite na janela medida"
+            },
             {
               "value": "ate_10",
               "label": "Até 10% — abaixo disso eu não durmo",

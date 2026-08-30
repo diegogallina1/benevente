@@ -35,14 +35,18 @@ let chartScale = "linear";
 const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 // Os três perfis declarados, pelo nome com que as séries chegam. Serve de
 // discriminador em toda parte que precise separar política de referência.
-const PROFILE_SERIES = ["Conservador", "Equilibrado", "Arrojado"];
+// Os degraus da escada, com o rótulo que a evidência publica. Escrever a lista
+// à mão fez a heurística do caixa quebrar quando a escada ganhou um quarto
+// degrau: sobravam dois nomes onde ela precisa de um. A ordem é do mais
+// apertado ao mais solto, como no questionário.
+const PROFILE_SERIES = ["Ultraconservador", "Conservador", "Equilibrado", "Arrojado"];
 // O caixa é a série que não é perfil nem mercado. Descobri-la em vez de fixá-la
 // pelo nome é o que impede que a próxima política renomeie o instrumento e
 // apague o resumo da home sem que nenhum teste perceba.
 const MARKET_SERIES = ["Ibovespa", "BOVA11"];
 const cashSeriesName = names =>
   names.find(name => !PROFILE_SERIES.includes(name) && !MARKET_SERIES.includes(name));
-const colors = { "Conservador":"#7fc0b4", "Equilibrado":"#20a486", "Arrojado":"#0f766e", "Benevente":"#0f766e", "Benevente 1":"#0f766e", "Benevente 2":"#20a486", "Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "Tesouro Selic":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490" };
+const colors = { "Ultraconservador":"#a8d5cb", "Conservador":"#7fc0b4", "Equilibrado":"#20a486", "Arrojado":"#0f766e", "Benevente":"#0f766e", "Benevente 1":"#0f766e", "Benevente 2":"#20a486", "Benevente Wealth System":"#0f766e", "Benevente Wealth System (MVO)":"#0f766e", "Benevente Quant AI":"#0f766e", "Benevente após IR":"#5aa79c", "MVO anual":"#ae8871", "MVO de referência":"#ae8871", "MVO clássico (elegível)":"#ae8871", "MVO clássico":"#ae8871", "CDI":"#3b779a", "Tesouro Selic":"#3b779a", "CDI após IR":"#8fb3c8", "Ibovespa":"#7a8490" };
 // Any string that reaches innerHTML has to be escaped, including strings the
 // user typed into the compare box and the name of a file they imported. Nothing
 // here is persisted or shared, so the exposure is to the person's own browser

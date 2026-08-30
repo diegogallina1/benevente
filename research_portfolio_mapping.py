@@ -14,7 +14,7 @@ from pathlib import Path
 import json
 
 from b3_connection import Qualidade
-from client_intake import Intake, as_json
+from client_intake import Intake, as_json, PROFILES
 from portfolio_mapping import Bucket, Position, Source, adapt_portfolio, map_portfolio
 
 ROOT = Path(__file__).resolve().parent
@@ -158,11 +158,15 @@ def main() -> None:
         "alternative": adaptar,
     }, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    # A mesma carteira contra os três perfis. O protótipo da tela precisa dos
+    # A mesma carteira contra cada perfil da escada. A lista vem do questionário
+    # em vez de repetida aqui: quando a escada ganhou um degrau, este arquivo
+    # seguiu sozinho, e uma lista copiada teria deixado o degrau novo de fora
+    # sem ninguém notar.
+    # O protótipo da tela precisa dos
     # três porque o questionário pode terminar em qualquer um deles, e mostrar
     # sempre o mesmo mapa faria as perguntas parecerem decorativas.
     todos = {}
-    for nome in ("conservador", "equilibrado", "arrojado"):
+    for nome in PROFILES:
         livro, data = alvo_do_perfil(nome)
         todos[nome] = {"decision": data,
                        "adequar": map_portfolio(posicoes, livro, **kwargs),
