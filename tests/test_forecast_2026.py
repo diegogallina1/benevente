@@ -134,3 +134,29 @@ def test_a_regua_declara_quando_nao_vale_para_o_perfil():
     # A mesma explicação, nas duas telas: duas versões divergem em silêncio.
     artefato = (ROOT / "docs" / "desenho_tela_mapa.html").read_text(encoding="utf-8")
     assert "A régua não mede este perfil" in artefato
+
+
+def test_ano_na_borda_e_declarado():
+    """A contagem de cobertura tem menos precisão do que aparenta.
+
+    No conservador, 2025 realizou 20,23% contra uma ponta de faixa em 20,21%: o
+    ano entra ou sai por dois centésimos de ponto, que é ruído de Monte Carlo e
+    não método. Publicar "7 de 8" sem dizer isso empresta ao número uma casa
+    decimal que ninguém tem.
+    """
+    web = json.loads((ROOT / "web" / "calibracao.json").read_text(encoding="utf-8"))
+    assert any(r.get("on_edge_years") for r in web["profiles"].values()), (
+        "nenhum ano de borda marcado: a marcação sumiu do publicador")
+    metodo = (ROOT / "web" / "metodo.html").read_text(encoding="utf-8")
+    for perfil, r in web["profiles"].items():
+        for ano in r.get("on_edge_years", []):
+            assert f"{ano} na borda" in metodo or f"{ano}, " in metodo, (perfil, ano)
+
+
+def test_cada_perfil_tem_a_propria_semente():
+    """Com um gerador só, acrescentar um perfil na frente da lista muda os
+    sorteios de todos os outros. Foi o que moveu a cobertura do conservador de
+    6 para 7 sem que o método dele mudasse."""
+    fonte = (ROOT / "research_forecast_calibration.py").read_text(encoding="utf-8")
+    assert "hashlib.sha256(profile.encode" in fonte
+    assert "rng = np.random.default_rng(SEED)" not in fonte

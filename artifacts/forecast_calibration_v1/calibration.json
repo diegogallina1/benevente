@@ -17,107 +17,135 @@
           "year": 2018,
           "history_days": 746,
           "horizon_days": 245,
-          "p10": 0.1099,
-          "p50": 0.123232,
-          "p90": 0.137188,
+          "cash_windows_known": 1998,
+          "p10": 0.075384,
+          "p50": 0.110209,
+          "p90": 0.144331,
           "realised": 0.071044,
           "inside": false,
           "above": false,
-          "below": true
+          "below": true,
+          "on_edge": false,
+          "band_source": "retorno de doze meses do caixa conhecido até janeiro"
         },
         {
           "year": 2019,
           "history_days": 991,
           "horizon_days": 247,
-          "p10": 0.095921,
-          "p50": 0.110846,
-          "p90": 0.126263,
+          "cash_windows_known": 2244,
+          "p10": 0.070081,
+          "p50": 0.109019,
+          "p90": 0.146358,
           "realised": 0.070148,
-          "inside": false,
+          "inside": true,
           "above": false,
-          "below": true
+          "below": false,
+          "on_edge": true,
+          "band_source": "retorno de doze meses do caixa conhecido até janeiro"
         },
         {
           "year": 2020,
           "history_days": 1238,
           "horizon_days": 247,
-          "p10": 0.087926,
-          "p50": 0.102352,
-          "p90": 0.117955,
+          "cash_windows_known": 2494,
+          "p10": 0.062103,
+          "p50": 0.106356,
+          "p90": 0.14559,
           "realised": 0.023509,
           "inside": false,
           "above": false,
-          "below": true
+          "below": true,
+          "on_edge": false,
+          "band_source": "retorno de doze meses do caixa conhecido até janeiro"
         },
         {
           "year": 2021,
           "history_days": 1485,
           "horizon_days": 246,
-          "p10": 0.070591,
-          "p50": 0.088939,
-          "p90": 0.106724,
+          "cash_windows_known": 2743,
+          "p10": 0.045576,
+          "p50": 0.099671,
+          "p90": 0.144668,
           "realised": 0.046076,
-          "inside": false,
+          "inside": true,
           "above": false,
-          "below": true
+          "below": false,
+          "on_edge": true,
+          "band_source": "retorno de doze meses do caixa conhecido até janeiro"
         },
         {
           "year": 2022,
           "history_days": 1731,
           "horizon_days": 249,
-          "p10": 0.065179,
-          "p50": 0.083194,
-          "p90": 0.101424,
+          "cash_windows_known": 2990,
+          "p10": 0.046371,
+          "p50": 0.098187,
+          "p90": 0.142682,
           "realised": 0.112633,
-          "inside": false,
-          "above": true,
-          "below": false
+          "inside": true,
+          "above": false,
+          "below": false,
+          "on_edge": false,
+          "band_source": "retorno de doze meses do caixa conhecido até janeiro"
         },
         {
           "year": 2023,
           "history_days": 1980,
           "horizon_days": 247,
-          "p10": 0.068574,
-          "p50": 0.086365,
-          "p90": 0.10372,
+          "cash_windows_known": 3240,
+          "p10": 0.0462,
+          "p50": 0.100873,
+          "p90": 0.143175,
           "realised": 0.131811,
-          "inside": false,
-          "above": true,
-          "below": false
+          "inside": true,
+          "above": false,
+          "below": false,
+          "on_edge": false,
+          "band_source": "retorno de doze meses do caixa conhecido até janeiro"
         },
         {
           "year": 2024,
           "history_days": 2227,
           "horizon_days": 250,
-          "p10": 0.074191,
-          "p50": 0.092204,
-          "p90": 0.109829,
+          "cash_windows_known": 3488,
+          "p10": 0.048804,
+          "p50": 0.103361,
+          "p90": 0.142723,
           "realised": 0.101928,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false,
+          "band_source": "retorno de doze meses do caixa conhecido até janeiro"
         },
         {
           "year": 2025,
           "history_days": 2477,
           "horizon_days": 249,
-          "p10": 0.075767,
-          "p50": 0.093179,
-          "p90": 0.109939,
+          "cash_windows_known": 3739,
+          "p10": 0.049285,
+          "p50": 0.10574,
+          "p90": 0.142851,
           "realised": 0.147538,
           "inside": false,
           "above": true,
-          "below": false
+          "below": false,
+          "on_edge": false,
+          "band_source": "retorno de doze meses do caixa conhecido até janeiro"
         }
       ],
       "coverage": {
-        "inside": 1,
+        "inside": 5,
         "total": 8,
-        "observed": 0.125,
+        "observed": 0.625,
         "nominal": 0.8,
         "standard_error": 0.1414
       },
-      "median_bias_pp": -0.945
+      "median_bias_pp": -1.609,
+      "on_edge_years": [
+        2019,
+        2021
+      ]
     },
     "conservador": {
       "years": [
@@ -125,107 +153,118 @@
           "year": 2018,
           "history_days": 746,
           "horizon_days": 245,
-          "p10": 0.064443,
-          "p50": 0.154172,
-          "p90": 0.255163,
+          "p10": 0.06265,
+          "p50": 0.152867,
+          "p90": 0.255452,
           "realised": 0.143062,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2019,
           "history_days": 991,
           "horizon_days": 247,
-          "p10": 0.067398,
-          "p50": 0.153226,
-          "p90": 0.249976,
+          "p10": 0.066001,
+          "p50": 0.152138,
+          "p90": 0.248651,
           "realised": 0.169041,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2020,
           "history_days": 1238,
           "horizon_days": 247,
-          "p10": 0.073421,
-          "p50": 0.155057,
-          "p90": 0.245021,
+          "p10": 0.072031,
+          "p50": 0.15383,
+          "p90": 0.244886,
           "realised": 0.027774,
           "inside": false,
           "above": false,
-          "below": true
+          "below": true,
+          "on_edge": false
         },
         {
           "year": 2021,
           "history_days": 1485,
           "horizon_days": 246,
-          "p10": 0.045697,
-          "p50": 0.135784,
-          "p90": 0.227568,
+          "p10": 0.04475,
+          "p50": 0.13594,
+          "p90": 0.229174,
           "realised": 0.068277,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2022,
           "history_days": 1731,
           "horizon_days": 249,
-          "p10": 0.042104,
-          "p50": 0.128176,
-          "p90": 0.217225,
+          "p10": 0.041685,
+          "p50": 0.127642,
+          "p90": 0.215112,
           "realised": 0.044387,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2023,
           "history_days": 1980,
           "horizon_days": 247,
-          "p10": 0.03451,
-          "p50": 0.115718,
-          "p90": 0.201272,
+          "p10": 0.033325,
+          "p50": 0.116008,
+          "p90": 0.201453,
           "realised": 0.165387,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2024,
           "history_days": 2227,
           "horizon_days": 250,
-          "p10": 0.038715,
-          "p50": 0.121575,
-          "p90": 0.204621,
+          "p10": 0.038528,
+          "p50": 0.121594,
+          "p90": 0.206287,
           "realised": 0.084353,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2025,
           "history_days": 2477,
           "horizon_days": 249,
-          "p10": 0.040196,
-          "p50": 0.120541,
-          "p90": 0.202145,
+          "p10": 0.040495,
+          "p50": 0.120936,
+          "p90": 0.203057,
           "realised": 0.202343,
-          "inside": false,
-          "above": true,
-          "below": false
+          "inside": true,
+          "above": false,
+          "below": false,
+          "on_edge": true
         }
       ],
       "coverage": {
-        "inside": 6,
+        "inside": 7,
         "total": 8,
-        "observed": 0.75,
+        "observed": 0.875,
         "nominal": 0.8,
         "standard_error": 0.1414
       },
-      "median_bias_pp": -2.245
+      "median_bias_pp": -2.204,
+      "on_edge_years": [
+        2025
+      ]
     },
     "equilibrado": {
       "years": [
@@ -233,97 +272,105 @@
           "year": 2018,
           "history_days": 746,
           "horizon_days": 245,
-          "p10": 0.004865,
-          "p50": 0.166539,
-          "p90": 0.367266,
+          "p10": 0.003698,
+          "p50": 0.164465,
+          "p90": 0.364619,
           "realised": 0.24362,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2019,
           "history_days": 991,
           "horizon_days": 247,
-          "p10": 0.030731,
-          "p50": 0.186965,
-          "p90": 0.375436,
+          "p10": 0.028649,
+          "p50": 0.187347,
+          "p90": 0.376532,
           "realised": 0.25966,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2020,
           "history_days": 1238,
           "horizon_days": 247,
-          "p10": 0.052894,
-          "p50": 0.200897,
-          "p90": 0.377893,
+          "p10": 0.049623,
+          "p50": 0.200464,
+          "p90": 0.37734,
           "realised": 0.04208,
           "inside": false,
           "above": false,
-          "below": true
+          "below": true,
+          "on_edge": false
         },
         {
           "year": 2021,
           "history_days": 1485,
           "horizon_days": 246,
-          "p10": 0.010865,
-          "p50": 0.179606,
-          "p90": 0.360005,
+          "p10": 0.011974,
+          "p50": 0.181255,
+          "p90": 0.356847,
           "realised": 0.131106,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2022,
           "history_days": 1731,
           "horizon_days": 249,
-          "p10": 0.015992,
-          "p50": 0.175674,
-          "p90": 0.345679,
+          "p10": 0.018168,
+          "p50": 0.17744,
+          "p90": 0.349612,
           "realised": 0.009512,
           "inside": false,
           "above": false,
-          "below": true
+          "below": true,
+          "on_edge": false
         },
         {
           "year": 2023,
           "history_days": 1980,
           "horizon_days": 247,
-          "p10": 0.000543,
-          "p50": 0.153586,
-          "p90": 0.317144,
+          "p10": -0.000334,
+          "p50": 0.153228,
+          "p90": 0.317862,
           "realised": 0.190022,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2024,
           "history_days": 2227,
           "horizon_days": 250,
-          "p10": 0.005315,
-          "p50": 0.156543,
-          "p90": 0.321799,
+          "p10": 0.005666,
+          "p50": 0.156514,
+          "p90": 0.319451,
           "realised": 0.055045,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2025,
           "history_days": 2477,
           "horizon_days": 249,
-          "p10": 0.005264,
-          "p50": 0.149715,
-          "p90": 0.308274,
+          "p10": 0.000542,
+          "p50": 0.149146,
+          "p90": 0.305242,
           "realised": 0.284688,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         }
       ],
       "coverage": {
@@ -333,7 +380,8 @@
         "nominal": 0.8,
         "standard_error": 0.1414
       },
-      "median_bias_pp": -1.922
+      "median_bias_pp": -1.927,
+      "on_edge_years": []
     },
     "arrojado": {
       "years": [
@@ -341,97 +389,105 @@
           "year": 2018,
           "history_days": 746,
           "horizon_days": 245,
-          "p10": -0.070659,
-          "p50": 0.175317,
-          "p90": 0.500141,
+          "p10": -0.069597,
+          "p50": 0.175433,
+          "p90": 0.499348,
           "realised": 0.415146,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2019,
           "history_days": 991,
           "horizon_days": 247,
-          "p10": -0.015446,
-          "p50": 0.228924,
-          "p90": 0.552677,
+          "p10": -0.016684,
+          "p50": 0.228105,
+          "p90": 0.555552,
           "realised": 0.367134,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2020,
           "history_days": 1238,
           "horizon_days": 247,
-          "p10": 0.019646,
-          "p50": 0.258095,
-          "p90": 0.563488,
+          "p10": 0.019701,
+          "p50": 0.259012,
+          "p90": 0.568444,
           "realised": 0.076424,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2021,
           "history_days": 1485,
           "horizon_days": 246,
-          "p10": -0.037893,
-          "p50": 0.237435,
-          "p90": 0.553196,
+          "p10": -0.040399,
+          "p50": 0.236983,
+          "p90": 0.55089,
           "realised": 0.212221,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2022,
           "history_days": 1731,
           "horizon_days": 249,
-          "p10": -0.027119,
-          "p50": 0.241952,
-          "p90": 0.533861,
+          "p10": -0.027455,
+          "p50": 0.242841,
+          "p90": 0.540867,
           "realised": -0.015076,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2023,
           "history_days": 1980,
           "horizon_days": 247,
-          "p10": -0.045394,
-          "p50": 0.205134,
-          "p90": 0.486232,
+          "p10": -0.046353,
+          "p50": 0.204627,
+          "p90": 0.490795,
           "realised": 0.238971,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2024,
           "history_days": 2227,
           "horizon_days": 250,
-          "p10": -0.042436,
-          "p50": 0.205131,
-          "p90": 0.488378,
+          "p10": -0.040886,
+          "p50": 0.203676,
+          "p90": 0.485654,
           "realised": 0.02357,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         },
         {
           "year": 2025,
           "history_days": 2477,
           "horizon_days": 249,
-          "p10": -0.047776,
-          "p50": 0.192037,
-          "p90": 0.467621,
+          "p10": -0.044092,
+          "p50": 0.194827,
+          "p90": 0.463873,
           "realised": 0.430784,
           "inside": true,
           "above": false,
-          "below": false
+          "below": false,
+          "on_edge": false
         }
       ],
       "coverage": {
@@ -441,7 +497,8 @@
         "nominal": 0.8,
         "standard_error": 0.1414
       },
-      "median_bias_pp": 0.064
+      "median_bias_pp": 0.046,
+      "on_edge_years": []
     }
   }
 }

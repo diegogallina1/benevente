@@ -72,6 +72,10 @@ def build() -> dict:
                 "nominal": r["coverage"]["nominal"],
                 "standard_error": r["coverage"]["standard_error"],
                 "median_bias_pp": r["median_bias_pp"],
+                # Anos decididos na borda da faixa. Sem eles a contagem parece
+                # ter uma precisão que ela não tem: no conservador, 2025 entra
+                # ou sai por dois centésimos de ponto.
+                "on_edge_years": r.get("on_edge_years", []),
                 # Quando a cobertura fica muito abaixo do nominal, publicar só o
                 # número deixa o leitor achar que foi azar. No caso conhecido não
                 # foi: o método não transfere para carteira dominada por caixa.
