@@ -84,7 +84,7 @@ Sem expor o código da aplicação, a lógica é verificável: o sistema elimina
 
 ### 3.4 A política vigente: três perfis declarados
 
-Desde agosto de 2026 o sistema opera sob uma política declarada. Em lugar de buscar a melhor configuração a cada ano, ela fixa três, uma por perfil, congeladas antes da avaliação prospectiva: o conservador aloca 35% do patrimônio em renda variável entre doze emissores; o equilibrado, 55% entre oito; o arrojado, 75% entre cinco. Em todos, um quinto do orçamento de renda variável fica num fundo negociado na B3 que replica o S&P 500 em reais (IVVB11), definido pela política e não pelo escore, e o saldo permanece em caixa. A camada de proteção intranual atua apenas sobre a parcela doméstica, porque o sinal de estresse é calculado sobre o Ibovespa. O registro traz os hashes dos insumos, o assinante, o critério de falseamento e o início da amostra confirmatória, e nenhum parâmetro muda depois do congelamento sem nova versão e nova contagem. As Seções 4.1.1 e 4.1.2 documentam as duas revisões; a 5.1 traz o diagnóstico.
+Desde agosto de 2026 o sistema opera sob uma política declarada. Em lugar de buscar a melhor configuração a cada ano, ela fixa três, congeladas antes da avaliação prospectiva: o conservador aloca 35% do patrimônio em renda variável entre doze emissores; o equilibrado, 55% entre oito; o arrojado, 75% entre cinco. Em todos, um quinto do orçamento de renda variável fica no IVVB11, fundo na B3 que replica o S&P 500 em reais, definido pela política e não pelo escore; o saldo fica em caixa. A camada de proteção intranual atua apenas sobre a parcela doméstica, porque o sinal de estresse é calculado sobre o Ibovespa. O registro traz os hashes dos insumos, o assinante, o critério de falseamento e o início da amostra confirmatória, e nenhum parâmetro muda sem nova versão e nova contagem. Uma quarta versão (30/08/2026) acrescentou um degrau de 4%, fora desta avaliação. As Seções 4.1.1 e 4.1.2 documentam as duas revisões; a 5.1 traz o diagnóstico.
 
 ### 3.5 Por que a decisão é anual
 
@@ -94,12 +94,12 @@ Cadência anual não significa ignorar o risco por doze meses: preço, concentra
 
 ### 3.6 Custos, imposto e execução
 
-Duas parcelas de custo são deduzidas do retorno bruto.
+Duas parcelas de custo são deduzidas do retorno bruto:
 
 - Taxas da B3 e corretagem por ordem.
 - Deslizamento por participação no volume, proporcional ao tamanho da ordem em relação ao volume médio diário do papel, de modo que uma ordem grande em papel ilíquido recebe custo maior.
 
-O imposto de renda é modelado à parte e **não** é deduzido: toda taxa anualizada neste artigo é bruta de imposto. O modelo aplica 15% sobre ganho realizado em renda variável e 17,5% sobre renda fixa de 361 a 720 dias, no ano da revisão que realiza o ganho, com liquidação integral no último ano — hipótese terminal conservadora, não diferimento indefinido.
+O imposto de renda é modelado à parte e **não** deduzido: toda taxa anualizada aqui é bruta de imposto. O modelo aplica 15% sobre ganho em renda variável e 17,5% sobre renda fixa de 361 a 720 dias, no ano da revisão que realiza o ganho, com liquidação integral no último ano.
 
 O sistema recusa, por regra, ordens que ultrapassem 5% do volume médio diário do papel; a ordem não é enviada.
 
