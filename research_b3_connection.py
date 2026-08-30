@@ -17,12 +17,24 @@ import json
 
 from b3_client import B3Client, Endpoints, Frescor, classificar, referencia_esperada
 from b3_connection import (BASE_COMECA_EM, COBERTURA, Consentimento, Negociacao,
-                           Qualidade, reconstruir_custo, relatorio_de_lacunas)
+                           Origem, Posicao, Qualidade, consolidar, reconstruir_custo,
+                           relatorio_de_lacunas)
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "artifacts" / "b3_connection_v1"
 
 #: Custódia como a API de Posição devolve: quantidade e valor, sem custo.
+#: Renda fixa privada como a B3 entrega: quantidade e vencimento, sem valor.
+#: O valor fica com o emissor, e é isso que a tela pede para a pessoa completar.
+RENDA_FIXA_PARCIAL = (
+    {"nome": "LCA Banco Beta 2028", "tipo": "LCA", "emissor": "Banco Beta",
+     "quantidade": 1, "vencimento": "2028-03-15"},
+    {"nome": "CDB Banco Beta 2027", "tipo": "CDB", "emissor": "Banco Beta",
+     "quantidade": 1, "vencimento": "2027-11-20"},
+    {"nome": "LCI Banco Gama 2029", "tipo": "LCI", "emissor": "Banco Gama",
+     "quantidade": 1, "vencimento": "2029-06-01"},
+)
+
 CUSTODIA = {"CURY3": (4_000, 44_000.0), "WEGE3": (3_000, 180_000.0),
             "MGLU3": (10_000, 25_000.0)}
 
@@ -86,6 +98,22 @@ def main() -> None:
     for nome, estado in cenarios.items():
         print(f"  {nome:<15} {estado.value}")
 
+    posicoes = [
+        Posicao(nome=t_, tipo="ação", origem=Origem.B3, valor_brl=valor, quantidade=qtd)
+        for t_, (qtd, valor) in sorted(CUSTODIA.items())
+    ] + [
+        Posicao(nome=r["nome"], tipo=r["tipo"], origem=Origem.B3_PARCIAL,
+                quantidade=r["quantidade"], vencimento=r["vencimento"], emissor=r["emissor"])
+        for r in RENDA_FIXA_PARCIAL
+    ]
+    consolidado = consolidar(posicoes)
+    print("\nCARTEIRA COMPLETA")
+    for pos in posicoes:
+        valor = f"R$ {pos.valor_brl:>12,.0f}" if pos.completa else "R$        ?  "
+        print(f"  {pos.nome:<22} {pos.tipo:<6} {valor}  {pos.origem.value}")
+    print(f"  total conhecido: R$ {consolidado['total_conhecido_brl']:,.0f} · "
+          f"{consolidado['sem_valor']} posição(ões) sem valor")
+
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "connection_example.json").write_text(json.dumps({
         "status": "demonstration_only",
@@ -98,6 +126,11 @@ def main() -> None:
                            "cobertura": round(c.cobertura, 4), "observacao": c.observacao}
                        for t, c in sorted(custos.items())},
         "gaps": lacunas,
+        # A carteira inteira, com a procedência colada em cada linha. Sem esta
+        # lista a tela mostrava só o agregado, e prometia no texto uma origem
+        # por posição que ela não exibia.
+        "posicoes": [p.como_dict() for p in posicoes],
+        "consolidado": consolidado,
         "freshness": {
             "reference": "D-1, publicado a partir das 8h",
             "sla_monthly": 0.97,

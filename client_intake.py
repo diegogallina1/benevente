@@ -103,7 +103,8 @@ QUESTIONS: tuple[Question, ...] = (
     Question(
         "prejuizo",
         "Você tem prejuízo acumulado a compensar em ações?",
-        "Prejuízo passado abate o imposto das vendas de agora, dentro da mesma cesta. Se existir "
+        "Prejuízo passado abate o imposto das vendas de agora, dentro do mesmo tipo de "
+        "investimento. Se existir "
         "e não for informado, o custo da mudança sai maior do que é de verdade.",
         kind="valor",
     ),

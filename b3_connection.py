@@ -233,3 +233,71 @@ def relatorio_de_lacunas(custos: dict[str, Custo]) -> dict:
             "estimar a diferença — um imposto estimado tem a mesma aparência de um imposto "
             "medido e leva à mesma decisão de vender."),
     }
+
+#: O que a B3 manda pela metade. Ela entrega quantidade e vencimento do papel de
+#: renda fixa privada, e não entrega valor nem preço de compra: esses ficam com
+#: o emissor. A tela precisa mostrar esses itens mesmo assim, porque escondê-los
+#: faria a carteira parecer menor do que é, e um patrimônio subdeclarado leva a
+#: um plano errado com aparência de certo.
+class Origem(str, Enum):
+    B3 = "veio da B3"
+    B3_PARCIAL = "veio da B3 pela metade"
+    MANUAL = "informado por você"
+
+
+@dataclass(frozen=True)
+class Posicao:
+    """Uma linha da carteira, com a procedência colada nela.
+
+    ``valor_brl`` é ``None`` quando ninguém sabe o valor ainda. Zero seria uma
+    resposta, e a diferença entre "vale zero" e "não sei quanto vale" é
+    exatamente o que decide se o plano pode ser calculado.
+    """
+    nome: str
+    tipo: str
+    origem: Origem
+    valor_brl: float | None = None
+    quantidade: float | None = None
+    vencimento: str | None = None
+    emissor: str | None = None
+
+    @property
+    def completa(self) -> bool:
+        return self.valor_brl is not None
+
+    @property
+    def falta(self) -> str:
+        if self.completa:
+            return ""
+        if self.origem is Origem.B3_PARCIAL:
+            return "falta o valor: a B3 manda quantidade e vencimento, o valor fica com o emissor"
+        return "falta o valor"
+
+    def como_dict(self) -> dict:
+        return {"nome": self.nome, "tipo": self.tipo, "origem": self.origem.value,
+                "valor_brl": self.valor_brl, "quantidade": self.quantidade,
+                "vencimento": self.vencimento, "emissor": self.emissor,
+                "completa": self.completa, "falta": self.falta}
+
+
+def consolidar(posicoes: list[Posicao]) -> dict:
+    """O total, e o quanto dele ainda não tem valor conhecido.
+
+    Publicar só o total somável esconderia o buraco. Quem lê precisa saber que
+    existem N linhas sem valor antes de acreditar na porcentagem de qualquer
+    coisa sobre o patrimônio.
+    """
+    completas = [p for p in posicoes if p.completa]
+    pendentes = [p for p in posicoes if not p.completa]
+    total = sum(p.valor_brl or 0.0 for p in completas)
+    return {
+        "total_conhecido_brl": round(total, 2),
+        "posicoes": len(posicoes),
+        "sem_valor": len(pendentes),
+        "sem_valor_nomes": [p.nome for p in pendentes],
+        "por_origem": {
+            o.value: round(sum(p.valor_brl or 0.0 for p in completas if p.origem is o), 2)
+            for o in Origem
+        },
+        "completo": not pendentes,
+    }

@@ -20,6 +20,7 @@ SOURCE = ROOT / "artifacts" / "portfolio_mapping_v1" / "mapping_by_profile.json"
 CONEXAO = ROOT / "artifacts" / "b3_connection_v1" / "connection_example.json"
 CALIBRACAO = ROOT / "artifacts" / "forecast_calibration_v1" / "calibration.json"
 ACOMPANHAMENTO = ROOT / "web" / "forecast_2026.json"
+MUDANCAS = ROOT / "web" / "mudancas_2026.json"
 OUT = ROOT / "docs" / "desenho_tela_mapa.html"
 
 PERFIL_LABEL = {"conservador": "Conservador", "equilibrado": "Equilibrado", "arrojado": "Arrojado"}
@@ -202,6 +203,49 @@ details > summary b { color: var(--fg); font-weight: 400; }
 
 /* --- a régua --- */
 .regua { margin-top: 40px; }
+
+/* --- alertas --- */
+.alerta { border-left: 2px solid var(--acao); background: var(--acao-fraco);
+          border-radius: 0 8px 8px 0; padding: 16px; margin-top: 16px;
+          font-size: 14px; line-height: 1.57; }
+.alerta p { margin: 0; color: var(--fg-2); }
+.alerta p + p { margin-top: 8px; }
+.alerta b { color: var(--fg); font-weight: 500; }
+.alerta .quando { font-family: "Spline Sans Mono", monospace; font-size: 12px;
+                  letter-spacing: .5px; color: var(--acao); }
+
+/* --- a carteira inteira --- */
+.carteira { margin-top: 32px; }
+/* Sem flex-wrap a terceira linha, que é a procedência, ficava na mesma faixa do
+   valor e vazava cortada para fora do cartão. E sem min-width zero o nome longo
+   quebrava letra a letra em vez de encolher. */
+.pos { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+       padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.pos:first-of-type { border-top: 0; }
+.pos b { font-weight: 500; color: var(--fg); flex: 1 1 auto; min-width: 0; }
+.pos .val { font-family: "Spline Sans Mono", monospace; font-variant-numeric: tabular-nums;
+            color: var(--fg); white-space: nowrap; }
+/* "sem-valor" e nao "falta": .falta ja existe neste app, com borda vermelha a
+   esquerda, e o nome repetido colava um risco vermelho no numero. */
+.pos .val.sem-valor { color: var(--neg); }
+.pos .de { font-size: 12px; color: var(--fg-2); flex: 0 0 100%; margin-top: 2px; }
+.pos .de b { font-weight: 400; color: var(--fg-2); }
+.total { margin: 14px 0 0; font-family: "Spline Sans Mono", monospace;
+         font-size: 14px; display: flex; justify-content: space-between; gap: 12px;
+         border-top: 1px solid var(--line-strong); padding-top: 12px; }
+.pos-acao { font: inherit; font-size: 12px; background: none; border: 0; padding: 0;
+            color: var(--acao); cursor: pointer; text-decoration: underline;
+            text-underline-offset: 3px; }
+#add-det { margin-top: 24px; }
+.add-corpo { display: flex; flex-direction: column; gap: 12px; padding-top: 10px; }
+.ajuda { margin: 0; font-size: 13px; line-height: 1.5; color: var(--fg-2); }
+.add-linha { display: grid; gap: 10px; }
+.add-linha label { display: flex; flex-direction: column; gap: 4px; font-size: 12px;
+                   color: var(--fg-2); }
+.add-linha input, .add-linha select { font: inherit; font-size: 14px; padding: 8px 10px;
+  border: 1px solid var(--line-strong); border-radius: 6px; background: var(--canvas);
+  color: var(--fg); min-height: 40px; }
+.erro-campo { margin: 0; font-size: 13px; color: var(--neg); }
 
 /* --- acompanhar --- */
 .ac-fig { margin: 24px 0 0; }
@@ -419,6 +463,33 @@ footer a { color: var(--acao); }
     </div>
   </div>
   <div class="aviso" id="fgc"></div>
+
+  <div class="carteira">
+    <p class="label">Tudo o que você tem</p>
+    <div id="lista-posicoes"></div>
+    <p class="total" id="total-carteira"></p>
+    <div class="aviso erro hidden" id="sem-valor"></div>
+  </div>
+
+  <details id="add-det">
+    <summary>Acrescentar o que a B3 não manda</summary>
+    <div class="add-corpo">
+      <p class="ajuda">Previdência, cripto, conta no exterior, imóvel, participação em
+         empresa. O que estiver aqui entra na conta do patrimônio e no registro da
+         decisão, marcado como informado por você.</p>
+      <div class="add-linha">
+        <label>O que é<input id="add-nome" type="text" placeholder="Previdência PGBL"></label>
+        <label>Tipo<select id="add-tipo">
+          <option>previdência</option><option>cripto</option><option>conta no exterior</option>
+          <option>imóvel</option><option>participação em empresa</option><option>outro</option>
+        </select></label>
+        <label>Quanto vale<input id="add-valor" type="text" inputmode="decimal" placeholder="R$ 0,00"></label>
+      </div>
+      <button class="link" type="button" id="add-botao">Acrescentar</button>
+      <p class="erro-campo hidden" id="add-erro"></p>
+    </div>
+  </details>
+
   <div class="regua" id="regua"></div>
 </section>
 
@@ -443,6 +514,12 @@ footer a { color: var(--acao); }
     <span>PDF com as contas, o plano que você não escolheu e o campo de assinatura.</span>
   </div>
   <div class="registro hidden" id="registro"></div>
+</section>
+
+<section id="alertas-sec" class="hidden">
+  <h2>O que mudou desde a sua decisão</h2>
+  <p class="lede" id="alertas-lede"></p>
+  <div id="alertas"></div>
 </section>
 
 <section id="acompanhar-sec" class="hidden">
@@ -727,7 +804,7 @@ $("alterar").onclick = () => editar(!editando);
 function avaliar() {
   if (Object.keys(respostas).length < escolha.length) {
     $("veredito").textContent = "";
-    esconde("mapa", "planos-sec", "razao-sec", "acompanhar-sec");
+    esconde("mapa", "planos-sec", "razao-sec", "acompanhar-sec", "alertas-sec");
     return;
   }
   // Respondido, o formulário vira uma linha: no celular, deixá-lo aberto obriga
@@ -759,6 +836,7 @@ function avaliar() {
 /* --- mapa --- */
 function render(perfil) {
   perfilAtual = perfil;
+  desenhaCarteira();
   const p = DADOS.profiles[perfil];
   const a = resolvido(p.adequar), b = resolvido(p.adaptar);
   mostra("mapa", "planos-sec");
@@ -839,6 +917,160 @@ function regua(perfil) {
     "<span><i style='background:var(--acao)'></i>o que aconteceu</span>" +
     "<span><i style='background:var(--neg)'></i>ficou fora da faixa</span>");
   host.append(chaves);
+}
+
+
+/* --- a carteira inteira --- */
+// Três origens, uma lista só. Separar em três telas faria a pessoa somar de
+// cabeça, e é justamente a soma que decide o plano.
+//
+// Valor ausente aparece como "?" e nunca como zero. Zero é uma resposta, e a
+// diferença entre "vale zero" e "não sei quanto vale" é o que decide se o plano
+// pode ser calculado. Enquanto houver "?", o total se declara parcial.
+const acrescentados = [];
+const valoresInformados = {};
+
+function carteiraToda() {
+  const daB3 = (b3.posicoes || []).map(p => Object.assign({}, p, {
+    valor_brl: valoresInformados[p.nome] != null ? valoresInformados[p.nome] : p.valor_brl,
+  }));
+  return daB3.concat(acrescentados);
+}
+
+function desenhaCarteira() {
+  const itens = carteiraToda();
+  const host = $("lista-posicoes");
+  host.innerHTML = "";
+
+  itens.forEach((p, i) => {
+    const linha = el("div", "pos");
+    const temValor = p.valor_brl != null;
+    linha.append(el("b", null, p.nome));
+    const v = el("span", "val" + (temValor ? "" : " sem-valor"),
+                 temValor ? BRL(p.valor_brl) : "R$ ?");
+    linha.append(v);
+
+    const de = el("span", "de");
+    const detalhe = [p.tipo, p.origem];
+    if (p.vencimento) detalhe.push("vence em " + p.vencimento.split("-").reverse().join("/"));
+    if (p.emissor) detalhe.push(p.emissor);
+    de.textContent = detalhe.join(" · ");
+
+    if (!temValor) {
+      de.append(document.createTextNode(". " + p.falta + ". "));
+      const b = el("button", "pos-acao", "Informar o valor");
+      b.type = "button";
+      b.onclick = () => pedeValor(p.nome);
+      de.append(b);
+    } else if (p.origem === "informado por você") {
+      de.append(document.createTextNode(". "));
+      const b = el("button", "pos-acao", "Remover");
+      b.type = "button";
+      b.onclick = () => { acrescentados.splice(acrescentados.indexOf(p), 1); desenhaCarteira(); };
+      de.append(b);
+    }
+    linha.append(de);
+    host.append(linha);
+  });
+
+  const comValor = itens.filter(p => p.valor_brl != null);
+  const sem = itens.filter(p => p.valor_brl == null);
+  const total = comValor.reduce((s, p) => s + p.valor_brl, 0);
+  $("total-carteira").innerHTML =
+    "<span>" + (sem.length ? "Total do que já tem valor" : "Total") + "</span>" +
+    "<span>" + BRL(total) + "</span>";
+
+  const aviso = $("sem-valor");
+  if (sem.length) {
+    aviso.classList.remove("hidden");
+    aviso.innerHTML = "<p><b>" + sem.length + " posição(ões) ainda sem valor.</b> " +
+      "Enquanto isso durar, o total acima é parcial e a porcentagem de qualquer coisa " +
+      "sobre o seu patrimônio está subestimando o denominador: " +
+      sem.map(p => p.nome).join(", ") + ".</p>";
+  } else {
+    aviso.classList.add("hidden");
+  }
+}
+
+function pedeValor(nome) {
+  const bruto = prompt("Quanto vale " + nome + " hoje, em reais?");
+  if (bruto == null) return;
+  const v = leValor(bruto);
+  if (!isFinite(v) || v < 0) { alert("Valor não reconhecido. Use algo como 25.000,00"); return; }
+  valoresInformados[nome] = v;
+  desenhaCarteira();
+  if (perfilAtual) render(perfilAtual);
+}
+
+$("add-botao").onclick = () => {
+  const nome = $("add-nome").value.trim();
+  const valor = leValor($("add-valor").value);
+  const erro = $("add-erro");
+  if (!nome) { erro.textContent = "Escreva o que é."; erro.classList.remove("hidden"); return; }
+  if (!isFinite(valor) || valor <= 0) {
+    erro.textContent = "Escreva quanto vale, como 25.000,00.";
+    erro.classList.remove("hidden"); return;
+  }
+  erro.classList.add("hidden");
+  acrescentados.push({ nome: nome, tipo: $("add-tipo").value,
+                       origem: "informado por você", valor_brl: valor,
+                       quantidade: null, vencimento: null, emissor: null,
+                       completa: true, falta: "" });
+  $("add-nome").value = ""; $("add-valor").value = "";
+  desenhaCarteira();
+};
+
+
+/* --- alertas de mudança na estratégia --- */
+// Só aparece para quem escolheu adequar, ou seja, para quem está copiando a
+// política. Quem escolheu manter a própria carteira não recebe alerta de uma
+// estratégia que ele não segue: seria ruído com aparência de instrução.
+//
+// O alerta diz o que aconteceu e o que isso pede da carteira dele, em reais,
+// porque "a camada reduziu para 55%" não é acionável e "venda R$ 12.600 de
+// ações" é.
+function alertas(perfil, chave) {
+  const m = DADOS.mudancas && DADOS.mudancas.perfis ? DADOS.mudancas.perfis[perfil] : null;
+  if (chave !== "adequar" || !m) { esconde("alertas-sec"); return; }
+  mostra("alertas-sec");
+
+  const host = $("alertas");
+  host.innerHTML = "";
+  const tudo = carteiraToda();
+  const patrimonio = tudo.reduce((s, p) => s + (p.valor_brl || 0), 0);
+  // Quantas linhas ainda não têm valor. O número em reais abaixo sai deste
+  // patrimônio, então enquanto faltar posição ele é piso, não valor final, e a
+  // tela precisa dizer isso no mesmo parágrafo em que dá a ordem de grandeza.
+  const semValor = tudo.filter(p => p.valor_brl == null).length;
+
+  if (!m.changes.length) {
+    $("alertas-lede").textContent =
+      "Nada mudou na política desde a decisão de janeiro. Se algo mudar, aparece aqui.";
+    return;
+  }
+  $("alertas-lede").textContent =
+    "Você escolheu seguir a política. Quando ela se mexe, a sua carteira precisa " +
+    "acompanhar, e é isto que mudou até agora.";
+
+  m.changes.forEach(c => {
+    const caixa = el("div", "alerta");
+    caixa.append(el("p", "quando", c.date.split("-").reverse().join("/")));
+    const p1 = el("p");
+    p1.innerHTML = "A camada de proteção entrou: " + c.why + ", no fechamento de " +
+      c.observed_on.split("-").reverse().join("/") + ". Cada ação passou a valer <b>" +
+      Math.round(c.factor * 100) + "%</b> do peso de janeiro.";
+    caixa.append(p1);
+
+    const p2 = el("p");
+    const saiu = c.from_equity - c.to_equity;
+    p2.innerHTML = "Na sua carteira, isso pede vender <b>" + BRL(patrimonio * saiu) +
+      "</b> em ações e levar para o CDI, mantendo a proporção entre os papéis. " +
+      "A parte em S&P 500 não se mexe." +
+      (semValor ? " Esse número é piso: " + semValor + " posição(ões) ainda sem valor " +
+                  "ficam de fora da conta, e o valor certo é maior." : "");
+    caixa.append(p2);
+    host.append(caixa);
+  });
 }
 
 /* --- acompanhar --- */
@@ -1120,6 +1352,7 @@ function razao(perfil, chave, rolar) {
     rolaPara(caixa, "nearest");
   };
 
+  alertas(perfil, chave);
   acompanhar(perfil);
   if (rolar) rolaPara($("razao-sec"), "start");
 }
@@ -1178,15 +1411,28 @@ def main() -> None:
     conexao = json.loads(CONEXAO.read_text(encoding="utf-8"))
     calibracao = json.loads(CALIBRACAO.read_text(encoding="utf-8"))
     acompanhamento = json.loads(ACOMPANHAMENTO.read_text(encoding="utf-8"))
+    mudancas = json.loads(MUDANCAS.read_text(encoding="utf-8"))
     magro = {
         "questionnaire": dados["questionnaire"],
-        "profiles": {nome: {"adequar": p["adequar"], "adaptar": p["adaptar"]}
+        # ``modules`` sai daqui: o app nunca o usou, e ele carregava para dentro
+        # do documento as duas palavras que a tela evita de propósito.
+        "profiles": {nome: {caminho: {k: v for k, v in p[caminho].items() if k != "modules"}
+                            for caminho in ("adequar", "adaptar")}
                      for nome, p in dados["profiles"].items()},
         "b3": {"base_starts": conexao["base_starts"], "coverage": conexao["coverage"],
                "freshness": conexao["freshness"],
                "consent": {k: v for k, v in conexao["consent"].items()
                            if k in ("escopo", "revogavel_em", "credencial_armazenada")},
-               "cost_basis": conexao["cost_basis"], "gaps": conexao["gaps"]},
+               "cost_basis": conexao["cost_basis"], "gaps": conexao["gaps"],
+               # A carteira inteira, com a procedência de cada linha. Sem ela a
+               # tela mostrava só o agregado e prometia no texto uma origem por
+               # posição que não exibia.
+               "posicoes": conexao["posicoes"], "consolidado": conexao["consolidado"]},
+        # O que a política mudou no ano. Quem copia a estratégia precisa saber
+        # que ela se mexeu, e o que isso pede da carteira dele.
+        "mudancas": {"ano": mudancas["year"],
+                     "perfis": {k: {"changes": v["changes"], "now": v["now"]}
+                                for k, v in mudancas["profiles"].items()}},
         # Calibração: o que se publica não é a projeção, é o quanto ela erra.
         "calibracao": {
             perfil: {"anos": [{k: dados[k] for k in ("year", "p10", "p50", "p90",

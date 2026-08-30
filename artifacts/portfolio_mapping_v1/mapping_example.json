@@ -163,7 +163,7 @@
         {
           "key": "prejuizo",
           "prompt": "Você tem prejuízo acumulado a compensar em ações?",
-          "help": "Prejuízo passado abate o imposto das vendas de agora, dentro da mesma cesta. Se existir e não for informado, o custo da mudança sai maior do que é de verdade.",
+          "help": "Prejuízo passado abate o imposto das vendas de agora, dentro do mesmo tipo de investimento. Se existir e não for informado, o custo da mudança sai maior do que é de verdade.",
           "kind": "valor",
           "options": []
         },
@@ -279,7 +279,7 @@
         "from_brl": 21000,
         "to_brl": 0.0,
         "delta_brl": -21000.0,
-        "reason": "fora do escopo da política",
+        "reason": "fora do que a política escolhe",
         "trade_cost_brl": 21.0,
         "realised_gain_brl": -9000.0,
         "tax_brl": 0.0,
@@ -509,7 +509,7 @@
         "from_brl": 21000,
         "to_brl": 21000,
         "delta_brl": 0,
-        "reason": "fora do escopo da política",
+        "reason": "fora do que a política escolhe",
         "trade_cost_brl": 0.0,
         "realised_gain_brl": 0.0,
         "tax_brl": 0.0,

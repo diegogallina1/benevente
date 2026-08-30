@@ -89,7 +89,7 @@ def test_ativo_fora_do_escopo_nao_e_vendido_por_nao_estar_na_cesta():
     posicoes = carteira() + [Position("Cripto", Bucket.FORA_DO_ESCOPO, 20_000, 30_000,
                                       Source.MANUAL)]
     cripto = next(m for m in map_portfolio(posicoes, ALVO)["moves"] if m["ticker"] == "Cripto")
-    assert cripto["reason"] == "fora do escopo da política"
+    assert cripto["reason"] == "fora do que a política escolhe"
     assert not any("mesma cesta" in n for n in cripto["notes"])
 
 
@@ -193,11 +193,23 @@ def test_o_prototipo_publicado_nao_fica_para_tras_do_modulo():
 
 
 def test_a_tela_nunca_publica_o_historico_no_caminho_que_nao_o_tem():
+    """A propriedade, não o formato do payload.
+
+    A versão anterior fixava a linha inteira do JSON, com um campo ``modules``
+    que a tela nunca usou e que depois saiu de lá. O teste quebrou por uma
+    mudança que não tinha nada a ver com o que ele protege, que é isto: quem
+    escolhe manter a própria carteira não recebe o histórico da política, porque
+    aquele histórico foi medido em outra carteira.
+    """
+    import json
+    import re
     from pathlib import Path
     pagina = (Path(__file__).resolve().parents[1] / "docs" / "desenho_tela_mapa.html")
-    texto = pagina.read_text(encoding="utf-8")
-    assert '"path":"adaptar","path_label":"Manter a carteira e aplicar a proteção",' \
-           '"modules":["Módulo 2 — Proteção"],"track_record_applies":false' in texto
+    dados = json.loads(re.search(r"const DADOS = (\{.*?\});",
+                                 pagina.read_text(encoding="utf-8"), re.S).group(1))
+    for perfil, planos in dados["profiles"].items():
+        assert planos["adaptar"]["track_record_applies"] is False, perfil
+        assert planos["adequar"]["track_record_applies"] is True, perfil
 
 
 def test_o_app_e_o_site_dizem_a_mesma_coisa():

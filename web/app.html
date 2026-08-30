@@ -186,6 +186,49 @@ details > summary b { color: var(--fg); font-weight: 400; }
 /* --- a régua --- */
 .regua { margin-top: 40px; }
 
+/* --- alertas --- */
+.alerta { border-left: 2px solid var(--acao); background: var(--acao-fraco);
+          border-radius: 0 8px 8px 0; padding: 16px; margin-top: 16px;
+          font-size: 14px; line-height: 1.57; }
+.alerta p { margin: 0; color: var(--fg-2); }
+.alerta p + p { margin-top: 8px; }
+.alerta b { color: var(--fg); font-weight: 500; }
+.alerta .quando { font-family: "Spline Sans Mono", monospace; font-size: 12px;
+                  letter-spacing: .5px; color: var(--acao); }
+
+/* --- a carteira inteira --- */
+.carteira { margin-top: 32px; }
+/* Sem flex-wrap a terceira linha, que é a procedência, ficava na mesma faixa do
+   valor e vazava cortada para fora do cartão. E sem min-width zero o nome longo
+   quebrava letra a letra em vez de encolher. */
+.pos { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px;
+       padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.pos:first-of-type { border-top: 0; }
+.pos b { font-weight: 500; color: var(--fg); flex: 1 1 auto; min-width: 0; }
+.pos .val { font-family: "Spline Sans Mono", monospace; font-variant-numeric: tabular-nums;
+            color: var(--fg); white-space: nowrap; }
+/* "sem-valor" e nao "falta": .falta ja existe neste app, com borda vermelha a
+   esquerda, e o nome repetido colava um risco vermelho no numero. */
+.pos .val.sem-valor { color: var(--neg); }
+.pos .de { font-size: 12px; color: var(--fg-2); flex: 0 0 100%; margin-top: 2px; }
+.pos .de b { font-weight: 400; color: var(--fg-2); }
+.total { margin: 14px 0 0; font-family: "Spline Sans Mono", monospace;
+         font-size: 14px; display: flex; justify-content: space-between; gap: 12px;
+         border-top: 1px solid var(--line-strong); padding-top: 12px; }
+.pos-acao { font: inherit; font-size: 12px; background: none; border: 0; padding: 0;
+            color: var(--acao); cursor: pointer; text-decoration: underline;
+            text-underline-offset: 3px; }
+#add-det { margin-top: 24px; }
+.add-corpo { display: flex; flex-direction: column; gap: 12px; padding-top: 10px; }
+.ajuda { margin: 0; font-size: 13px; line-height: 1.5; color: var(--fg-2); }
+.add-linha { display: grid; gap: 10px; }
+.add-linha label { display: flex; flex-direction: column; gap: 4px; font-size: 12px;
+                   color: var(--fg-2); }
+.add-linha input, .add-linha select { font: inherit; font-size: 14px; padding: 8px 10px;
+  border: 1px solid var(--line-strong); border-radius: 6px; background: var(--canvas);
+  color: var(--fg); min-height: 40px; }
+.erro-campo { margin: 0; font-size: 13px; color: var(--neg); }
+
 /* --- acompanhar --- */
 .ac-fig { margin: 24px 0 0; }
 .ac-fig svg { display: block; width: 100%; height: auto; }
@@ -420,6 +463,33 @@ footer a { color: var(--acao); }
     </div>
   </div>
   <div class="aviso" id="fgc"></div>
+
+  <div class="carteira">
+    <p class="label">Tudo o que você tem</p>
+    <div id="lista-posicoes"></div>
+    <p class="total" id="total-carteira"></p>
+    <div class="aviso erro hidden" id="sem-valor"></div>
+  </div>
+
+  <details id="add-det">
+    <summary>Acrescentar o que a B3 não manda</summary>
+    <div class="add-corpo">
+      <p class="ajuda">Previdência, cripto, conta no exterior, imóvel, participação em
+         empresa. O que estiver aqui entra na conta do patrimônio e no registro da
+         decisão, marcado como informado por você.</p>
+      <div class="add-linha">
+        <label>O que é<input id="add-nome" type="text" placeholder="Previdência PGBL"></label>
+        <label>Tipo<select id="add-tipo">
+          <option>previdência</option><option>cripto</option><option>conta no exterior</option>
+          <option>imóvel</option><option>participação em empresa</option><option>outro</option>
+        </select></label>
+        <label>Quanto vale<input id="add-valor" type="text" inputmode="decimal" placeholder="R$ 0,00"></label>
+      </div>
+      <button class="link" type="button" id="add-botao">Acrescentar</button>
+      <p class="erro-campo hidden" id="add-erro"></p>
+    </div>
+  </details>
+
   <div class="regua" id="regua"></div>
 </section>
 
@@ -444,6 +514,12 @@ footer a { color: var(--acao); }
     <span>PDF com as contas, o plano que você não escolheu e o campo de assinatura.</span>
   </div>
   <div class="registro hidden" id="registro"></div>
+</section>
+
+<section id="alertas-sec" class="hidden">
+  <h2>O que mudou desde a sua decisão</h2>
+  <p class="lede" id="alertas-lede"></p>
+  <div id="alertas"></div>
 </section>
 
 <section id="acompanhar-sec" class="hidden">
@@ -473,6 +549,6 @@ footer a { color: var(--acao); }
 </div>
 
 
-<script src="./plano.js?v=2b3d33c51e"></script>
+<script src="./plano.js?v=af5df8f139"></script>
 </body>
 </html>

@@ -78,8 +78,23 @@ def checar() -> list[tuple[bool, str]]:
 
     # --- e o app não fala uma língua que só o site ensina ---
     corpo = tela[tela.index("<div class=\"wrap\">"):]
+    # O jargão que escapou da última vez estava dentro do script, não na
+    # marcação: o alerta é montado em JavaScript e só existe depois que a pessoa
+    # escolhe um plano. Ler só o HTML estático deixava passar exatamente o texto
+    # que o cliente lê. Agora as cadeias literais do script entram na varredura.
+    script = "\n".join(re.findall(r"<script>(.*?)</script>", corpo, flags=re.S))
+    # Comentário de código não é texto de cliente: mantê-lo na varredura
+    # transformaria a explicação de uma decisão em falso positivo.
+    script = re.sub(r"^\s*//.*$", "", script, flags=re.M)
+    # E só o que parece frase. Nome de variável e chave de JSON também são
+    # literais, e incluí-los faz o verificador acusar "cesta" dentro de um
+    # ``forEach(([cesta, d])`` e "escopo" numa chave do consentimento. Alarme
+    # falso é pior que nenhum alarme: ensina a ignorar o alarme verdadeiro.
+    frase = re.compile(r"^(?=.*\s)(?![^\"]*[{}()=<>])[^\"\\]{20,}$")
+    literais = " ".join(x for x in re.findall(r'"([^"\\]{4,})"', script)
+                        if frase.match(x))
     visivel = re.sub(r"<script>.*?</script>", "", corpo, flags=re.S)
-    visivel = re.sub(r"<[^>]+>", " ", visivel).lower()
+    visivel = (re.sub(r"<[^>]+>", " ", visivel) + " " + literais).lower()
     for palavra in JARGAO_PROIBIDO:
         r.append((not re.search(rf"\b{palavra}\b", visivel),
                   f"a tela do app não usa '{palavra}' sem explicar"))

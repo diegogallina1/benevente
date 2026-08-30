@@ -50,7 +50,7 @@ class Bucket(str, Enum):
     FUNDO_GLOBAL = "fundo global"
     RENDA_FIXA = "renda fixa"
     CAIXA = "caixa"
-    FORA_DO_ESCOPO = "fora do escopo da política"
+    FORA_DO_ESCOPO = "fora do que a política escolhe"
 
 
 @dataclass(frozen=True)
@@ -304,7 +304,7 @@ def map_portfolio(positions: list[Position], target: dict, *,
         # de um ativo fora do escopo sugere que ele foi analisado e reprovado —
         # ele não foi olhado, e a diferença importa para quem lê depois.
         if pos.bucket is Bucket.FORA_DO_ESCOPO:
-            motivo = "fora do escopo da política"
+            motivo = "fora do que a política escolhe"
             notas.append("regime tributário próprio: o imposto desta venda não é apurado aqui")
         else:
             motivo = "não faz parte da carteira do perfil" if vender_tudo else "acima do peso declarado"
@@ -441,7 +441,7 @@ def adapt_portfolio(positions: list[Position], target: dict, *,
         ticker = pos.ticker.removesuffix(".SA")
         if pos.bucket is Bucket.FORA_DO_ESCOPO:
             moves.append(Move(ticker, "manter", pos.market_value_brl, pos.market_value_brl,
-                              "fora do escopo da política",
+                              "fora do que a política escolhe",
                               notes=["a camada de proteção não observa nem cobre esta posição"]))
             continue
         if pos.bucket in (Bucket.CAIXA, Bucket.RENDA_FIXA):
