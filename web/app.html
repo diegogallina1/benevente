@@ -473,18 +473,33 @@ footer a { color: var(--acao); }
   <details id="add-det">
     <summary>Acrescentar o que a B3 não manda</summary>
     <div class="add-corpo">
-      <p class="ajuda">Previdência, cripto, exterior, imóvel. Entra no patrimônio e no
-         registro, marcado como informado por você.</p>
+      <p class="ajuda">CDB, LCI, LCA, previdência, cripto, exterior, imóvel. Entra no
+         patrimônio e no registro, marcado como informado por você. Em papel de renda
+         fixa a tela também traz a oferta para a régua líquida e conta o limite do FGC.</p>
       <div class="add-linha">
         <label>O que é<input id="add-nome" type="text" placeholder="Previdência PGBL"></label>
         <label>Tipo<select id="add-tipo">
+          <option>CDB</option><option>LCI</option><option>LCA</option>
+          <option>LC</option><option>RDB</option>
           <option>previdência</option><option>cripto</option><option>conta no exterior</option>
           <option>imóvel</option><option>participação em empresa</option><option>outro</option>
         </select></label>
         <label>Quanto vale<input id="add-valor" type="text" inputmode="decimal" placeholder="R$ 0,00"></label>
       </div>
+      <div class="add-linha hidden" id="add-rf">
+        <label>Quem emite<input id="add-emissor" type="text" placeholder="Banco Exemplo"></label>
+        <label>Como rende<select id="add-indice">
+          <option value="cdi">% do CDI</option>
+          <option value="cdi_mais">CDI mais taxa</option>
+          <option value="pre">prefixado</option>
+          <option value="ipca">IPCA mais taxa</option>
+        </select></label>
+        <label>Taxa<input id="add-taxa" type="text" inputmode="decimal" placeholder="110"></label>
+        <label>Vencimento<input id="add-venc" type="date"></label>
+      </div>
       <button class="link" type="button" id="add-botao">Acrescentar</button>
       <p class="erro-campo hidden" id="add-erro"></p>
+      <div class="hidden" id="add-regua"></div>
     </div>
   </details>
 
@@ -546,6 +561,6 @@ footer a { color: var(--acao); }
 </div>
 
 
-<script src="./plano.js?v=a78276cc77"></script>
+<script src="./plano.js?v=c60349e16a"></script>
 </body>
 </html>

@@ -339,6 +339,11 @@ def map_portfolio(positions: list[Position], target: dict, *,
         if p.bucket is Bucket.RENDA_FIXA and p.conglomerate:
             fgc[p.conglomerate] = fgc.get(p.conglomerate, 0.0) + p.market_value_brl
     estouros = {k: round(v, 2) for k, v in fgc.items() if v > FGC_PER_CONGLOMERATE_BRL}
+    # A exposição inteira, e não só a que estoura. O teto móvel do FGC é sobre a
+    # soma coberta em todos os emissores, então quem publica apenas os estouros
+    # torna esse limite incalculável: quinze posições de 200 mil não aparecem em
+    # lista nenhuma e passam bem do milhão que a garantia paga em quatro anos.
+    exposicao_fgc = {k: round(v, 2) for k, v in fgc.items()}
 
     return {
         "path": "adequar",
@@ -369,6 +374,7 @@ def map_portfolio(positions: list[Position], target: dict, *,
                               "tax_brl": round(imposto_por_cesta.get(k, 0.0), 2)}
                           for k, v in sorted(por_cesta.items())},
         "fgc_breaches": estouros,
+        "fgc_exposure": exposicao_fgc,
         "sources": sorted({p.source.value for p in positions}),
         "moves": [
             {"ticker": m.ticker, "action": m.action,
@@ -495,6 +501,11 @@ def adapt_portfolio(positions: list[Position], target: dict, *,
         if p.bucket is Bucket.RENDA_FIXA and p.conglomerate:
             fgc[p.conglomerate] = fgc.get(p.conglomerate, 0.0) + p.market_value_brl
     estouros = {k: round(v, 2) for k, v in fgc.items() if v > FGC_PER_CONGLOMERATE_BRL}
+    # A exposição inteira, e não só a que estoura. O teto móvel do FGC é sobre a
+    # soma coberta em todos os emissores, então quem publica apenas os estouros
+    # torna esse limite incalculável: quinze posições de 200 mil não aparecem em
+    # lista nenhuma e passam bem do milhão que a garantia paga em quatro anos.
+    exposicao_fgc = {k: round(v, 2) for k, v in fgc.items()}
 
     fora = sum(p.market_value_brl for p in positions if p.bucket is Bucket.FORA_DO_ESCOPO)
     coberto = sum(m.to_brl for m in moves
@@ -552,6 +563,7 @@ def adapt_portfolio(positions: list[Position], target: dict, *,
                               "tax_brl": round(imposto_por_cesta.get(k, 0.0), 2)}
                           for k, v in sorted(por_cesta.items())},
         "fgc_breaches": estouros,
+        "fgc_exposure": exposicao_fgc,
         "sources": sorted({p.source.value for p in positions}),
         "moves": [
             {"ticker": m.ticker, "action": m.action,

@@ -48,6 +48,10 @@ class Regime(str, Enum):
 
 class Index(str, Enum):
     CDI = "CDI"
+    #: CDI mais spread, a forma como a maior parte do CDB de prazo longo é
+    #: oferecida. Faltava, e sem ela a oferta tinha de ser convertida à mão para
+    #: percentual do CDI, o que muda de resultado quando o CDI muda.
+    CDI_MAIS = "CDI+"
     PREFIXADO = "prefixado"
     IPCA = "IPCA+"
     SELIC = "Selic"
@@ -120,6 +124,8 @@ def gross_annual_yield(product: Product, cdi_annual: float, ipca_annual: float) 
     """Rendimento bruto ao ano, antes de imposto e taxas."""
     if product.index in (Index.CDI, Index.SELIC):
         return cdi_annual * product.rate
+    if product.index is Index.CDI_MAIS:
+        return cdi_annual + product.rate
     if product.index is Index.PREFIXADO:
         return product.rate
     if product.index is Index.IPCA:
@@ -268,6 +274,31 @@ def allocate(products: list[Product], amount_brl: float, reference: date, cdi_an
                 "per_conglomerate_cap_brl": FGC_PER_CONGLOMERATE_BRL,
                 "rolling_cap_brl": FGC_ROLLING_CAP_BRL,
                 "rolling_window_years": FGC_ROLLING_YEARS},
+    }
+
+
+def motor_para_navegador() -> dict:
+    """As constantes do motor, para quem precisa refazer a conta fora do Python.
+
+    A pessoa digita a oferta que viu na corretora e espera o número na hora, o
+    que obriga a conta a rodar no navegador. Duas implementações da mesma regra
+    divergem no dia em que uma tabela muda, e a que ninguém olha é a que fica
+    para trás. Então a tabela mora aqui e viaja; o que se reescreve do outro
+    lado é só a aritmética, e um teste roda as duas sobre a mesma grade de casos
+    e compara.
+
+    Nada aqui é escolha de produto. É a lei tributária e o limite do FGC.
+    """
+    return {
+        "ir": [{"ate_dias": limite, "aliquota": aliquota} for limite, aliquota in IR_BRACKETS],
+        "iof": list(IOF_DAILY_TABLE),
+        "fgc": {"por_conglomerado_brl": FGC_PER_CONGLOMERATE_BRL,
+                "teto_movel_brl": FGC_ROLLING_CAP_BRL,
+                "janela_anos": FGC_ROLLING_YEARS},
+        "produtos": {nome: {"regime": regra["regime"].value, "fgc": regra["fgc"], "ir": regra["ir"]}
+                     for nome, regra in PRODUCT_RULES.items()},
+        "indices": [i.value for i in Index],
+        "dias_no_ano": 365.25,
     }
 
 

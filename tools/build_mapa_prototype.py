@@ -12,9 +12,12 @@ from pathlib import Path
 import json
 import sys
 
+ROOT_PARA_MOTOR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_calibration_web import nota_do_instrumento  # noqa: E402
 from design_tokens import FONTES_LINK, css as tokens_css  # noqa: E402
+sys.path.insert(0, str(ROOT_PARA_MOTOR))
+from fixed_income_catalog import motor_para_navegador  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "artifacts" / "portfolio_mapping_v1" / "mapping_by_profile.json"
@@ -22,7 +25,113 @@ CONEXAO = ROOT / "artifacts" / "b3_connection_v1" / "connection_example.json"
 CALIBRACAO = ROOT / "artifacts" / "forecast_calibration_v1" / "calibration.json"
 ACOMPANHAMENTO = ROOT / "web" / "forecast_2026.json"
 MUDANCAS = ROOT / "web" / "mudancas_2026.json"
+#: A grade do Tesouro serve de piso de comparação: é o papel sem risco de
+#: crédito e com liquidez diária, e toda oferta de banco é medida contra ele.
+OFERTAS_TESOURO = ROOT / "data" / "ofertas_tesouro.json"
 OUT = ROOT / "docs" / "desenho_tela_mapa.html"
+
+
+#: A aritmética da régua de renda fixa, no navegador. Fica numa constante
+#: e não solta no meio da página porque o teste precisa carregar exatamente
+#: este código e rodá-lo contra a versão em Python. Extrair a função do
+#: HTML gerado por expressão regular funcionaria hoje e quebraria calado na
+#: primeira vez que alguém mexesse na formatação.
+REGUA_RF_JS = r"""/* --- a regua da renda fixa --- */
+// A mesma conta que fixed_income_catalog faz em Python, refeita aqui porque a
+// pessoa digita a oferta e espera o numero na hora. As tabelas nao sao
+// reescritas: elas chegam prontas em DADOS.renda_fixa.motor, e um teste roda as
+// duas implementacoes sobre a mesma grade de casos.
+
+function aliquotaIR(dias) {
+  const faixas = DADOS.renda_fixa.motor.ir;
+  for (const f of faixas) if (dias <= f.ate_dias) return f.aliquota;
+  return faixas[faixas.length - 1].aliquota;
+}
+
+// O IOF morde o rendimento antes do imposto de renda e some no trigesimo dia.
+function fatorIOF(dias) {
+  const tabela = DADOS.renda_fixa.motor.iof;
+  if (dias >= 30) return 0;
+  return tabela[Math.max(dias - 1, 0)];
+}
+
+function brutoAoAno(papel, cdi, ipca) {
+  if (papel.indice === "cdi" || papel.indice === "selic") return cdi * papel.taxa;
+  if (papel.indice === "cdi_mais") return cdi + papel.taxa;
+  if (papel.indice === "pre") return papel.taxa;
+  if (papel.indice === "ipca") return (1 + ipca) * (1 + papel.taxa) - 1;
+  return NaN;
+}
+
+function diasEntre(deIso, ateIso) {
+  const dia = 86400000;
+  return Math.round((Date.parse(ateIso + "T00:00:00Z") - Date.parse(deIso + "T00:00:00Z")) / dia);
+}
+
+// Rendimento liquido anualizado no horizonte do proprio papel. Comparar um CDB
+// de seis meses com um de tres anos pela taxa anunciada ignora que o primeiro
+// paga 22,5% de imposto e o segundo 15%.
+function liquidoAoAno(papel, referencia) {
+  const rf = DADOS.renda_fixa;
+  const regra = rf.motor.produtos[papel.tipo];
+  if (!regra) return null;
+  const dias = diasEntre(referencia, papel.vencimento);
+  if (!(dias > 0)) return null;
+  const anos = dias / rf.motor.dias_no_ano;
+
+  const bruto = brutoAoAno(papel, rf.cdi_anual, rf.ipca_anual);
+  if (!isFinite(bruto)) return null;
+  const depoisDeTaxas = bruto - (papel.custodia || 0);
+  const acumulado = Math.pow(1 + depoisDeTaxas, anos) - 1;
+
+  const ir = regra.ir ? aliquotaIR(dias) : 0;
+  const iof = regra.ir ? fatorIOF(dias) : 0;
+  const liquidoAcumulado = acumulado * (1 - iof) * (1 - ir);
+  const liquido = Math.pow(1 + liquidoAcumulado, 1 / anos) - 1;
+  return {
+    dias: dias, bruto: bruto, ir: ir, iof: iof, liquido: liquido,
+    // Fracao do CDI bruto. E o numero que se compara, porque indice nao paga
+    // imposto: um CDB anunciado a 118% do CDI entrega perto de 101% dele.
+    sobre_cdi: rf.cdi_anual ? liquido / rf.cdi_anual : null,
+    fgc: regra.fgc, regime: regra.regime,
+  };
+}
+
+// O piso: Tesouro Selic mais curto, liquidez diaria, sem risco de credito, ja
+// com custodia. Toda oferta de banco e medida contra ele.
+function pisoLiquido(vencimento, referencia) {
+  const piso = DADOS.renda_fixa.piso;
+  return liquidoAoAno({ tipo: "TESOURO", indice: "selic", taxa: piso.rate,
+                        vencimento: vencimento, custodia: piso.custody_fee_annual },
+                      referencia);
+}
+
+// O resumo do FGC, sem tocar em tela. Fica aqui junto da regua porque e conta,
+// e conta que imprime dinheiro precisa de teste: o ramo do teto movel so
+// aparece em carteira grande, que e justamente a que ninguem monta a mao para
+// conferir.
+//
+// "coberto" soma o que cabe em cada emissor, nao o que a pessoa tem. Espalhar
+// tres milhoes por quinze bancos deixa um milhao garantido, nao tres, porque o
+// teto de quatro anos e por CPF somando todas as instituicoes.
+function resumoFgc(porConglomerado, limites) {
+  const nomes = Object.keys(porConglomerado);
+  const estouros = nomes
+    .filter(n => porConglomerado[n] > limites.por_conglomerado_brl)
+    .sort((x, y) => porConglomerado[y] - porConglomerado[x]);
+  const coberto = nomes.reduce(
+    (s, n) => s + Math.min(porConglomerado[n], limites.por_conglomerado_brl), 0);
+  return {
+    estouros: estouros,
+    excedente_por_emissor: estouros.reduce(
+      (s, n) => s + porConglomerado[n] - limites.por_conglomerado_brl, 0),
+    coberto: coberto,
+    excedente_movel: Math.max(0, coberto - limites.teto_movel_brl),
+    acima_do_teto_movel: coberto > limites.teto_movel_brl,
+  };
+}
+
+"""
 
 
 HTML = r"""<meta charset="utf-8">
@@ -473,18 +582,33 @@ footer a { color: var(--acao); }
   <details id="add-det">
     <summary>Acrescentar o que a B3 não manda</summary>
     <div class="add-corpo">
-      <p class="ajuda">Previdência, cripto, exterior, imóvel. Entra no patrimônio e no
-         registro, marcado como informado por você.</p>
+      <p class="ajuda">CDB, LCI, LCA, previdência, cripto, exterior, imóvel. Entra no
+         patrimônio e no registro, marcado como informado por você. Em papel de renda
+         fixa a tela também traz a oferta para a régua líquida e conta o limite do FGC.</p>
       <div class="add-linha">
         <label>O que é<input id="add-nome" type="text" placeholder="Previdência PGBL"></label>
         <label>Tipo<select id="add-tipo">
+          <option>CDB</option><option>LCI</option><option>LCA</option>
+          <option>LC</option><option>RDB</option>
           <option>previdência</option><option>cripto</option><option>conta no exterior</option>
           <option>imóvel</option><option>participação em empresa</option><option>outro</option>
         </select></label>
         <label>Quanto vale<input id="add-valor" type="text" inputmode="decimal" placeholder="R$ 0,00"></label>
       </div>
+      <div class="add-linha hidden" id="add-rf">
+        <label>Quem emite<input id="add-emissor" type="text" placeholder="Banco Exemplo"></label>
+        <label>Como rende<select id="add-indice">
+          <option value="cdi">% do CDI</option>
+          <option value="cdi_mais">CDI mais taxa</option>
+          <option value="pre">prefixado</option>
+          <option value="ipca">IPCA mais taxa</option>
+        </select></label>
+        <label>Taxa<input id="add-taxa" type="text" inputmode="decimal" placeholder="110"></label>
+        <label>Vencimento<input id="add-venc" type="date"></label>
+      </div>
       <button class="link" type="button" id="add-botao">Acrescentar</button>
       <p class="erro-campo hidden" id="add-erro"></p>
+      <div class="hidden" id="add-regua"></div>
     </div>
   </details>
 
@@ -557,6 +681,13 @@ const RANK = Object.fromEntries(Object.keys(DADOS.profiles).map((n, i) => [n, i]
 const respostas = {};
 
 const $ = id => document.getElementById(id);
+// Nome de posicao e texto que a propria pessoa digitou, e ele chega a innerHTML
+// em mais de um lugar. A exposicao aqui e ao proprio navegador de quem digitou,
+// porque nada disto e guardado nem compartilhado, mas texto de usuario dentro de
+// marcacao e um habito que envelhece mal quando o proximo campo vier de fora.
+const escapa = v => String(v).replace(/[&<>"']/g, c =>
+  ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
 const el = (tag, cls, html) => {
   const n = document.createElement(tag);
   if (cls) n.className = cls;
@@ -860,15 +991,7 @@ function render(perfil) {
   barra("bar-hoje", [b.equity_before, 1 - b.equity_before - fora, fora]);
   barra("bar-alvo", [b.equity_budget, 1 - b.equity_budget, 0]);
 
-  const fgc = $("fgc");
-  const estouros = Object.entries(a.fgc_breaches || {});
-  fgc.style.display = estouros.length ? "block" : "none";
-  if (estouros.length) {
-    const [nome, valor] = estouros[0];
-    fgc.innerHTML = "<p><b>" + BRL(valor - 250000) + " sem cobertura do FGC.</b> " +
-      BRL(valor) + " no conglomerado " + nome + ", e a garantia cobre R$ 250.000 por CPF. " +
-      "Os dois planos mantêm a posição: é risco assumido, e assumir precisa ser decisão.</p>";
-  }
+  desenhaFgc(a);
   regua(perfil);
   planos(perfil, a, b);
 }
@@ -984,7 +1107,7 @@ function desenhaCarteira() {
     aviso.classList.remove("hidden");
     aviso.innerHTML = "<p><b>" + sem.length + " posição(ões) sem valor.</b> O total é " +
       "parcial, e toda porcentagem sobre o patrimônio sai baixa: " +
-      sem.map(p => p.nome).join(", ") + ".</p>";
+      sem.map(p => escapa(p.nome)).join(", ") + ".</p>";
   } else {
     aviso.classList.add("hidden");
   }
@@ -1000,23 +1123,152 @@ function pedeValor(nome) {
   if (perfilAtual) render(perfilAtual);
 }
 
+/* --- o limite do FGC, inteiro --- */
+// Havia meia conta aqui: so o teto de 250 mil por conglomerado, so o primeiro
+// estouro na tela, e o limite lido de um numero escrito na frase. Faltavam
+// duas coisas que mudam a resposta.
+//
+// A primeira e o teto movel de um milhao por CPF em quatro anos. Ele e o total
+// que o FGC paga a uma pessoa somando todas as instituicoes na janela, entao
+// espalhar tres milhoes por quinze bancos, cada um abaixo de 250 mil, nao deixa
+// os tres milhoes garantidos: deixa um milhao. Quem so olha o teto por emissor
+// nunca ve isso.
+//
+// A segunda e que o que a pessoa acrescenta a mao nao entrava na conta. Os
+// papeis que mais dependem do FGC sao justamente CDB, LCI e LCA, que a B3 nao
+// manda e que ela digita, e eles eram invisiveis para o unico aviso que
+// existia sobre eles.
+function exposicaoPorConglomerado(a) {
+  const soma = {};
+  const junta = (nome, valor) => {
+    if (!nome || !(valor > 0)) return;
+    soma[nome] = (soma[nome] || 0) + valor;
+  };
+  Object.entries(a.fgc_exposure || a.fgc_breaches || {}).forEach(([n, v]) => junta(n, v));
+  acrescentados.forEach(item => {
+    if (item.regua && item.regua.fgc) junta(item.conglomerado || item.emissor, item.valor_brl);
+  });
+  return soma;
+}
+
+function desenhaFgc(a) {
+  const caixa = $("fgc");
+  const limites = DADOS.renda_fixa.motor.fgc;
+  const porConglomerado = exposicaoPorConglomerado(a);
+  const r = resumoFgc(porConglomerado, limites);
+
+  if (!r.estouros.length && !r.acima_do_teto_movel) { caixa.style.display = "none"; return; }
+  caixa.style.display = "block";
+
+  const partes = [];
+  if (r.estouros.length) {
+    const linhas = r.estouros.map(n => "<li>" + escapa(n) + ": " + BRL(porConglomerado[n]) +
+      ", sendo " + BRL(porConglomerado[n] - limites.por_conglomerado_brl) + " a descoberto</li>");
+    partes.push("<p><b>" + BRL(r.excedente_por_emissor) + " acima do teto por emissor.</b> " +
+      "A garantia cobre " + BRL(limites.por_conglomerado_brl) + " por CPF em cada " +
+      "conglomerado.</p><ul>" + linhas.join("") + "</ul>");
+  }
+  if (r.acima_do_teto_movel) {
+    partes.push("<p><b>" + BRL(r.excedente_movel) + " além do teto de quatro anos.</b> " +
+      "Somando o que cabe em cada emissor dá " + BRL(r.coberto) + ", e o FGC paga no máximo " +
+      BRL(limites.teto_movel_brl) + " por CPF em " + limites.janela_anos + " anos, " +
+      "por mais bancos que sejam. Dividir em mais emissores não levanta esse teto.</p>");
+  }
+  partes.push("<p>Os dois planos mantêm a posição: é risco assumido, e assumir precisa " +
+    "ser decisão.</p>");
+  caixa.innerHTML = partes.join("");
+}
+
+__REGUA_RF__
+
+const TIPOS_RF = ["CDB", "LCI", "LCA", "LC", "RDB"];
+
+function mostraCamposRF() {
+  const eRF = TIPOS_RF.indexOf($("add-tipo").value) >= 0;
+  $("add-rf").classList.toggle("hidden", !eRF);
+  if (!eRF) $("add-regua").classList.add("hidden");
+}
+
+// A pessoa digita 110 para "110% do CDI" e 1,2 para "CDI mais 1,2%". Os dois
+// sao percentuais na tela e fracao na conta, e por isso a leitura e a mesma.
+// O que muda entre eles e o significado, e quem decide isso e brutoAoAno.
+function leTaxa(texto) {
+  const bruto = leValor(texto);
+  return isFinite(bruto) && bruto > 0 ? bruto / 100 : NaN;
+}
+
+$("add-tipo").onchange = mostraCamposRF;
+mostraCamposRF();
+
 $("add-botao").onclick = () => {
   const nome = $("add-nome").value.trim();
   const valor = leValor($("add-valor").value);
+  const tipo = $("add-tipo").value;
   const erro = $("add-erro");
-  if (!nome) { erro.textContent = "Escreva o que é."; erro.classList.remove("hidden"); return; }
-  if (!isFinite(valor) || valor <= 0) {
-    erro.textContent = "Escreva quanto vale, como 25.000,00.";
-    erro.classList.remove("hidden"); return;
+  const diz = m => { erro.textContent = m; erro.classList.remove("hidden"); };
+  if (!nome) { diz("Escreva o que é."); return; }
+  if (!isFinite(valor) || valor <= 0) { diz("Escreva quanto vale, como 25.000,00."); return; }
+
+  const item = { nome: nome, tipo: tipo, origem: "informado por você", valor_brl: valor,
+                 quantidade: null, vencimento: null, emissor: null,
+                 completa: true, falta: "" };
+
+  if (TIPOS_RF.indexOf(tipo) >= 0) {
+    const emissor = $("add-emissor").value.trim();
+    const taxa = leTaxa($("add-taxa").value);
+    const venc = $("add-venc").value;
+    if (!emissor) { diz("Escreva quem emite. É o que decide o limite do FGC."); return; }
+    if (!isFinite(taxa)) { diz("Escreva a taxa, como 110 para 110% do CDI."); return; }
+    if (!venc) { diz("Escreva o vencimento. Sem ele não dá para saber o imposto."); return; }
+    item.emissor = emissor;
+    item.conglomerado = emissor;
+    item.indice = $("add-indice").value;
+    item.taxa = taxa;
+    item.vencimento = venc;
+    const r = liquidoAoAno(item, DADOS.renda_fixa.referencia);
+    if (!r) { diz("O vencimento precisa ser depois de hoje."); return; }
+    item.regua = r;
   }
+
   erro.classList.add("hidden");
-  acrescentados.push({ nome: nome, tipo: $("add-tipo").value,
-                       origem: "informado por você", valor_brl: valor,
-                       quantidade: null, vencimento: null, emissor: null,
-                       completa: true, falta: "" });
+  acrescentados.push(item);
   $("add-nome").value = ""; $("add-valor").value = "";
+  $("add-emissor").value = ""; $("add-taxa").value = ""; $("add-venc").value = "";
+  mostraRegua(item);
   desenhaCarteira();
+  // O aviso do FGC é desenhado junto do plano, e um papel acrescentado depois
+  // dele deixava o aviso velho na tela: a pessoa somava trezentos mil num banco
+  // que já tinha duzentos e não via nada mudar. Redesenhar o plano inteiro é o
+  // que o resto da tela já faz quando a carteira muda.
+  if (perfilAtual) render(perfilAtual);
 };
+
+// O que o papel rende na mesma unidade que todo o resto, e contra o piso.
+function mostraRegua(item) {
+  const caixa = $("add-regua");
+  if (!item.regua) { caixa.classList.add("hidden"); return; }
+  const r = item.regua;
+  const piso = pisoLiquido(item.vencimento, DADOS.renda_fixa.referencia);
+  const diferenca = piso ? (r.liquido - piso.liquido) * 100 : null;
+  const veredito = diferenca === null ? ""
+    : diferenca >= 0
+      ? "<p>Rende <b>" + diferenca.toFixed(2).replace(".", ",") + " ponto</b> ao ano acima do "
+        + "Tesouro Selic no mesmo prazo. É o que este papel paga pelo risco de crédito e "
+        + "pela carência.</p>"
+      : "<p>Rende <b>" + Math.abs(diferenca).toFixed(2).replace(".", ",") + " ponto</b> ao ano "
+        + "abaixo do Tesouro Selic no mesmo prazo, que tem liquidez diária e não tem risco de "
+        + "crédito. A oferta está cobrando risco sem pagar por ele.</p>";
+  caixa.innerHTML = "<p><b>" + escapa(item.nome) + "</b> rende <b>" + PCT(r.liquido) +
+    "</b> líquido ao ano, que é <b>" + PCT(r.sobre_cdi) + " do CDI</b>." +
+    (r.ir ? " O imposto no prazo é de " + PCT(r.ir) + "." : " É isento de imposto de renda.") +
+    "</p>" + veredito +
+    "<p class='ajuda'>" + (r.fgc ? "Coberto pelo FGC, dentro dos limites abaixo."
+                                 : "Sem cobertura do FGC.") +
+    " Régua com CDI a " + PCT(DADOS.renda_fixa.cdi_anual) + " ao ano" +
+    (item.indice === "ipca" ? " e IPCA a " + PCT(DADOS.renda_fixa.ipca_anual) + ", premissa declarada" : "") +
+    ". Não é recomendação.</p>";
+  caixa.classList.remove("hidden");
+}
 
 
 /* --- alertas de mudança na estratégia --- */
@@ -1409,6 +1661,7 @@ def main() -> None:
     dados = json.loads(SOURCE.read_text(encoding="utf-8"))
     conexao = json.loads(CONEXAO.read_text(encoding="utf-8"))
     calibracao = json.loads(CALIBRACAO.read_text(encoding="utf-8"))
+    tesouro = json.loads(OFERTAS_TESOURO.read_text(encoding="utf-8"))
     acompanhamento = json.loads(ACOMPANHAMENTO.read_text(encoding="utf-8"))
     mudancas = json.loads(MUDANCAS.read_text(encoding="utf-8"))
     magro = {
@@ -1445,6 +1698,25 @@ def main() -> None:
                      "nota": nota_do_instrumento(perfil, r)}
             for perfil, r in calibracao["profiles"].items()
         },
+        # A régua de renda fixa. A pessoa digita a oferta que viu na corretora e
+        # a conta roda no navegador, porque esperar servidor para comparar dois
+        # números seria pior que não comparar. As tabelas viajam prontas daqui,
+        # de fixed_income_catalog, e um teste roda a versão Python e a do
+        # navegador sobre a mesma grade para elas não se separarem.
+        #
+        # O piso é o Tesouro Selic de prazo mais curto: liquidez diária, sem
+        # risco de crédito, e já com a custódia descontada. Uma oferta de banco
+        # que não bate esse piso está cobrando risco e prazo sem pagar por eles.
+        "renda_fixa": {
+            "motor": motor_para_navegador(),
+            "cdi_anual": tesouro["selic_annual_used"],
+            # O IPCA aqui só serve para trazer papel indexado à mesma unidade. É
+            # premissa declarada, não projeção da casa, e aparece na tela como tal.
+            "ipca_anual": 0.045,
+            "referencia": tesouro["reference_date"],
+            "piso": min((x for x in tesouro["products"] if x["index"] == "Selic"),
+                        key=lambda x: x["maturity"]),
+        },
         # O ano corrente. A faixa vem congelada de janeiro; o realizado, do
         # acompanhamento diário. O artefato é um documento só, então os dois
         # vêm embutidos, e o realizado entra de cinco em cinco pregões: entre
@@ -1477,6 +1749,7 @@ def main() -> None:
     # A versao do site le web/tokens.css, o mesmo arquivo que as paginas usam, # e os dois saem de tools/design_tokens.py, que e a fonte unica.
     pagina = (HTML.replace("__DADOS__", json.dumps(magro, ensure_ascii=False,
                                                    separators=(",", ":")))
+                  .replace("__REGUA_RF__", REGUA_RF_JS)
                   .replace("__FONTES__", FONTES_LINK)
                   .replace("__TOKENS__", tokens_css(com_cabecalho=False)))
     OUT.parent.mkdir(parents=True, exist_ok=True)

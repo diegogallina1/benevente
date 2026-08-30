@@ -22,7 +22,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from client_intake import PROFILES, WORST_DRAWDOWN  # noqa: E402
-from fixed_income_catalog import FGC_PER_CONGLOMERATE_BRL  # noqa: E402
+from fixed_income_catalog import (FGC_PER_CONGLOMERATE_BRL,  # noqa: E402
+                                  FGC_ROLLING_CAP_BRL, FGC_ROLLING_YEARS)
 
 APP = ROOT / "artifacts" / "portfolio_mapping_v1" / "mapping_by_profile.json"
 TELA = ROOT / "docs" / "desenho_tela_mapa.html"
@@ -69,12 +70,22 @@ def checar() -> list[tuple[bool, str]]:
         r.append((texto in index,
                   f"{perfil}: pior queda {texto} do questionário está publicada na home"))
 
-    r.append((f"R$ {FGC_PER_CONGLOMERATE_BRL / 1000:.0f}.000".replace(".000", ".000") in tela
-              or "250.000" in tela,
-              f"teto do FGC de R$ {FGC_PER_CONGLOMERATE_BRL:,.0f} aparece na tela do app"
+    # O limite do FGC era procurado como texto na página. Quando a tela passou a
+    # formatá-lo a partir do motor, em vez de escrevê-lo à mão, o literal sumiu e
+    # a checagem reprovou uma melhora. O que importa é o valor que o app carrega,
+    # e ele vem do mesmo módulo que a alocação em Python usa.
+    # O limite viaja no payload embutido na própria tela, e não no artefato de
+    # mapeamento: é a tela que faz a conta do FGC agora.
+    corpo = tela[tela.index("{", tela.index("const DADOS")):]
+    limites = json.JSONDecoder().raw_decode(corpo)[0]["renda_fixa"]["motor"]["fgc"]
+    r.append((limites.get("por_conglomerado_brl") == FGC_PER_CONGLOMERATE_BRL,
+              f"teto do FGC por conglomerado no app é {FGC_PER_CONGLOMERATE_BRL:,.0f}"
               .replace(",", ".")))
+    r.append((limites.get("teto_movel_brl") == FGC_ROLLING_CAP_BRL,
+              f"teto móvel do FGC no app é {FGC_ROLLING_CAP_BRL:,.0f} em "
+              f"{FGC_ROLLING_YEARS} anos".replace(",", ".")))
     r.append((set(app["profiles"]) == set(PROFILES),
-              "os três perfis do app são os mesmos do questionário"))
+              "os perfis do app são os mesmos do questionário"))
 
     # --- e o app não fala uma língua que só o site ensina ---
     corpo = tela[tela.index("<div class=\"wrap\">"):]

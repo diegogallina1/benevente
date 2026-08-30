@@ -247,6 +247,9 @@
     "fgc_breaches": {
       "Beta": 310000.0
     },
+    "fgc_exposure": {
+      "Beta": 310000.0
+    },
     "sources": [
       "Open Finance (compartilhamento de investimentos)",
       "extrato da Área do Investidor da B3",
@@ -465,6 +468,9 @@
     },
     "tax_by_bucket": {},
     "fgc_breaches": {
+      "Beta": 310000.0
+    },
+    "fgc_exposure": {
       "Beta": 310000.0
     },
     "sources": [
