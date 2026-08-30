@@ -6,11 +6,11 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="description" content="Protótipo do aplicativo da Benevente: conecta a B3, quatro perguntas e dois planos. Dados sintéticos.">
 <link rel="canonical" href="https://benevente.dgo.fi/app">
-<link rel="stylesheet" href="./tokens.css?v=3c01adb34d">
+<link rel="stylesheet" href="./tokens.css?v=057ed757df">
 <title>Plano de carteira</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap">
 <style>
 /* Dovetail aplicado ao Benevente. Tokens do guia, adaptados ao layout que já
    existe: canvas quase preto sob uma grade de blueprint, tipo branco, uma única
@@ -446,8 +446,7 @@ footer a { color: var(--acao); }
 
 <section id="mapa" class="hidden">
   <h2>Sua carteira hoje</h2>
-  <p class="lede">Cada posição mostra de onde o dado veio: extrato da B3, Open Finance ou
-     lançamento manual.</p>
+  <p class="lede">Cada posição mostra de onde o dado veio.</p>
   <div class="painel">
     <p class="quando" id="quando"></p>
     <div class="big num" id="aderencia"></div>
@@ -474,9 +473,8 @@ footer a { color: var(--acao); }
   <details id="add-det">
     <summary>Acrescentar o que a B3 não manda</summary>
     <div class="add-corpo">
-      <p class="ajuda">Previdência, cripto, conta no exterior, imóvel, participação em
-         empresa. O que estiver aqui entra na conta do patrimônio e no registro da
-         decisão, marcado como informado por você.</p>
+      <p class="ajuda">Previdência, cripto, exterior, imóvel. Entra no patrimônio e no
+         registro, marcado como informado por você.</p>
       <div class="add-linha">
         <label>O que é<input id="add-nome" type="text" placeholder="Previdência PGBL"></label>
         <label>Tipo<select id="add-tipo">
@@ -524,8 +522,7 @@ footer a { color: var(--acao); }
 
 <section id="acompanhar-sec" class="hidden">
   <h2>Acompanhar</h2>
-  <p class="lede">O que a carteira do seu perfil rendeu neste ano, ao lado da faixa
-     que a regra projetou em janeiro. A faixa não se mexe. O que anda é a linha.</p>
+  <p class="lede">O ano contra a faixa projetada em janeiro. A faixa não se mexe.</p>
   <div class="painel">
     <p class="label" id="ac-quando"></p>
     <div class="big num" id="ac-numero"></div>
@@ -549,6 +546,6 @@ footer a { color: var(--acao); }
 </div>
 
 
-<script src="./plano.js?v=af5df8f139"></script>
+<script src="./plano.js?v=da2446d348"></script>
 </body>
 </html>

@@ -129,10 +129,9 @@ $("conectar").onclick = () => {
     const [ticker, dados] = pendentes[0];
     const jaSabe = (b3.cost_basis[ticker] || {}).valor_brl || 0;
     alerta.innerHTML = "<p><b>Falta saber por quanto você comprou " + ticker + ".</b> " +
-      "Essa compra é anterior a " + b3.base_starts.split("-").reverse().join("/") +
-      ", então não está no histórico que a B3 manda. Sem esse número não dá para calcular " +
-      "o imposto dessa venda, e ele não é chutado aqui, porque um imposto chutado tem a " +
-      "mesma cara de um imposto calculado.</p>";
+      "A compra é anterior a " + b3.base_starts.split("-").reverse().join("/") + " e não " +
+      "está no histórico da B3. Sem ela o imposto não sai, e aqui não se chuta imposto: " +
+      "chutado tem a mesma cara de calculado.</p>";
     alerta.append(campoDeCusto(ticker, jaSabe));
   }
   mostra("perguntas");
@@ -359,9 +358,8 @@ function render(perfil) {
   if (estouros.length) {
     const [nome, valor] = estouros[0];
     fgc.innerHTML = "<p><b>" + BRL(valor - 250000) + " sem cobertura do FGC.</b> " +
-      "Você tem " + BRL(valor) + " no conglomerado " + nome + ", e a garantia cobre até " +
-      "R$ 250.000 por CPF. Os dois planos mantêm essa posição: é risco de crédito assumido, " +
-      "e assumi-lo precisa ser decisão registrada, não distração.</p>";
+      BRL(valor) + " no conglomerado " + nome + ", e a garantia cobre R$ 250.000 por CPF. " +
+      "Os dois planos mantêm a posição: é risco assumido, e assumir precisa ser decisão.</p>";
   }
   regua(perfil);
   planos(perfil, a, b);
@@ -400,10 +398,8 @@ function regua(perfil) {
   // acaso, e é justamente o perfil que acertou tudo que precisa dizer isso.
   const ep = Math.round((c.cobertura.standard_error || 0) * 100);
   host.append(el("p", null,
-    "<b>Oito anos é pouco.</b> A margem de erro dessa contagem é de cerca de " + ep +
-    " pontos, então acertar 6 ou acertar 8 não se distingue de sorte. O que está " +
-    "medido aqui é a régua, não uma promessa de resultado, nenhuma tela deste " +
-    "produto projeta o seu patrimônio."));
+    "<b>Oito anos é pouco.</b> A margem de erro é de " + ep + " pontos: acertar 6 ou 8 " +
+    "não se distingue de sorte. Isto mede a régua, não promete resultado."));
   host.append(grafico(c.anos));
   const chaves = el("div", "chaves",
     "<span><i style='background:var(--line-strong)'></i>faixa projetada em janeiro</span>" +
@@ -476,9 +472,8 @@ function desenhaCarteira() {
   const aviso = $("sem-valor");
   if (sem.length) {
     aviso.classList.remove("hidden");
-    aviso.innerHTML = "<p><b>" + sem.length + " posição(ões) ainda sem valor.</b> " +
-      "Enquanto isso durar, o total acima é parcial e a porcentagem de qualquer coisa " +
-      "sobre o seu patrimônio está subestimando o denominador: " +
+    aviso.innerHTML = "<p><b>" + sem.length + " posição(ões) sem valor.</b> O total é " +
+      "parcial, e toda porcentagem sobre o patrimônio sai baixa: " +
       sem.map(p => p.nome).join(", ") + ".</p>";
   } else {
     aviso.classList.add("hidden");
@@ -556,11 +551,10 @@ function alertas(perfil, chave) {
 
     const p2 = el("p");
     const saiu = c.from_equity - c.to_equity;
-    p2.innerHTML = "Na sua carteira, isso pede vender <b>" + BRL(patrimonio * saiu) +
-      "</b> em ações e levar para o CDI, mantendo a proporção entre os papéis. " +
-      "A parte em S&P 500 não se mexe." +
-      (semValor ? " Esse número é piso: " + semValor + " posição(ões) ainda sem valor " +
-                  "ficam de fora da conta, e o valor certo é maior." : "");
+    p2.innerHTML = "Na sua carteira: vender <b>" + BRL(patrimonio * saiu) + "</b> em ações " +
+      "para o CDI, na mesma proporção. A parte em S&P 500 fica." +
+      (semValor ? " Piso, porque " + semValor + " posição(ões) sem valor ficam fora da conta."
+                : "");
     caixa.append(p2);
     host.append(caixa);
   });
@@ -590,9 +584,7 @@ function acompanhar(perfil) {
     PCT(n.p10) + "</b> a <b>" + PCT(n.p90) + "</b>. O resultado está <b>" +
     (n.inside ? "dentro" : "fora") + "</b> dela.";
   $("ac-grafico").innerHTML = cone(r.faixa, r.realizado);
-  $("ac-legenda").textContent =
-    "A área é o que foi projetado em janeiro para cada ponto do ano. A linha é o " +
-    "que aconteceu, do primeiro pregão até hoje.";
+  $("ac-legenda").textContent = "Área: o projetado em janeiro. Linha: o que aconteceu.";
   $("ac-limite").innerHTML = "<p>" + ac.limitacao + "</p>";
 }
 
@@ -815,14 +807,14 @@ function razao(perfil, chave, rolar) {
   html += "<div class='total'><span>" +
     (m.tax_is_complete ? "Total, pago uma vez" : "Calculado até aqui, pago uma vez") +
     "</span><span class='num'>" + BRL(m.transition_total_brl) + "</span></div>";
-  html += "<p>O imposto é calculado por tipo de investimento, pelo preço médio: ganhos e " +
-    "prejuízos se compensam dentro do mesmo tipo e nunca entre tipos diferentes." +
+  html += "<p>Ganho e prejuízo se compensam dentro do mesmo tipo de investimento, nunca " +
+    "entre tipos." +
     (m.exempt_month_assumed && (m.tax_by_bucket.renda_variavel || {}).realised_gain_brl > 0
-      ? " O imposto sobre ações fica em zero porque o total vendido no mês cabe na isenção de " +
-        "R$ 20 mil, se houver outra venda no mesmo mês, ela deixa de valer."
+      ? " Ações ficam em zero pela isenção de R$ 20 mil no mês. Outra venda no mesmo mês " +
+        "derruba a isenção."
       : "") +
     (m.tax_by_bucket.fora_do_escopo
-      ? " O zero em Fora da estratégia não é isenção: é uma conta que não é feita aqui, " +
+      ? " O zero em Fora da estratégia não é isenção, é conta que não fazemos aqui, " +
         "porque cripto tem regras próprias."
       : "") +
     " O outro plano custaria " + BRL(outro.transition_total_brl) + ".</p>";

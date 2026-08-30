@@ -52,8 +52,8 @@
   --btn-fg: #0a0a0a;
 }
 :root, :root[data-theme="dark"] {
-  --sans: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --display: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --serif: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --sans: "Figtree", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --display: "Figtree", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --serif: "Figtree", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --mono: "Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }

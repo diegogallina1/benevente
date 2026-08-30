@@ -80,14 +80,21 @@ ESCURO = {
 #: padrao — e um teste que repete a decisao trava a decisao em vez de conferi-la.
 TEMAS = ((":root", CLARO), (':root[data-theme="dark"]', ESCURO))
 
-SANS = '"Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif'
+SANS = '"Figtree", ui-sans-serif, system-ui, -apple-system, sans-serif'
 MONO = '"Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
 
+#: O link das fontes, e ele precisa viajar para todas as páginas.
+#:
+#: Descoberto ao trocar a família: o site pedia Schibsted Grotesk no CSS e
+#: carregava Plus Jakarta Sans no HTML, duas fontes que nunca se encontraram. O
+#: navegador não achava a primeira, não usava a segunda, e caía na fonte do
+#: sistema. Toda a tipografia do site era acidental, e ninguém veria isso numa
+#: revisão de código: só medindo a página renderizada.
 FONTES_LINK = (
     '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
     '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
-    'family=Schibsted+Grotesk:wght@400;500;600;700&'
+    'family=Figtree:wght@400;500;600;700&'
     'family=Spline+Sans+Mono:wght@400;500&display=swap">'
 )
 

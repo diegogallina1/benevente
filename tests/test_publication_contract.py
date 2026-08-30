@@ -60,7 +60,12 @@ def test_benevente_2_has_direct_benchmarks_and_shared_design_system() -> None:
     )]
     for path in pages:
         source = path.read_text(encoding="utf-8")
-        assert "Plus+Jakarta+Sans" in source, path
+        # A família tem de ser a que o CSS pede, e não qualquer uma. O site
+        # carregava Plus Jakarta Sans e pedia outra coisa em var(--sans): as
+        # duas nunca se encontraram e a página inteira caía na fonte do
+        # sistema. Um teste que aceitasse só "carrega alguma fonte" deixaria
+        # esse defeito passar de novo.
+        assert "family=Figtree" in source, path
         assert "DM+Mono" not in source, path
         assert "design-system.css" in source, path
     # The two version pages were consolidated into one tab; the old URLs stay as

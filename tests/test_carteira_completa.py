@@ -78,4 +78,4 @@ def test_o_alerta_so_existe_para_quem_copia_a_estrategia():
 def test_o_alerta_avisa_quando_o_numero_e_piso():
     """O valor em reais sai do patrimônio conhecido. Enquanto faltar posição, ele
     é piso, e a tela precisa dizer isso no mesmo parágrafo em que dá o número."""
-    assert "Esse número é piso" in TELA.read_text(encoding="utf-8")
+    assert "Piso, porque" in TELA.read_text(encoding="utf-8")
