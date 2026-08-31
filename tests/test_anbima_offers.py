@@ -430,3 +430,74 @@ def test_403_de_ambiente_e_403_de_produto_orientam_coisas_diferentes(ambiente, m
     with pytest.raises(SystemExit) as produto_negado:
         coletor.coletar("producao", abrir=com_corpo("product not subscribed"))
     assert "habilite o produto" in str(produto_negado.value)
+
+
+def test_a_coleta_segue_paginando_ate_a_pagina_incompleta(ambiente, monkeypatch, tmp_path) -> None:
+    """Mil linhas redondas são assinatura de teto, não tamanho de conjunto."""
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (tmp_path / "nada.env",))
+    monkeypatch.delenv("ANBIMA_ACCESS_TOKEN", raising=False)
+    monkeypatch.setattr(coletor, "POR_PAGINA", 3)
+    paginas = {1: [{"a": 1}, {"a": 2}, {"a": 3}],
+               2: [{"a": 4}, {"a": 5}, {"a": 6}],
+               3: [{"a": 7}]}
+    pedidas = []
+
+    def abrir(pedido, timeout=None):
+        alvo = pedido.full_url
+        if "oauth/access-token" in alvo:
+            return RespostaFalsa(json.dumps({"access_token": "abc"}).encode("utf-8"))
+        numero = 1
+        if "page=" in alvo:
+            numero = int(alvo.split("page=")[1].split("&")[0])
+        pedidas.append(numero)
+        return RespostaFalsa(json.dumps(paginas.get(numero, [])).encode("utf-8"))
+
+    linhas = coletor.buscar("https://exemplo", "rota", "abc", "v2",
+                            esquema=coletor._cabecalho_access_token, abrir=abrir)
+    assert len(linhas) == 7, "parou na primeira página"
+    assert pedidas == [1, 2, 3]
+
+
+def test_o_envelope_nao_vira_item_da_lista(ambiente) -> None:
+    """Metadado de paginação misturado ao dado é dado corrompido."""
+    itens, envelope = coletor.itens_e_envelope(
+        {"content": [{"cnpj": "x"}], "total_elements": 1, "last": True})
+    assert itens == [{"cnpj": "x"}]
+    assert envelope["last"] is True
+    assert all("total_elements" not in item for item in itens)
+
+
+def test_paginacao_que_nao_converge_para_em_vez_de_girar(ambiente, monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (tmp_path / "nada.env",))
+    monkeypatch.delenv("ANBIMA_ACCESS_TOKEN", raising=False)
+    monkeypatch.setattr(coletor, "POR_PAGINA", 2)
+    monkeypatch.setattr(coletor, "PAGINAS_MAXIMAS", 5)
+
+    def abrir(pedido, timeout=None):
+        if "oauth/access-token" in pedido.full_url:
+            return RespostaFalsa(json.dumps({"access_token": "abc"}).encode("utf-8"))
+        return RespostaFalsa(json.dumps([{"a": 1}, {"a": 2}]).encode("utf-8"))
+
+    with pytest.raises(SystemExit) as caiu:
+        coletor.buscar("https://exemplo", "rota", "abc", "v2",
+                       esquema=coletor._cabecalho_access_token, abrir=abrir)
+    assert "5 páginas" in str(caiu.value)
+
+
+def test_sandbox_nao_sobrescreve_arquivo_colhido_em_producao(tmp_path) -> None:
+    """A troca mais difícil de perceber: mesmo nome, mesmo formato, dado falso."""
+    destino = tmp_path / "fundos.json"
+    destino.write_text(json.dumps({"environment": "producao", "products": [1, 2]}),
+                       encoding="utf-8")
+    with pytest.raises(SystemExit) as caiu:
+        coletor.gravar(destino, {"environment": "sandbox", "products": []})
+    assert "produção" in str(caiu.value)
+    # E o arquivo continua com o que tinha.
+    assert json.loads(destino.read_text(encoding="utf-8"))["products"] == [1, 2]
+
+
+def test_producao_pode_sobrescrever_sandbox_sem_reclamar(tmp_path) -> None:
+    destino = tmp_path / "fundos.json"
+    destino.write_text(json.dumps({"environment": "sandbox"}), encoding="utf-8")
+    coletor.gravar(destino, {"environment": "producao", "products": [7]})
+    assert json.loads(destino.read_text(encoding="utf-8"))["products"] == [7]

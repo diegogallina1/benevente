@@ -71,6 +71,14 @@ FONTES = (
     ("debentures/mercado-secundario", "DEBENTURE"),
     ("cri-cra/mercado-secundario", "CRI"),
 )
+#: Quantos itens pedir por página. Mil foi o que o sandbox devolveu sem pedir
+#: nada, o que é a assinatura de um teto: número redondo raramente é o tamanho
+#: real de um conjunto. Coleta truncada em silêncio é pior que coleta que falha,
+#: porque ninguém confere um total que parece plausível.
+POR_PAGINA = 1000
+#: Trava de segurança. Se a paginação não convergir, para em vez de girar.
+PAGINAS_MAXIMAS = 200
+
 #: Da mais nova para a mais velha. A ANBIMA publica v1 e v2 do pacote de preços,
 #: e os caminhos do v2 não estão na documentação pública que dá para ler daqui.
 #: Então a versão é configuração, e não um palpite escrito no código: em "auto"
@@ -240,10 +248,62 @@ def token(base: str, *, abrir=urllib.request.urlopen) -> str:
     return corpo["access_token"]
 
 
+def itens_e_envelope(corpo) -> tuple[list, dict]:
+    """Separa os itens do envelope, seja qual for o formato da resposta.
+
+    Uma rota devolve lista pura, outra devolve um objeto com os itens dentro e
+    metadados de paginação em volta. O nome do campo varia por rota, então
+    aceita-se o primeiro que seja lista. O envelope volta separado porque é ele
+    que diz se a página é a última.
+    """
+    if isinstance(corpo, list):
+        return corpo, {}
+    if not isinstance(corpo, dict):
+        return [], {}
+    for campo in ("content", "items", "data", "registros"):
+        if isinstance(corpo.get(campo), list):
+            return corpo[campo], {k: v for k, v in corpo.items() if k != campo}
+    return [], corpo
+
+
+def buscar_pagina(base: str, caminho: str, acesso: str, versao: str, pagina: int, *,
+                  feed: str, esquema, abrir) -> tuple[list, dict]:
+    """Uma página. Devolve os itens e o envelope, sem misturar os dois."""
+    sufixo = f"?page={pagina}&size={POR_PAGINA}" if pagina > 1 or POR_PAGINA else ""
+    corpo = _chamar(base, caminho + sufixo, acesso, versao, feed=feed,
+                    esquema=esquema, abrir=abrir)
+    return itens_e_envelope(corpo)
+
+
 def buscar(base: str, caminho: str, acesso: str, versao: str = "v1", *,
            feed: str = "precos-indices", esquema=_cabecalho_access_token,
            abrir=urllib.request.urlopen) -> list[dict]:
-    """Uma chamada a um feed, numa versão. Devolve a lista crua, sem interpretar."""
+    """Todas as páginas de uma rota, concatenadas.
+
+    Sem isto a coleta para no teto da primeira página e ninguém percebe: mil
+    linhas parecem um resultado, não um truncamento.
+    """
+    tudo: list = []
+    for pagina in range(1, PAGINAS_MAXIMAS + 1):
+        itens, envelope = buscar_pagina(base, caminho, acesso, versao, pagina,
+                                        feed=feed, esquema=esquema, abrir=abrir)
+        tudo.extend(itens)
+        if len(itens) < POR_PAGINA:
+            break
+        ultima = envelope.get("last") or envelope.get("ultima_pagina")
+        if ultima is True:
+            break
+    else:
+        raise SystemExit(
+            f"{caminho}: a paginação passou de {PAGINAS_MAXIMAS} páginas sem "
+            f"terminar. Melhor parar que girar em falso.")
+    return tudo
+
+
+def _chamar(base: str, caminho: str, acesso: str, versao: str = "v1", *,
+            feed: str = "precos-indices", esquema=_cabecalho_access_token,
+            abrir=urllib.request.urlopen):
+    """Uma chamada crua a um feed, numa versão. Não interpreta a resposta."""
     ident, _ = credencial()
     cabecalhos = {**esquema(ident, acesso), "Accept": "application/json"}
     pedido = urllib.request.Request(f"{base}/feed/{feed}/{versao}/{caminho}",
@@ -278,7 +338,7 @@ def buscar(base: str, caminho: str, acesso: str, versao: str = "v1", *,
                 f"{versao}/{caminho}: HTTP 403, credencial reconhecida e {saida} "
                 f"A ANBIMA respondeu: {explicacao}") from None
         raise SystemExit(f"{versao}/{caminho}: HTTP {erro.code}.") from None
-    return corpo if isinstance(corpo, list) else corpo.get("content", [])
+    return corpo
 
 
 def numero(valor) -> float | None:
@@ -474,6 +534,27 @@ def diagnostico(ambiente: str, *, abrir=urllib.request.urlopen) -> None:
                     print(f"  {alvo} · {nome}: {parou}")
                 else:
                     print(f"  {alvo} · {nome}: OK, {len(linhas)} linhas")
+
+
+def gravar(destino: Path, documento: dict) -> None:
+    """Escreve, menos quando isso trocaria dado real por dado de mentira.
+
+    O sandbox serve mocks. Uma execução distraída com --ambiente sandbox por
+    cima de um arquivo colhido em produção substituiria dado real por fictício
+    sem avisar, e o arquivo continuaria com cara de bom: mesmo nome, mesmo
+    formato, números plausíveis. É a troca mais difícil de perceber depois.
+    """
+    if destino.exists() and documento.get("environment") == "sandbox":
+        try:
+            anterior = json.loads(destino.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            anterior = {}
+        if anterior.get("environment") == "producao":
+            raise SystemExit(
+                f"{destino.name} veio da produção e isto é sandbox, que serve "
+                f"dados fictícios. Apague o arquivo se quiser mesmo substituir.")
+    destino.write_text(json.dumps(documento, ensure_ascii=False, indent=2) + "\n",
+                       encoding="utf-8")
 
 
 def main() -> None:
