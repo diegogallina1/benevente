@@ -44,3 +44,9 @@ data/tesouro_direto_precos_taxas.csv
 *.crt
 *.cer
 b3_ca*
+
+# Credencial da ANBIMA. Ela vem do ambiente, nunca do repositório, pela mesma
+# razão do certificado da B3: um segredo commitado continua no histórico
+# depois de removido do topo.
+anbima_*.json
+.env.anbima
