@@ -40,7 +40,14 @@ def test_sempre_da_para_apontar_a_resposta_que_definiu_o_perfil():
     resultado = intake.assessment()
     assert resultado["profile"] == "equilibrado"
     assert [b["caps_at"] for b in resultado["binding"]] == ["equilibrado"]
-    assert "dois e cinco anos" in resultado["binding"][0]["answer"].lower()
+    # A resposta registrada tem de ser exatamente o rótulo da opção escolhida, e
+    # não um pedaço de texto copiado para cá: o teste existe para garantir que dá
+    # para apontar quem decidiu, não para congelar a redação da opção.
+    from client_intake import QUESTIONS
+    horizonte = next(q for q in QUESTIONS if q.key == "horizonte")
+    escolhida = next(o for o in horizonte.options if o.value == "2_a_5")
+    assert resultado["binding"][0]["answer"] == escolhida.label
+    assert resultado["binding"][0]["question"] == horizonte.prompt
 
 
 def test_toda_resposta_fica_registrada_inclusive_as_que_nao_limitam():

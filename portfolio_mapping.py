@@ -574,10 +574,10 @@ def adapt_portfolio(positions: list[Position], target: dict, *,
             for m in sorted(moves, key=lambda x: (x.action == "manter", -abs(x.delta_brl)))
         ],
         "honesty": (
-            "Aqui os seus ativos ficam e ganham a proteção nas quedas. O retorno que a "
-            "Benevente publica foi medido escolhendo os ativos e protegendo, junto, então ele "
-            "não descreve esta carteira. Dá para dizer o que a proteção faz — reduzir a "
-            "exposição quando o mercado cai —, não quanto ela renderia aqui."),
+            "Seus ativos ficam e ganham a proteção. O retorno publicado foi medido "
+            "escolhendo os ativos e protegendo juntos, então ele não descreve esta "
+            "carteira. A proteção reduz a exposição quando o mercado cai. Quanto ela "
+            "renderia aqui, ninguém mediu."),
     }
 
 

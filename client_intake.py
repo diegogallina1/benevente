@@ -63,63 +63,55 @@ class Question:
 QUESTIONS: tuple[Question, ...] = (
     Question(
         "horizonte",
-        "Quando você vai precisar desse dinheiro?",
-        "É a única resposta que nenhuma estratégia contorna: quem precisa sacar em um ano "
-        "não pode esperar uma queda se recuperar, por melhor que seja a carteira.",
-        (Option("ate_2", "Em até dois anos", "conservador",
+        "Quando vai precisar do dinheiro?",
+        "Prazo curto não dá tempo de uma queda se recuperar.",
+        (Option("ate_2", "Até dois anos", "conservador",
                 "com prazo curto, uma queda não tem tempo de se recuperar", "até 2 anos"),
-         Option("2_a_5", "Entre dois e cinco anos", "equilibrado",
+         Option("2_a_5", "De dois a cinco anos", "equilibrado",
                 "cinco anos cobrem a maior parte das quedas medidas, mas não todas", "2 a 5 anos"),
-         Option("5_mais", "Em cinco anos ou mais", None, "", "5+ anos")),
+         Option("5_mais", "Cinco anos ou mais", None, "", "5+ anos")),
     ),
     Question(
         "queda",
-        "Qual a maior queda que você aguentaria sem vender?",
-        "Na janela medida, o ultraconservador caiu 0,8%, o conservador 9,2%, o equilibrado "
-        "17,9% e o arrojado 28,9% no pior momento. Vender no fundo é o que transforma queda "
-        "em prejuízo.",
-        (Option("ate_2", "Até 2% — quero quase não sentir", "ultraconservador",
+        "Qual queda você aguenta sem vender?",
+        "Na janela medida: ultraconservador 0,8%, conservador 9,2%, equilibrado 17,9%, "
+        "arrojado 28,9%.",
+        (Option("ate_2", "Até 2%", "ultraconservador",
                 "só o ultraconservador ficou dentro desse limite na janela medida",
                 "queda até 2%"),
-         Option("ate_10", "Até 10% — abaixo disso eu não durmo", "conservador",
+         Option("ate_10", "Até 10%", "conservador",
                 "só o conservador ficou dentro desse limite na janela medida", "queda até 10%"),
-         Option("ate_20", "Até 20% — incomoda, mas eu seguro", "equilibrado",
+         Option("ate_20", "Até 20%", "equilibrado",
                 "o arrojado passou de 28% na pior queda, além do que foi declarado",
                 "queda até 20%"),
-         Option("acima_20", "Mais de 20% — eu entendo que faz parte", None, "",
-                "queda acima de 20%")),
+         Option("acima_20", "Mais de 20%", None, "", "queda acima de 20%")),
     ),
     Question(
         "reserva",
-        "Você já tem reserva de emergência separada desse dinheiro?",
-        "Sem reserva, o primeiro imprevisto vira uma venda forçada — e venda forçada acontece "
-        "justamente quando o mercado está ruim.",
-        (Option("sim", "Sim, está separada", None, "", "com reserva"),
+        "Tem reserva de emergência separada?",
+        "Sem reserva, o primeiro imprevisto vira venda forçada.",
+        (Option("sim", "Sim", None, "", "com reserva"),
          Option("nao", "Ainda não", "conservador",
                 "sem reserva, este dinheiro é a reserva na prática", "sem reserva")),
     ),
     Question(
         "retirada",
-        "Você vai retirar deste dinheiro todo mês?",
-        "Retirada mensal muda o problema: obriga a manter liquidez e a vender em momento ruim "
-        "se a liquidez acabar.",
-        (Option("nao", "Não, é para deixar rendendo", None, "", "sem retirada"),
-         Option("sim", "Sim, retiro um valor por mês", "equilibrado",
+        "Vai retirar todo mês?",
+        "Retirada mensal exige caixa e limita o que pode oscilar.",
+        (Option("nao", "Não", None, "", "sem retirada"),
+         Option("sim", "Sim", "equilibrado",
                 "retirada recorrente exige caixa e reduz o que pode oscilar", "com retirada")),
     ),
     Question(
         "prejuizo",
-        "Você tem prejuízo acumulado a compensar em ações?",
-        "Prejuízo passado abate o imposto das vendas de agora, dentro do mesmo tipo de "
-        "investimento. Se existir "
-        "e não for informado, o custo da mudança sai maior do que é de verdade.",
+        "Tem prejuízo a compensar em ações?",
+        "Ele abate o imposto das vendas de agora. Sem informar, o custo sai maior.",
         kind="valor",
     ),
     Question(
         "travar",
-        "Alguma posição que você não quer ou não pode vender?",
-        "Carência, ação de família, participação com significado próprio. O mapa respeita e "
-        "registra — o que ele não faz é fingir que a restrição não existe.",
+        "Alguma posição que não pode vender?",
+        "Carência, ação de família. O mapa respeita e registra.",
         kind="texto",
     ),
 )
@@ -161,7 +153,7 @@ class Intake:
             "all_limits": motivos,
             "rationale": (
                 f"Perfil {teto}: "
-                + ("; ".join(f"{m['answer'].lower()} — {m['why']}" for m in vinculante if m["why"])
+                + ("; ".join(f"{m['answer'].lower()}, {m['why']}" for m in vinculante if m["why"])
                    or "nenhuma resposta impôs teto abaixo do máximo")
                 + "."),
             "unanswered": [q.key for q in QUESTIONS

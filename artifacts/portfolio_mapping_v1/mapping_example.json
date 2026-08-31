@@ -15,39 +15,39 @@
       "worst_measured_drawdown": -0.1788,
       "binding": [
         {
-          "question": "Qual a maior queda que você aguentaria sem vender?",
-          "answer": "Até 20% — incomoda, mas eu seguro",
+          "question": "Qual queda você aguenta sem vender?",
+          "answer": "Até 20%",
           "caps_at": "equilibrado",
           "why": "o arrojado passou de 28% na pior queda, além do que foi declarado"
         }
       ],
       "all_limits": [
         {
-          "question": "Quando você vai precisar desse dinheiro?",
-          "answer": "Em cinco anos ou mais",
+          "question": "Quando vai precisar do dinheiro?",
+          "answer": "Cinco anos ou mais",
           "caps_at": "não limita",
           "why": "não impõe teto"
         },
         {
-          "question": "Qual a maior queda que você aguentaria sem vender?",
-          "answer": "Até 20% — incomoda, mas eu seguro",
+          "question": "Qual queda você aguenta sem vender?",
+          "answer": "Até 20%",
           "caps_at": "equilibrado",
           "why": "o arrojado passou de 28% na pior queda, além do que foi declarado"
         },
         {
-          "question": "Você já tem reserva de emergência separada desse dinheiro?",
-          "answer": "Sim, está separada",
+          "question": "Tem reserva de emergência separada?",
+          "answer": "Sim",
           "caps_at": "não limita",
           "why": "não impõe teto"
         },
         {
-          "question": "Você vai retirar deste dinheiro todo mês?",
-          "answer": "Não, é para deixar rendendo",
+          "question": "Vai retirar todo mês?",
+          "answer": "Não",
           "caps_at": "não limita",
           "why": "não impõe teto"
         }
       ],
-      "rationale": "Perfil equilibrado: até 20% — incomoda, mas eu seguro — o arrojado passou de 28% na pior queda, além do que foi declarado.",
+      "rationale": "Perfil equilibrado: até 20%, o arrojado passou de 28% na pior queda, além do que foi declarado.",
       "unanswered": []
     },
     "questionnaire": {
@@ -61,27 +61,27 @@
       "questions": [
         {
           "key": "horizonte",
-          "prompt": "Quando você vai precisar desse dinheiro?",
-          "help": "É a única resposta que nenhuma estratégia contorna: quem precisa sacar em um ano não pode esperar uma queda se recuperar, por melhor que seja a carteira.",
+          "prompt": "Quando vai precisar do dinheiro?",
+          "help": "Prazo curto não dá tempo de uma queda se recuperar.",
           "kind": "escolha",
           "options": [
             {
               "value": "ate_2",
-              "label": "Em até dois anos",
+              "label": "Até dois anos",
               "brief": "até 2 anos",
               "caps_profile": "conservador",
               "note": "com prazo curto, uma queda não tem tempo de se recuperar"
             },
             {
               "value": "2_a_5",
-              "label": "Entre dois e cinco anos",
+              "label": "De dois a cinco anos",
               "brief": "2 a 5 anos",
               "caps_profile": "equilibrado",
               "note": "cinco anos cobrem a maior parte das quedas medidas, mas não todas"
             },
             {
               "value": "5_mais",
-              "label": "Em cinco anos ou mais",
+              "label": "Cinco anos ou mais",
               "brief": "5+ anos",
               "caps_profile": null,
               "note": ""
@@ -90,34 +90,34 @@
         },
         {
           "key": "queda",
-          "prompt": "Qual a maior queda que você aguentaria sem vender?",
-          "help": "Na janela medida, o ultraconservador caiu 0,8%, o conservador 9,2%, o equilibrado 17,9% e o arrojado 28,9% no pior momento. Vender no fundo é o que transforma queda em prejuízo.",
+          "prompt": "Qual queda você aguenta sem vender?",
+          "help": "Na janela medida: ultraconservador 0,8%, conservador 9,2%, equilibrado 17,9%, arrojado 28,9%.",
           "kind": "escolha",
           "options": [
             {
               "value": "ate_2",
-              "label": "Até 2% — quero quase não sentir",
+              "label": "Até 2%",
               "brief": "queda até 2%",
               "caps_profile": "ultraconservador",
               "note": "só o ultraconservador ficou dentro desse limite na janela medida"
             },
             {
               "value": "ate_10",
-              "label": "Até 10% — abaixo disso eu não durmo",
+              "label": "Até 10%",
               "brief": "queda até 10%",
               "caps_profile": "conservador",
               "note": "só o conservador ficou dentro desse limite na janela medida"
             },
             {
               "value": "ate_20",
-              "label": "Até 20% — incomoda, mas eu seguro",
+              "label": "Até 20%",
               "brief": "queda até 20%",
               "caps_profile": "equilibrado",
               "note": "o arrojado passou de 28% na pior queda, além do que foi declarado"
             },
             {
               "value": "acima_20",
-              "label": "Mais de 20% — eu entendo que faz parte",
+              "label": "Mais de 20%",
               "brief": "queda acima de 20%",
               "caps_profile": null,
               "note": ""
@@ -126,13 +126,13 @@
         },
         {
           "key": "reserva",
-          "prompt": "Você já tem reserva de emergência separada desse dinheiro?",
-          "help": "Sem reserva, o primeiro imprevisto vira uma venda forçada — e venda forçada acontece justamente quando o mercado está ruim.",
+          "prompt": "Tem reserva de emergência separada?",
+          "help": "Sem reserva, o primeiro imprevisto vira venda forçada.",
           "kind": "escolha",
           "options": [
             {
               "value": "sim",
-              "label": "Sim, está separada",
+              "label": "Sim",
               "brief": "com reserva",
               "caps_profile": null,
               "note": ""
@@ -148,20 +148,20 @@
         },
         {
           "key": "retirada",
-          "prompt": "Você vai retirar deste dinheiro todo mês?",
-          "help": "Retirada mensal muda o problema: obriga a manter liquidez e a vender em momento ruim se a liquidez acabar.",
+          "prompt": "Vai retirar todo mês?",
+          "help": "Retirada mensal exige caixa e limita o que pode oscilar.",
           "kind": "escolha",
           "options": [
             {
               "value": "nao",
-              "label": "Não, é para deixar rendendo",
+              "label": "Não",
               "brief": "sem retirada",
               "caps_profile": null,
               "note": ""
             },
             {
               "value": "sim",
-              "label": "Sim, retiro um valor por mês",
+              "label": "Sim",
               "brief": "com retirada",
               "caps_profile": "equilibrado",
               "note": "retirada recorrente exige caixa e reduz o que pode oscilar"
@@ -170,15 +170,15 @@
         },
         {
           "key": "prejuizo",
-          "prompt": "Você tem prejuízo acumulado a compensar em ações?",
-          "help": "Prejuízo passado abate o imposto das vendas de agora, dentro do mesmo tipo de investimento. Se existir e não for informado, o custo da mudança sai maior do que é de verdade.",
+          "prompt": "Tem prejuízo a compensar em ações?",
+          "help": "Ele abate o imposto das vendas de agora. Sem informar, o custo sai maior.",
           "kind": "valor",
           "options": []
         },
         {
           "key": "travar",
-          "prompt": "Alguma posição que você não quer ou não pode vender?",
-          "help": "Carência, ação de família, participação com significado próprio. O mapa respeita e registra — o que ele não faz é fingir que a restrição não existe.",
+          "prompt": "Alguma posição que não pode vender?",
+          "help": "Carência, ação de família. O mapa respeita e registra.",
           "kind": "texto",
           "options": []
         }
@@ -556,6 +556,6 @@
         "notes": []
       }
     ],
-    "honesty": "Aqui os seus ativos ficam e ganham a proteção nas quedas. O retorno que a Benevente publica foi medido escolhendo os ativos e protegendo, junto, então ele não descreve esta carteira. Dá para dizer o que a proteção faz — reduzir a exposição quando o mercado cai —, não quanto ela renderia aqui."
+    "honesty": "Seus ativos ficam e ganham a proteção. O retorno publicado foi medido escolhendo os ativos e protegendo juntos, então ele não descreve esta carteira. A proteção reduz a exposição quando o mercado cai. Quanto ela renderia aqui, ninguém mediu."
   }
 }

@@ -228,10 +228,9 @@ def relatorio_de_lacunas(custos: dict[str, Custo]) -> dict:
                           "cobertura": round(c.cobertura, 4)}
                       for t, c in sorted(pendentes.items())},
         "consequencia": (
-            "Enquanto houver posição sem custo defensável, o imposto do plano é parcial. "
-            "O mapa mostra o que consegue apurar e nomeia o que ficou de fora, em vez de "
-            "estimar a diferença — um imposto estimado tem a mesma aparência de um imposto "
-            "medido e leva à mesma decisão de vender."),
+            "Sem custo defensável, o imposto do plano é parcial. O mapa apura o que dá e "
+            "nomeia o resto. Não estima: imposto estimado se parece com imposto medido e "
+            "leva à mesma decisão de vender."),
     }
 
 #: O que a B3 manda pela metade. Ela entrega quantidade e vencimento do papel de

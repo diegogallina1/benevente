@@ -512,8 +512,7 @@ footer a { color: var(--acao); }
     </button>
   </div>
   <h1>Plano de carteira</h1>
-  <p>Conecte a sua conta da B3, responda quatro perguntas e veja quanto da sua carteira
-     já serve. No fim, dois planos com custos bem diferentes.</p>
+  <p>Conecte a B3, responda quatro perguntas, veja dois planos com o custo de cada um.</p>
 </header>
 
 <ol class="etapas" id="etapas">
@@ -552,8 +551,7 @@ footer a { color: var(--acao); }
 
 <section id="perguntas" class="hidden">
   <h2>Quatro perguntas</h2>
-  <p class="lede">Sem pontuação: cada resposta impõe um limite e vale o mais apertado.
-     Assim dá sempre para apontar qual resposta decidiu.</p>
+  <p class="lede">Vale a resposta mais apertada. Dá para apontar qual decidiu.</p>
   <div id="qs"></div>
   <div id="resumo" class="resumo hidden">
     <p class="chips" id="chips"></p>
@@ -591,9 +589,8 @@ footer a { color: var(--acao); }
   <details id="add-det">
     <summary>Acrescentar o que a B3 não manda</summary>
     <div class="add-corpo">
-      <p class="ajuda">CDB, LCI, LCA, previdência, cripto, exterior, imóvel. Entra no
-         patrimônio e no registro, marcado como informado por você. Em papel de renda
-         fixa a tela também traz a oferta para a régua líquida e conta o limite do FGC.</p>
+      <p class="ajuda">CDB, LCI, LCA, previdência, cripto, imóvel. Papel de renda fixa
+         entra na régua líquida e no limite do FGC.</p>
       <div class="add-linha">
         <label>O que é<input id="add-nome" type="text" placeholder="Previdência PGBL"></label>
         <label>Tipo<select id="add-tipo">
@@ -626,9 +623,7 @@ footer a { color: var(--acao); }
 
 <section id="planos-sec" class="hidden">
   <h2>Dois planos</h2>
-  <p class="lede">Um troca os seus ativos pela seleção da política e protege nas quedas.
-     O outro mantém os seus ativos e só protege. A escolha é sua, e as duas ficam
-     registradas.</p>
+  <p class="lede">Um troca seus ativos pela seleção da política. O outro mantém e só protege. As duas ficam registradas.</p>
   <div class="planos" id="planos"></div>
 </section>
 
@@ -742,8 +737,18 @@ function rolaPara(alvo, bloco) {
   const r = alvo.getBoundingClientRect();
   const altura = window.innerHeight || document.documentElement.clientHeight;
   if (r.top >= 0 && r.top <= altura * 0.6) return;
-  alvo.scrollIntoView({ behavior: menosMovimento.matches ? "auto" : "smooth",
-                        block: bloco || "nearest" });
+  const posicao = { block: bloco || "nearest" };
+  if (menosMovimento.matches) { alvo.scrollIntoView(posicao); return; }
+  const antes = alvo.getBoundingClientRect().top;
+  alvo.scrollIntoView({ behavior: "smooth", ...posicao });
+  // Nem todo contexto anima o scroll suave, e onde ele não anima nada acontece:
+  // a pessoa clica a resposta e a página fica parada, como se o clique tivesse
+  // falhado. Medido num renderizador onde "smooth" não move e "auto" move. Meio
+  // segundo depois, se não saiu do lugar, vai de uma vez: chegar importa mais
+  // que deslizar.
+  setTimeout(() => {
+    if (Math.abs(alvo.getBoundingClientRect().top - antes) < 2) alvo.scrollIntoView(posicao);
+  }, 500);
 }
 
 /* --- conexão com a B3 --- */
@@ -907,7 +912,11 @@ function resolvido(m) {
 /* --- perguntas --- */
 const escolha = DADOS.questionnaire.questions.filter(q => q.kind === "escolha");
 const qsBox = $("qs");
-escolha.forEach(q => {
+// As caixas ficam guardadas para a resposta poder levar à pergunta seguinte. Sem
+// isso a pessoa responde e rola à mão quatro vezes: são quatro cliques de
+// decisão e quatro de navegação, e metade do tempo era a metade que não decide.
+const caixasQ = [];
+escolha.forEach((q, i) => {
   const box = el("div", "q");
   box.append(el("p", null, q.prompt), el("p", "help", q.help));
   const opts = el("div", "opts");
@@ -920,12 +929,28 @@ escolha.forEach(q => {
       opts.querySelectorAll(".opt").forEach(x => x.setAttribute("aria-pressed", "false"));
       b.setAttribute("aria-pressed", "true");
       avaliar();
+      // Só avança enquanto está respondendo pela primeira vez. Quem voltou para
+      // trocar uma resposta quer ver o que mudou, e ser empurrado para a frente
+      // a cada clique é o oposto de ajudar.
+      if (!editando) seguinte(i);
     };
     opts.append(b);
   });
   box.append(opts);
   qsBox.append(box);
+  caixasQ.push(box);
 });
+
+// A próxima pergunta ainda sem resposta, ou o plano quando não sobrar nenhuma.
+function seguinte(depoisDe) {
+  for (let i = depoisDe + 1; i < escolha.length; i++) {
+    if (!respostas[escolha[i].key]) { rolaPara(caixasQ[i], "start"); return; }
+  }
+  for (let i = 0; i < escolha.length; i++) {
+    if (!respostas[escolha[i].key]) { rolaPara(caixasQ[i], "start"); return; }
+  }
+  rolaPara($("mapa"), "start");
+}
 
 const resumoBox = $("resumo");
 // Quem abriu o formulário para mudar uma resposta continua com ele aberto: antes
