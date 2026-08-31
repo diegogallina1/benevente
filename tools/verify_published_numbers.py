@@ -229,6 +229,15 @@ def main() -> int:
     check("BTech carrega os dois resultados posteriores (256, 2,63 pp, 0,777, caixa real, hash v3)",
           all(x in btech for x in ("256 candidatos", "2,63 pontos percentuais", "0,777",
                                    "ca2476d4", "4.1.2", "12,34%", "9,36%")))
+    # O contrafactual da imputação é número publicado, então vale a mesma regra
+    # dos outros: ele tem de sair do artefato e não da prosa. O parecerista que
+    # cobrar "e se tirar os dados imputados" precisa achar a conta, não a frase.
+    robustez = json.loads((ROOT / "artifacts" / "btech_robustness_20260820"
+                           / "summary.json").read_text(encoding="utf-8"))["imputation_removed"]
+    check("BTech: retorno sem as séries imputadas confere com o artefato",
+          f"{robustez['cagr'] * 100:.2f}".replace(".", ",") in btech
+          and f"{robustez['cagr_with_imputed'] * 100:.2f}".replace(".", ",") in btech)
+
     check("BTech: oito hipóteses rejeitadas, não cinco",
           "Oito hipóteses foram testadas" in btech and "Cinco hipóteses foram testadas" not in btech)
     check("CiFer: regra aninhada como registro do período, não como vigente",

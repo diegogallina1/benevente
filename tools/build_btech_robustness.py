@@ -109,6 +109,54 @@ def imputation_stress(nested: pd.DataFrame, exposure: pd.DataFrame) -> pd.DataFr
     return pd.DataFrame(rows)
 
 
+def imputation_removal(nested: pd.DataFrame, coverage: pd.DataFrame) -> pd.DataFrame:
+    """E se as séries imputadas simplesmente não tivessem sido compradas?
+
+    O teste de estresse ao lado penaliza a parcela imputada por um haircut
+    arbitrário. Este responde a pergunta que o parecerista faz de verdade: tire
+    os papéis que dependem de provento estimado e ponha o dinheiro no caixa.
+
+    A conta usa o retorno realizado de cada papel, que está no próprio livro
+    anual, então não é aproximação linear: é a contribuição medida daquelas
+    posições, removida e substituída pelo CDI do mesmo ano.
+
+    Duas ressalvas, e as duas empurram na mesma direção. A primeira é que o
+    alocador teria escolhido outro papel no lugar, e não caixa, então isto é o
+    piso e não a estimativa central. A segunda é que o retorno por papel é bruto
+    de custo enquanto o da carteira é líquido, o que deixa a remoção
+    ligeiramente severa demais. Nenhuma das duas favorece o resultado.
+    """
+    basis_columns = ["ticker", "basis"]
+    linhas = []
+    for decision in nested.itertuples(index=False):
+        holdings_path = (
+            ROOT / "artifacts" / f"c12_{decision.selected_configuration}" / "annual_holdings.csv"
+        )
+        holdings = pd.read_csv(holdings_path)
+        holdings = holdings.loc[
+            (holdings["decision_year"] == int(decision.decision_year))
+            & (holdings["ticker"] != "TITULO_CDI")
+        ].copy()
+        holdings["coverage_ticker"] = holdings["ticker"].str.replace(".SA", "", regex=False)
+        merged = holdings.merge(
+            coverage[basis_columns], left_on="coverage_ticker", right_on="ticker", how="left")
+        imputadas = merged["basis"].eq("total_return_imputed_distribution")
+        peso = float(merged.loc[imputadas, "weight"].sum())
+        contribuicao = float(
+            (merged.loc[imputadas, "weight"]
+             * merged.loc[imputadas, "realised_next_year_return"]).sum())
+        linhas.append({
+            "decision_year": int(decision.decision_year),
+            "imputed_weight": peso,
+            "imputed_contribution": contribuicao,
+            "portfolio_net_return": float(decision.net_return),
+            "cdi_net_return": float(decision.cdi_net_return),
+            "return_without_imputed": float(decision.net_return) - contribuicao
+                                      + peso * float(decision.cdi_net_return),
+        })
+    return pd.DataFrame(linhas)
+
+
 def imputation_break_even(nested: pd.DataFrame, exposure: pd.DataFrame) -> pd.DataFrame:
     base = nested["net_return"].to_numpy(dtype=float)
     imputed_weight = exposure["imputed_weight"].to_numpy(dtype=float)
@@ -146,11 +194,13 @@ def main() -> None:
     bootstrap = paired_year_bootstrap(nested)
     stress = imputation_stress(nested, exposure)
     break_even = imputation_break_even(nested, exposure)
+    removal = imputation_removal(nested, coverage)
     OUTPUT.mkdir(parents=True, exist_ok=True)
     exposure.to_csv(OUTPUT / "annual_data_quality_exposure.csv", index=False)
     bootstrap.to_csv(OUTPUT / "paired_year_bootstrap.csv", index=False)
     stress.to_csv(OUTPUT / "imputation_stress.csv", index=False)
     break_even.to_csv(OUTPUT / "imputation_break_even.csv", index=False)
+    removal.to_csv(OUTPUT / "imputation_removal.csv", index=False)
 
     summary = {
         "status": "retrospective_sensitivity_not_prospective_validation",
@@ -160,6 +210,16 @@ def main() -> None:
             "seed": BOOTSTRAP_SEED,
             "years": int(len(nested)),
             "warning": "Resampling measures internal stability only; it does not create new regimes, repair source data, or constitute an out-of-sample test.",
+        },
+        # O contrafactual que o parecer pede em vez do haircut: sem os papéis
+        # que dependem de provento imputado, com o orçamento deles no caixa.
+        "imputation_removed": {
+            "method": ("contribuição medida das posições imputadas, removida e substituída "
+                       "pelo CDI do mesmo ano; o alocador teria escolhido outro papel, "
+                       "então isto é piso e não estimativa central"),
+            "cagr": float(cagr(removal["return_without_imputed"].to_numpy(dtype=float))),
+            "cagr_with_imputed": float(cagr(removal["portfolio_net_return"].to_numpy(dtype=float))),
+            "cdi_cagr": float(cagr(removal["cdi_net_return"].to_numpy(dtype=float))),
         },
         "data_quality": {
             "selected_equity_weight_with_imputed_distribution_share": float(

@@ -7,6 +7,12 @@
     "years": 11,
     "warning": "Resampling measures internal stability only; it does not create new regimes, repair source data, or constitute an out-of-sample test."
   },
+  "imputation_removed": {
+    "method": "contribuição medida das posições imputadas, removida e substituída pelo CDI do mesmo ano; o alocador teria escolhido outro papel, então isto é piso e não estimativa central",
+    "cagr": 0.16550061864200316,
+    "cagr_with_imputed": 0.1786442942659776,
+    "cdi_cagr": 0.09609571930908412
+  },
   "data_quality": {
     "selected_equity_weight_with_imputed_distribution_share": 0.13944746254528478,
     "maximum_total_portfolio_weight_on_imputed_series": 0.5,
