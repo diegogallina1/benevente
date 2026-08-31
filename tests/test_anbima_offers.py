@@ -467,16 +467,25 @@ def test_o_envelope_nao_vira_item_da_lista(ambiente) -> None:
     assert all("total_elements" not in item for item in itens)
 
 
-def test_paginacao_que_nao_converge_para_em_vez_de_girar(ambiente, monkeypatch, tmp_path) -> None:
+def test_paginacao_que_nunca_termina_para_no_limite(ambiente, monkeypatch, tmp_path) -> None:
+    """Páginas sempre cheias e sempre diferentes: aí a trava é a única saída.
+
+    Repetição é outra história e para limpo, sem exceção. O que sobra para a
+    trava é a rota que devolve conteúdo novo para sempre, e nesse caso desistir
+    é a resposta certa: continuar seria confiar numa API que não termina.
+    """
     monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (tmp_path / "nada.env",))
     monkeypatch.delenv("ANBIMA_ACCESS_TOKEN", raising=False)
     monkeypatch.setattr(coletor, "POR_PAGINA", 2)
     monkeypatch.setattr(coletor, "PAGINAS_MAXIMAS", 5)
+    contador = {"n": 0}
 
     def abrir(pedido, timeout=None):
         if "oauth/access-token" in pedido.full_url:
             return RespostaFalsa(json.dumps({"access_token": "abc"}).encode("utf-8"))
-        return RespostaFalsa(json.dumps([{"a": 1}, {"a": 2}]).encode("utf-8"))
+        contador["n"] += 1
+        n = contador["n"]
+        return RespostaFalsa(json.dumps([{"a": n}, {"a": n + 100}]).encode("utf-8"))
 
     with pytest.raises(SystemExit) as caiu:
         coletor.buscar("https://exemplo", "rota", "abc", "v2",
@@ -501,3 +510,27 @@ def test_producao_pode_sobrescrever_sandbox_sem_reclamar(tmp_path) -> None:
     destino.write_text(json.dumps({"environment": "sandbox"}), encoding="utf-8")
     coletor.gravar(destino, {"environment": "producao", "products": [7]})
     assert json.loads(destino.read_text(encoding="utf-8"))["products"] == [7]
+
+
+def test_rota_que_ignora_a_pagina_para_na_repeticao(ambiente, monkeypatch, tmp_path) -> None:
+    """O mock devolve o mesmo conteúdo para toda página, e o laço precisa ver isso.
+
+    Sem a checagem, duzentas chamadas empilhariam duzentas cópias do mesmo dado.
+    A trava de páginas evitaria o giro infinito e não evitaria o resultado
+    errado, que é pior: um arquivo grande e plausível, com tudo repetido.
+    """
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (tmp_path / "nada.env",))
+    monkeypatch.delenv("ANBIMA_ACCESS_TOKEN", raising=False)
+    monkeypatch.setattr(coletor, "POR_PAGINA", 2)
+    chamadas = []
+
+    def abrir(pedido, timeout=None):
+        if "oauth/access-token" in pedido.full_url:
+            return RespostaFalsa(json.dumps({"access_token": "abc"}).encode("utf-8"))
+        chamadas.append(pedido.full_url)
+        return RespostaFalsa(json.dumps([{"a": 1}, {"a": 2}]).encode("utf-8"))
+
+    linhas = coletor.buscar("https://exemplo", "rota", "abc", "v2",
+                            esquema=coletor._cabecalho_access_token, abrir=abrir)
+    assert linhas == [{"a": 1}, {"a": 2}], "empilhou repetição"
+    assert len(chamadas) == 2, "não parou assim que a página se repetiu"

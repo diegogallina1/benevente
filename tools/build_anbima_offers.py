@@ -76,8 +76,11 @@ FONTES = (
 #: real de um conjunto. Coleta truncada em silêncio é pior que coleta que falha,
 #: porque ninguém confere um total que parece plausível.
 POR_PAGINA = 1000
-#: Trava de segurança. Se a paginação não convergir, para em vez de girar.
-PAGINAS_MAXIMAS = 200
+#: Trava de segurança. Se a paginação não convergir, para em vez de girar. Vinte
+#: já é muito: com mil por página são vinte mil registros, mais do que qualquer
+#: rota destas devolve. Duzentas era generosidade que custava duzentas chamadas
+#: numa rota que ignora o parâmetro de página.
+PAGINAS_MAXIMAS = 20
 
 #: Da mais nova para a mais velha. A ANBIMA publica v1 e v2 do pacote de preços,
 #: e os caminhos do v2 não estão na documentação pública que dá para ler daqui.
@@ -284,14 +287,22 @@ def buscar(base: str, caminho: str, acesso: str, versao: str = "v1", *,
     linhas parecem um resultado, não um truncamento.
     """
     tudo: list = []
+    anterior = None
     for pagina in range(1, PAGINAS_MAXIMAS + 1):
         itens, envelope = buscar_pagina(base, caminho, acesso, versao, pagina,
                                         feed=feed, esquema=esquema, abrir=abrir)
+        # Uma rota que ignora o parâmetro de página devolve sempre a mesma
+        # coisa. Sem esta checagem o laço pede duzentas páginas idênticas e
+        # empilha duzentas cópias do mesmo dado: nem a trava de segurança salva,
+        # porque ela só evita o giro infinito, não o resultado errado.
+        assinatura = json.dumps(itens, ensure_ascii=False, sort_keys=True)[:4000]
+        if anterior is not None and assinatura == anterior:
+            break
+        anterior = assinatura
         tudo.extend(itens)
         if len(itens) < POR_PAGINA:
             break
-        ultima = envelope.get("last") or envelope.get("ultima_pagina")
-        if ultima is True:
+        if envelope.get("last") is True or envelope.get("ultima_pagina") is True:
             break
     else:
         raise SystemExit(
