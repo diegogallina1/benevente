@@ -187,3 +187,33 @@ def test_ieee_supplement_is_anonymous_and_self_manifested() -> None:
     assert "diegogallina" not in readable
     assert "github.com/" not in readable
     assert "benevente-wealth-system.vercel.app" not in readable
+
+
+def test_o_app_pede_so_fontes_que_ele_carrega() -> None:
+    """O app tinha a própria folha de estilo e a própria fonte inventada.
+
+    O site já era testado assim, porque uma vez pediu uma família e carregou
+    outra, e as duas nunca se encontraram: a página inteira caiu na fonte do
+    sistema sem nada quebrar. O app repetiu o defeito com Schibsted Grotesk e
+    sobreviveu meses, inclusive com o rodapé afirmando a tipografia errada.
+
+    O teste não fixa qual é a família. Ele exige que toda família nomeada na
+    folha de estilo esteja entre as que a página manda o navegador buscar.
+    """
+    for nome in ("app.html", ):
+        fonte = (ROOT / "web" / nome).read_text(encoding="utf-8")
+        carregadas = set(re.findall(r"family=([A-Za-z0-9+]+)", fonte))
+        carregadas = {f.replace("+", " ") for f in carregadas}
+        assert carregadas, nome
+        pedidas = set()
+        for pilha in re.findall(r"font-family:\s*([^;}]+)", fonte):
+            pedidas.update(re.findall(r'"([^"]+)"', pilha))
+        orfas = sorted(pedidas - carregadas)
+        assert not orfas, (
+            f"{nome} pede {orfas} e carrega {sorted(carregadas)}: a família que "
+            f"ninguém busca cai calada na fonte do sistema")
+        # E o rodapé não pode nomear uma tipografia diferente da que a página usa.
+        declarada = re.search(r"Tipografia ([^<]+)\.", fonte)
+        assert declarada, nome
+        for familia in re.split(r"\s+e\s+", declarada.group(1)):
+            assert familia.strip() in carregadas, (familia, sorted(carregadas))

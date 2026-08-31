@@ -15,9 +15,14 @@ import sys
 ROOT_PARA_MOTOR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_calibration_web import nota_do_instrumento  # noqa: E402
-from design_tokens import FONTES_LINK, css as tokens_css  # noqa: E402
+from design_tokens import FONTES_LINK, MONO, SANS, css as tokens_css  # noqa: E402
 sys.path.insert(0, str(ROOT_PARA_MOTOR))
 from fixed_income_catalog import motor_para_navegador  # noqa: E402
+
+def _familia(pilha: str) -> str:
+    """O primeiro nome da pilha, que é a fonte que a página realmente pede."""
+    return pilha.split(",")[0].strip().strip('"')
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / "artifacts" / "portfolio_mapping_v1" / "mapping_by_profile.json"
@@ -166,14 +171,18 @@ __TOKENS__
 * { box-sizing: border-box; }
 body {
   margin: 0; color: var(--fg); background: var(--canvas);
-  font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* Do token, e não escrita aqui. Este arquivo pedia Schibsted Grotesk e a
+     página carregava só Figtree: nenhuma das duas aparecia, e o app inteiro
+     renderizava na fonte do sistema. É o mesmo defeito que o site já teve, e
+     ele sobreviveu aqui porque o app tem a própria folha de estilo. */
+  font-family: var(--sans);
   font-size: 16px; line-height: 1.5; letter-spacing: -.25px;
   font-feature-settings: "liga";
   -webkit-font-smoothing: antialiased; overflow-wrap: break-word;
 }
 .wrap { max-width: 1200px; margin: 0 auto; padding: 24px 16px 96px; }
 @media (min-width: 42rem) { .wrap { max-width: 42rem; padding: 64px 24px 96px; } }
-.num { font-family: "Spline Sans Mono", ui-monospace, monospace;
+.num { font-family: var(--mono);
        font-variant-numeric: tabular-nums; letter-spacing: 0; }
 .neg { color: var(--neg); }
 .hidden { display: none; }
@@ -182,7 +191,7 @@ body {
 /* O monoespaçado em caixa alta com tracking largo: lê como metadado, não como
    texto corrido. É o que o guia usa para rotular seção. */
 .label, .eyebrow {
-  font-family: "Spline Sans Mono", ui-monospace, monospace;
+  font-family: var(--mono);
   font-size: 12px; line-height: 1.4; letter-spacing: .85px;
   text-transform: uppercase; color: var(--acao); font-weight: 400; margin: 0;
 }
@@ -196,7 +205,7 @@ h3 { font-size: 20px; line-height: 1.33; letter-spacing: -.42px; font-weight: 50
 header { padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }
 .topo { display: flex; align-items: center; justify-content: space-between;
         gap: 16px; margin-bottom: 24px; }
-.marca { font-family: "Spline Sans Mono", monospace; font-size: 12px; letter-spacing: .85px;
+.marca { font-family: var(--mono); font-size: 12px; letter-spacing: .85px;
          text-transform: uppercase; color: #102a43; margin: 0;
          display: inline-flex; align-items: center; gap: 8px; }
 .marca .marca-b { width: 22px; height: 22px; border-radius: 6px; flex: none; }
@@ -207,7 +216,7 @@ header { padding-bottom: 24px; margin-bottom: 24px; border-bottom: 1px solid var
 header p:last-child { margin: 0; color: var(--fg-2); font-size: 16px; }
 
 /* Pílula: o guia reserva o raio total para navegação e controles do topo. */
-.tema { font: inherit; font-family: "Spline Sans Mono", monospace; font-size: 12px;
+.tema { font: inherit; font-family: var(--mono); font-size: 12px;
         letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2);
         background: transparent; border: 1px solid var(--line-strong); border-radius: 9999px;
         min-height: 44px; padding: 0 14px; cursor: pointer;
@@ -217,7 +226,7 @@ header p:last-child { margin: 0; color: var(--fg-2); font-size: 16px; }
 .etapas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
           list-style: none; margin: 0 0 40px; padding: 0; }
 .etapas li { border-top: 1px solid var(--line); padding-top: 8px;
-             font-family: "Spline Sans Mono", monospace; font-size: 12px;
+             font-family: var(--mono); font-size: 12px;
              letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2); }
 .etapas li[data-on="1"] { border-top-color: var(--acao); color: var(--fg); }
 .etapas b { display: block; font-weight: 400; color: var(--acao); }
@@ -231,7 +240,7 @@ section { margin-bottom: 56px; }
 .seguranca b { color: var(--fg); font-weight: 500; }
 details { margin-top: 24px; border-top: 1px solid var(--line); }
 details > summary { cursor: pointer; list-style: none; padding: 16px 0; min-height: 44px;
-                    font-family: "Spline Sans Mono", monospace; font-size: 12px;
+                    font-family: var(--mono); font-size: 12px;
                     letter-spacing: .85px; text-transform: uppercase; color: var(--acao);
                     display: flex; align-items: center; justify-content: space-between; gap: 16px; }
 details > summary::-webkit-details-marker { display: none; }
@@ -260,7 +269,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .painel .big { color: var(--acao); }
 .painel p { margin: 8px 0 0; color: var(--fg-2); font-size: 14px; line-height: 1.57; }
 .quando { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: baseline;
-          font-family: "Spline Sans Mono", monospace; font-size: 12px; letter-spacing: .85px;
+          font-family: var(--mono); font-size: 12px; letter-spacing: .85px;
           text-transform: uppercase; color: var(--fg-2);
           border-bottom: 1px solid var(--elev); padding-bottom: 16px; margin-bottom: 16px; }
 .quando b { color: var(--fg); font-weight: 400; }
@@ -274,11 +283,11 @@ details > summary b { color: var(--fg); font-weight: 400; }
 
 .barras { margin-top: 24px; }
 .barra-linha { margin-bottom: 16px; }
-.barra-linha > span { display: block; font-family: "Spline Sans Mono", monospace;
+.barra-linha > span { display: block; font-family: var(--mono);
                       font-size: 12px; letter-spacing: .85px; text-transform: uppercase;
                       color: var(--fg-2); margin-bottom: 8px; }
 .legenda { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 16px;
-           font-family: "Spline Sans Mono", monospace; font-size: 12px; letter-spacing: .85px;
+           font-family: var(--mono); font-size: 12px; letter-spacing: .85px;
            text-transform: uppercase; color: var(--fg-2); }
 .legenda i { display: inline-block; width: 8px; height: 8px; border-radius: 2px;
              margin-right: 8px; vertical-align: 0; }
@@ -299,7 +308,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
                             border-color: var(--btn); font-weight: 500; }
 
 .resumo { border-top: 1px solid var(--line); padding-top: 16px; }
-.chips { margin: 0 0 8px; font-family: "Spline Sans Mono", monospace; font-size: 12px;
+.chips { margin: 0 0 8px; font-family: var(--mono); font-size: 12px;
          letter-spacing: .85px; text-transform: uppercase; color: var(--fg); }
 .chips span + span::before { content: " · "; color: var(--fg-2); }
 .link { font: inherit; font-size: 14px; color: var(--acao); background: none; border: 0;
@@ -320,7 +329,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .alerta p { margin: 0; color: var(--fg-2); }
 .alerta p + p { margin-top: 8px; }
 .alerta b { color: var(--fg); font-weight: 500; }
-.alerta .quando { font-family: "Spline Sans Mono", monospace; font-size: 12px;
+.alerta .quando { font-family: var(--mono); font-size: 12px;
                   letter-spacing: .5px; color: var(--acao); }
 
 /* --- a carteira inteira --- */
@@ -332,14 +341,14 @@ details > summary b { color: var(--fg); font-weight: 400; }
        padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
 .pos:first-of-type { border-top: 0; }
 .pos b { font-weight: 500; color: var(--fg); flex: 1 1 auto; min-width: 0; }
-.pos .val { font-family: "Spline Sans Mono", monospace; font-variant-numeric: tabular-nums;
+.pos .val { font-family: var(--mono); font-variant-numeric: tabular-nums;
             color: var(--fg); white-space: nowrap; }
 /* "sem-valor" e nao "falta": .falta ja existe neste app, com borda vermelha a
    esquerda, e o nome repetido colava um risco vermelho no numero. */
 .pos .val.sem-valor { color: var(--neg); }
 .pos .de { font-size: 12px; color: var(--fg-2); flex: 0 0 100%; margin-top: 2px; }
 .pos .de b { font-weight: 400; color: var(--fg-2); }
-.total { margin: 14px 0 0; font-family: "Spline Sans Mono", monospace;
+.total { margin: 14px 0 0; font-family: var(--mono);
          font-size: 14px; display: flex; justify-content: space-between; gap: 12px;
          border-top: 1px solid var(--line-strong); padding-top: 12px; }
 .pos-acao { font: inherit; font-size: 12px; background: none; border: 0; padding: 0;
@@ -370,7 +379,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .regua svg { display: block; width: 100%; height: auto; }
 .regua figcaption { margin-top: 8px; font-size: 12px; line-height: 1.4; color: var(--fg-2); }
 .regua .chaves { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 8px;
-                 font-family: "Spline Sans Mono", monospace; font-size: 12px;
+                 font-family: var(--mono); font-size: 12px;
                  letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2); }
 .regua .chaves i { display: inline-block; width: 8px; height: 8px; border-radius: 2px;
                    margin-right: 8px; vertical-align: 0; }
@@ -384,7 +393,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .plano:focus-visible { outline: 2px solid var(--acao); outline-offset: 2px; }
 .plano[aria-pressed="true"] { border-color: var(--acao); background: var(--acao-fraco); }
 .plano .custo { font-size: 40px; line-height: 1.2; letter-spacing: -.84px; font-weight: 500; }
-.plano .custo small { display: block; font-family: "Spline Sans Mono", monospace;
+.plano .custo small { display: block; font-family: var(--mono);
                       font-size: 12px; letter-spacing: .85px; text-transform: uppercase;
                       color: var(--fg-2); margin-top: 8px; }
 .plano dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 8px 16px;
@@ -400,7 +409,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 
 /* --- o que muda --- */
 .razao { margin-top: 24px; }
-.grupo { font-family: "Spline Sans Mono", monospace; font-size: 12px; letter-spacing: .85px;
+.grupo { font-family: var(--mono); font-size: 12px; letter-spacing: .85px;
          text-transform: uppercase; color: var(--fg-2); margin: 24px 0 0;
          padding-bottom: 8px; border-bottom: 1px solid var(--line); }
 .grupo:first-child { margin-top: 0; }
@@ -438,15 +447,15 @@ details > summary b { color: var(--fg); font-weight: 400; }
 .registro { margin-top: 16px; background: var(--card); border: 1px solid var(--elev);
             border-radius: 8px; padding: 24px; }
 .registro p { margin: 0 0 16px; font-size: 14px; line-height: 1.57; color: var(--fg-2); }
-.registro pre { margin: 0; overflow-x: auto; font-family: "Spline Sans Mono", monospace;
+.registro pre { margin: 0; overflow-x: auto; font-family: var(--mono);
                 font-size: 12px; line-height: 1.6; color: var(--fg); }
 
 .informar { margin-top: 16px; }
-.informar label { display: block; font-family: "Spline Sans Mono", monospace; font-size: 12px;
+.informar label { display: block; font-family: var(--mono); font-size: 12px;
                   letter-spacing: .85px; text-transform: uppercase; color: var(--fg-2);
                   margin-bottom: 8px; }
 .campo { display: flex; flex-wrap: wrap; gap: 8px; }
-.campo input { font: inherit; font-family: "Spline Sans Mono", monospace; font-size: 16px;
+.campo input { font: inherit; font-family: var(--mono); font-size: 16px;
                flex: 1 1 10rem; min-width: 0; min-height: 44px; padding: 8px 16px;
                color: var(--fg); background: var(--elev); border: 1px solid var(--line);
                border-radius: 8px; }
@@ -464,7 +473,7 @@ details > summary b { color: var(--fg); font-weight: 400; }
 footer { border-top: 1px solid var(--line); margin-top: 80px; padding-top: 24px;
          font-size: 12px; line-height: 1.4; color: var(--fg-2); }
 footer p { margin: 0 0 8px; }
-footer code { font-family: "Spline Sans Mono", monospace; }
+footer code { font-family: var(--mono); }
 footer a { color: var(--acao); }
 
 @media (min-width: 42rem) {
@@ -665,7 +674,7 @@ footer a { color: var(--acao); }
      da B3 de <code>b3_connection.py</code>. Nenhuma ordem é transmitida por esta tela.</p>
   <p>O custo aparece antes do benefício de propósito, e nenhuma tela deste projeto promete
      patrimônio futuro: o que a Benevente publica é o quanto a própria régua erra.</p>
-  <p>Tipografia Schibsted Grotesk e Spline Sans Mono.</p>
+  <p>__TIPOGRAFIA__</p>
 </footer>
 </div>
 
@@ -1750,6 +1759,9 @@ def main() -> None:
     pagina = (HTML.replace("__DADOS__", json.dumps(magro, ensure_ascii=False,
                                                    separators=(",", ":")))
                   .replace("__REGUA_RF__", REGUA_RF_JS)
+                  # O rodapé nomeava a tipografia à mão e nomeava a errada. Sai
+                  # das mesmas constantes que a folha de estilo usa.
+                  .replace("__TIPOGRAFIA__", f"Tipografia {_familia(SANS)} e {_familia(MONO)}.")
                   .replace("__FONTES__", FONTES_LINK)
                   .replace("__TOKENS__", tokens_css(com_cabecalho=False)))
     OUT.parent.mkdir(parents=True, exist_ok=True)
