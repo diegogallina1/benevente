@@ -50,7 +50,22 @@ FONTES = (
     ("debentures/mercado-secundario", "DEBENTURE"),
     ("cri-cra/mercado-secundario", "CRI"),
 )
+#: Da mais nova para a mais velha. A ANBIMA publica v1 e v2 do pacote de preços,
+#: e os caminhos do v2 não estão na documentação pública que dá para ler daqui.
+#: Então a versão é configuração, e não um palpite escrito no código: em "auto"
+#: o programa tenta a mais nova, aceita 404 como "esta rota não existe nesta
+#: versão", cai para a anterior e grava qual respondeu. Descobrir é honesto;
+#: fixar v2 sem conferir seria publicar um chute com cara de fato.
+VERSOES = ("v2", "v1")
 TEMPO_LIMITE = 30
+
+
+#: ``abrir`` é sempre por nome. Quando a versão virou parâmetro, um teste passou
+#: a função falsa na posição dela e o "abrir" caiu no padrão: o teste foi para a
+#: rede de verdade sem ninguém notar. Argumento posicional não deve conseguir
+#: trocar um dublê por um socket.
+class RotaAusente(RuntimeError):
+    """A rota não existe nesta versão da API. Serve para cair para a anterior."""
 
 
 class SemCredencial(RuntimeError):
@@ -67,7 +82,7 @@ def credencial() -> tuple[str, str]:
     return ident, segredo
 
 
-def token(base: str, abrir=urllib.request.urlopen) -> str:
+def token(base: str, *, abrir=urllib.request.urlopen) -> str:
     """Troca a credencial por um token de uma hora, pelo fluxo documentado."""
     ident, segredo = credencial()
     basico = base64.b64encode(f"{ident}:{segredo}".encode("utf-8")).decode("ascii")
@@ -89,21 +104,25 @@ def token(base: str, abrir=urllib.request.urlopen) -> str:
     return corpo["access_token"]
 
 
-def buscar(base: str, caminho: str, acesso: str, abrir=urllib.request.urlopen) -> list[dict]:
-    """Uma chamada ao feed. Devolve a lista crua, sem interpretar."""
+def buscar(base: str, caminho: str, acesso: str, versao: str = "v1", *,
+           abrir=urllib.request.urlopen) -> list[dict]:
+    """Uma chamada ao feed, numa versão. Devolve a lista crua, sem interpretar."""
     ident, _ = credencial()
     pedido = urllib.request.Request(
-        f"{base}/feed/precos-indices/v1/{caminho}",
+        f"{base}/feed/precos-indices/{versao}/{caminho}",
         headers={"Authorization": f"Bearer {acesso}", "client_id": ident,
                  "Accept": "application/json"})
     try:
         with abrir(pedido, timeout=TEMPO_LIMITE) as resposta:
             corpo = json.loads(resposta.read().decode("utf-8"))
     except urllib.error.HTTPError as erro:
+        if erro.code == 404:
+            # Rota inexistente nesta versão. Quem chamou decide se tenta outra.
+            raise RotaAusente(f"{versao}/{caminho}") from None
         if erro.code == 403:
             raise SystemExit(
-                f"{caminho}: HTTP 403. O app tem o produto de preços habilitado?") from None
-        raise SystemExit(f"{caminho}: HTTP {erro.code}.") from None
+                f"{versao}/{caminho}: HTTP 403. O app tem esse produto habilitado?") from None
+        raise SystemExit(f"{versao}/{caminho}: HTTP {erro.code}.") from None
     return corpo if isinstance(corpo, list) else corpo.get("content", [])
 
 
@@ -154,15 +173,36 @@ def produto(linha: dict, tipo: str) -> dict | None:
     }
 
 
-def coletar(ambiente: str, abrir=urllib.request.urlopen) -> dict:
+def buscar_na_melhor_versao(base: str, caminho: str, acesso: str, versoes, *,
+                            abrir=urllib.request.urlopen) -> tuple[list[dict], str]:
+    """Tenta as versões na ordem dada e devolve a primeira que responder.
+
+    Só o 404 faz descer de versão. Um 403 é outra coisa, o app não tem o produto
+    habilitado, e cair para a versão anterior nesse caso esconderia o problema
+    de contratação atrás de um resultado vazio.
+    """
+    ausentes = []
+    for versao in versoes:
+        try:
+            return buscar(base, caminho, acesso, versao, abrir=abrir), versao
+        except RotaAusente:
+            ausentes.append(versao)
+    raise SystemExit(f"{caminho}: rota ausente em {', '.join(ausentes)}.")
+
+
+def coletar(ambiente: str, versao: str = "auto", *, abrir=urllib.request.urlopen) -> dict:
     base = BASES[ambiente]
-    acesso = token(base, abrir)
+    acesso = token(base, abrir=abrir)
+    versoes = VERSOES if versao == "auto" else (versao,)
     itens: list[dict] = []
-    por_fonte: dict[str, tuple[int, int]] = {}
+    por_fonte: dict[str, dict] = {}
     for caminho, tipo in FONTES:
-        cruas = buscar(base, caminho, acesso, abrir)
+        cruas, respondeu = buscar_na_melhor_versao(base, caminho, acesso, versoes, abrir=abrir)
         convertidas = [x for x in (produto(l, tipo) for l in cruas) if x]
-        por_fonte[caminho] = (len(cruas), len(convertidas))
+        # Qual versão serviu cada rota fica no arquivo. Sem isso, uma migração
+        # silenciosa de formato apareceria como mudança de mercado.
+        por_fonte[caminho] = {"linhas": len(cruas), "convertidas": len(convertidas),
+                              "versao": respondeu}
         itens.extend(convertidas)
     return {
         "source": "ANBIMA Feed, preços e índices, mercado secundário",
@@ -170,8 +210,9 @@ def coletar(ambiente: str, abrir=urllib.request.urlopen) -> dict:
         "origem": "AUTOMATICA_PUBLICA",
         "rate_source": "taxa indicativa, não a de compra nem a de venda",
         "regime": "valor mobiliário sob a CVM, sem cobertura do FGC",
+        "api_version_requested": versao,
         "products": itens,
-        "por_fonte": {k: {"linhas": v[0], "convertidas": v[1]} for k, v in por_fonte.items()},
+        "por_fonte": por_fonte,
     }
 
 
@@ -179,16 +220,20 @@ def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--ambiente", choices=sorted(BASES),
                    default=os.environ.get("ANBIMA_AMBIENTE", "sandbox"))
+    p.add_argument("--versao", choices=("auto", *VERSOES),
+                   default=os.environ.get("ANBIMA_VERSAO", "auto"),
+                   help="auto tenta a mais nova e cai para a anterior no 404")
     args = p.parse_args()
 
-    documento = coletar(args.ambiente)
+    documento = coletar(args.ambiente, args.versao)
     DESTINO.write_text(json.dumps(documento, ensure_ascii=False, indent=2) + "\n",
                        encoding="utf-8")
 
     itens = documento["products"]
     print(f"{DESTINO.relative_to(ROOT)}: {len(itens)} papéis · ambiente {args.ambiente}")
     for caminho, contagem in documento["por_fonte"].items():
-        print(f"  {caminho}: {contagem['convertidas']} de {contagem['linhas']} linhas")
+        print(f"  {caminho}: {contagem['convertidas']} de {contagem['linhas']} linhas "
+              f"· respondeu {contagem['versao']}")
     datas = sorted({x["maturity"] for x in itens})
     if datas:
         print(f"  vencimentos de {datas[0]} a {datas[-1]}")
