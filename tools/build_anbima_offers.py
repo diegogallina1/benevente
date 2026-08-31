@@ -547,6 +547,17 @@ def diagnostico(ambiente: str, *, abrir=urllib.request.urlopen) -> None:
                     print(f"  {alvo} · {nome}: OK, {len(linhas)} linhas")
 
 
+def _quantos(documento: dict) -> int:
+    """Quantos registros um documento carrega, seja qual for o formato."""
+    if not isinstance(documento, dict):
+        return 0
+    total = len(documento.get("products") or [])
+    for corpo in (documento.get("rotas") or {}).values():
+        if isinstance(corpo, dict):
+            total += int(corpo.get("linhas") or 0)
+    return total
+
+
 def gravar(destino: Path, documento: dict) -> None:
     """Escreve, menos quando isso trocaria dado real por dado de mentira.
 
@@ -555,15 +566,25 @@ def gravar(destino: Path, documento: dict) -> None:
     sem avisar, e o arquivo continuaria com cara de bom: mesmo nome, mesmo
     formato, números plausíveis. É a troca mais difícil de perceber depois.
     """
-    if destino.exists() and documento.get("environment") == "sandbox":
+    anterior = {}
+    if destino.exists():
         try:
             anterior = json.loads(destino.read_text(encoding="utf-8"))
         except (OSError, json.JSONDecodeError):
             anterior = {}
-        if anterior.get("environment") == "producao":
-            raise SystemExit(
-                f"{destino.name} veio da produção e isto é sandbox, que serve "
-                f"dados fictícios. Apague o arquivo se quiser mesmo substituir.")
+    if anterior.get("environment") == "producao" and documento.get("environment") == "sandbox":
+        raise SystemExit(
+            f"{destino.name} veio da produção e isto é sandbox, que serve "
+            f"dados fictícios. Apague o arquivo se quiser mesmo substituir.")
+    # Uma coleta que não trouxe nada não deve apagar a que trouxe. Aconteceu:
+    # uma rodada com a paginação quebrada gravou zero por cima de mil linhas, e
+    # o arquivo ficou com cara de resultado, só que vazio. Registrar a falha é
+    # certo; registrar por cima do que funcionava, não.
+    if _quantos(anterior) and not _quantos(documento):
+        raise SystemExit(
+            f"{destino.name} tem {_quantos(anterior)} registros e esta coleta "
+            f"não trouxe nenhum. O arquivo fica como está. Resolva a causa, ou "
+            f"apague o arquivo se quiser mesmo gravar o vazio.")
     destino.write_text(json.dumps(documento, ensure_ascii=False, indent=2) + "\n",
                        encoding="utf-8")
 

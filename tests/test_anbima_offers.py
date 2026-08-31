@@ -534,3 +534,33 @@ def test_rota_que_ignora_a_pagina_para_na_repeticao(ambiente, monkeypatch, tmp_p
                             esquema=coletor._cabecalho_access_token, abrir=abrir)
     assert linhas == [{"a": 1}, {"a": 2}], "empilhou repetição"
     assert len(chamadas) == 2, "não parou assim que a página se repetiu"
+
+
+def test_coleta_vazia_nao_apaga_a_que_trouxe_dados(tmp_path) -> None:
+    """Aconteceu: uma rodada com a paginação quebrada gravou zero sobre mil."""
+    destino = tmp_path / "fundos.json"
+    destino.write_text(json.dumps(
+        {"environment": "sandbox", "rotas": {"fundos": {"linhas": 1000}}}),
+        encoding="utf-8")
+    with pytest.raises(SystemExit) as caiu:
+        coletor.gravar(destino, {"environment": "sandbox",
+                                 "rotas": {"fundos": {"linhas": 0, "falhou": "erro"}}})
+    assert "1000 registros" in str(caiu.value)
+    assert json.loads(destino.read_text(encoding="utf-8"))["rotas"]["fundos"]["linhas"] == 1000
+
+
+def test_coleta_parcial_ainda_grava_porque_trouxe_alguma_coisa(tmp_path) -> None:
+    """A guarda é contra o vazio, não contra o incompleto."""
+    destino = tmp_path / "fundos.json"
+    destino.write_text(json.dumps(
+        {"environment": "sandbox", "rotas": {"a": {"linhas": 10}, "b": {"linhas": 10}}}),
+        encoding="utf-8")
+    coletor.gravar(destino, {"environment": "sandbox",
+                             "rotas": {"a": {"linhas": 7}, "b": {"linhas": 0}}})
+    assert json.loads(destino.read_text(encoding="utf-8"))["rotas"]["a"]["linhas"] == 7
+
+
+def test_primeira_coleta_vazia_grava_porque_nao_ha_o_que_perder(tmp_path) -> None:
+    destino = tmp_path / "fundos.json"
+    coletor.gravar(destino, {"environment": "sandbox", "rotas": {"a": {"linhas": 0}}})
+    assert destino.exists()
