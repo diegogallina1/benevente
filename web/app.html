@@ -225,7 +225,9 @@ details > summary b { color: var(--fg); font-weight: 400; }
 #add-det { margin-top: 24px; }
 .add-corpo { display: flex; flex-direction: column; gap: 12px; padding-top: 10px; }
 .ajuda { margin: 0; font-size: 13px; line-height: 1.5; color: var(--fg-2); }
-.add-linha { display: grid; gap: 10px; }
+/* Os campos fluem por largura. Um por linha, o formulário de renda fixa tinha
+   sete alturas de campo e obrigava a rolar para achar o botão. */
+.add-linha { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(11rem, 100%), 1fr)); }
 .add-linha label { display: flex; flex-direction: column; gap: 4px; font-size: 12px;
                    color: var(--fg-2); }
 .add-linha input, .add-linha select { font: inherit; font-size: 14px; padding: 8px 10px;
