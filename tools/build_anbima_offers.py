@@ -105,6 +105,27 @@ TEMPO_LIMITE = 30
 #: a função falsa na posição dela e o "abrir" caiu no padrão: o teste foi para a
 #: rede de verdade sem ninguém notar. Argumento posicional não deve conseguir
 #: trocar um dublê por um socket.
+def censura(texto: str) -> str:
+    """Apaga do texto qualquer valor de credencial antes de ele virar log.
+
+    O corpo de um 4xx costuma trazer a explicação do servidor, que é justamente
+    o que falta para diagnosticar, e às vezes ecoa o que foi enviado. As duas
+    coisas viajam juntas, então a saída passa por aqui em vez de ser descartada
+    inteira: perder a explicação por medo do eco é jogar fora o diagnóstico.
+    """
+    limpo = texto
+    for valor in _valores_sensiveis():
+        if valor and len(valor) >= 4:
+            limpo = limpo.replace(valor, "«apagado»")
+    return limpo.strip()[:400]
+
+
+def _valores_sensiveis() -> tuple[str, ...]:
+    arquivo = _do_arquivo()
+    nomes = ("ANBIMA_CLIENT_ID", "ANBIMA_CLIENT_SECRET", "ANBIMA_ACCESS_TOKEN")
+    return tuple(os.environ.get(n) or arquivo.get(n, "") for n in nomes)
+
+
 class NaoAutorizado(RuntimeError):
     """401 na chamada ao feed. Pode ser o cabeçalho errado, não a credencial."""
 
@@ -231,11 +252,15 @@ def buscar(base: str, caminho: str, acesso: str, versao: str = "v1", *,
         with abrir(pedido, timeout=TEMPO_LIMITE) as resposta:
             corpo = json.loads(resposta.read().decode("utf-8"))
     except urllib.error.HTTPError as erro:
+        try:
+            explicacao = censura(erro.read().decode("utf-8", errors="replace"))
+        except Exception:
+            explicacao = ""
         if erro.code == 404:
             # Rota inexistente nesta versão. Quem chamou decide se tenta outra.
             raise RotaAusente(f"{versao}/{caminho}") from None
         if erro.code == 401:
-            raise NaoAutorizado(f"{versao}/{caminho}") from None
+            raise NaoAutorizado(f"a ANBIMA respondeu: {explicacao}") from None
         if erro.code == 403:
             # 403 com este cabeçalho significa que a credencial foi reconhecida
             # e o recurso não está no plano do app. Não é problema de código.
@@ -243,7 +268,7 @@ def buscar(base: str, caminho: str, acesso: str, versao: str = "v1", *,
             raise SystemExit(
                 f"{versao}/{caminho}: HTTP 403, credencial reconhecida e recurso "
                 f"não liberado. Habilite o produto {produto} para este app no "
-                f"portal da ANBIMA. Nenhuma mudança de código resolve isto.") from None
+                f"portal da ANBIMA. A ANBIMA respondeu: {explicacao}") from None
         raise SystemExit(f"{versao}/{caminho}: HTTP {erro.code}.") from None
     return corpo if isinstance(corpo, list) else corpo.get("content", [])
 
@@ -304,7 +329,7 @@ def buscar_na_melhor_versao(base: str, caminho: str, acesso: str, versoes, *,
     outra coisa, o app não tem o produto habilitado, e insistir nesse caso
     esconderia um problema de contratação atrás de um resultado vazio.
     """
-    ausentes, recusados = [], []
+    ausentes, recusados, explicacoes = [], [], []
     for versao in versoes:
         for nome, esquema in ESQUEMAS:
             try:
@@ -313,8 +338,9 @@ def buscar_na_melhor_versao(base: str, caminho: str, acesso: str, versoes, *,
             except RotaAusente:
                 ausentes.append(versao)
                 break
-            except NaoAutorizado:
+            except NaoAutorizado as recusa:
                 recusados.append(f"{versao}/{nome}")
+                explicacoes.append(str(recusa))
                 continue
             return linhas, versao, nome
     detalhe = []
@@ -322,9 +348,12 @@ def buscar_na_melhor_versao(base: str, caminho: str, acesso: str, versoes, *,
         detalhe.append(f"rota ausente em {', '.join(sorted(set(ausentes)))}")
     if recusados:
         detalhe.append(f"401 em {', '.join(recusados)}")
+    # A explicação do servidor vem por último e é o que de fato orienta: o resto
+    # é o que este programa tentou, e isso quem lê já sabe.
+    dito = f" {explicacoes[-1]}" if explicacoes else ""
     raise SystemExit(
-        f"{caminho}: " + "; ".join(detalhe) + ". "
-        "Um 401 em todos os cabeçalhos costuma ser app sem esse produto liberado "
+        f"{caminho}: " + "; ".join(detalhe) + "." + dito +
+        " Um 401 em todos os cabeçalhos costuma ser app sem esse produto liberado "
         "no ambiente escolhido: confira se o app está aprovado em produção ou "
         "rode com --ambiente sandbox.")
 
@@ -422,8 +451,8 @@ def diagnostico(ambiente: str, *, abrir=urllib.request.urlopen) -> None:
                                     esquema=esquema, abrir=abrir)
                 except RotaAusente:
                     print(f"  {alvo} · {nome}: 404 rota ausente")
-                except NaoAutorizado:
-                    print(f"  {alvo} · {nome}: 401 recusado")
+                except NaoAutorizado as recusa:
+                    print(f"  {alvo} · {nome}: 401 recusado. {recusa}")
                 except SystemExit as parou:
                     print(f"  {alvo} · {nome}: {parou}")
                 else:

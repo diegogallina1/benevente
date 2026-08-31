@@ -350,3 +350,38 @@ def test_sem_token_pronto_o_fluxo_oauth_continua_valendo(ambiente, monkeypatch, 
 
     assert coletor.token("https://exemplo", abrir=abrir) == "trocado"
     assert any("oauth/access-token" in x for x in chamou)
+
+
+def test_a_explicacao_do_servidor_aparece_e_a_credencial_nao(ambiente, monkeypatch, tmp_path) -> None:
+    """Perder a explicação por medo do eco é jogar fora o diagnóstico.
+
+    O corpo de um 4xx traz o motivo, que é o que falta para resolver, e às vezes
+    ecoa o que foi enviado. As duas coisas vêm juntas, então o texto passa por
+    censura em vez de ser descartado inteiro.
+    """
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (tmp_path / "nada.env",))
+    monkeypatch.delenv("ANBIMA_ACCESS_TOKEN", raising=False)
+    corpo = ('{"message": "produto nao contratado", "client_id": "' + SEGREDO + '"}')
+
+    def abrir(pedido, timeout=None):
+        alvo = pedido.full_url
+        if "oauth/access-token" in alvo:
+            return RespostaFalsa(json.dumps({"access_token": "abc"}).encode("utf-8"))
+        raise urllib.error.HTTPError(alvo, 401, "recusado", {},
+                                     io.BytesIO(corpo.encode("utf-8")))
+
+    with pytest.raises(SystemExit) as caiu:
+        coletor.coletar("sandbox", abrir=abrir)
+    mensagem = str(caiu.value)
+    assert "produto nao contratado" in mensagem
+    assert SEGREDO not in mensagem
+
+
+def test_censura_apaga_qualquer_valor_de_credencial(ambiente, monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (tmp_path / "nada.env",))
+    monkeypatch.setenv("ANBIMA_ACCESS_TOKEN", "token-secreto")
+    texto = f"erro com {SEGREDO} e token-secreto e um-id juntos"
+    limpo = coletor.censura(texto)
+    for valor in (SEGREDO, "token-secreto", "um-id"):
+        assert valor not in limpo, valor
+    assert "erro com" in limpo
