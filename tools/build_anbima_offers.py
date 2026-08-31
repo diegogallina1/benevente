@@ -40,6 +40,10 @@ import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 DESTINO = ROOT / "data" / "ofertas_anbima.json"
+DESTINO_FUNDOS = ROOT / "data" / "fundos_anbima.json"
+#: Onde a credencial pode morar sem entrar no repositório. Os dois nomes já
+#: estão no .gitignore, e nenhum deles é lido de outro lugar do projeto.
+ARQUIVOS_DE_CREDENCIAL = (ROOT / ".env.anbima", ROOT / ".env.local")
 
 BASES = {
     "producao": "https://api.anbima.com.br",
@@ -72,12 +76,42 @@ class SemCredencial(RuntimeError):
     """O ambiente não tem as variáveis, e adivinhar não é opção."""
 
 
+def _do_arquivo() -> dict[str, str]:
+    """Lê CHAVE=valor de um .env ignorado pelo git, se existir.
+
+    Existe porque exportar variável na linha de comando deixa o segredo no
+    histórico do shell, e porque "não sei onde por" é o começo de todo segredo
+    commitado. O arquivo não é criado por este programa e não é lido de nenhum
+    outro lugar do projeto: quem o escreve é a pessoa, uma vez.
+    """
+    achados: dict[str, str] = {}
+    for caminho in ARQUIVOS_DE_CREDENCIAL:
+        if not caminho.exists():
+            continue
+        for linha in caminho.read_text(encoding="utf-8").splitlines():
+            linha = linha.strip()
+            if not linha or linha.startswith("#") or "=" not in linha:
+                continue
+            chave, _, valor = linha.partition("=")
+            chave = chave.strip()
+            if chave.startswith("ANBIMA_"):
+                achados.setdefault(chave, valor.strip().strip('"').strip("'"))
+    return achados
+
+
 def credencial() -> tuple[str, str]:
-    ident = os.environ.get("ANBIMA_CLIENT_ID", "").strip()
-    segredo = os.environ.get("ANBIMA_CLIENT_SECRET", "").strip()
+    # O ambiente vence o arquivo: numa máquina de produção a variável é quem
+    # manda, e o arquivo é conveniência de quem roda na própria máquina.
+    arquivo = _do_arquivo()
+    ident = (os.environ.get("ANBIMA_CLIENT_ID") or arquivo.get("ANBIMA_CLIENT_ID", "")).strip()
+    segredo = (os.environ.get("ANBIMA_CLIENT_SECRET")
+               or arquivo.get("ANBIMA_CLIENT_SECRET", "")).strip()
     if not ident or not segredo:
         raise SemCredencial(
-            "Defina ANBIMA_CLIENT_ID e ANBIMA_CLIENT_SECRET no ambiente. O "
+            "Faltam ANBIMA_CLIENT_ID e ANBIMA_CLIENT_SECRET. Ponha as duas no "
+            f"arquivo {ARQUIVOS_DE_CREDENCIAL[0].name}, na raiz do repositório, "
+            "uma por linha no formato CHAVE=valor. O arquivo já está no "
+            ".gitignore. Variável de ambiente também serve e tem precedência. O "
             "repositório não guarda credencial e o programa não pede em prompt.")
     return ident, segredo
 
@@ -105,11 +139,11 @@ def token(base: str, *, abrir=urllib.request.urlopen) -> str:
 
 
 def buscar(base: str, caminho: str, acesso: str, versao: str = "v1", *,
-           abrir=urllib.request.urlopen) -> list[dict]:
-    """Uma chamada ao feed, numa versão. Devolve a lista crua, sem interpretar."""
+           feed: str = "precos-indices", abrir=urllib.request.urlopen) -> list[dict]:
+    """Uma chamada a um feed, numa versão. Devolve a lista crua, sem interpretar."""
     ident, _ = credencial()
     pedido = urllib.request.Request(
-        f"{base}/feed/precos-indices/{versao}/{caminho}",
+        f"{base}/feed/{feed}/{versao}/{caminho}",
         headers={"Authorization": f"Bearer {acesso}", "client_id": ident,
                  "Accept": "application/json"})
     try:
@@ -216,6 +250,52 @@ def coletar(ambiente: str, versao: str = "auto", *, abrir=urllib.request.urlopen
     }
 
 
+#: As rotas de fundos, sob outro feed. A documentação pública mostra o padrão
+#: /feed/fundos/v1/fundos/, mesmo para o produto que a ANBIMA chama de v2, então
+#: aqui vale a mesma disciplina dos preços: tenta a mais nova, cai no 404.
+ROTAS_DE_FUNDOS = ("fundos", "fundos/patrimonio-liquido-segmento")
+
+
+def coletar_fundos(ambiente: str, versao: str = "auto", *,
+                   abrir=urllib.request.urlopen) -> dict:
+    """O cadastro de fundos, guardado separado das ofertas de propósito.
+
+    Um fundo não tem taxa contratada: tem retorno realizado, taxa de
+    administração e come-cotas. Pôr isso na mesma lista de um CDB a 110% do CDI
+    compararia um histórico com uma promessa, que é o erro que a régua existe
+    para evitar. Então os dois arquivos são distintos, e quem quiser comparar
+    fundo com papel precisa dizer sob qual hipótese de retorno futuro, que é uma
+    escolha de quem compara e não um dado da ANBIMA.
+    """
+    base = BASES[ambiente]
+    acesso = token(base, abrir=abrir)
+    versoes = VERSOES if versao == "auto" else (versao,)
+    conteudo: dict[str, dict] = {}
+    for rota in ROTAS_DE_FUNDOS:
+        ausentes = []
+        for tentativa in versoes:
+            try:
+                linhas = buscar(base, rota, acesso, tentativa, feed="fundos", abrir=abrir)
+            except RotaAusente:
+                ausentes.append(tentativa)
+                continue
+            conteudo[rota] = {"linhas": len(linhas), "versao": tentativa, "dados": linhas}
+            break
+        else:
+            conteudo[rota] = {"linhas": 0, "versao": None,
+                              "ausente_em": ausentes, "dados": []}
+    return {
+        "source": "ANBIMA Feed, fundos",
+        "environment": ambiente,
+        "origem": "AUTOMATICA_PUBLICA",
+        "api_version_requested": versao,
+        "aviso": ("Retorno de fundo é realizado, não taxa contratada, e carrega "
+                  "taxa de administração e come-cotas. Não entra na régua de "
+                  "ofertas sem uma hipótese declarada de retorno futuro."),
+        "rotas": conteudo,
+    }
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--ambiente", choices=sorted(BASES),
@@ -223,7 +303,21 @@ def main() -> None:
     p.add_argument("--versao", choices=("auto", *VERSOES),
                    default=os.environ.get("ANBIMA_VERSAO", "auto"),
                    help="auto tenta a mais nova e cai para a anterior no 404")
+    p.add_argument("--produto", choices=("precos", "fundos"), default="precos",
+                   help="precos escreve a grade de papéis; fundos, o cadastro")
     args = p.parse_args()
+
+    if args.produto == "fundos":
+        documento = coletar_fundos(args.ambiente, args.versao)
+        DESTINO_FUNDOS.write_text(json.dumps(documento, ensure_ascii=False, indent=2) + "\n",
+                                  encoding="utf-8")
+        print(f"{DESTINO_FUNDOS.relative_to(ROOT)} · ambiente {args.ambiente}")
+        for rota, corpo in documento["rotas"].items():
+            onde = corpo["versao"] or f"ausente em {', '.join(corpo.get('ausente_em', []))}"
+            print(f"  {rota}: {corpo['linhas']} linhas · {onde}")
+        print("  não entra na régua de ofertas: retorno de fundo é realizado, "
+              "não taxa contratada.")
+        return
 
     documento = coletar(args.ambiente, args.versao)
     DESTINO.write_text(json.dumps(documento, ensure_ascii=False, indent=2) + "\n",

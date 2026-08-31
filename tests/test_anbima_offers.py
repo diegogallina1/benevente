@@ -195,3 +195,65 @@ def test_abrir_e_so_por_nome_para_engano_posicional_nao_alcancar_a_rede() -> Non
                    coletor.buscar_na_melhor_versao):
         parametro = inspect.signature(funcao).parameters["abrir"]
         assert parametro.kind is inspect.Parameter.KEYWORD_ONLY, funcao.__name__
+
+
+def test_a_credencial_pode_vir_de_arquivo_ignorado_pelo_git(monkeypatch, tmp_path) -> None:
+    """"Não sei onde por" é o começo de todo segredo commitado."""
+    monkeypatch.delenv("ANBIMA_CLIENT_ID", raising=False)
+    monkeypatch.delenv("ANBIMA_CLIENT_SECRET", raising=False)
+    arquivo = tmp_path / ".env.anbima"
+    arquivo.write_text("\n".join([
+        "# comentario",
+        "ANBIMA_CLIENT_ID=do-arquivo",
+        'ANBIMA_CLIENT_SECRET="aspas"',
+    ]) + "\n", encoding="utf-8")
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (arquivo,))
+    assert coletor.credencial() == ("do-arquivo", "aspas")
+
+
+def test_o_ambiente_vence_o_arquivo(monkeypatch, tmp_path) -> None:
+    """Em produção a variável manda; o arquivo é conveniência de quem roda local."""
+    arquivo = tmp_path / ".env.anbima"
+    arquivo.write_text("\n".join([
+        "ANBIMA_CLIENT_ID=do-arquivo", "ANBIMA_CLIENT_SECRET=x",
+    ]) + "\n", encoding="utf-8")
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (arquivo,))
+    monkeypatch.setenv("ANBIMA_CLIENT_ID", "do-ambiente")
+    monkeypatch.setenv("ANBIMA_CLIENT_SECRET", "y")
+    assert coletor.credencial() == ("do-ambiente", "y")
+
+
+def test_os_arquivos_de_credencial_estao_no_gitignore() -> None:
+    """De nada adianta o carregador apontar para um arquivo que o git versiona."""
+    ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
+    for caminho in coletor.ARQUIVOS_DE_CREDENCIAL:
+        assert caminho.name in ignore, caminho.name
+
+
+def test_fundos_usa_o_proprio_feed_e_nao_o_de_precos(ambiente) -> None:
+    pedidos = []
+
+    def abrir(pedido, timeout=None):
+        alvo = pedido.full_url
+        if "oauth/access-token" in alvo:
+            return RespostaFalsa(json.dumps({"access_token": "abc"}).encode("utf-8"))
+        pedidos.append(alvo)
+        return RespostaFalsa(json.dumps([{"cnpj": "00.000.000/0001-00"}]).encode("utf-8"))
+
+    documento = coletor.coletar_fundos("sandbox", abrir=abrir)
+    assert all("/feed/fundos/" in x for x in pedidos), pedidos
+    assert not any("precos-indices" in x for x in pedidos)
+    assert documento["rotas"]["fundos"]["linhas"] == 1
+
+
+def test_fundo_nao_entra_na_regua_de_ofertas(ambiente) -> None:
+    """Retorno realizado e taxa contratada não se comparam sem hipótese declarada."""
+    def abrir(pedido, timeout=None):
+        if "oauth/access-token" in pedido.full_url:
+            return RespostaFalsa(json.dumps({"access_token": "abc"}).encode("utf-8"))
+        return RespostaFalsa(json.dumps([]).encode("utf-8"))
+
+    documento = coletor.coletar_fundos("sandbox", abrir=abrir)
+    assert "products" not in documento
+    assert "come-cotas" in documento["aviso"]
+    assert coletor.DESTINO_FUNDOS != coletor.DESTINO
