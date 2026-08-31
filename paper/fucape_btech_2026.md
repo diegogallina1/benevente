@@ -84,7 +84,7 @@ Sem expor o código da aplicação, a lógica é verificável: o sistema elimina
 
 ### 3.4 A política vigente: três perfis declarados
 
-Desde agosto de 2026 o sistema opera sob uma política declarada. Em lugar de buscar a melhor configuração a cada ano, ela fixa três, congeladas antes da avaliação prospectiva: o conservador aloca 35% do patrimônio em renda variável entre doze emissores; o equilibrado, 55% entre oito; o arrojado, 75% entre cinco. Em todos, um quinto do orçamento de renda variável fica no IVVB11, fundo na B3 que replica o S&P 500 em reais, definido pela política e não pelo escore; o saldo fica em caixa. A camada de proteção intranual atua apenas sobre a parcela doméstica, porque o sinal de estresse é calculado sobre o Ibovespa. O registro traz os hashes dos insumos, o assinante, o critério de falseamento e o início da amostra confirmatória, e nenhum parâmetro muda sem nova versão e nova contagem. Uma quarta versão (30/08/2026) acrescentou um degrau de 4%, fora desta avaliação. As Seções 4.1.1 e 4.1.2 documentam as duas revisões; a 5.1 traz o diagnóstico.
+Desde agosto de 2026 o sistema opera sob uma política declarada. Em lugar de buscar a melhor configuração a cada ano, ela fixa três, congeladas antes da avaliação prospectiva: o conservador aloca 35% do patrimônio em renda variável entre doze emissores; o equilibrado, 55% entre oito; o arrojado, 75% entre cinco. Em todos, um quinto do orçamento de renda variável fica no IVVB11, fundo na B3 que replica o S&P 500 em reais, definido pela política e não pelo escore; o saldo fica em caixa. A camada de proteção intranual atua apenas sobre a parcela doméstica, porque o sinal de estresse é calculado sobre o Ibovespa. O registro traz os hashes dos insumos, o assinante, o critério de falseamento e o início da amostra confirmatória, e nenhum parâmetro muda sem nova versão. A quarta versão acrescentou um degrau de 4%, fora desta avaliação: a série de 2026 dele é reconstrução, não acompanhamento. As Seções 4.1.1 e 4.1.2 documentam as duas revisões; a 5.1 traz o diagnóstico.
 
 ### 3.5 Por que a decisão é anual
 
@@ -134,13 +134,13 @@ A política da Seção 4.1.1 declarava como caixa 100% do CDI capitalizado diari
 
 ### 4.2 Comparadores
 
-Três referências foram calculadas de forma independente.
+Três referências foram calculadas independentemente.
 
 - CDI, série 12 do Banco Central, como custo de oportunidade do caixa.
 - Ibovespa, índice de retorno total que incorpora os proventos da carteira teórica e, por isso, é comparável a uma carteira que os reinveste (B3, 2026c).
 - Otimização média-variância sobre o mesmo universo elegível. Esse método estima retorno médio e covariância com dados anteriores e escolhe pesos que maximizam a relação entre retorno esperado e risco sob os mesmos limites de elegibilidade.
 
-O último comparador merece nota: em uma versão anterior, a série rotulada como MVO era numericamente idêntica à estratégia, ou seja, a estratégia estava sendo comparada a si mesma. O defeito foi encontrado na auditoria interna e corrigido com uma implementação independente, que passou a produzir resultados distintos, inclusive desfavoráveis à estratégia em um dos onze anos. Todos os comparadores usam as mesmas datas de início e fim da carteira.
+O último comparador merece nota: em uma versão anterior, a série rotulada como MVO era numericamente idêntica à estratégia, que assim se comparava a si mesma. O defeito foi encontrado na auditoria interna e corrigido com uma implementação independente, que passou a produzir resultados distintos, inclusive desfavoráveis à estratégia em um dos onze anos. Todos os comparadores usam as mesmas datas de início e fim da carteira.
 
 ### 4.3 Correção por múltiplas tentativas
 
@@ -154,7 +154,7 @@ A reconstrução de retorno total combina 497 séries; em 139 delas a distribui�
 
 ### 4.5 Registro prospectivo
 
-A linhagem tem quatro registros: o módulo de seleção anual, em 16 de agosto de 2026; a camada de proteção e o protocolo de acompanhamento, depois das respectivas mudanças; a política por perfil, em 25 de agosto; e a revisão do instrumento de caixa, em 26 de agosto, que é a que governa decisões futuras. Extensões não herdam a data dos registros anteriores. Para sustentar uma conclusão prospectiva, cada perfil precisa superar o próprio caixa declarado e o Ibovespa após custos e tributos, respeitar o critério de falseamento do registro e acumular ao menos três decisões anuais completas posteriores ao congelamento; a amostra confirmatória começa no primeiro pregão de 2027. Nenhuma observação prospectiva havia sido consumida quando a versão 3 substituiu a 2, e por isso a contagem não recomeçou — se já tivesse sido, teria recomeçado. Não existe resultado prospectivo na data deste artigo: a carteira de janeiro de 2026 antecede os registros e é carteira-sombra.
+A linhagem tem cinco registros: o módulo de seleção anual, em 16 de agosto de 2026; a camada de proteção e o protocolo de acompanhamento, após as respectivas mudanças; a política por perfil, em 25 de agosto; a revisão do caixa, em 26 de agosto, que governa esta avaliação; e o quarto degrau, em 30 de agosto, que rege decisões futuras. Extensões não herdam a data dos registros anteriores. Para sustentar uma conclusão prospectiva, cada perfil precisa superar o próprio caixa declarado e o Ibovespa após custos e tributos, respeitar o critério de falseamento do registro e acumular ao menos três decisões anuais completas posteriores ao congelamento; a amostra confirmatória começa no primeiro pregão de 2027. Nenhuma observação prospectiva havia sido consumida quando a versão 3 substituiu a 2, e por isso a contagem não recomeçou — se já tivesse sido, teria recomeçado. Não existe resultado prospectivo na data deste artigo: a carteira de janeiro de 2026 antecede os registros e é carteira-sombra.
 
 ---
 
