@@ -61,6 +61,19 @@ FONTES = (
 #: versão", cai para a anterior e grava qual respondeu. Descobrir é honesto;
 #: fixar v2 sem conferir seria publicar um chute com cara de fato.
 VERSOES = ("v2", "v1")
+#: Como mandar o token na chamada ao feed. A documentação pública descreve o
+#: fluxo do token e para por aí: não diz o cabeçalho da chamada seguinte. As
+#: duas formas abaixo são as candidatas, e um 401 faz tentar a próxima em vez de
+#: desistir. Qual funcionou fica gravado, e aí para de ser adivinhação.
+def _cabecalho_access_token(ident: str, acesso: str) -> dict:
+    return {"client_id": ident, "access_token": acesso}
+
+
+def _cabecalho_bearer(ident: str, acesso: str) -> dict:
+    return {"client_id": ident, "Authorization": f"Bearer {acesso}"}
+
+
+ESQUEMAS = (("access_token", _cabecalho_access_token), ("bearer", _cabecalho_bearer))
 TEMPO_LIMITE = 30
 
 
@@ -68,6 +81,10 @@ TEMPO_LIMITE = 30
 #: a função falsa na posição dela e o "abrir" caiu no padrão: o teste foi para a
 #: rede de verdade sem ninguém notar. Argumento posicional não deve conseguir
 #: trocar um dublê por um socket.
+class NaoAutorizado(RuntimeError):
+    """401 na chamada ao feed. Pode ser o cabeçalho errado, não a credencial."""
+
+
 class RotaAusente(RuntimeError):
     """A rota não existe nesta versão da API. Serve para cair para a anterior."""
 
@@ -139,13 +156,13 @@ def token(base: str, *, abrir=urllib.request.urlopen) -> str:
 
 
 def buscar(base: str, caminho: str, acesso: str, versao: str = "v1", *,
-           feed: str = "precos-indices", abrir=urllib.request.urlopen) -> list[dict]:
+           feed: str = "precos-indices", esquema=_cabecalho_access_token,
+           abrir=urllib.request.urlopen) -> list[dict]:
     """Uma chamada a um feed, numa versão. Devolve a lista crua, sem interpretar."""
     ident, _ = credencial()
-    pedido = urllib.request.Request(
-        f"{base}/feed/{feed}/{versao}/{caminho}",
-        headers={"Authorization": f"Bearer {acesso}", "client_id": ident,
-                 "Accept": "application/json"})
+    cabecalhos = {**esquema(ident, acesso), "Accept": "application/json"}
+    pedido = urllib.request.Request(f"{base}/feed/{feed}/{versao}/{caminho}",
+                                    headers=cabecalhos)
     try:
         with abrir(pedido, timeout=TEMPO_LIMITE) as resposta:
             corpo = json.loads(resposta.read().decode("utf-8"))
@@ -153,6 +170,8 @@ def buscar(base: str, caminho: str, acesso: str, versao: str = "v1", *,
         if erro.code == 404:
             # Rota inexistente nesta versão. Quem chamou decide se tenta outra.
             raise RotaAusente(f"{versao}/{caminho}") from None
+        if erro.code == 401:
+            raise NaoAutorizado(f"{versao}/{caminho}") from None
         if erro.code == 403:
             raise SystemExit(
                 f"{versao}/{caminho}: HTTP 403. O app tem esse produto habilitado?") from None
@@ -208,20 +227,37 @@ def produto(linha: dict, tipo: str) -> dict | None:
 
 
 def buscar_na_melhor_versao(base: str, caminho: str, acesso: str, versoes, *,
-                            abrir=urllib.request.urlopen) -> tuple[list[dict], str]:
-    """Tenta as versões na ordem dada e devolve a primeira que responder.
+                            feed: str = "precos-indices",
+                            abrir=urllib.request.urlopen) -> tuple[list[dict], str, str]:
+    """Tenta versão e cabeçalho, e devolve a combinação que respondeu.
 
-    Só o 404 faz descer de versão. Um 403 é outra coisa, o app não tem o produto
-    habilitado, e cair para a versão anterior nesse caso esconderia o problema
-    de contratação atrás de um resultado vazio.
+    Só o 404 faz descer de versão, e só o 401 faz trocar de cabeçalho. Um 403 é
+    outra coisa, o app não tem o produto habilitado, e insistir nesse caso
+    esconderia um problema de contratação atrás de um resultado vazio.
     """
-    ausentes = []
+    ausentes, recusados = [], []
     for versao in versoes:
-        try:
-            return buscar(base, caminho, acesso, versao, abrir=abrir), versao
-        except RotaAusente:
-            ausentes.append(versao)
-    raise SystemExit(f"{caminho}: rota ausente em {', '.join(ausentes)}.")
+        for nome, esquema in ESQUEMAS:
+            try:
+                linhas = buscar(base, caminho, acesso, versao, feed=feed,
+                                esquema=esquema, abrir=abrir)
+            except RotaAusente:
+                ausentes.append(versao)
+                break
+            except NaoAutorizado:
+                recusados.append(f"{versao}/{nome}")
+                continue
+            return linhas, versao, nome
+    detalhe = []
+    if ausentes:
+        detalhe.append(f"rota ausente em {', '.join(sorted(set(ausentes)))}")
+    if recusados:
+        detalhe.append(f"401 em {', '.join(recusados)}")
+    raise SystemExit(
+        f"{caminho}: " + "; ".join(detalhe) + ". "
+        "Um 401 em todos os cabeçalhos costuma ser app sem esse produto liberado "
+        "no ambiente escolhido: confira se o app está aprovado em produção ou "
+        "rode com --ambiente sandbox.")
 
 
 def coletar(ambiente: str, versao: str = "auto", *, abrir=urllib.request.urlopen) -> dict:
@@ -231,12 +267,13 @@ def coletar(ambiente: str, versao: str = "auto", *, abrir=urllib.request.urlopen
     itens: list[dict] = []
     por_fonte: dict[str, dict] = {}
     for caminho, tipo in FONTES:
-        cruas, respondeu = buscar_na_melhor_versao(base, caminho, acesso, versoes, abrir=abrir)
+        cruas, respondeu, cabecalho = buscar_na_melhor_versao(
+            base, caminho, acesso, versoes, abrir=abrir)
         convertidas = [x for x in (produto(l, tipo) for l in cruas) if x]
-        # Qual versão serviu cada rota fica no arquivo. Sem isso, uma migração
-        # silenciosa de formato apareceria como mudança de mercado.
+        # Qual versão e qual cabeçalho serviram cada rota ficam no arquivo. Sem
+        # isso, uma migração silenciosa apareceria como mudança de mercado.
         por_fonte[caminho] = {"linhas": len(cruas), "convertidas": len(convertidas),
-                              "versao": respondeu}
+                              "versao": respondeu, "cabecalho": cabecalho}
         itens.extend(convertidas)
     return {
         "source": "ANBIMA Feed, preços e índices, mercado secundário",
@@ -272,18 +309,10 @@ def coletar_fundos(ambiente: str, versao: str = "auto", *,
     versoes = VERSOES if versao == "auto" else (versao,)
     conteudo: dict[str, dict] = {}
     for rota in ROTAS_DE_FUNDOS:
-        ausentes = []
-        for tentativa in versoes:
-            try:
-                linhas = buscar(base, rota, acesso, tentativa, feed="fundos", abrir=abrir)
-            except RotaAusente:
-                ausentes.append(tentativa)
-                continue
-            conteudo[rota] = {"linhas": len(linhas), "versao": tentativa, "dados": linhas}
-            break
-        else:
-            conteudo[rota] = {"linhas": 0, "versao": None,
-                              "ausente_em": ausentes, "dados": []}
+        linhas, versao_ok, cabecalho = buscar_na_melhor_versao(
+            base, rota, acesso, versoes, feed="fundos", abrir=abrir)
+        conteudo[rota] = {"linhas": len(linhas), "versao": versao_ok,
+                          "cabecalho": cabecalho, "dados": linhas}
     return {
         "source": "ANBIMA Feed, fundos",
         "environment": ambiente,
@@ -296,6 +325,41 @@ def coletar_fundos(ambiente: str, versao: str = "auto", *,
     }
 
 
+def diagnostico(ambiente: str, *, abrir=urllib.request.urlopen) -> None:
+    """Uma chamada por combinação, só para saber o que a ANBIMA aceita.
+
+    Existe porque a documentação pública descreve o fluxo do token e não diz o
+    cabeçalho da chamada seguinte. Em vez de eu adivinhar e você rodar cego, o
+    programa tenta as combinações e imprime o código de cada uma. Nenhum dado é
+    gravado: isto responde "o que funciona", não "quanto rende".
+    """
+    base = BASES[ambiente]
+    print(f"ambiente {ambiente} · {base}")
+    try:
+        acesso = token(base, abrir=abrir)
+    except SystemExit as parou:
+        print(f"  token: {parou}")
+        return
+    print(f"  token: obtido, {len(acesso)} caracteres")
+    ident, _ = credencial()
+    for feed, rota in (("precos-indices", "debentures/mercado-secundario"),
+                       ("fundos", "fundos")):
+        for versao in VERSOES:
+            for nome, esquema in ESQUEMAS:
+                alvo = f"{feed}/{versao}/{rota}"
+                try:
+                    linhas = buscar(base, rota, acesso, versao, feed=feed,
+                                    esquema=esquema, abrir=abrir)
+                except RotaAusente:
+                    print(f"  {alvo} · {nome}: 404 rota ausente")
+                except NaoAutorizado:
+                    print(f"  {alvo} · {nome}: 401 recusado")
+                except SystemExit as parou:
+                    print(f"  {alvo} · {nome}: {parou}")
+                else:
+                    print(f"  {alvo} · {nome}: OK, {len(linhas)} linhas")
+
+
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     p.add_argument("--ambiente", choices=sorted(BASES),
@@ -305,7 +369,13 @@ def main() -> None:
                    help="auto tenta a mais nova e cai para a anterior no 404")
     p.add_argument("--produto", choices=("precos", "fundos"), default="precos",
                    help="precos escreve a grade de papéis; fundos, o cadastro")
+    p.add_argument("--diagnostico", action="store_true",
+                   help="testa as combinações de versão e cabeçalho sem gravar nada")
     args = p.parse_args()
+
+    if args.diagnostico:
+        diagnostico(args.ambiente)
+        return
 
     if args.produto == "fundos":
         documento = coletar_fundos(args.ambiente, args.versao)
@@ -313,8 +383,8 @@ def main() -> None:
                                   encoding="utf-8")
         print(f"{DESTINO_FUNDOS.relative_to(ROOT)} · ambiente {args.ambiente}")
         for rota, corpo in documento["rotas"].items():
-            onde = corpo["versao"] or f"ausente em {', '.join(corpo.get('ausente_em', []))}"
-            print(f"  {rota}: {corpo['linhas']} linhas · {onde}")
+            print(f"  {rota}: {corpo['linhas']} linhas · {corpo['versao']} "
+                  f"· cabeçalho {corpo['cabecalho']}")
         print("  não entra na régua de ofertas: retorno de fundo é realizado, "
               "não taxa contratada.")
         return
@@ -327,7 +397,7 @@ def main() -> None:
     print(f"{DESTINO.relative_to(ROOT)}: {len(itens)} papéis · ambiente {args.ambiente}")
     for caminho, contagem in documento["por_fonte"].items():
         print(f"  {caminho}: {contagem['convertidas']} de {contagem['linhas']} linhas "
-              f"· respondeu {contagem['versao']}")
+              f"· {contagem['versao']} · cabeçalho {contagem['cabecalho']}")
     datas = sorted({x["maturity"] for x in itens})
     if datas:
         print(f"  vencimentos de {datas[0]} a {datas[-1]}")

@@ -257,3 +257,37 @@ def test_fundo_nao_entra_na_regua_de_ofertas(ambiente) -> None:
     assert "products" not in documento
     assert "come-cotas" in documento["aviso"]
     assert coletor.DESTINO_FUNDOS != coletor.DESTINO
+
+
+def test_401_faz_trocar_de_cabecalho_antes_de_desistir(ambiente) -> None:
+    """A documentação não diz como mandar o token na chamada ao feed.
+
+    Então o programa tenta as candidatas. Aqui a primeira é recusada e a segunda
+    aceita, e o arquivo tem de registrar qual funcionou: sem isso, a próxima
+    pessoa adivinha de novo.
+    """
+    def abrir(pedido, timeout=None):
+        alvo = pedido.full_url
+        if "oauth/access-token" in alvo:
+            return RespostaFalsa(json.dumps({"access_token": "abc"}).encode("utf-8"))
+        if pedido.get_header("Access_token") is not None:
+            raise urllib.error.HTTPError(alvo, 401, "recusado", {}, io.BytesIO(b"{}"))
+        return RespostaFalsa(json.dumps([]).encode("utf-8"))
+
+    documento = coletor.coletar("sandbox", abrir=abrir)
+    assert all(c["cabecalho"] == "bearer" for c in documento["por_fonte"].values())
+
+
+def test_401_em_todos_os_cabecalhos_explica_o_que_conferir(ambiente) -> None:
+    def abrir(pedido, timeout=None):
+        alvo = pedido.full_url
+        if "oauth/access-token" in alvo:
+            return RespostaFalsa(json.dumps({"access_token": "abc"}).encode("utf-8"))
+        raise urllib.error.HTTPError(alvo, 401, "recusado", {}, io.BytesIO(b"{}"))
+
+    with pytest.raises(SystemExit) as caiu:
+        coletor.coletar("sandbox", abrir=abrir)
+    mensagem = str(caiu.value)
+    assert "401" in mensagem
+    # A saída precisa dizer o que conferir, e não só que deu errado.
+    assert "sandbox" in mensagem and "produção" in mensagem
