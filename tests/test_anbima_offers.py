@@ -187,7 +187,9 @@ def test_403_nao_faz_cair_de_versao_porque_nao_e_rota_ausente(ambiente) -> None:
 
     with pytest.raises(SystemExit) as caiu:
         coletor.coletar("sandbox", abrir=abrir)
-    assert "403" in str(caiu.value) and "Habilite" in str(caiu.value)
+    # A orientação depende do que o servidor disse; o que este teste exige é
+    # que o 403 pare na hora, e não que ele desça de versão.
+    assert "403" in str(caiu.value)
 
 
 def test_abrir_e_so_por_nome_para_engano_posicional_nao_alcancar_a_rede() -> None:
@@ -385,3 +387,46 @@ def test_censura_apaga_qualquer_valor_de_credencial(ambiente, monkeypatch, tmp_p
     for valor in (SEGREDO, "token-secreto", "um-id"):
         assert valor not in limpo, valor
     assert "erro com" in limpo
+
+
+def test_uma_rota_ausente_nao_derruba_as_que_responderam(ambiente, monkeypatch, tmp_path) -> None:
+    """Trocar resultado parcial por nenhum é pior que o parcial."""
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (tmp_path / "nada.env",))
+    monkeypatch.delenv("ANBIMA_ACCESS_TOKEN", raising=False)
+
+    def abrir(pedido, timeout=None):
+        alvo = pedido.full_url
+        if "oauth/access-token" in alvo:
+            return RespostaFalsa(json.dumps({"access_token": "abc"}).encode("utf-8"))
+        if "patrimonio-liquido-segmento" in alvo:
+            raise urllib.error.HTTPError(alvo, 404, "não existe", {}, io.BytesIO(b"{}"))
+        return RespostaFalsa(json.dumps([{"cnpj": "x"}]).encode("utf-8"))
+
+    documento = coletor.coletar_fundos("sandbox", abrir=abrir)
+    assert documento["rotas"]["fundos"]["linhas"] == 1
+    ausente = documento["rotas"]["fundos/patrimonio-liquido-segmento"]
+    # A ausência fica anotada: sem isso ela passaria por resposta vazia.
+    assert ausente["versao"] is None and "falhou" in ausente
+
+
+def test_403_de_ambiente_e_403_de_produto_orientam_coisas_diferentes(ambiente, monkeypatch, tmp_path) -> None:
+    """A ANBIMA distingue os dois, e a saída tem de distinguir também."""
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (tmp_path / "nada.env",))
+    monkeypatch.delenv("ANBIMA_ACCESS_TOKEN", raising=False)
+
+    def com_corpo(texto):
+        def abrir(pedido, timeout=None):
+            alvo = pedido.full_url
+            if "oauth/access-token" in alvo:
+                return RespostaFalsa(json.dumps({"access_token": "abc"}).encode("utf-8"))
+            raise urllib.error.HTTPError(alvo, 403, "proibido", {},
+                                         io.BytesIO(texto.encode("utf-8")))
+        return abrir
+
+    with pytest.raises(SystemExit) as ambiente_negado:
+        coletor.coletar("producao", abrir=com_corpo("Access denied for this environment."))
+    assert "não está aprovado neste ambiente" in str(ambiente_negado.value)
+
+    with pytest.raises(SystemExit) as produto_negado:
+        coletor.coletar("producao", abrir=com_corpo("product not subscribed"))
+    assert "habilite o produto" in str(produto_negado.value)

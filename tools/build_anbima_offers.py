@@ -81,14 +81,14 @@ VERSOES = ("v2", "v1")
 #: Como mandar o token na chamada ao feed. A documentação pública descreve o
 #: fluxo do token e para por aí: não diz o cabeçalho da chamada seguinte.
 #:
-#: Medido em 31/08/2026 contra a produção: com ``access_token`` a API respondeu
-#: 403, e com ``Authorization: Bearer`` respondeu 401. A diferença é o achado.
-#: 401 é "não sei quem é você"; 403 é "sei quem é você e este recurso não é
-#: seu". Ou seja, o cabeçalho certo é o primeiro, e o que falta é produto
-#: habilitado no app, que se resolve no portal e não aqui.
+#: Resolvido em 31/08/2026, e não por dedução: o sandbox devolveu 200 com mil
+#: linhas em fundos/v2 usando ``access_token``, e o gateway recusa o Bearer com
+#: uma frase que nomeia o cabeçalho que ele espera: "Access Token in the
+#: request, identified by HEADER access_token, is invalid".
 #:
-#: A ordem continua sendo tentativa, e não fé: se a ANBIMA mudar, o 401 faz
-#: cair para a outra forma e o arquivo grava qual respondeu.
+#: O Bearer fica como último recurso, e não por dúvida: ele custa zero enquanto
+#: o primeiro funciona, e se a ANBIMA mudar de gateway o 401 faz cair para ele
+#: em vez de o coletor parar. Qual respondeu continua indo para o arquivo.
 def _cabecalho_access_token(ident: str, acesso: str) -> dict:
     return {"client_id": ident, "access_token": acesso}
 
@@ -265,10 +265,18 @@ def buscar(base: str, caminho: str, acesso: str, versao: str = "v1", *,
             # 403 com este cabeçalho significa que a credencial foi reconhecida
             # e o recurso não está no plano do app. Não é problema de código.
             produto = "Fundos" if feed == "fundos" else "Preços e Índices"
+            # A ANBIMA distingue os dois casos, e a orientação muda com eles:
+            # "environment" é app não aprovado neste ambiente, o que se resolve
+            # pedindo acesso de produção; qualquer outra coisa é produto não
+            # habilitado, que se resolve marcando o produto no app.
+            de_ambiente = "environment" in explicacao.lower()
+            saida = (f"o app não está aprovado neste ambiente. Peça acesso de "
+                     f"produção à ANBIMA, ou rode com --ambiente sandbox."
+                     if de_ambiente else
+                     f"habilite o produto {produto} para este app no portal.")
             raise SystemExit(
-                f"{versao}/{caminho}: HTTP 403, credencial reconhecida e recurso "
-                f"não liberado. Habilite o produto {produto} para este app no "
-                f"portal da ANBIMA. A ANBIMA respondeu: {explicacao}") from None
+                f"{versao}/{caminho}: HTTP 403, credencial reconhecida e {saida} "
+                f"A ANBIMA respondeu: {explicacao}") from None
         raise SystemExit(f"{versao}/{caminho}: HTTP {erro.code}.") from None
     return corpo if isinstance(corpo, list) else corpo.get("content", [])
 
@@ -407,8 +415,17 @@ def coletar_fundos(ambiente: str, versao: str = "auto", *,
     versoes = VERSOES if versao == "auto" else (versao,)
     conteudo: dict[str, dict] = {}
     for rota in ROTAS_DE_FUNDOS:
-        linhas, versao_ok, cabecalho = buscar_na_melhor_versao(
-            base, rota, acesso, versoes, feed="fundos", abrir=abrir)
+        # Uma rota ausente não pode derrubar a coleta inteira: o conjunto de
+        # rotas varia com o plano, e perder o que respondeu por causa do que não
+        # respondeu troca um resultado parcial por nenhum. O que faltou fica
+        # anotado, para a ausência não passar por resposta vazia.
+        try:
+            linhas, versao_ok, cabecalho = buscar_na_melhor_versao(
+                base, rota, acesso, versoes, feed="fundos", abrir=abrir)
+        except SystemExit as parou:
+            conteudo[rota] = {"linhas": 0, "versao": None, "cabecalho": None,
+                              "falhou": str(parou), "dados": []}
+            continue
         conteudo[rota] = {"linhas": len(linhas), "versao": versao_ok,
                           "cabecalho": cabecalho, "dados": linhas}
     return {
@@ -482,8 +499,11 @@ def main() -> None:
                                   encoding="utf-8")
         print(f"{DESTINO_FUNDOS.relative_to(ROOT)} · ambiente {args.ambiente}")
         for rota, corpo in documento["rotas"].items():
-            print(f"  {rota}: {corpo['linhas']} linhas · {corpo['versao']} "
-                  f"· cabeçalho {corpo['cabecalho']}")
+            if corpo["versao"] is None:
+                print(f"  {rota}: não respondeu · {corpo.get('falhou', '')}")
+            else:
+                print(f"  {rota}: {corpo['linhas']} linhas · {corpo['versao']} "
+                      f"· cabeçalho {corpo['cabecalho']}")
         print("  não entra na régua de ofertas: retorno de fundo é realizado, "
               "não taxa contratada.")
         return
