@@ -35,20 +35,37 @@ import argparse
 import base64
 import json
 import os
+import subprocess
 import urllib.error
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
 DESTINO = ROOT / "data" / "ofertas_anbima.json"
 DESTINO_FUNDOS = ROOT / "data" / "fundos_anbima.json"
-#: Onde a credencial pode morar sem entrar no repositório. Os dois nomes já
-#: estão no .gitignore, e nenhum deles é lido de outro lugar do projeto.
-ARQUIVOS_DE_CREDENCIAL = (ROOT / ".env.anbima", ROOT / ".env.local")
+#: Onde procurar a credencial, na ordem. O primeiro fica **fora** do
+#: repositório, e é o recomendado: arquivo dentro do repo depende de o
+#: .gitignore ter efeito, e ele não tem efeito sobre arquivo já rastreado. Foi
+#: assim que uma chave real foi parar num repositório público: o nome estava no
+#: .gitignore, o arquivo foi commitado antes, e o ignore virou decoração.
+#:
+#: Os caminhos de dentro do repo continuam aceitos por conveniência, mas passam
+#: pela checagem de ``_versionado``, que recusa ler de arquivo rastreado.
+ARQUIVOS_DE_CREDENCIAL = (
+    Path.home() / ".benevente" / "anbima.env",
+    ROOT / ".env.anbima",
+    ROOT / ".env.local",
+)
 
 BASES = {
     "producao": "https://api.anbima.com.br",
-    "sandbox": "https://api-sandbox.anbima.com.br",
+    # O sandbox serve os feeds sob /mocks. Sem isso o caminho não existe, e foi
+    # o que o diagnóstico mostrou ao pedir o token direto na raiz e levar 404.
+    "sandbox": "https://api-sandbox.anbima.com.br/mocks",
 }
+#: O token sai sempre da produção. O sandbox não tem endpoint de token próprio:
+#: pedi-lo lá devolve 404, e essa foi a primeira coisa que o diagnóstico contou.
+#: A credencial é a mesma; o que muda é contra qual base o token é usado.
+BASE_DO_TOKEN = "https://api.anbima.com.br"
 #: O que buscar, e que tipo do catálogo cada família vira.
 FONTES = (
     ("debentures/mercado-secundario", "DEBENTURE"),
@@ -62,9 +79,16 @@ FONTES = (
 #: fixar v2 sem conferir seria publicar um chute com cara de fato.
 VERSOES = ("v2", "v1")
 #: Como mandar o token na chamada ao feed. A documentação pública descreve o
-#: fluxo do token e para por aí: não diz o cabeçalho da chamada seguinte. As
-#: duas formas abaixo são as candidatas, e um 401 faz tentar a próxima em vez de
-#: desistir. Qual funcionou fica gravado, e aí para de ser adivinhação.
+#: fluxo do token e para por aí: não diz o cabeçalho da chamada seguinte.
+#:
+#: Medido em 31/08/2026 contra a produção: com ``access_token`` a API respondeu
+#: 403, e com ``Authorization: Bearer`` respondeu 401. A diferença é o achado.
+#: 401 é "não sei quem é você"; 403 é "sei quem é você e este recurso não é
+#: seu". Ou seja, o cabeçalho certo é o primeiro, e o que falta é produto
+#: habilitado no app, que se resolve no portal e não aqui.
+#:
+#: A ordem continua sendo tentativa, e não fé: se a ANBIMA mudar, o 401 faz
+#: cair para a outra forma e o arquivo grava qual respondeu.
 def _cabecalho_access_token(ident: str, acesso: str) -> dict:
     return {"client_id": ident, "access_token": acesso}
 
@@ -93,6 +117,23 @@ class SemCredencial(RuntimeError):
     """O ambiente não tem as variáveis, e adivinhar não é opção."""
 
 
+def _versionado(caminho: Path) -> bool:
+    """O git rastreia este arquivo? Se rastreia, ler dele é convidar o vazamento.
+
+    Não basta o nome estar no .gitignore: o ignore não alcança arquivo que já
+    entrou no índice. A pergunta certa é feita ao próprio git.
+    """
+    try:
+        conferido = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", str(caminho)],
+            cwd=str(ROOT), capture_output=True, timeout=10)
+    except (OSError, subprocess.SubprocessError):
+        # Sem git por perto não dá para afirmar nada, e o programa não deve
+        # travar por isso. Quem decide o risco é quem escolheu o caminho.
+        return False
+    return conferido.returncode == 0
+
+
 def _do_arquivo() -> dict[str, str]:
     """Lê CHAVE=valor de um .env ignorado pelo git, se existir.
 
@@ -105,6 +146,13 @@ def _do_arquivo() -> dict[str, str]:
     for caminho in ARQUIVOS_DE_CREDENCIAL:
         if not caminho.exists():
             continue
+        if _versionado(caminho):
+            raise SemCredencial(
+                f"{caminho} está sob controle de versão. Um segredo aí vai para "
+                f"o repositório no próximo commit, e o .gitignore não impede "
+                f"isso em arquivo já rastreado. Rode: git rm --cached "
+                f"{caminho.name}, e prefira {ARQUIVOS_DE_CREDENCIAL[0]}, que "
+                f"fica fora do repositório.")
         for linha in caminho.read_text(encoding="utf-8").splitlines():
             linha = linha.strip()
             if not linha or linha.startswith("#") or "=" not in linha:
@@ -173,8 +221,13 @@ def buscar(base: str, caminho: str, acesso: str, versao: str = "v1", *,
         if erro.code == 401:
             raise NaoAutorizado(f"{versao}/{caminho}") from None
         if erro.code == 403:
+            # 403 com este cabeçalho significa que a credencial foi reconhecida
+            # e o recurso não está no plano do app. Não é problema de código.
+            produto = "Fundos" if feed == "fundos" else "Preços e Índices"
             raise SystemExit(
-                f"{versao}/{caminho}: HTTP 403. O app tem esse produto habilitado?") from None
+                f"{versao}/{caminho}: HTTP 403, credencial reconhecida e recurso "
+                f"não liberado. Habilite o produto {produto} para este app no "
+                f"portal da ANBIMA. Nenhuma mudança de código resolve isto.") from None
         raise SystemExit(f"{versao}/{caminho}: HTTP {erro.code}.") from None
     return corpo if isinstance(corpo, list) else corpo.get("content", [])
 
@@ -262,7 +315,7 @@ def buscar_na_melhor_versao(base: str, caminho: str, acesso: str, versoes, *,
 
 def coletar(ambiente: str, versao: str = "auto", *, abrir=urllib.request.urlopen) -> dict:
     base = BASES[ambiente]
-    acesso = token(base, abrir=abrir)
+    acesso = token(BASE_DO_TOKEN, abrir=abrir)
     versoes = VERSOES if versao == "auto" else (versao,)
     itens: list[dict] = []
     por_fonte: dict[str, dict] = {}
@@ -305,7 +358,7 @@ def coletar_fundos(ambiente: str, versao: str = "auto", *,
     escolha de quem compara e não um dado da ANBIMA.
     """
     base = BASES[ambiente]
-    acesso = token(base, abrir=abrir)
+    acesso = token(BASE_DO_TOKEN, abrir=abrir)
     versoes = VERSOES if versao == "auto" else (versao,)
     conteudo: dict[str, dict] = {}
     for rota in ROTAS_DE_FUNDOS:
@@ -336,7 +389,7 @@ def diagnostico(ambiente: str, *, abrir=urllib.request.urlopen) -> None:
     base = BASES[ambiente]
     print(f"ambiente {ambiente} · {base}")
     try:
-        acesso = token(base, abrir=abrir)
+        acesso = token(BASE_DO_TOKEN, abrir=abrir)
     except SystemExit as parou:
         print(f"  token: {parou}")
         return

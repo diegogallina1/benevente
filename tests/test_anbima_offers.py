@@ -52,7 +52,10 @@ def ambiente(monkeypatch):
     monkeypatch.setenv("ANBIMA_CLIENT_SECRET", SEGREDO)
 
 
-def test_sem_credencial_o_programa_para_em_vez_de_adivinhar(monkeypatch) -> None:
+def test_sem_credencial_o_programa_para_em_vez_de_adivinhar(monkeypatch, tmp_path) -> None:
+    # Aponta para um diretório vazio: numa máquina de quem desenvolve a
+    # credencial de verdade existe, e o teste não pode depender de ela faltar.
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (tmp_path / "nada.env",))
     monkeypatch.delenv("ANBIMA_CLIENT_ID", raising=False)
     monkeypatch.delenv("ANBIMA_CLIENT_SECRET", raising=False)
     with pytest.raises(coletor.SemCredencial):
@@ -184,7 +187,7 @@ def test_403_nao_faz_cair_de_versao_porque_nao_e_rota_ausente(ambiente) -> None:
 
     with pytest.raises(SystemExit) as caiu:
         coletor.coletar("sandbox", abrir=abrir)
-    assert "403" in str(caiu.value) and "habilitado" in str(caiu.value)
+    assert "403" in str(caiu.value) and "Habilite" in str(caiu.value)
 
 
 def test_abrir_e_so_por_nome_para_engano_posicional_nao_alcancar_a_rede() -> None:
@@ -223,11 +226,42 @@ def test_o_ambiente_vence_o_arquivo(monkeypatch, tmp_path) -> None:
     assert coletor.credencial() == ("do-ambiente", "y")
 
 
-def test_os_arquivos_de_credencial_estao_no_gitignore() -> None:
-    """De nada adianta o carregador apontar para um arquivo que o git versiona."""
-    ignore = (ROOT / ".gitignore").read_text(encoding="utf-8")
+def test_nenhum_arquivo_de_credencial_esta_rastreado_pelo_git() -> None:
+    """A pergunta certa é ao git, não ao .gitignore.
+
+    A versão anterior deste teste procurava o nome no .gitignore e passava. Um
+    arquivo com client_id e client_secret reais foi commitado e publicado num
+    repositório público com este teste verde, porque o .gitignore não alcança
+    arquivo que já entrou no índice. O proxy passava; a propriedade não.
+    """
+    import subprocess
+
     for caminho in coletor.ARQUIVOS_DE_CREDENCIAL:
-        assert caminho.name in ignore, caminho.name
+        rastreado = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", str(caminho)],
+            cwd=str(ROOT), capture_output=True)
+        assert rastreado.returncode != 0, f"{caminho} está sob controle de versão"
+
+
+def test_o_carregador_recusa_ler_de_arquivo_versionado(monkeypatch, tmp_path) -> None:
+    """Recusar é melhor que avisar: o próximo commit não pergunta."""
+    arquivo = tmp_path / "credencial.env"
+    arquivo.write_text("\n".join([
+        "ANBIMA_CLIENT_ID=x", "ANBIMA_CLIENT_SECRET=y",
+    ]) + "\n", encoding="utf-8")
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (arquivo,))
+    monkeypatch.setattr(coletor, "_versionado", lambda _: True)
+    monkeypatch.delenv("ANBIMA_CLIENT_ID", raising=False)
+    monkeypatch.delenv("ANBIMA_CLIENT_SECRET", raising=False)
+    with pytest.raises(coletor.SemCredencial) as caiu:
+        coletor.credencial()
+    assert "git rm --cached" in str(caiu.value)
+
+
+def test_o_primeiro_lugar_procurado_fica_fora_do_repositorio() -> None:
+    """Arquivo dentro do repo depende do .gitignore ter efeito. Fora, não."""
+    primeiro = coletor.ARQUIVOS_DE_CREDENCIAL[0]
+    assert ROOT not in primeiro.parents, primeiro
 
 
 def test_fundos_usa_o_proprio_feed_e_nao_o_de_precos(ambiente) -> None:
