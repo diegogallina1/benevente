@@ -325,3 +325,28 @@ def test_401_em_todos_os_cabecalhos_explica_o_que_conferir(ambiente) -> None:
     assert "401" in mensagem
     # A saída precisa dizer o que conferir, e não só que deu errado.
     assert "sandbox" in mensagem and "produção" in mensagem
+
+
+def test_token_emitido_pelo_portal_dispensa_a_troca_oauth(monkeypatch, tmp_path) -> None:
+    """Parte das contas recebe o token pronto; trocar de novo só atrapalha."""
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (tmp_path / "nada.env",))
+    monkeypatch.setenv("ANBIMA_ACCESS_TOKEN", "token-do-portal")
+
+    def abrir(pedido, timeout=None):
+        assert "oauth/access-token" not in pedido.full_url, "não devia trocar nada"
+        return RespostaFalsa(b"[]")
+
+    assert coletor.token("https://exemplo", abrir=abrir) == "token-do-portal"
+
+
+def test_sem_token_pronto_o_fluxo_oauth_continua_valendo(ambiente, monkeypatch, tmp_path) -> None:
+    monkeypatch.setattr(coletor, "ARQUIVOS_DE_CREDENCIAL", (tmp_path / "nada.env",))
+    monkeypatch.delenv("ANBIMA_ACCESS_TOKEN", raising=False)
+    chamou = []
+
+    def abrir(pedido, timeout=None):
+        chamou.append(pedido.full_url)
+        return RespostaFalsa(json.dumps({"access_token": "trocado"}).encode("utf-8"))
+
+    assert coletor.token("https://exemplo", abrir=abrir) == "trocado"
+    assert any("oauth/access-token" in x for x in chamou)

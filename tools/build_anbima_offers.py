@@ -181,8 +181,24 @@ def credencial() -> tuple[str, str]:
     return ident, segredo
 
 
+def token_pronto() -> str:
+    """Token já emitido pelo portal, se houver.
+
+    Parte das contas da ANBIMA recebe um access token direto no portal, em vez
+    de trocar client_id e secret por um. Nesse caso a troca é desnecessária, e
+    insistir nela só produz um token que o feed não aceita. Se a variável
+    existir, ela vence: quem tem o token emitido sabe mais que este programa.
+    """
+    arquivo = _do_arquivo()
+    return (os.environ.get("ANBIMA_ACCESS_TOKEN")
+            or arquivo.get("ANBIMA_ACCESS_TOKEN", "")).strip()
+
+
 def token(base: str, *, abrir=urllib.request.urlopen) -> str:
-    """Troca a credencial por um token de uma hora, pelo fluxo documentado."""
+    """O token do portal, se houver; senão, a troca pelo fluxo documentado."""
+    emitido = token_pronto()
+    if emitido:
+        return emitido
     ident, segredo = credencial()
     basico = base64.b64encode(f"{ident}:{segredo}".encode("utf-8")).decode("ascii")
     pedido = urllib.request.Request(
@@ -390,10 +406,11 @@ def diagnostico(ambiente: str, *, abrir=urllib.request.urlopen) -> None:
     print(f"ambiente {ambiente} · {base}")
     try:
         acesso = token(BASE_DO_TOKEN, abrir=abrir)
-    except SystemExit as parou:
+    except (SystemExit, SemCredencial) as parou:
         print(f"  token: {parou}")
         return
-    print(f"  token: obtido, {len(acesso)} caracteres")
+    origem = "do portal (ANBIMA_ACCESS_TOKEN)" if token_pronto() else "trocado por client_credentials"
+    print(f"  token: {origem}, {len(acesso)} caracteres")
     ident, _ = credencial()
     for feed, rota in (("precos-indices", "debentures/mercado-secundario"),
                        ("fundos", "fundos")):
