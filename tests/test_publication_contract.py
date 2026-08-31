@@ -217,3 +217,52 @@ def test_o_app_pede_so_fontes_que_ele_carrega() -> None:
         assert declarada, nome
         for familia in re.split(r"\s+e\s+", declarada.group(1)):
             assert familia.strip() in carregadas, (familia, sorted(carregadas))
+
+
+def test_sem_trava_a_pagina_tem_de_se_declarar_prototipo_sintetico() -> None:
+    """O que torna a trava desligável é a carteira não ser de ninguém.
+
+    A trava nunca foi segurança: a comparação roda no navegador e qualquer
+    pessoa que abra o código passa. Ela mantinha o visitante casual fora de uma
+    tela inacabada. Desligada, o que resta impedindo um mal-entendido é a página
+    dizer o que é, e isso passa a ser obrigação verificada e não hábito.
+
+    Se um dia a trava voltar, este teste não atrapalha: ele só exige o que a
+    página já deveria dizer de qualquer jeito.
+    """
+    import sys
+    sys.path.insert(0, str(ROOT / "tools"))
+    from build_mapa_prototype import TRAVA_LIGADA
+
+    pagina = (ROOT / "web" / "app.html").read_text(encoding="utf-8")
+    script = (ROOT / "web" / "plano.js").read_text(encoding="utf-8")
+
+    assert 'name="robots" content="noindex, nofollow"' in pagina
+    assert "protótipo" in pagina.lower()
+    assert "sintética" in pagina.lower()
+    assert "Nenhuma ordem é transmitida" in pagina
+
+    if TRAVA_LIGADA:
+        assert 'id="senha"' in pagina and 'id="entrar"' in pagina
+        assert "__SHA__" not in script and "sha256" in script.lower()
+    else:
+        # Campo de senha sem o código que o lê é pior que os dois estados: parece
+        # quebrado e convida alguém a digitar uma senha num campo inerte.
+        assert 'id="senha"' not in pagina and 'id="entrar"' not in pagina
+        assert "Senha de acesso" not in pagina
+
+
+def test_a_trava_desligada_nao_leva_dado_real_junto() -> None:
+    """Sem trava, a única defesa é o dado ser sintético. Então ele tem de ser."""
+    import json
+    import re
+
+    fonte = (ROOT / "web" / "plano.js").read_text(encoding="utf-8")
+    dados = json.JSONDecoder().raw_decode(fonte[fonte.index("{", fonte.index("DADOS")):])[0]
+    bruto = json.dumps(dados, ensure_ascii=False)
+    # CPF, e-mail e telefone não têm o que fazer num payload sintético, e se
+    # aparecerem é porque alguém apontou a tela para dado de gente.
+    assert not re.search(r"\d{3}\.\d{3}\.\d{3}-\d{2}", bruto), "CPF no payload"
+    assert not re.search(r"[\w.+-]+@[\w-]+\.[\w.]+", bruto), "e-mail no payload"
+    # E a tela não pode estar carregando credencial nenhuma junto do payload.
+    assert dados["b3"]["consent"]["credencial_armazenada"] is False

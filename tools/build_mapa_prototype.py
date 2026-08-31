@@ -1658,6 +1658,16 @@ SITE_JS = ROOT / "web" / "plano.js"
 #: para o visitante casual não cair numa tela inacabada, e nada além disso.
 SENHA_SHA256 = "4c073be62dd2eeca3d94f45932aef78e01d815664e90d0144b7ed10978f8b801"
 
+#: Desligada em 31/08/2026, a pedido, para testar sem atrito. O código dela fica
+#: aqui inteiro: religar é trocar esta linha para ``True``.
+#:
+#: O que a deixa desligável é a carteira ser sintética. Ela nunca protegeu dado
+#: de ninguém, e não é o que vai proteger: antes de qualquer dado real de
+#: cliente entrar nesta tela, o que precisa existir é autenticação no servidor,
+#: não uma comparação de hash no navegador. Um teste recusa a combinação de
+#: trava desligada com página que não se declara protótipo de dado sintético.
+TRAVA_LIGADA = False
+
 CABECALHO_SITE = """<!doctype html>
 <html lang="pt-BR">
 <head>
@@ -1806,7 +1816,11 @@ def main() -> None:
     for meta in ('<meta charset="utf-8">\n',
                  '<meta name="viewport" content="width=device-width, initial-scale=1">\n'):
         marcacao = marcacao.replace(meta, "", 1)
-    corpo = marcacao.replace('<div class="wrap">', TRAVA + '<div class="wrap hidden" id="app">', 1)
+    # A marcação da trava sai junto com o script dela. Deixar o campo de senha
+    # na página sem o código que o lê seria o pior dos dois estados: parece
+    # quebrado e ainda convida alguém a digitar uma senha num campo inerte.
+    corpo = (marcacao.replace('<div class="wrap">', TRAVA + '<div class="wrap hidden" id="app">', 1)
+             if TRAVA_LIGADA else marcacao)
     corte = corpo.index("</style>") + len("</style>")
     SITE_HTML.write_text(
         CABECALHO_SITE + '<link rel="stylesheet" href="./tokens.css">\n'
@@ -1816,7 +1830,8 @@ def main() -> None:
     SITE_JS.write_text(
         "// Gerado por tools/build_mapa_prototype.py. Não edite à mão.\n"
         "// Separado do documento porque a CSP do site é script-src 'self'.\n"
-        + _TRAVA_JS.replace("__SHA__", SENHA_SHA256) + script, encoding="utf-8")
+        + (_TRAVA_JS.replace("__SHA__", SENHA_SHA256) if TRAVA_LIGADA else "")
+        + script, encoding="utf-8")
 
     print(f"{OUT.relative_to(ROOT)}: {OUT.stat().st_size / 1024:.1f} KB · "
           f"{len(magro['profiles'])} perfis, "
