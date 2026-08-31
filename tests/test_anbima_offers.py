@@ -564,3 +564,26 @@ def test_primeira_coleta_vazia_grava_porque_nao_ha_o_que_perder(tmp_path) -> Non
     destino = tmp_path / "fundos.json"
     coletor.gravar(destino, {"environment": "sandbox", "rotas": {"a": {"linhas": 0}}})
     assert destino.exists()
+
+
+def test_dado_de_sandbox_nao_pode_ser_commitado_como_se_fosse_real() -> None:
+    """Mock versionado é a próxima confusão esperando acontecer.
+
+    O sandbox da ANBIMA serve dados fictícios com o mesmo formato dos reais. Um
+    arquivo desses no repositório, com nome de artefato de dados, vira dado real
+    aos olhos de quem chegar depois, inclusive de quem o escreveu. Ele pode
+    existir na máquina; o que não pode é entrar no controle de versão.
+    """
+    import subprocess
+
+    for nome in ("fundos_anbima.json", "ofertas_anbima.json"):
+        caminho = ROOT / "data" / nome
+        rastreado = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", str(caminho)],
+            cwd=str(ROOT), capture_output=True).returncode == 0
+        if not (rastreado and caminho.exists()):
+            continue
+        documento = json.loads(caminho.read_text(encoding="utf-8"))
+        assert documento.get("environment") != "sandbox", (
+            f"{nome} está versionado com dados de sandbox, que são fictícios. "
+            f"Colha em produção ou tire o arquivo do controle de versão.")

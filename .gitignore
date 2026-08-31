@@ -50,3 +50,9 @@ b3_ca*
 # depois de removido do topo.
 anbima_*.json
 .env.anbima
+
+# Coleta do sandbox da ANBIMA: dado fictício com o formato do real.
+# Pode existir na máquina, não pode virar artefato do repositório.
+# Um teste recusa versionar coleta marcada como sandbox.
+data/fundos_anbima.json
+data/ofertas_anbima.json
