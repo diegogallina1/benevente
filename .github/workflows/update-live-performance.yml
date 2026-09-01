@@ -55,7 +55,11 @@ jobs:
         shell: bash
         run: |
           tracked="web/live_performance.json web/live_profiles_2026.json web/forecast_2026.json web/mudancas_2026.json artifacts/notification_queue/queue.json"
-          for perfil in conservador equilibrado arrojado; do
+          # Os perfis saem da politica, nao de uma lista escrita aqui. Escrita a
+          # mao, esta ficou com tres quando a escada ganhou o quarto degrau: o
+          # passo anterior gerava os quatro arquivos e este publicava tres, e o
+          # ultraconservador congelava no site sem nenhum erro aparecer.
+          for perfil in $(python -c "import sys; sys.path.insert(0, 'tools'); from politica import escada; print(' '.join(escada()))"); do
             tracked="$tracked web/live_performance_${perfil}.json web/current_decision_2026_${perfil}.json"
           done
           if git diff --quiet -- $tracked; then

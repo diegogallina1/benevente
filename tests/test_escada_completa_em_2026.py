@@ -93,10 +93,20 @@ def test_a_serie_reconstruida_nao_se_passa_por_acompanhada() -> None:
 
 def test_nenhum_gerador_carrega_a_propria_copia_da_escada() -> None:
     """A lista escrita à mão é o defeito, e ele reaparece por cópia."""
-    copiada = re.compile(r'"conservador"\s*,\s*"equilibrado"\s*,\s*"arrojado"')
+    # Duas formas da mesma cópia: a lista de literais do Python e do JavaScript,
+    # e a sequência solta de um laço de shell. A segunda escapou da primeira
+    # varredura e ficou meses publicando três perfis de quatro.
+    copiada = re.compile(r'"conservador"\s*,\s*"equilibrado"\s*,\s*"arrojado"'
+                         r'|conservador\s+equilibrado\s+arrojado')
+    alvos = [*(ROOT / "tools").glob("*.py"), *WEB.glob("*.js"),
+             *(ROOT / ".github" / "workflows").glob("*.yml")]
     culpados = []
-    for caminho in [*(ROOT / "tools").glob("*.py"), *WEB.glob("*.js")]:
-        if copiada.search(caminho.read_text(encoding="utf-8")):
+    for caminho in alvos:
+        texto = caminho.read_text(encoding="utf-8")
+        # A linha que explica o defeito pode nomear os três sem cometê-lo.
+        texto = "\n".join(
+            linha for linha in texto.splitlines() if not linha.strip().startswith("#"))
+        if copiada.search(texto):
             culpados.append(str(caminho.relative_to(ROOT)))
     assert not culpados, f"escada copiada em {culpados}: leia de tools/politica.py"
 
