@@ -64,6 +64,10 @@ jobs:
           fi
           git config user.name "diegogallina1"
           git config user.email "214411949+diegogallina1@users.noreply.github.com"
-          git add $tracked
+          # -f porque o .gitignore descarta artifacts/ inteiro, e um diretorio
+          # ignorado nao e percorrido nem para os arquivos ja rastreados dentro
+          # dele: sem isso o git recusa o pathspec da fila de notificacoes e o
+          # passo morre antes do commit. Nos caminhos de web/ o -f e inocuo.
+          git add -f $tracked
           git commit -m "Atualiza acompanhamento corrente de 2026 [skip ci]"
           git push
