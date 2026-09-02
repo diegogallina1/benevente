@@ -96,3 +96,53 @@ def test_unchanged_cvm_archive_is_not_downloaded(monkeypatch) -> None:
     assert events == []
     assert fingerprint == "2026-08-17T11:01:00"
     assert cached is True
+
+
+def test_tickers_are_the_union_of_every_published_profile(tmp_path: Path) -> None:
+    def live(*tickers: str) -> str:
+        allocation = [{"ticker": ticker, "weight": 0.1} for ticker in (*tickers, "CDI")]
+        return json.dumps({"portfolio_definitions": {"benevente2": {"target_allocation": allocation}}})
+
+    (tmp_path / "live_performance_arrojado.json").write_text(live("VIVA3", "CURY3"), encoding="utf-8")
+    (tmp_path / "live_performance_conservador.json").write_text(live("CURY3", "PLPL3", "IVVB11"), encoding="utf-8")
+    (tmp_path / "live_performance.json").write_text(live("ZZZZ3"), encoding="utf-8")  # legado, ignorado
+    assert MODULE.load_portfolio_tickers(tmp_path) == ("VIVA3", "CURY3", "PLPL3", "IVVB11")
+
+
+def test_published_radar_watches_every_profile() -> None:
+    published = json.loads((ROOT / "web" / "event_radar.json").read_text(encoding="utf-8"))
+    assert set(MODULE.load_portfolio_tickers(ROOT / "web")) <= set(published["portfolio_tickers"])
+
+
+def test_nothing_collected_is_not_reported_as_normal() -> None:
+    now = datetime(2026, 8, 23, 12, 10, tzinfo=MODULE.BRT)
+    failed = [{"source": "CVM IPE", "status": "indisponivel", "items": 0}, {"source": "Google", "status": "indisponivel", "items": 0}]
+    result = MODULE.build_radar({}, now, [], failed)
+    assert result["current_state"] == "sem_coleta"
+    assert result["consolidations"][0]["collection"] == "sem_coleta"
+    partial = MODULE.build_radar({}, now, [], [failed[0], {"source": "Google", "status": "ok", "items": 0}])
+    assert partial["current_state"] == "normal"
+    assert partial["consolidations"][0]["collection"] == "parcial"
+    assert partial["consolidations"][0]["sources_ok"] == "1/2"
+
+
+def test_cvm_rows_left_out_are_counted_not_swallowed() -> None:
+    cutoff = datetime(2026, 8, 20, tzinfo=MODULE.BRT)
+    rows = [
+        {"Categoria": "Fato Relevante", "Data_Entrega": "2026-08-22 10:00:00", "Nome_Companhia": "ACME", "Assunto": "Aquisição"},
+        {"Categoria": "Fato Relevante", "Data_Entrega": "2026-08-01 10:00:00", "Nome_Companhia": "ACME", "Assunto": "Antigo"},
+        {"Categoria": "Fato Relevante", "Data_Entrega": "sem data", "Nome_Companhia": "ACME", "Assunto": "Ilegível"},
+        {"Categoria": "Ata de Assembleia", "Data_Entrega": "2026-08-22 10:00:00", "Nome_Companhia": "ACME", "Assunto": "AGO"},
+    ]
+    counters: dict = {}
+    events = MODULE.read_cvm_rows(rows, cutoff, counters)
+    assert len(events) == 1
+    assert counters["rows_read"] == 4
+    assert counters["rows_kept"] == 1
+    assert counters["rows_before_window"] == 1
+    assert counters["rows_without_date"] == 1
+    assert counters["rows_other_category"] == 1
+    assert counters["columns_recognised"] is True
+    renamed: dict = {}
+    assert MODULE.read_cvm_rows([{"Tipo_Documento": "Fato Relevante", "Data": "2026-08-22"}], cutoff, renamed) == []
+    assert renamed["columns_recognised"] is False

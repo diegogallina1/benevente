@@ -3,7 +3,7 @@
   if (!host) return;
   const escape = value => String(value ?? "").replace(/[&<>\"']/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "\"": "&quot;", "'": "&#39;" }[character]));
   const date = value => new Date(value).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", dateStyle: "short", timeStyle: "short" });
-  const stateLabel = { normal: "Normal", atencao: "Atenção", alerta: "Alerta", critico: "Crítico" };
+  const stateLabel = { normal: "Normal", atencao: "Atenção", alerta: "Alerta", critico: "Crítico", sem_coleta: "Sem coleta" };
   try {
     const response = await fetch("./event_radar.json", { cache: "no-store" });
     if (!response.ok) throw new Error("indisponível");

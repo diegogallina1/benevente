@@ -127,7 +127,13 @@ def _current_cvm_resource(year: int) -> dict[str, Any]:
     return resources[0]
 
 
-def fetch_cvm_ipe(year: int, cutoff: datetime, known_fingerprint: str = "") -> tuple[list[dict[str, Any]], str, bool]:
+def fetch_cvm_ipe(
+    year: int, cutoff: datetime, known_fingerprint: str = "", counters: dict[str, Any] | None = None,
+) -> tuple[list[dict[str, Any]], str, bool]:
+    """`counters`, quando passado, recebe quantas linhas o arquivo tinha e por que cada uma ficou de fora.
+
+    Sem isso um arquivo com colunas renomeadas ou datas ilegíveis vira "ok, 0 itens", indistinguível de um dia calmo.
+    """
     resource = _current_cvm_resource(year)
     fingerprint = resource.get("last_modified") or resource.get("hash") or resource["url"]
     if known_fingerprint and fingerprint == known_fingerprint:
@@ -139,14 +145,31 @@ def fetch_cvm_ipe(year: int, cutoff: datetime, known_fingerprint: str = "") -> t
     raw = archive.read(csv_names[0])
     decoded = raw.decode("latin-1")
     reader = csv.DictReader(io.StringIO(decoded), delimiter=";")
+    events = read_cvm_rows(reader, cutoff, counters)
+    return events, fingerprint, False
+
+
+def read_cvm_rows(reader: Iterable[dict[str, Any]], cutoff: datetime, counters: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+    tally: dict[str, Any] = {"rows_read": 0, "rows_other_category": 0, "rows_without_date": 0, "rows_before_window": 0, "rows_kept": 0}
+    categories: dict[str, int] = {}
+    columns_seen = False
     events = []
     for row in reader:
+        tally["rows_read"] += 1
+        columns_seen = columns_seen or any(key in row for key in ("Categoria", "Categoria_Doc"))
         category = (row.get("Categoria") or row.get("Categoria_Doc") or "").strip()
+        categories[category] = categories.get(category, 0) + 1
         if category not in RELEVANT_CVM_CATEGORIES:
+            tally["rows_other_category"] += 1
             continue
         published = _parse_date(row.get("Data_Entrega") or row.get("DataEntrega"))
-        if published is None or published.astimezone(timezone.utc) < cutoff.astimezone(timezone.utc):
+        if published is None:
+            tally["rows_without_date"] += 1
             continue
+        if published.astimezone(timezone.utc) < cutoff.astimezone(timezone.utc):
+            tally["rows_before_window"] += 1
+            continue
+        tally["rows_kept"] += 1
         company = _clean(row.get("Nome_Companhia") or row.get("NomeCompanhia") or "Companhia aberta")
         subject = _clean(row.get("Assunto") or row.get("Tipo") or category)
         title = f"{company}: {category} — {subject}" if subject and subject != category else f"{company}: {category}"
@@ -164,7 +187,11 @@ def fetch_cvm_ipe(year: int, cutoff: datetime, known_fingerprint: str = "") -> t
             "category": category,
             "company": company,
         })
-    return events, fingerprint, False
+    if counters is not None:
+        counters.update(tally)
+        counters["columns_recognised"] = columns_seen or tally["rows_read"] == 0
+        counters["categories_seen"] = dict(sorted(categories.items(), key=lambda pair: -pair[1])[:8])
+    return events
 
 
 def deterministic_classification(event: dict[str, Any], portfolio_tickers: Iterable[str]) -> dict[str, Any]:
@@ -314,11 +341,15 @@ def build_radar(
     ordered_events = sorted(old_events.values(), key=lambda item: item.get("published_at", ""), reverse=True)[:300]
     latest = sorted(new_events, key=lambda item: (item["classification"]["materiality"], item["published_at"]), reverse=True)
     top_score = max((item["classification"]["materiality"] for item in latest), default=0)
+    sources_ok = sum(1 for item in source_status if item.get("status") == "ok")
+    # "normal" só quando alguém de fato olhou: sem nenhuma fonte respondendo, o estado é "sem_coleta".
+    collection = "completa" if source_status and sources_ok == len(source_status) else "parcial" if sources_ok else "sem_coleta"
     consolidation = {
         "run_at": _iso(now), "window_hours": 12, "new_items": len(new_events),
         "items_by_state": {state: sum(item["state"] == state for item in new_events) for state in ("critico", "alerta", "atencao", "normal")},
-        "source_status": source_status, "classifier_status": classifier_status,
-        "classifier_error": classifier_error, "state": _state(top_score),
+        "source_status": source_status, "sources_ok": f"{sources_ok}/{len(source_status)}", "collection": collection,
+        "classifier_status": classifier_status,
+        "classifier_error": classifier_error, "state": "sem_coleta" if collection == "sem_coleta" else _state(top_score),
     }
     consolidations = [consolidation, *previous.get("consolidations", [])][:60]
     document = {
@@ -347,14 +378,18 @@ def collect(
     previous_sources = {item.get("source"): item for item in previous_source_status}
     previous_cvm = previous_sources.get("CVM IPE", {})
     try:
+        counters: dict[str, Any] = {}
         cvm_events, fingerprint, cached = fetch_cvm_ipe(
             now.year, cutoff,
             known_fingerprint=previous_cvm.get("fingerprint", "") if previous_cvm.get("status") == "ok" else "",
+            counters=counters,
         )
         events.extend(cvm_events)
+        unreadable = bool(counters) and counters["rows_read"] > 0 and not counters["columns_recognised"]
         statuses.append({
-            "source": "CVM IPE", "status": "ok", "items": len(cvm_events),
+            "source": "CVM IPE", "status": "formato_desconhecido" if unreadable else "ok", "items": len(cvm_events),
             "fingerprint": fingerprint, "download": "dispensado_sem_atualizacao" if cached else "atualizado",
+            "rows": counters or previous_cvm.get("rows", {}),
         })
     except Exception as error:
         statuses.append({"source": "CVM IPE", "status": "indisponivel", "items": 0, "detail": f"{type(error).__name__}: {error}"[:240]})
@@ -369,14 +404,22 @@ def collect(
     return list({item["id"]: item for item in events}.values()), statuses
 
 
+def _tickers_in(path: Path) -> list[str]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    definitions = data.get("portfolio_definitions", {})
+    allocation = (definitions.get("benevente2") or definitions.get("benevente1") or {}).get("target_allocation", [])
+    return [item["ticker"] for item in allocation if item.get("ticker") and item["ticker"] != "CDI"]
+
+
 def load_portfolio_tickers(web_directory: Path) -> tuple[str, ...]:
-    live_path = web_directory / "live_performance.json"
-    if not live_path.exists():
-        return ("VIVA3", "CURY3", "CMIN3", "BBSE3", "LEVE3")
-    data = json.loads(live_path.read_text(encoding="utf-8"))
-    allocation = data.get("portfolio_definitions", {}).get("benevente1", {}).get("target_allocation", [])
-    tickers = tuple(item["ticker"] for item in allocation if item.get("ticker") and item["ticker"] != "CDI")
-    return tickers or ("VIVA3", "CURY3", "CMIN3", "BBSE3", "LEVE3")
+    """União dos tickers de todos os perfis publicados; o arquivo legado só entra quando não há perfil."""
+    profile_files = sorted(web_directory.glob("live_performance_*.json"))
+    sources = profile_files or [web_directory / "live_performance.json"]
+    tickers: dict[str, None] = {}
+    for path in sources:
+        if path.exists():
+            tickers.update(dict.fromkeys(_tickers_in(path)))
+    return tuple(tickers) or ("VIVA3", "CURY3", "CMIN3", "BBSE3", "LEVE3")
 
 
 def update(output: Path, now: datetime | None = None) -> dict[str, Any]:
