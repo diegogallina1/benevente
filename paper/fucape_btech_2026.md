@@ -84,7 +84,7 @@ Sem expor o código da aplicação, a lógica é verificável: o sistema elimina
 
 ### 3.4 A política vigente: três perfis declarados
 
-Desde agosto de 2026 o sistema opera sob uma política declarada. Em lugar de buscar a melhor configuração a cada ano, ela fixa três, congeladas antes da avaliação prospectiva: o conservador aloca 35% do patrimônio em renda variável entre doze emissores; o equilibrado, 55% entre oito; o arrojado, 75% entre cinco. Em todos, um quinto do orçamento de renda variável fica no IVVB11, fundo na B3 que replica o S&P 500 em reais, definido pela política e não pelo escore; o saldo fica em caixa. A camada de proteção intranual atua apenas sobre a parcela doméstica, porque o sinal de estresse é calculado sobre o Ibovespa. O registro traz os hashes dos insumos, o assinante, o critério de falseamento e o início da amostra confirmatória, e nenhum parâmetro muda sem nova versão. A quarta versão acrescentou um degrau de 4%, fora desta avaliação: a série de 2026 dele é reconstrução, não acompanhamento. As Seções 4.1.1 e 4.1.2 documentam as duas revisões; a 5.1 traz o diagnóstico.
+Desde agosto de 2026 o sistema opera sob uma política declarada. Em lugar de buscar a melhor configuração a cada ano, ela fixa três, congeladas antes da avaliação prospectiva: o conservador aloca 35% do patrimônio em renda variável entre doze emissores; o equilibrado, 55% entre oito; o arrojado, 75% entre cinco. Em todos, um quinto do orçamento de renda variável fica no IVVB11, fundo na B3 que replica o S&P 500 em reais, definido pela política e não pelo escore; o saldo fica em caixa. A camada de proteção intranual atua apenas sobre a parcela doméstica, porque o sinal de estresse é calculado sobre o Ibovespa. O registro traz os hashes dos insumos, o assinante, o critério de falseamento e o início da amostra confirmatória, e nenhum parâmetro muda sem nova versão. A quarta versão acrescentou um degrau de 4%, fora desta avaliação. As séries de 2026 dos quatro perfis são reconstruções de agosto, com a política aplicada retroativamente a 2 de janeiro com os dados de então; nenhuma foi acompanhada desde janeiro. As Seções 4.1.1 e 4.1.2 documentam as duas revisões; a 5.1 traz o diagnóstico.
 
 ### 3.5 Por que a decisão é anual
 
@@ -150,7 +150,7 @@ Medimos também o prêmio de retrospectiva: a diferença entre o retorno anualiz
 
 ### 4.4 Auditoria da qualidade dos dados e sensibilidade
 
-A reconstrução de retorno total combina 497 séries; em 139 delas a distribuição de proventos precisou ser imputada por falta de cobertura do provedor. Como uma série problemática pode nunca entrar na carteira, a auditoria cruzou por ano a política, os pesos e o tipo de reconstrução, e mede a parcela da exposição a ações que dependeu de provento imputado. Três testes de sensibilidade complementam a inspeção: a reamostragem conjunta dos vetores anuais, com 100 mil amostras e semente registrada, que mede estabilidade interna sem criar crises novas; perdas hipotéticas aplicadas apenas à parcela investida em séries imputadas; e a remoção dessas séries, com o orçamento delas no caixa e a contribuição medida de cada posição.
+A reconstrução de retorno total combina 497 séries; em 139 delas a distribuição de proventos precisou ser imputada por falta de cobertura do provedor. A auditoria cruzou por ano a política, os pesos e o tipo de reconstrução, e mede a parcela da exposição a ações que dependeu de provento imputado. Três testes de sensibilidade complementam a inspeção: a reamostragem conjunta dos vetores anuais, com 100 mil amostras e semente registrada, que mede estabilidade interna sem criar crises novas; perdas hipotéticas aplicadas apenas à parcela investida em séries imputadas; e a remoção dessas séries, com o orçamento delas no caixa e a contribuição medida de cada posição.
 
 ### 4.5 Registro prospectivo
 
@@ -260,7 +260,7 @@ Nenhuma cadência mais rápida superou a anual: pareada por ano-calendário e ap
 
 Modelo de linguagem como fonte de retorno. Este é o teste que mais interessa à governança do produto, e está detalhado a seguir.
 
-Proteção intranual concebida depois da Covid-19, com parâmetros escolhidos apenas em 2015–2018. Fora dessa janela, em 2019–2025, a diferença anual de retorno não foi detectável (p = 0,964): o efeito medido é de queda, não de retorno. No histórico completo a queda máxima recuou de 47,8% para 28,7% e o retorno anualizado subiu de 17,86% para 18,45%, e a Tabela 2 mantém as duas séries separadas para que a camada não se confunda com a seleção. Para R$ 100 mil, o imposto incremental das reduções foi de R$ 2.195, levando o valor terminal de R$ 643.774 para R$ 634.531. A camada integra a política declarada da Seção 3.4.
+Proteção intranual concebida depois da Covid-19, com parâmetros escolhidos apenas em 2015–2018. Fora dessa janela, em 2019–2025, a diferença anual de retorno não foi detectável (p = 0,964): o efeito medido é de queda, não de retorno. No histórico completo a queda máxima recuou de 47,8% para 28,7% e o retorno anualizado subiu de 17,86% para 18,45%, e a Tabela 2 mantém as duas séries separadas. Para R$ 100 mil, o imposto incremental das reduções foi de R$ 2.195, levando o valor terminal de R$ 643.774 para R$ 634.531. A camada integra a política declarada da Seção 3.4.
 
 ### 5.6 O experimento com modelo de linguagem: três resultados nulos
 

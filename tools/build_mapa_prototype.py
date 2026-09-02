@@ -1071,7 +1071,7 @@ function regua(perfil) {
         "não se distingue de sorte. Isto mede a régua, não promete resultado."));
   host.append(grafico(c.anos));
   const chaves = el("div", "chaves",
-    "<span><i style='background:var(--line-strong)'></i>faixa projetada em janeiro</span>" +
+    "<span><i style='background:var(--line-strong)'></i>faixa projetada com dados anteriores ao ano</span>" +
     "<span><i style='background:var(--acao)'></i>o que aconteceu</span>" +
     "<span><i style='background:var(--neg)'></i>ficou fora da faixa</span>");
   host.append(chaves);
@@ -1331,7 +1331,7 @@ function alertas(perfil, chave) {
 
   if (!m.changes.length) {
     $("alertas-lede").textContent =
-      "Nada mudou na política desde a decisão de janeiro. Se algo mudar, aparece aqui.";
+      "Nada mudou na política desde o registro. Se algo mudar, aparece aqui.";
     return;
   }
   $("alertas-lede").textContent =
@@ -1378,15 +1378,19 @@ function acompanhar(perfil) {
     " · até " + n.date.split("-").reverse().join("/");
   $("ac-numero").textContent = PCT(n.realised);
   $("ac-numero").className = "big num" + (n.realised < 0 ? " neg" : "");
-  const quando = r.faixa_de_janeiro ? "projetada em janeiro"
+  // Nenhuma faixa foi projetada em janeiro. Todas foram desenhadas em agosto com
+  // dados anteriores ao ano, e a tela dizia "projetada em janeiro" para três
+  // delas porque o payload afirmava isso a partir de um literal. Agora a data
+  // vem do artefato e a frase vem da data.
+  const quando = r.faixa_de_janeiro ? "projetada antes do ano"
     : "desenhada em " + r.faixa_desenhada.split("-").reverse().join("/") + ", com dados anteriores a " + ac.ano;
   $("ac-frase").innerHTML = "Para este ponto do ano, a faixa " + quando + " vai de <b>" +
     PCT(n.p10) + "</b> a <b>" + PCT(n.p90) + "</b>. O resultado está <b>" +
     (n.inside ? "dentro" : "fora") + "</b> dela.";
   $("ac-grafico").innerHTML = cone(r.faixa, r.realizado);
   $("ac-legenda").textContent = r.faixa_de_janeiro
-    ? "Área: o projetado em janeiro. Linha: o que aconteceu."
-    : "Área: o projetado para o ano. Linha: o que aconteceu. Esta carteira foi declarada com o ano em curso, e a série dela é reconstruída.";
+    ? "Área: o projetado antes do ano. Linha: o que aconteceu."
+    : "Área: o projetado para o ano, com dados anteriores a ele. Linha: o que aconteceu. Toda a série de 2026 é reconstrução.";
   $("ac-limite").innerHTML = "<p>" + (r.faixa_de_janeiro ? ac.limitacao : ac.limitacao_tardia) + "</p>";
 }
 

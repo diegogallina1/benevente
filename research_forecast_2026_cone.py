@@ -39,6 +39,10 @@ BLOCK = 20
 DRAWS = 20_000
 QUANTILES = (0.10, 0.50, 0.90)
 SEED = 20260826
+#: A data de produção do artefato, gravada nele. O primeiro foi feito em
+#: 27/08/2026, e o código dizia "calculada em janeiro" porque os dados eram de
+#: antes de janeiro. Ninguém a calculou em janeiro.
+DESENHADO_EM = "2026-08-27"
 #: Pregões de um ano cheio na B3. A faixa é calculada até aqui, e o site usa a
 #: linha correspondente ao número de pregões que já passaram.
 HORIZONTE_MAXIMO = 250
@@ -94,9 +98,16 @@ def main() -> None:
             "point_in_time": "só retornos anteriores ao primeiro pregão de 2026",
             "step_sessions": PASSO,
         },
-        "limitation": ("A faixa é uma só, calculada em janeiro, e não se ajusta ao "
-                       "que foi acontecendo. Um ano dentro da faixa não confirma a "
-                       "regra: a cobertura só significa alguma coisa somando muitos anos."),
+        # A data em que este arquivo foi produzido. Sem ela, quem lê supõe que a
+        # faixa é de janeiro porque os dados são anteriores a janeiro, e não é: a
+        # disciplina de entrada (só dados anteriores ao ano) e a de declaração
+        # (existir antes do ano) são coisas diferentes, e esta faixa só tem a
+        # primeira.
+        "drawn_on": DESENHADO_EM,
+        "limitation": ("A faixa é uma só, desenhada com dados anteriores a 2026, e não "
+                       "se ajusta ao que foi acontecendo. Um ano dentro da faixa não "
+                       "confirma a regra: a cobertura só significa alguma coisa somando "
+                       "muitos anos."),
         "profiles": {},
     }
 

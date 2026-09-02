@@ -26,5 +26,24 @@
     "why_it_matters": "As faixas dos outros três foram declaradas antes do primeiro pregão de 2026. Esta não foi: nenhum dado de 2026 entrou nela, mas ninguém a desenhou antes do ano. Por isso ela enquadra o resultado e não entra em contagem de cobertura, que continua sendo dos anos fechados de 2015 a 2025."
   },
   "asymmetry_that_remains": "Três perfis com série acompanhada e um com série reconstruída não são a mesma coisa, e a diferença viaja com o número em cada tela que o mostra.",
-  "addendum_sha256": "c4c14a3ac667e571f84175feba550e7eaa719267669d8816323fb9a7155ae62c"
+  "correction_2026_09_02": {
+    "corrected_on": "2026-09-02",
+    "supersedes_text_in": [
+      "what_changed",
+      "asymmetry_that_remains",
+      "reconstruction.what_it_still_is_not",
+      "band.why_it_matters"
+    ],
+    "previous_addendum_sha256": "c4c14a3ac667e571f84175feba550e7eaa719267669d8816323fb9a7155ae62c",
+    "what_was_wrong": "Este adendo, a declaração v4, o site, o resumo enviado ao orientador e a tela do aplicativo diziam que os três primeiros perfis foram congelados antes do primeiro pregão de 2026 e acompanhados desde então, e que só o quarto era reconstrução. Não é verdade. A v3 foi registrada em 26/08/2026, os livros dos três perfis carregam status de reconstrução sob política congelada, a série diária deles foi publicada pela primeira vez em 26/08/2026, e o cone de faixas foi gerado em 27/08/2026 com semente 20260826. Nenhuma série de 2026 foi acompanhada desde janeiro. Nenhuma faixa de 2026 existia antes de 2026.",
+    "what_is_true": "As quatro séries de 2026 são reconstruções feitas em agosto de 2026, com a política aplicada retroativamente à data de 02/01/2026 usando só dados daquele dia. A disciplina de entrada se manteve em todas: nenhum dado de 2026 escolheu nada. A disciplina de declaração não existe para nenhuma: a política foi declarada com o ano em curso. A diferença entre os três e o quarto é de quatro dias, 26/08 contra 30/08, e não de oito meses.",
+    "what_changed_in_the_artifacts": "web/forecast_2026.json passou a carregar band_drawn_on de agosto para os quatro perfis e band_declared_before_year falso para todos; antes, três levavam a data 2026-01-02 preenchida por um literal de fallback no gerador. O texto do site, da nota da carteira, do aplicativo e do resumo foi alinhado. A frase da declaração v4 fica como está, porque é congelada, e esta correção é o registro de que ela está errada.",
+    "code_hashes_after_the_fourth_rung": {
+      "why": "A declaração v4 lista hashes de portfolio_risk.py e profile_ladder_v2.py que não batem com os arquivos: os dois foram editados depois do registro para acrescentar o quarto degrau (um apelido em PROFILE_ALIASES e um degrau em LADDER_V2). Registro com hash de código que não confere é uma garantia quebrada, e fica dito aqui em vez de escondido. Os hashes atuais seguem, e o que mudou está descrito em vez de só refeito.",
+      "portfolio_risk.py": "315a19f310123e134f83d3ef196d57c42d6201819268b6a18d3d0d5fdb53a16b",
+      "profile_ladder_v2.py": "dc135b694940c29ff8bec07b686224d1a98833085c19863f14c36a253bdf49e2"
+    },
+    "what_this_means_for_the_claim": "O que o projeto pode afirmar sobre 2026 é menos do que afirmava: a regra, aplicada point-in-time, teria produzido estas carteiras e este resultado. Não pode afirmar que alguém as segurou durante a queda de maio, para nenhum dos quatro perfis. A amostra confirmatória continua começando no primeiro pregão de 2027, e é a única que responde isso."
+  },
+  "addendum_sha256": "3189755df404bcd7ba0ec023d8b0e671f03abd6a739eb2493da3df3a0d102a0a"
 }

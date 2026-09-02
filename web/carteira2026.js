@@ -149,7 +149,7 @@
         <header><b>${rotulo(p)}</b><small>teto de ${pct(b.declared.maximum_equity_weight, 0)} em ações · ${acoes.length} emissores</small></header>
         <strong class="${retorno >= 0 ? "up" : "down"}">${retorno >= 0 ? "+" : ""}${pct(retorno)}</strong>
         <span class="carteira-2026-since">desde ${dateBr(b.decision_date)} · até ${dateBr(l.through)}</span>
-        ${l.reconstructed ? `<span class="carteira-2026-marca">Série reconstruída em 30/08/2026, quando o degrau foi declarado. Mesma cesta, mesmos preços, mesma regra dos outros. O que ela não tem é a marcação a mercado feita enquanto o ano acontecia.</span>` : ""}
+        ${l.reconstructed ? `<span class="carteira-2026-marca">Degrau declarado em 30/08/2026, quatro dias depois dos outros três. Mesma cesta, mesmos preços, mesma regra.</span>` : ""}
         <p class="carteira-2026-names">${nomes}</p>
         ${divisao(p, b, mudancas)}
         ${detalhe(p, b, mudancas)}
@@ -160,11 +160,14 @@
       // Quatro frases curtas no lugar de um bloco só. O bloco anterior tinha
       // aposto, dois pontos e oração encaixada na mesma sentença, e numa coluna
       // estreita virava parede de texto.
-      note.textContent = `Decisão de ${dateBr(summary.decision_date)}, `
-        + `congelada por ${summary.approved_by}. O retorno é parcial e usa o preço de `
-        + `fechamento da B3. Não ajusta proventos, então subestima quem pagou dividendos. `
-        + `Este ano é reconstrução acompanhada. A validação prospectiva começa no primeiro `
-        + `pregão de 2027.`;
+      // A nota anterior dizia "fechamento da B3, não ajusta proventos" para um dado
+      // que é fechamento ajustado de fonte pública, e chamava o ano de "reconstrução
+      // acompanhada", que é uma categoria só com dois nomes. O arquivo da série
+      // diz a procedência; a nota repete o arquivo em vez de inventar.
+      note.textContent = `Política registrada em agosto de 2026 por ${summary.approved_by}, `
+        + `aplicada à data de ${dateBr(summary.decision_date)} com os dados daquele dia. `
+        + `Todo o ano é reconstrução, marcada a mercado desde o registro, com fechamento `
+        + `ajustado de fonte pública. A validação prospectiva começa no primeiro pregão de 2027.`;
     }
   }).catch(() => {
     host.innerHTML = `<p class="carteira-2026-names">O acompanhamento de 2026 não pôde ser carregado agora.</p>`;

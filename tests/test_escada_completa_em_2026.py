@@ -81,10 +81,16 @@ def test_a_serie_reconstruida_nao_se_passa_por_acompanhada() -> None:
         assert faixa["profiles"][perfil]["band_declared_before_year"] is False
         assert app["acompanhamento"]["perfis"][perfil]["faixa_de_janeiro"] is False
 
+    # A versão anterior deste bloco exigia que as três faixas "de janeiro" se
+    # dissessem declaradas antes do ano. Era a narrativa, não o dado: o cone foi
+    # gerado em 27/08/2026 com semente 20260826, a v3 foi registrada em 26/08, e
+    # a série diária foi commitada em 26/08. Nenhuma faixa de 2026 existia antes
+    # de 2026. O teste agora exige o contrário, e exige que a data publicada seja
+    # a de agosto e não um literal de janeiro.
     for perfil, r in faixa["profiles"].items():
-        if perfil not in reconstruidos:
-            assert r["band_declared_before_year"] is True, perfil
-            assert app["acompanhamento"]["perfis"][perfil]["faixa_de_janeiro"] is True, perfil
+        assert r["band_declared_before_year"] is False, perfil
+        assert r["band_drawn_on"] >= "2026-08-26", (perfil, r["band_drawn_on"])
+        assert app["acompanhamento"]["perfis"][perfil]["faixa_de_janeiro"] is False, perfil
 
     # E a tela não pode continuar dizendo "projetada em janeiro" para todo mundo.
     tela = (WEB / "plano.js").read_text(encoding="utf-8")

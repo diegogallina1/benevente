@@ -25,6 +25,13 @@ from politica import escada
 
 ROOT = Path(__file__).resolve().parents[1]
 CONE = ROOT / "artifacts" / "forecast_2026_cone_v1" / "cone.json"
+#: Quando o cone foi desenhado. O artefato congelado não carrega a data e não
+#: pode ser regerado para ganhar uma: o gerador sorteia com um contador único e
+#: a escada mudou de ordem desde então, o que moveria as faixas. A data vem do
+#: que o git prova: o primeiro commit de web/forecast_2026.json é de 27/08/2026
+#: e a semente do método é 20260826. Antes disto o código preenchia "2026-01-02"
+#: como fallback, e publicou uma data inventada por dias.
+CONE_DESENHADO_EM = "2026-08-27"
 #: A faixa dos degraus declarados depois de janeiro, que não podia entrar
 #: no cone congelado sem mover as faixas dos outros. Ver
 #: research_forecast_2026_cone_tardio.py.
@@ -87,8 +94,13 @@ def build() -> dict:
         faixa = _faixa_em(faixas[perfil]["band"], agora["sessions"])
         documento["profiles"][perfil] = {
             "band": faixas[perfil]["band"],
-            "band_drawn_on": faixas[perfil].get("drawn_on", cone.get("drawn_on", "2026-01-02")),
-            "band_declared_before_year": perfil in cone["profiles"],
+            "band_drawn_on": faixas[perfil].get("drawn_on", cone.get("drawn_on", CONE_DESENHADO_EM)),
+            # Nenhuma faixa foi declarada antes do ano: todas foram desenhadas em
+            # agosto com dados anteriores a 2026. A propriedade é calculada da
+            # data, e não afirmada por pertencer ao cone "de janeiro".
+            "band_declared_before_year": (
+                faixas[perfil].get("drawn_on", cone.get("drawn_on", CONE_DESENHADO_EM))
+                < f"{cone['year']}-01-01"),
             "realised": realizado,
             "now": {
                 "sessions": agora["sessions"],
