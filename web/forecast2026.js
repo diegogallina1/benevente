@@ -11,7 +11,9 @@
 (() => {
   const host = document.querySelector("#forecast-2026");
   if (!host) return;
-  const NOMES = { conservador: "Conservador", equilibrado: "Equilibrado", arrojado: "Arrojado" };
+  // Os perfis vêm do arquivo, na ordem da política. A lista escrita à mão tinha
+  // três e descartava a faixa do quarto degrau que o mesmo arquivo publicava.
+  const rotulo = p => p.charAt(0).toUpperCase() + p.slice(1);
   const pct = (v, d = 2) => `${v >= 0 ? "+" : ""}${(v * 100).toLocaleString("pt-BR",
     { minimumFractionDigits: d, maximumFractionDigits: d })}%`;
   const esc = v => String(v).replace(/[&<>"']/g, c =>
@@ -54,12 +56,12 @@
   fetch("./forecast_2026.json", { cache: "no-store" })
     .then(r => { if (!r.ok) throw new Error("indisponível"); return r.json(); })
     .then(dados => {
-      host.innerHTML = Object.keys(NOMES).map(perfil => {
+      host.innerHTML = Object.keys(dados.profiles).map(perfil => {
         const p = dados.profiles[perfil];
         if (!p) return "";
         const n = p.now;
         return `<article class="fc-perfil">
-          <h3>${NOMES[perfil]}</h3>
+          <h3>${rotulo(perfil)}</h3>
           <p>Em <b>${n.sessions} pregões</b> de 2026, o resultado é
              <b>${pct(n.realised)}</b>. A faixa projetada em janeiro para este
              ponto do ano vai de <b>${pct(n.p10)}</b> a <b>${pct(n.p90)}</b>.

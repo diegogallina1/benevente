@@ -102,12 +102,36 @@ def test_nenhum_gerador_carrega_a_propria_copia_da_escada() -> None:
     # Duas formas da mesma cópia: a lista de literais do Python e do JavaScript,
     # e a sequência solta de um laço de shell. A segunda escapou da primeira
     # varredura e ficou meses publicando três perfis de quatro.
-    copiada = re.compile(r'"conservador"\s*,\s*"equilibrado"\s*,\s*"arrojado"'
-                         r'|conservador\s+equilibrado\s+arrojado')
-    alvos = [*(ROOT / "tools").glob("*.py"), *WEB.glob("*.js"),
-             *(ROOT / ".github" / "workflows").glob("*.yml")]
+    # Três formas da mesma cópia: a lista de literais do Python e do JavaScript,
+    # a sequência solta de um laço de shell, e o objeto de rótulos do JavaScript
+    # ({ conservador: "Conservador", equilibrado: ... }). A terceira escapou de
+    # duas varreduras e escondeu o quarto degrau em duas páginas do site.
+    # A tupla precisa COMEÇAR em "conservador": uma tupla de quatro que contém
+    # os três (client_intake.PROFILES) não é cópia, é a escada inteira.
+    copiada = re.compile(r'[(\[]\s*"conservador"\s*,\s*"equilibrado"\s*,\s*"arrojado"\s*[)\],]'
+                         r'|conservador\s+equilibrado\s+arrojado'
+                         r'|conservador\s*:\s*"Conservador"\s*,\s*equilibrado\s*:')
+    # E a varredura cobre onde as cópias de fato moravam: tests/ tinha três, a
+    # raiz tinha uma em tax_lot_accounting.py, e nenhuma delas era vista.
+    alvos = [*(ROOT / "tools").glob("*.py"), *ROOT.glob("*.py"), *(ROOT / "tests").glob("*.py"),
+             *WEB.glob("*.js"), *(ROOT / ".github" / "workflows").glob("*.yml")]
+    # Os três nomes também aparecem onde NÃO são cópia da escada vigente, e cada
+    # exceção diz por quê, em vez de sumir num filtro mudo.
+    excecoes = {
+        # Afirmam que as registrações v1 e v3, congeladas, têm três perfis. Têm.
+        "tests/test_profile_ladder.py": "testa a registração v1, que declara três",
+        "tests/test_profile_ladder_v3.py": "testa a registração v3, que declara três",
+        # Módulos de pesquisa cujos artefatos foram gerados com três perfis. Ler a
+        # escada aqui mudaria artefatos publicados; o quarto degrau deles é dívida
+        # declarada, não omissão escondida.
+        "profile_intrayear_risk.py": "avaliação da camada congelada em três perfis",
+        "tax_lot_accounting.py": "tese tributária sem artefato para o quarto degrau",
+        "validate_risk_system.py": "validação de pesquisa sobre os três originais",
+    }
     culpados = []
     for caminho in alvos:
+        if str(caminho.relative_to(ROOT)).replace(chr(92), "/") in excecoes:
+            continue
         texto = caminho.read_text(encoding="utf-8")
         # A linha que explica o defeito pode nomear os três sem cometê-lo.
         texto = "\n".join(

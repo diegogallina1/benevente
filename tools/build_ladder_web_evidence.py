@@ -295,7 +295,11 @@ def build(start_year: int, end_year: int) -> dict:
         "lineage": {
             "Benevente 1": "módulo de seleção: a cesta anual declarada, com a perna global",
             "Benevente 2": "módulo de proteção: reduz a exposição doméstica sob estresse observável",
-            PUBLIC_NAME: "os dois módulos, em três perfis declarados e congelados",
+            # Contado do registro, não escrito: este texto dizia "três" num
+            # arquivo que listava quatro perfis logo abaixo.
+            PUBLIC_NAME: (f"os dois módulos, em "
+                          f"{ {3: 'três', 4: 'quatro', 5: 'cinco'}.get(len(registration['profiles']), len(registration['profiles']))} "
+                          f"perfis declarados e congelados"),
         },
         "registration_sha256": registration["registration_sha256"],
         "approved_by": registration["approved_by"],

@@ -110,10 +110,17 @@ def main() -> int:
     # registrada, alguma entrada mudou sem passar pelo rito.
     L = json.loads((ROOT / "web/ladder_v2.json").read_text(encoding="utf-8"))
     R = json.loads((ROOT / "data/benevente_profile_ladder_v4_registration.json").read_text(encoding="utf-8"))
-    esperado = {"conservador": (.35, 12, .1322, -.1671, .1234, -.0917),
-                "equilibrado": (.55, 8, .1625, -.2654, .1539, -.1788),
-                "arrojado": (.75, 5, .2026, -.3564, .1979, -.2895)}
-    for nome, (eqw, tops, c1, dd1, c2, dd2) in esperado.items():
+    # O quarto degrau entra na mesma trava. Sem ele aqui, os 9,73% e −0,81% da
+    # home e do método eram cópia sem verificador. A faixa de redução de queda
+    # é por degrau: com 4% em ações, a camada devolve menos de um ponto, e a
+    # faixa de 6,7 a 8,7 dos outros três não descreve esse degrau.
+    esperado = {"ultraconservador": (.04, 12, .0983, -.0169, .0973, -.0081, (0.5, 1.2)),
+                "conservador": (.35, 12, .1322, -.1671, .1234, -.0917, (6.7, 8.7)),
+                "equilibrado": (.55, 8, .1625, -.2654, .1539, -.1788, (6.7, 8.7)),
+                "arrojado": (.75, 5, .2026, -.3564, .1979, -.2895, (6.7, 8.7))}
+    check("escada: o verificador cobre todos os perfis publicados",
+          set(esperado) == set(L["profiles"]))
+    for nome, (eqw, tops, c1, dd1, c2, dd2, (red_min, red_max)) in esperado.items():
         item = L["profiles"][nome]
         ok = (item["declared"]["maximum_equity_weight"] == eqw and item["declared"]["top_assets"] == tops
               and close(item["benevente1"]["cagr"], c1, 5e-4) and close(item["benevente1"]["max_drawdown"], dd1, 5e-4)
@@ -123,7 +130,7 @@ def main() -> int:
         red = abs(item["benevente1"]["max_drawdown"] - item["benevente2"]["max_drawdown"]) * 100
         custo = (item["benevente1"]["cagr"] - item["benevente2"]["cagr"]) * 100
         check(f"escada {nome}: camada devolve {red:.2f} pp de queda por {custo:.2f} pp",
-              6.7 - .05 <= red <= 8.7 + .05 and custo < 1.0)
+              red_min - .05 <= red <= red_max + .05 and custo < 1.0)
     check("caixa 9.36% (Tesouro Selic) e Ibovespa 11.74% da fonte datada",
           close(L["references"]["Tesouro Selic"]["cagr"], .0936, 5e-4)
           and close(L["references"]["Ibovespa"]["cagr"], .1174, 5e-4))

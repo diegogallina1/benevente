@@ -19,7 +19,11 @@
   const count = (value, digits = 1) => Number(value).toLocaleString("pt-BR", {
     minimumFractionDigits: digits, maximumFractionDigits: digits,
   });
-  const LABELS = { conservador: "Conservador", equilibrado: "Equilibrado", arrojado: "Arrojado" };
+  // Os rótulos vêm dos perfis que o artefato publica, na ordem dele. Escrita à
+  // mão, a lista tinha três nomes e filtrava o quarto degrau para fora da
+  // tabela em silêncio, enquanto o título acima dizia "os quatro perfis".
+  const rotulo = key => key.charAt(0).toUpperCase() + key.slice(1);
+  let LABELS = {};
 
   const fail = message => {
     hosts.forEach(host => { host.textContent = message; host.classList.add("ladder-error"); });
@@ -31,6 +35,7 @@
     const response = await fetch("./ladder_v2.json", { cache: "no-store" });
     if (!response.ok) throw new Error("indisponível");
     data = await response.json();
+    LABELS = Object.fromEntries(Object.keys(data.profiles).map(key => [key, rotulo(key)]));
   } catch (_) {
     fail("A escada declarada não pôde ser carregada agora.");
     return;
@@ -115,7 +120,9 @@
   const pct = (value, digits = 2) => Number.isFinite(Number(value))
     ? `${(Number(value) * 100).toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits })}%`
     : "—";
-  const LABELS = { conservador: "Conservador", equilibrado: "Equilibrado", arrojado: "Arrojado" };
+  // Mesma regra da tabela acima: os perfis vêm do artefato, não de uma lista.
+  const rotulo = key => key.charAt(0).toUpperCase() + key.slice(1);
+  let LABELS = {};
   const ACTIONS = {
     entered: "entrou", maintained: "mantido", increased: "aumentou",
     reduced: "reduziu", exited: "saiu", not_held: "fora",
@@ -126,12 +133,16 @@
     const response = await fetch("./composition.json", { cache: "no-store" });
     if (!response.ok) throw new Error("indisponível");
     data = await response.json();
+    LABELS = Object.fromEntries(Object.keys(data.profiles).map(key => [key, rotulo(key)]));
   } catch (_) {
     hosts.forEach(host => { host.textContent = "A composição auditável não pôde ser carregada agora."; });
     return;
   }
 
-  const years = data.profiles.conservador.map(item => item.decision_year).sort((a, b) => b - a);
+  // Os anos vêm do primeiro perfil do artefato, seja ele qual for: ancorar num
+  // nome escrito aqui quebraria no dia em que esse nome saísse da política.
+  const primeiro = Object.keys(data.profiles)[0];
+  const years = data.profiles[primeiro].map(item => item.decision_year).sort((a, b) => b - a);
   const requestedProfile = new URLSearchParams(location.search).get("perfil");
   let activeProfile = Object.prototype.hasOwnProperty.call(LABELS, requestedProfile) ? requestedProfile : "equilibrado";
   let activeYear = years[0];

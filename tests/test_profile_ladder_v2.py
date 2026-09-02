@@ -38,8 +38,11 @@ def test_arrojado_now_agrees_with_the_registered_risk_spec():
 
 
 def test_ladder_still_orders_risk_in_one_direction():
-    budgets = [LADDER_V2[n]["maximum_equity_weight"] for n in ("conservador", "equilibrado", "arrojado")]
-    counts = [LADDER_V2[n]["top_assets"] for n in ("conservador", "equilibrado", "arrojado")]
+    # A escada inteira, na ordem do teto de ações: com três nomes escritos aqui,
+    # o degrau que LADDER_V2 ganhou depois nunca era conferido.
+    escada = sorted(LADDER_V2, key=lambda n: LADDER_V2[n]["maximum_equity_weight"])
+    budgets = [LADDER_V2[n]["maximum_equity_weight"] for n in escada]
+    counts = [LADDER_V2[n]["top_assets"] for n in escada]
     assert budgets == sorted(budgets)
     assert counts == sorted(counts, reverse=True)
 

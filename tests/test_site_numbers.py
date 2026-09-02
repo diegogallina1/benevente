@@ -123,7 +123,12 @@ def test_the_chart_carries_the_references_it_is_compared_against() -> None:
 
 
 def test_the_ladder_ordering_holds_in_the_published_numbers() -> None:
-    order = ["conservador", "equilibrado", "arrojado"]
+    # A ordem vem da política: escrita à mão com três nomes, a monotonia da
+    # escada publicada nunca era testada no quarto degrau.
+    import sys
+    sys.path.insert(0, str(ROOT / "tools"))
+    from politica import escada
+    order = escada()
     cagr = [EVIDENCE["profiles"][name]["benevente2"]["cagr"] for name in order]
     drawdown = [EVIDENCE["profiles"][name]["benevente2"]["max_drawdown"] for name in order]
     assert cagr == sorted(cagr), "o retorno deixou de subir com o perfil"

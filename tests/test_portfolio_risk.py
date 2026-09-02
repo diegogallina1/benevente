@@ -111,7 +111,10 @@ def test_observable_stress_may_still_cut_below_the_floor():
 
 
 def test_default_floor_is_zero_so_the_registered_policy_is_unchanged():
-    for name in ("conservador", "equilibrado", "arrojado"):
+    # Todas as especificações registradas, e não três nomes copiados: o
+    # ultraconservador entra por apelido e herda a mesma propriedade.
+    from portfolio_risk import PROFILE_ALIASES, PROFILE_SPECS
+    for name in (*PROFILE_SPECS, *PROFILE_ALIASES):
         assert risk_profile_spec(name).minimum_equity_fraction_of_cap == 0.0
     names = ["A1", "A2", "A3", "A4", "A5", "A6"]
     published, _ = apply_annual_risk_policy(target(), history(.45), names, "equilibrado",
