@@ -5,17 +5,20 @@ System** é a camada B2B de governança e explicação dessa pesquisa. O núcleo
 publicado é uma seleção multifatorial anual, orientada por fundamentos: qualidade,
 valor e momento ordenam o universo elegível. A configuração de cada perfil —
 parcela em ações, número de posições, teto por setor e fração no exterior — é
-**declarada e congelada antes do período**, com hash público; o CDI recebe o
-saldo.
+**declarada e congelada antes do período confirmatório**, com hash público; o
+saldo fica em Tesouro Selic, líquido de custódia.
 
 A configuração deixou de ser buscada em 2026. A busca aninhada que a escolhia foi
 rodada sobre uma grade ampliada, de 36 para 256 candidatos, com insumos, código e
 janela idênticos: o desfecho caiu de 15,31% para 12,68% ao ano e o Sharpe
 deflacionado de 0,957 para 0,777, abaixo da significância. Com dez observações
 anuais não se ranqueia 256 candidatos. A política vigente é
-`benevente_profile_ladder_v2`, descrita em
-[`docs/protocolo_escada_v2.md`](docs/protocolo_escada_v2.md) e congelada em
-`data/benevente_profile_ladder_v2_registration.json`.
+`benevente_profile_ladder_v4`, congelada em
+`data/benevente_profile_ladder_v4_registration.json` (quatro perfis; a v3
+trocou o caixa por Tesouro Selic, a v4 acrescentou o degrau ultraconservador),
+com o que mudou depois do congelamento registrado em
+`data/benevente_profile_ladder_v4_tracking_addendum.json`. O protocolo da
+escada está em [`docs/protocolo_escada_v2.md`](docs/protocolo_escada_v2.md).
 
 O MVO não é o Benevente. Ele é um comparador quantitativo independente e um
 alocador experimental. O modelo de linguagem também não escolhe ativos nem
@@ -35,7 +38,7 @@ recálculo histórico desfaz isso; só anos posteriores ao registro congelado
 testam a regra prospectivamente, e a amostra confirmatória começa no primeiro
 pregão de 2027.
 
-Sete hipóteses foram testadas e rejeitadas, publicadas com o mesmo detalhe dos
+Oito hipóteses foram testadas e rejeitadas, publicadas com o mesmo detalhe dos
 resultados positivos — inclusive a de que ampliar a busca *piorava* o sistema.
 A lista completa das limitações está em
 [`web/limitacoes.html`](web/limitacoes.html) e nos protocolos em `docs/`.
@@ -213,13 +216,16 @@ python profile_ladder_v2.py --run
 
 | Perfil | Ações | Emissores | Global | CAGR 2015–2025 | Queda máxima |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| Conservador | 35% | 12 | 7% | 12,51% | −9,16% |
-| Equilibrado | 55% | 8 | 11% | 15,51% | −17,86% |
-| Arrojado | 75% | 5 | 15% | 19,87% | −28,94% |
+| Ultraconservador | 4% | 12 | 1% | 9,73% | −0,81% |
+| Conservador | 35% | 12 | 7% | 12,34% | −9,17% |
+| Equilibrado | 55% | 8 | 11% | 15,39% | −17,88% |
+| Arrojado | 75% | 5 | 15% | 19,79% | −28,95% |
 
-Números com a camada de risco intranual, sobre a janela que desenvolveu as
-próprias regras. Sem ela, o CAGR sobe cerca de um ponto e a queda máxima piora
-entre 7 e 8 pontos em cada perfil. A amostra confirmatória começa no primeiro
+Números com a camada de risco intranual e o caixa em Tesouro Selic, sobre a
+janela que desenvolveu as próprias regras. Sem a camada, nos três perfis com
+mais ações o CAGR sobe cerca de um ponto e a queda máxima piora entre 7 e 8
+pontos; no ultraconservador a camada devolve menos de um ponto de queda. O
+ultraconservador foi declarado em 30/08/2026, fora da avaliação do artigo. A amostra confirmatória começa no primeiro
 pregão de 2027 e exige três decisões anuais completas antes de qualquer
 alegação de desempenho prospectivo.
 
@@ -257,13 +263,14 @@ independentes e após custos modelados:
 
 | Série | CAGR | Queda máxima | Anos batendo o CDI |
 | --- | ---: | ---: | ---: |
-| Conservador | 12,51% | −9,16% | 8 de 11 |
-| Equilibrado | 15,51% | −17,86% | 8 de 11 |
-| Arrojado | 19,87% | −28,94% | 8 de 11 |
-| CDI | 9,61% | 0% | — |
-| Ibovespa | 11,33% | −46,95% | — |
+| Ultraconservador | 9,73% | −0,81% | 8 de 11 |
+| Conservador | 12,34% | −9,17% | 8 de 11 |
+| Equilibrado | 15,39% | −17,88% | 8 de 11 |
+| Arrojado | 19,79% | −28,95% | 8 de 11 |
+| Tesouro Selic | 9,36% | −0,60% | — |
+| Ibovespa | 11,74% | −46,82% | — |
 
-Na amostra, os três perfis superam CDI e Ibovespa no CAGR, e a ordenação de
+Na amostra, os quatro perfis superam o caixa no CAGR e três superam o Ibovespa; o ultraconservador, com 4% em ações, fica abaixo do índice por construção, e a ordenação de
 risco se mantém: quem rendeu mais caiu mais. Isso não autoriza uma promessa —
 a janela foi usada no desenvolvimento, há somente onze observações anuais, e
 cerca de um terço do retorno da perna global veio da desvalorização do real e

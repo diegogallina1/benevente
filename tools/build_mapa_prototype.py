@@ -639,7 +639,7 @@ footer a { color: var(--acao); }
   <div class="conta" id="conta"></div>
   <div class="acoes">
     <button class="btn" type="button" id="gerar">Gerar o dossiê do plano</button>
-    <span>PDF com as contas, o plano que você não escolheu e o campo de assinatura.</span>
+    <span>O registro da sua decisão, com o plano que você não escolheu. Neste protótipo ele aparece na tela; no app, vira PDF assinável.</span>
   </div>
   <div class="registro hidden" id="registro"></div>
 </section>

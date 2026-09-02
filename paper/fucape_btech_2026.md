@@ -84,7 +84,7 @@ Sem expor o código da aplicação, a lógica é verificável: o sistema elimina
 
 ### 3.4 A política vigente: três perfis declarados
 
-Desde agosto de 2026 o sistema opera sob uma política declarada. Em lugar de buscar a melhor configuração a cada ano, ela fixa três, congeladas antes da avaliação prospectiva: o conservador aloca 35% do patrimônio em renda variável entre doze emissores; o equilibrado, 55% entre oito; o arrojado, 75% entre cinco. Em todos, um quinto do orçamento de renda variável fica no IVVB11, fundo na B3 que replica o S&P 500 em reais, definido pela política e não pelo escore; o saldo fica em caixa. A camada de proteção intranual atua apenas sobre a parcela doméstica, porque o sinal de estresse é calculado sobre o Ibovespa. O registro traz os hashes dos insumos, o assinante, o critério de falseamento e o início da amostra confirmatória, e nenhum parâmetro muda sem nova versão. A quarta versão acrescentou um degrau de 4%, fora desta avaliação. As séries de 2026 dos quatro perfis são reconstruções de agosto, com a política aplicada retroativamente a 2 de janeiro com os dados de então; nenhuma foi acompanhada desde janeiro. As Seções 4.1.1 e 4.1.2 documentam as duas revisões; a 5.1 traz o diagnóstico.
+Desde agosto de 2026 o sistema opera sob uma política declarada. Em vez da busca anual, ela fixa três, congeladas antes da avaliação prospectiva: o conservador aloca 35% do patrimônio em renda variável entre doze emissores; o equilibrado, 55% entre oito; o arrojado, 75% entre cinco. Em todos, um quinto do orçamento de renda variável fica no IVVB11, fundo na B3 que replica o S&P 500 em reais, definido pela política e não pelo escore; o saldo fica em caixa. A camada de proteção intranual atua apenas sobre a parcela doméstica, porque o sinal de estresse é calculado sobre o Ibovespa. O registro traz os hashes dos insumos, o assinante, o critério de falseamento e o início da amostra confirmatória, e nenhum parâmetro muda sem nova versão. A quarta versão acrescentou um degrau de 4%, fora desta avaliação. As séries de 2026 dos quatro perfis são reconstruções de agosto, com a política aplicada retroativamente a 2 de janeiro com os dados de então; nenhuma foi acompanhada desde janeiro. As Seções 4.1.1 e 4.1.2 documentam as duas revisões; a 5.1 traz o diagnóstico.
 
 ### 3.5 Por que a decisão é anual
 
@@ -168,11 +168,11 @@ A Tabela 2 traz o diagnóstico retrospectivo da política vigente sobre 2015–2
 
 | Perfil | Renda variável | Emissores | Retorno anualizado | Volatilidade | Queda máxima | Anos acima do CDI |
 |---|---:|---:|---:|---:|---:|:---:|
-| Conservador | 35% | 12 | 12,51% | 5,84% | −9,16% | 8 de 11 |
-| Equilibrado | 55% | 8 | 15,51% | 10,51% | −17,86% | 8 de 11 |
-| Arrojado | 75% | 5 | 19,87% | 16,94% | −28,94% | 8 de 11 |
+| Conservador | 35% | 12 | 12,34% | 5,85% | −9,17% | 8 de 11 |
+| Equilibrado | 55% | 8 | 15,39% | 10,51% | −17,88% | 8 de 11 |
+| Arrojado | 75% | 5 | 19,79% | 16,95% | −28,95% | 8 de 11 |
 | Ibovespa | — | — | 11,74% | 23,37% | −46,82% | — |
-| CDI | — | — | 9,61% | 0,25% | — | — |
+| Tesouro Selic | — | — | 9,36% | 0,29% | −0,60% | — |
 
 Os três perfis preservam a ordenação declarada de risco: retorno e queda máxima crescem juntos do conservador ao arrojado, e nenhum perfil se aproximou da queda máxima do Ibovespa.
 
