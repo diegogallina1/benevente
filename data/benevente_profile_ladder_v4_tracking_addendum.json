@@ -43,7 +43,13 @@
       "portfolio_risk.py": "315a19f310123e134f83d3ef196d57c42d6201819268b6a18d3d0d5fdb53a16b",
       "profile_ladder_v2.py": "dc135b694940c29ff8bec07b686224d1a98833085c19863f14c36a253bdf49e2"
     },
-    "what_this_means_for_the_claim": "O que o projeto pode afirmar sobre 2026 é menos do que afirmava: a regra, aplicada point-in-time, teria produzido estas carteiras e este resultado. Não pode afirmar que alguém as segurou durante a queda de maio, para nenhum dos quatro perfis. A amostra confirmatória continua começando no primeiro pregão de 2027, e é a única que responde isso."
+    "what_this_means_for_the_claim": "O que o projeto pode afirmar sobre 2026 é menos do que afirmava: a regra, aplicada point-in-time, teria produzido estas carteiras e este resultado. Não pode afirmar que alguém as segurou durante a queda de maio, para nenhum dos quatro perfis. A amostra confirmatória continua começando no primeiro pregão de 2027, e é a única que responde isso.",
+    "tax_disclosure_share": {
+      "what_was_wrong": "A declaração v4 diz, no campo tax_disclosure do ultraconservador, que cerca de 92% do perfil fica em caixa tributado. O teto de renda variável do degrau é 4%, então o caixa é 96%. O número da frase não sai de lugar nenhum do registro.",
+      "what_is_true": "Com o teto de 4% em ações, 96% do perfil fica em caixa. A conclusão da frase, de que o líquido depois do imposto sobre o caixa fica perto do Tesouro Selic líquido, continua valendo: ela depende do imposto, não do percentual.",
+      "why_not_edited_in_place": "A declaração é congelada e citada pelo hash; a correção fica registrada aqui, ao lado.",
+      "previous_addendum_sha256": "3189755df404bcd7ba0ec023d8b0e671f03abd6a739eb2493da3df3a0d102a0a"
+    }
   },
-  "addendum_sha256": "3189755df404bcd7ba0ec023d8b0e671f03abd6a739eb2493da3df3a0d102a0a"
+  "addendum_sha256": "5328f337c4c4fdea9c0389ca64146b4022b137b9ddd6e014ae57be0e097c944f"
 }

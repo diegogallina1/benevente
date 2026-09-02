@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-08-23",
+  "updated_at": "2026-09-02",
   "versions": [
     {
       "name": "Benevente 1",
@@ -24,7 +24,15 @@
       "registered_at": "2026-08-23",
       "source": "docs/live_monitoring_protocol.md",
       "sha256": "15d6f7957c35baaf551f866e1f76998006d3443b908f8d2f6795846e0493f8cd",
-      "2026_status": "acompanhamento corrente versionado"
+      "2026_status": "substituído em 2026-09-02 pela versão 1.1.0; descrevia uma carteira de cinco ações com 45% em CDI"
+    },
+    {
+      "name": "Acompanhamento diário 1.1.0",
+      "role": "marcação a mercado dos quatro perfis da escada, três pernas por carteira, faltas contadas; sem seleção ou ordens",
+      "registered_at": "2026-09-02",
+      "source": "docs/live_monitoring_protocol.md",
+      "sha256": "763fd1c5487858ac580cd021b5c52abe35e4b04a0012b6a36516b19fba626b53",
+      "2026_status": "acompanhamento corrente versionado; as quatro séries de 2026 são reconstruções de agosto de 2026"
     }
   ],
   "first_fully_post_registration_annual_decision": "próxima decisão anual tomada sem alteração posterior do método",

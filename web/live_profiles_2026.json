@@ -9,34 +9,34 @@
   "profiles": {
     "ultraconservador": {
       "through": "2026-08-31",
-      "portfolio_return": 0.0894192082,
+      "portfolio_return": 0.0894192079,
       "equity_weight": 0.04,
       "issuers": 12,
-      "record_sha256": "04d83920c32cc60a55dd2719803e33dae6c4ca21baa69d86062dde9b63f33083",
+      "record_sha256": "7f80515cb818bad780e0e1604a14d24f75de2a986e97745b44b749c0bedd2e5b",
       "reconstructed": true
     },
     "conservador": {
       "through": "2026-08-31",
-      "portfolio_return": 0.0644814215,
+      "portfolio_return": 0.0644814185,
       "equity_weight": 0.35,
       "issuers": 12,
-      "record_sha256": "438ce62ab67a70eb6006e8242fa81f852994cc08a9468f97bd5d53522e37e729",
+      "record_sha256": "19a6aeaa0a4042b663222accae3716af9299b70820ddd9bb1ec4ca5159f82b7c",
       "reconstructed": false
     },
     "equilibrado": {
       "through": "2026-08-31",
-      "portfolio_return": 0.0544606633,
+      "portfolio_return": 0.0544606679,
       "equity_weight": 0.55,
       "issuers": 8,
-      "record_sha256": "4975fc2fb5f1b931efc5e6765a722b9d7a5e425498924b61521126d092625970",
+      "record_sha256": "375dd20d56a16e081a4921ca3d2018711e90b44668299e735c14a41fd3337a71",
       "reconstructed": false
     },
     "arrojado": {
       "through": "2026-08-31",
-      "portfolio_return": 0.0272868406,
+      "portfolio_return": 0.0272868579,
       "equity_weight": 0.75,
       "issuers": 5,
-      "record_sha256": "146773ff4c09dd9155ce43e485d9ab4e125c30f5892bf34f06c89595ffb266e5",
+      "record_sha256": "a13b50881c4f5770ed8779456c20fa28b392d3c61af8bc8e4d3b3cac68e7df66",
       "reconstructed": false
     }
   }

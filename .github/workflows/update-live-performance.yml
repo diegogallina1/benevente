@@ -49,7 +49,12 @@ jobs:
           # abrir cada carteira. Sai da mesma serie diaria.
           python tools/build_changes_2026_web.py
           python tools/notify_queue.py
-          python -m pytest tests/test_live_performance.py tests/test_profile_books_2026.py tests/test_notify_queue.py -q
+          # Os tres ultimos guardam o que a auditoria de setembro encontrou
+          # quebrado: o monitor sem separar as pernas, listas de tres perfis
+          # escondendo o quarto degrau, e a faixa de 2026 descrita como se
+          # tivesse sido desenhada em janeiro.
+          python -m pytest tests/test_live_performance.py tests/test_profile_books_2026.py tests/test_notify_queue.py \
+            tests/test_monitor_pernas_e_faltas.py tests/test_escada_completa_em_2026.py tests/test_forecast_2026.py -q
 
       - name: Publicar somente quando houver novo dado
         shell: bash

@@ -49,7 +49,16 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     assert "Benevente 2, Ibovespa e CDI" not in home  # comparison is visual, not repeated as prose
     # The home must be meaningful before JavaScript runs, so the ladder's own
     # figures are the static fallback. They used to be the retired rule's.
-    assert all(label in home for label in ("+259,6%", "+382,9%", "+629,1%", "+167,6%"))
+    # Derived from the ladder artifact, not typed here: a literal would keep
+    # passing after the ladder changed and the home did not.
+    if str(ROOT / "tools") not in sys.path:
+        sys.path.insert(0, str(ROOT / "tools"))
+    from politica import escada
+    ladder = json.loads((ROOT / "web" / "ladder_v2.json").read_text(encoding="utf-8"))
+    cumulative = [ladder["profiles"][name]["benevente2"]["cumulative_return"] for name in escada()]
+    cumulative.append(ladder["references"]["Tesouro Selic"]["cumulative_return"])
+    labels = [f"+{value * 100:.1f}%".replace(".", ",") for value in cumulative]
+    assert all(label in home for label in labels), labels
     assert "543,8%" not in home and "509,8%" not in home
     # O estúdio que trocava de versão na home saiu junto com o dossiê: cada
     # página de versão já traz o seu próprio histórico de decisões, e manter um
@@ -114,8 +123,15 @@ def test_site_data_contract_matches_canonical_sources() -> None:
     assert contract["prospective_protocol"]["sha256"] == __import__("hashlib").sha256(protocol_path.read_bytes()).hexdigest()
     versions = json.loads((ROOT / "web" / "protocol_versions.json").read_text(encoding="utf-8"))
     assert [item["name"] for item in versions["versions"]] == [
-        "Benevente 1", "Benevente 2", "Acompanhamento diário 1.0.0"
+        "Benevente 1", "Benevente 2", "Acompanhamento diário 1.0.0", "Acompanhamento diário 1.1.0"
     ]
+    # The retired protocol keeps its hash and says what replaced it; the live
+    # one hashes to the document on disk.
+    retired, current = versions["versions"][2], versions["versions"][3]
+    assert retired["2026_status"].startswith("substituído em 2026-09-02")
+    assert current["sha256"] == __import__("hashlib").sha256(
+        (ROOT / "docs" / "live_monitoring_protocol.md").read_bytes()
+    ).hexdigest()
 
 
 def test_site_uses_honest_language_model_and_cadence_claims() -> None:

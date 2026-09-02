@@ -141,13 +141,14 @@ def main() -> None:
             "equity_weight": document["declared"]["maximum_equity_weight"],
             "issuers": emissores,
             "record_sha256": live["record_sha256"],
-            # Os três primeiros foram marcados a mercado dia a dia enquanto o ano
-            # acontecia. O quarto foi reconstruído de uma vez, depois. Mesma
-            # seleção, mesmos preços, mesma função: procedência diferente, e ela
-            # viaja junto do número em vez de ficar só no texto ao lado.
+            # As quatro séries são reconstruções de agosto de 2026 (adendo v4,
+            # correção de 02/09). A marca distingue só a procedência do livro:
+            # os três primeiros têm livro próprio congelado sob a política, o
+            # quarto foi derivado do conservador em 30/08, quatro dias depois.
+            # Ela viaja junto do número em vez de ficar só no texto ao lado.
             "reconstructed": profile not in source["books"],
         }
-        marca = "" if profile in source["books"] else " · reconstruído"
+        marca = "" if profile in source["books"] else " · declarado em 30/08, derivado"
         print(f"{profile:<17} até {live['through']} · "
               f"{live['summary']['portfolio_return']:+.2%} · "
               f"registro {live['record_sha256'][:12]}{marca}")

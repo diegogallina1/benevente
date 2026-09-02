@@ -145,7 +145,7 @@ B2_CONFIG = {
     "volatility_window": 20,
     "peak_window": 126,
 }
-MONITORING_PROTOCOL_SHA256 = "15d6f7957c35baaf551f866e1f76998006d3443b908f8d2f6795846e0493f8cd"
+MONITORING_PROTOCOL_SHA256 = "763fd1c5487858ac580cd021b5c52abe35e4b04a0012b6a36516b19fba626b53"
 B2_PROTOCOL_SHA256 = "d1f37a440f24421e0df32f304ee0683c6de04ed9417d0cb014a0bfc7309e80e4"
 
 
@@ -522,8 +522,8 @@ def build_live_document(
         "reference_strategy": "Benevente 1",
         "status": "carteira_sombra_acompanhamento_corrente",
         "decision_date": decision_date,
-        "protocol_version": "monitoramento-diario-1.0.0",
-        "protocol_registered_at": "2026-08-23",
+        "protocol_version": "monitoramento-diario-1.1.0",
+        "protocol_registered_at": "2026-09-02",
         "protocol_sha256": MONITORING_PROTOCOL_SHA256,
         "benevente2_protocol_sha256": B2_PROTOCOL_SHA256,
         "through": through,
@@ -571,9 +571,10 @@ def build_live_document(
                 "saíram da série inteira. Zero é o esperado; qualquer outro número é "
                 "buraco no dado, não no mercado."),
             "interpretation": (
-                "Acompanhamento da decisão de 02/01/2026. Não é validação prospectiva porque "
-                "o método foi refinado durante 2026. A trajetória do Benevente 2 anterior a "
-                "20/08/2026 é reconstrução retrospectiva."
+                "Marcação a mercado do que a política vigente teria montado em 02/01/2026 com os "
+                "dados daquele dia. As séries de 2026 foram reconstruídas em agosto de 2026 e "
+                "publicadas a partir de 26/08/2026; não são validação prospectiva. A primeira "
+                "amostra confirmatória começa no primeiro pregão de 2027."
             ),
         },
     }

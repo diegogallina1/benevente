@@ -137,7 +137,8 @@ def test_workflow_is_daily_local_time_and_does_not_use_an_llm() -> None:
 def test_published_document_has_a_verifiable_contract() -> None:
     document = json.loads((ROOT / "web" / "live_performance.json").read_text(encoding="utf-8"))
     assert document["status"] == "carteira_sombra_acompanhamento_corrente"
-    assert document["protocol_registered_at"] == "2026-08-23"
+    assert document["protocol_registered_at"] == "2026-09-02"
+    assert document["protocol_version"] == "monitoramento-diario-1.1.0"
     assert document["protocol_sha256"] == __import__("hashlib").sha256(
         (ROOT / "docs" / "live_monitoring_protocol.md").read_bytes()
     ).hexdigest()
