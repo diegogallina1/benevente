@@ -13,8 +13,16 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
-PERFIS = ("conservador", "equilibrado", "arrojado")
-REGISTRO = json.loads((ROOT / "data" / "benevente_profile_ladder_v3_registration.json").read_text(encoding="utf-8"))
+# A escada e o registro vêm da política, não de uma tupla e de um caminho
+# escritos aqui. Escritos à mão, este arquivo testava três livros contra a v3
+# enquanto o site publicava quatro sob a v4, e o quarto degrau ficou sem
+# propriedade nenhuma testada.
+import sys
+sys.path.insert(0, str(ROOT / "tools"))
+from politica import REGISTRO as CAMINHO_DO_REGISTRO, escada  # noqa: E402
+
+PERFIS = tuple(escada())
+REGISTRO = json.loads(CAMINHO_DO_REGISTRO.read_text(encoding="utf-8"))
 
 
 @pytest.fixture(scope="module")
@@ -55,11 +63,13 @@ def test_cada_livro_fecha_em_cem_por_cento(livros) -> None:
 
 
 def test_a_escada_de_risco_se_mantem_na_carteira_de_2026(livros) -> None:
-    acoes = {p: sum(h["weight"] for h in l["holdings"] if h["ticker"] != "IVVB11")
-             for p, l in livros.items()}
-    assert acoes["conservador"] < acoes["equilibrado"] < acoes["arrojado"]
-    emissores = {p: len([h for h in l["holdings"] if h["ticker"] != "IVVB11"]) for p, l in livros.items()}
-    assert emissores["conservador"] > emissores["equilibrado"] > emissores["arrojado"]
+    # Na ordem da escada, do degrau mais apertado ao mais solto: a parcela em
+    # ações cresce a cada degrau e o número de emissores não cresce. Escrita
+    # com três nomes, a comparação nunca olhava o degrau que a política acrescentou.
+    acoes = [sum(h["weight"] for h in livros[p]["holdings"] if h["ticker"] != "IVVB11") for p in PERFIS]
+    emissores = [len([h for h in livros[p]["holdings"] if h["ticker"] != "IVVB11"]) for p in PERFIS]
+    assert all(a < b for a, b in zip(acoes, acoes[1:])), dict(zip(PERFIS, acoes))
+    assert all(a >= b for a, b in zip(emissores, emissores[1:])), dict(zip(PERFIS, emissores))
 
 
 def test_o_acompanhamento_declara_que_e_reconstrucao(livros) -> None:

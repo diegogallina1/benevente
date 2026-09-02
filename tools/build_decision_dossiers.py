@@ -27,6 +27,8 @@ from docx.shared import Cm, Pt, RGBColor
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from politica import REGISTRO  # noqa: E402
 from portfolio_risk import risk_profile_spec  # noqa: E402
 
 OUT_DOCX = ROOT / "artifacts" / "decision_dossiers" / "docx"
@@ -259,7 +261,10 @@ def build_dossier(profile: str, block: dict, ladder: dict, registration: dict) -
 def main() -> None:
     composition = json.loads((ROOT / "web" / "composition.json").read_text(encoding="utf-8"))
     ladder = json.loads((ROOT / "web" / "ladder_v2.json").read_text(encoding="utf-8"))
-    registration = json.loads((ROOT / "data" / "benevente_profile_ladder_v3_registration.json").read_text(encoding="utf-8"))
+    # O selo vem do registro vigente. Apontado para a v3, os onze dossiês do
+    # ultraconservador saíram carimbados com uma política que não declara esse
+    # perfil, e o teste que deveria pegar isso lia o mesmo caminho fixo.
+    registration = json.loads(REGISTRO.read_text(encoding="utf-8"))
     OUT_DOCX.mkdir(parents=True, exist_ok=True)
     count = 0
     for profile, blocks in composition["profiles"].items():

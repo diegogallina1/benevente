@@ -2,8 +2,10 @@
   "decision_date": "2026-01-02",
   "profile": "conservador",
   "status": "reconstrucao_sob_politica_congelada",
-  "policy": "benevente_profile_ladder_v3",
-  "registration_sha256": "ca2476d4d5ce8dac3796bd20aceefd5437ba7b71fc9e126f2493f6f0beba563b",
+  "policy": "benevente_profile_ladder_v4",
+  "registration_sha256": "4d8fb114c92188239d456370550b173cab8fadbdd5f5a2ab1cfc1bd8648400ba",
+  "built_under_policy": "benevente_profile_ladder_v3",
+  "built_under_sha256": "ca2476d4d5ce8dac3796bd20aceefd5437ba7b71fc9e126f2493f6f0beba563b",
   "approved_by": "Diego Gallina",
   "declared": {
     "maximum_equity_weight": 0.35,

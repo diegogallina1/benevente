@@ -1,16 +1,18 @@
 {
   "decision_date": "2026-01-02",
-  "policy": "benevente_profile_ladder_v3",
-  "registration_sha256": "ca2476d4d5ce8dac3796bd20aceefd5437ba7b71fc9e126f2493f6f0beba563b",
+  "policy": "benevente_profile_ladder_v4",
+  "registration_sha256": "4d8fb114c92188239d456370550b173cab8fadbdd5f5a2ab1cfc1bd8648400ba",
+  "built_under_policy": "benevente_profile_ladder_v3",
+  "built_under_sha256": "ca2476d4d5ce8dac3796bd20aceefd5437ba7b71fc9e126f2493f6f0beba563b",
   "approved_by": "Diego Gallina",
   "honesty": "A política é declarada e foi congelada antes desta execução, então aplicá-la a uma data passada não escolhe nada: orçamento, número de nomes, tetos e fatores já estavam assinados. A amostra confirmatória continua começando no primeiro pregão de 2027 — este livro é reconstrução, não validação prospectiva.",
   "profiles": {
     "ultraconservador": {
       "through": "2026-08-31",
-      "portfolio_return": 0.0894192079,
+      "portfolio_return": 0.0894192082,
       "equity_weight": 0.04,
       "issuers": 12,
-      "record_sha256": "7e001990b54cda0bc4b3b2f489376951a80a5c9bbf2f6c498694145cda84cef6",
+      "record_sha256": "99a003226b5ae597dcde5f400a64cda58e3f1da291eb86d4beda3d76382da1c8",
       "reconstructed": true
     },
     "conservador": {

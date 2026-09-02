@@ -14,7 +14,14 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB = ROOT / "web"
-PERFIS = ("conservador", "equilibrado", "arrojado")
+
+# Da política, não de uma tupla. Com três nomes escritos aqui, o quarto degrau
+# ficava fora de todas as propriedades deste arquivo sem nenhum teste reclamar.
+import sys
+sys.path.insert(0, str(ROOT / "tools"))
+from politica import escada  # noqa: E402
+
+PERFIS = tuple(escada())
 
 
 @pytest.fixture(scope="module")

@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
 from portfolio_risk import risk_profile_spec  # noqa: E402
-from politica import escada  # noqa: E402
+from politica import REGISTRO, escada  # noqa: E402
 from update_live_performance import update  # noqa: E402
 BOOKS = ROOT / "artifacts" / "profile_books_2026" / "profile_books_2026.json"
 WEB = ROOT / "web"
@@ -44,8 +44,11 @@ def overlay_for(profile: str, registration: dict) -> tuple[dict, list[float]]:
 
 def decision_document(book: dict, source: dict) -> dict:
     """O livro de um perfil no formato que o monitor consome."""
-    registration = json.loads(
-        (ROOT / "data" / "benevente_profile_ladder_v3_registration.json").read_text(encoding="utf-8"))
+    # O registro vigente, lido de politica.py e não de um caminho escrito aqui.
+    # Este arquivo apontava para a v3 enquanto a escada publicava a v4, e o resumo
+    # diário saía carimbado com uma política que não declara o quarto degrau que
+    # ele mesmo listava. A camada é a mesma nas duas versões; o selo não era.
+    registration = json.loads(REGISTRO.read_text(encoding="utf-8"))
     overlay_config, multipliers = overlay_for(book["profile"], registration)
     holdings = [{"ticker": p["ticker"], "weight": p["weight"],
                  "score": p.get("score"),
@@ -66,8 +69,14 @@ def decision_document(book: dict, source: dict) -> dict:
         "decision_date": source["decision_date"],
         "profile": book["profile"],
         "status": source["status"],
-        "policy": source["policy"],
-        "registration_sha256": source["registration_sha256"],
+        # O livro foi construído sob a v3 e é governado pela v4, que a substitui
+        # com os mesmos parâmetros para este perfil. As duas ficam nomeadas: a
+        # vigente em policy, a de construção em built_under. Só a v3 aparecia, e o
+        # site publicava dois hashes "vigentes" em páginas diferentes.
+        "policy": registration["policy"],
+        "registration_sha256": registration["registration_sha256"],
+        "built_under_policy": source["policy"],
+        "built_under_sha256": source["registration_sha256"],
         "approved_by": source["approved_by"],
         "declared": book["declared"],
         "holdings": holdings,
@@ -91,8 +100,17 @@ def main() -> None:
     args = parser.parse_args()
 
     source = json.loads(args.books.read_text(encoding="utf-8"))
-    summary = {"decision_date": source["decision_date"], "policy": source["policy"],
-               "registration_sha256": source["registration_sha256"],
+    # Duas políticas viajam aqui, e as duas precisam ser nomeadas. Os livros de
+    # janeiro foram construídos sob a v3, e isso é procedência: fica em
+    # built_under. O que governa hoje é a v4, que a substitui com os mesmos
+    # parâmetros para estes três perfis e acrescenta o quarto: fica em policy.
+    # Antes só a v3 aparecia, num resumo que listava um perfil que ela não declara.
+    vigente = json.loads(REGISTRO.read_text(encoding="utf-8"))
+    summary = {"decision_date": source["decision_date"],
+               "policy": vigente["policy"],
+               "registration_sha256": vigente["registration_sha256"],
+               "built_under_policy": source["policy"],
+               "built_under_sha256": source["registration_sha256"],
                "approved_by": source["approved_by"], "honesty": source["honesty"],
                "profiles": {}}
     for profile in escada():

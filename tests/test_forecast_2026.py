@@ -15,8 +15,17 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 CONE = ROOT / "artifacts" / "forecast_2026_cone_v1" / "cone.json"
+#: O degrau declarado depois ganhou faixa própria, num arquivo separado, para o
+#: cone congelado não ser reaberto. Sem ler os dois, a faixa do ultraconservador
+#: publicada no site não estava amarrada a artefato nenhum.
+CONE_TARDIO = ROOT / "artifacts" / "forecast_2026_cone_v1" / "cone_tardio.json"
 WEB = ROOT / "web" / "forecast_2026.json"
-PERFIS = ("conservador", "equilibrado", "arrojado")
+
+import sys
+sys.path.insert(0, str(ROOT / "tools"))
+from politica import escada  # noqa: E402
+
+PERFIS = tuple(escada())
 
 
 @pytest.fixture(scope="module")
@@ -28,11 +37,17 @@ def publicado() -> dict:
 @pytest.fixture(scope="module")
 def artefato() -> dict:
     assert CONE.exists(), "rode research_forecast_2026_cone.py"
-    return json.loads(CONE.read_text(encoding="utf-8"))
+    assert CONE_TARDIO.exists(), "rode research_forecast_2026_cone_tardio.py"
+    cone = json.loads(CONE.read_text(encoding="utf-8"))
+    tardio = json.loads(CONE_TARDIO.read_text(encoding="utf-8"))
+    # Os perfis não podem se sobrepor: o tardio existe para os que o congelado
+    # não tem, e um perfil nos dois seria duas faixas para o mesmo degrau.
+    assert not set(cone["profiles"]) & set(tardio["profiles"])
+    return {**cone, "profiles": {**cone["profiles"], **tardio["profiles"]}}
 
 
 def test_a_faixa_publicada_e_copia_do_artefato(publicado, artefato):
-    """Se o site recalculasse a faixa, ela deixaria de ser a de janeiro."""
+    """Se o site recalculasse a faixa, ela deixaria de ser a congelada em agosto."""
     for perfil in PERFIS:
         assert publicado["profiles"][perfil]["band"] == artefato["profiles"][perfil]["band"], perfil
 
