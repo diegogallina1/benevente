@@ -306,7 +306,24 @@ def apply_benevente2_overlay(
         b1_return = float(row["portfolio"]) / previous_b1 - 1.0 if index else 0.0
         cdi_return = float(row["cdi"]) / previous_cdi - 1.0 if index else 0.0
         multiplier = desired_equity / base_equity_weight if base_equity_weight else 0.0
-        b2_return = cdi_return + multiplier * (b1_return - cdi_return) - cost
+        # O excesso sobre o caixa é decomposto por perna. A camada escala só o
+        # doméstico; a perna global fica com o próprio excesso inteiro, porque a
+        # política a declara isenta. A fórmula anterior escalava b1 − cdi por
+        # inteiro, e cortava o fundo global junto com as ações num sinal que
+        # não se aplica a ele. Com multiplicador 1 as duas formas coincidem.
+        if index and "domestic" in row and "domestic" in rows[index - 1]:
+            anterior = rows[index - 1]
+            base = float(anterior["portfolio"])
+            dom_contrib = (float(row["domestic"]) - float(anterior["domestic"])) / base
+            glob_contrib = (float(row["global"]) - float(anterior["global"])) / base
+            dom_share = float(anterior["domestic"]) / base
+            glob_share = float(anterior["global"]) / base
+            b2_return = (cdi_return
+                         + multiplier * (dom_contrib - dom_share * cdi_return)
+                         + (glob_contrib - glob_share * cdi_return)
+                         - cost)
+        else:
+            b2_return = cdi_return + multiplier * (b1_return - cdi_return) - cost
         b2_level *= 1.0 + b2_return
         row["benevente2"] = round(b2_level, 8)
         row["benevente2_equity_weight"] = round(desired_equity, 12)
@@ -318,11 +335,13 @@ def apply_benevente2_overlay(
 
     labels = {0: "normal", 1: "alerta", 2: "severo"}
     next_state, next_calmer_days = _advance_risk_state(state, calmer_days, raw_states[-1])
-    next_equity = base_equity_weight
-    if next_state == 1:
-        next_equity = min(next_equity, config["alert_equity_cap"])
-    elif next_state == 2:
-        next_equity = min(next_equity, config["severe_equity_cap"])
+    # O alvo da próxima sessão sai da mesma regra que a exposição corrente. Aqui
+    # ficou o teto fixo do livro antigo enquanto a série já usava o
+    # multiplicador do perfil: no alerta, current_equity_weight dizia 55% do
+    # alvo e next_session_equity_weight dizia "manter", no mesmo registro. A
+    # alocação publicada para o próximo pregão, e o valor em reais dela, saíam
+    # sem o corte que a série descrevia.
+    next_equity = _desired_equity(base_equity_weight, next_state, config, multipliers)
     return rows, {
         "configuration": B2_CONFIG,
         "current_risk_state": labels[states[-1]],
@@ -371,6 +390,21 @@ def build_live_document(
     for ticker in required[1:]:
         common_dates &= set(market_series[ticker])
     common_dates &= set(cdi_rates)
+    # Um pregão some da série publicada sempre que qualquer papel não tem preço
+    # nele. Isso acontecia em silêncio e o arquivo saía com missing_tickers
+    # vazio escrito no código. Agora cada papel conta quantos pregões derrubou,
+    # e o total de sessões perdidas vai junto: dado que falta tem de aparecer
+    # como falta, não como série mais curta com cara de completa.
+    uniao = set()
+    for ticker in required:
+        uniao |= {day for day in market_series[ticker] if day >= decision_date}
+    uniao |= {day for day in cdi_rates if day >= decision_date}
+    faltas = {
+        ticker: sorted(day for day in uniao if day not in market_series[ticker])
+        for ticker in required
+    }
+    faltas = {ticker: dias for ticker, dias in faltas.items() if dias}
+    sessoes_perdidas = sorted(day for day in uniao if day not in common_dates)
     timeline = sorted(day for day in common_dates if day >= decision_date)
     if len(timeline) < 2:
         raise LiveDataError("Não há ao menos duas datas comuns depois da decisão")
@@ -388,18 +422,31 @@ def build_live_document(
     starts = {ticker: market_series[ticker][start_day] for ticker in required}
     series: list[dict[str, Any]] = []
     for day in timeline:
-        equity_value = sum(
+        # As duas pernas separadas, porque a camada de proteção só move uma. A
+        # reconstrução do Benevente 2 precisa saber quanto do excesso veio do
+        # doméstico, que ela escala, e quanto veio da perna global, que a
+        # política declara isenta e ela não pode tocar.
+        global_value = sum(
             float(item["weight"])
             * market_series[str(item["ticker"])][day]
             / starts[str(item["ticker"])]
-            for item in holdings
+            for item in holdings if str(item["ticker"]) in exempt
         )
+        domestic_value = sum(
+            float(item["weight"])
+            * market_series[str(item["ticker"])][day]
+            / starts[str(item["ticker"])]
+            for item in holdings if str(item["ticker"]) not in exempt
+        )
+        equity_value = domestic_value + global_value
         cdi_relative = _value_on_or_before(cdi_levels, day) / cdi_start
         portfolio_relative = equity_value + cdi_weight * cdi_relative
         series.append(
             {
                 "date": day,
                 "portfolio": round(portfolio_relative * 100.0, 8),
+                "domestic": round(domestic_value * 100.0, 8),
+                "global": round(global_value * 100.0, 8),
                 "cdi": round(cdi_relative * 100.0, 8),
                 "bova11": round(market_series["BOVA11"][day] / starts["BOVA11"] * 100.0, 8),
                 "ibovespa_price": round(
@@ -456,7 +503,11 @@ def build_live_document(
         "portfolio_return": round(last["portfolio"] / 100.0 - 1.0, 12),
         "benevente2_reconstructed_return": round(last["benevente2"] / 100.0 - 1.0, 12),
         "portfolio_value_brl": round(100_000.0 * last["portfolio"] / 100.0, 2),
-        "equity_sleeve_return": round(equity_last / equity_weight - 1.0, 12),
+        # O numerador soma todas as posições, inclusive a perna global; o
+        # denominador precisa somar os mesmos pesos. Dividir por equity_weight,
+        # que já teve a parcela isenta subtraída, publicava ~26% de retorno da
+        # perna de ações em todos os perfis: era 1,25 × (1 + r) − 1, não r.
+        "equity_sleeve_return": round(equity_last / (equity_weight + exempt_weight) - 1.0, 12),
         "cdi_return": round(last["cdi"] / 100.0 - 1.0, 12),
         "bova11_return": round(last["bova11"] / 100.0 - 1.0, 12),
         "ibovespa_price_return": round(last["ibovespa_price"] / 100.0 - 1.0, 12),
@@ -510,7 +561,15 @@ def build_live_document(
                 "O fechamento ajustado incorpora os ajustes publicados pelo provedor secundário. "
                 "A conciliação integral com eventos B3/CVM ainda não foi concluída."
             ),
-            "missing_tickers": [],
+            "missing_tickers": [
+                {"ticker": ticker, "missing_sessions": len(dias), "first": dias[0], "last": dias[-1]}
+                for ticker, dias in sorted(faltas.items())
+            ],
+            "dropped_sessions": len(sessoes_perdidas),
+            "dropped_sessions_note": (
+                "Pregões em que algum papel não tinha preço na fonte e que por isso "
+                "saíram da série inteira. Zero é o esperado; qualquer outro número é "
+                "buraco no dado, não no mercado."),
             "interpretation": (
                 "Acompanhamento da decisão de 02/01/2026. Não é validação prospectiva porque "
                 "o método foi refinado durante 2026. A trajetória do Benevente 2 anterior a "
