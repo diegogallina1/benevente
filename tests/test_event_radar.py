@@ -3,6 +3,8 @@ import json
 from datetime import datetime
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location("update_event_radar", ROOT / "tools" / "update_event_radar.py")
@@ -96,6 +98,64 @@ def test_unchanged_cvm_archive_is_not_downloaded(monkeypatch) -> None:
     assert events == []
     assert fingerprint == "2026-08-17T11:01:00"
     assert cached is True
+
+
+def test_a_resposta_do_modelo_e_tratada_como_dado_hostil() -> None:
+    """A manchete de terceiro entra no prompt, então a saída do modelo é suspeita."""
+    hostil = {
+        "id": "a", "materiality": "999", "confidence": 5, "urgency": "<script>",
+        "impact": "lucrativo", "horizon": "ontem",
+        "impacted_tickers": ["VIVA3", "<img src=x onerror=alert(1)>", "petr4"] + ["X"] * 40,
+        "summary": "S" * 5000, "rationale": "R" * 5000,
+        "needs_human_review": False, "chave_injetada": "PWN", "state": "critico",
+    }
+    saida = MODULE._classificacao_saneada(hostil, "gemini-3.5-flash")
+    assert saida["materiality"] == 100 and saida["confidence"] == 1.0
+    assert saida["urgency"] in MODULE.URGENCIAS and saida["impact"] == "incerto"
+    assert saida["horizon"] == "indeterminado"
+    assert saida["impacted_tickers"] == ["VIVA3", "PETR4"]
+    assert len(saida["summary"]) == 900 and len(saida["rationale"]) == 900
+    # A política exige revisão humana acima de 50; o modelo não pode dispensá-la.
+    assert saida["needs_human_review"] is True
+    # Chave que o modelo inventou não chega ao arquivo publicado.
+    assert "chave_injetada" not in saida and "state" not in saida
+
+
+def test_download_tem_teto_de_bytes(monkeypatch) -> None:
+    class Resposta:
+        def __init__(self, corpo): self.corpo = corpo
+        def __enter__(self): return self
+        def __exit__(self, *_): return False
+        def read(self, quanto=None): return self.corpo[:quanto] if quanto else self.corpo
+
+    corpo = b"x" * 8
+    monkeypatch.setattr(MODULE.urllib.request, "urlopen", lambda *a, **k: Resposta(corpo))
+    assert MODULE._request("https://exemplo.test/pequeno", limite=10) == corpo
+    with pytest.raises(RuntimeError, match="acima do teto"):
+        MODULE._request("https://exemplo.test/grande?chave=segredo", limite=5)
+
+
+def test_membro_de_zip_gigante_e_recusado_antes_de_descomprimir(monkeypatch) -> None:
+    import io as _io
+    import zipfile as _zip
+
+    buffer = _io.BytesIO()
+    with _zip.ZipFile(buffer, "w", _zip.ZIP_DEFLATED) as saida:
+        saida.writestr("ipe.csv", "a" * 4096)  # comprime muito; o teto é sobre o tamanho declarado
+    monkeypatch.setattr(MODULE, "_current_cvm_resource", lambda year: {
+        "url": "https://exemplo.test/ipe.zip", "last_modified": "2026-09-02T00:00:00"})
+    monkeypatch.setattr(MODULE, "_request", lambda *a, **k: buffer.getvalue())
+    monkeypatch.setattr(MODULE, "MEMBRO_MAXIMO", 100)
+    with pytest.raises(RuntimeError, match="acima do teto"):
+        MODULE.fetch_cvm_ipe(2026, datetime(2026, 8, 20, tzinfo=MODULE.BRT))
+
+
+def test_entidade_externa_em_xml_nao_e_resolvida() -> None:
+    from xml.etree import ElementTree
+    veneno = ('<?xml version="1.0"?><!DOCTYPE r [<!ENTITY x SYSTEM "file:///etc/passwd">]>'
+              "<r><i>&x;</i></r>")
+    with pytest.raises(ElementTree.ParseError):
+        ElementTree.fromstring(veneno)
 
 
 def test_tickers_are_the_union_of_every_published_profile(tmp_path: Path) -> None:

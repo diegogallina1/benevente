@@ -50,11 +50,27 @@ RELEVANT_CVM_CATEGORIES = {
 }
 
 
-def _request(url: str, *, timeout: int = 30, headers: dict[str, str] | None = None) -> bytes:
+BYTES_MAXIMOS = 40 * 1024 * 1024
+MEMBRO_MAXIMO = 200 * 1024 * 1024
+
+
+def _request(url: str, *, timeout: int = 30, headers: dict[str, str] | None = None,
+             limite: int = BYTES_MAXIMOS) -> bytes:
+    """Baixa com teto de bytes.
+
+    Sem teto, uma resposta grande é lida inteira na memória do runner: vale para
+    o ZIP da CVM, para o RSS e para o JSON do modelo. O XML ainda expande
+    entidades internas declaradas no próprio documento (o ElementTree recusa
+    entidade externa, então XXE não se aplica, mas a bomba de entidades sim), e
+    o teto de bytes é o que limita o tamanho do documento antes de parsear.
+    """
     request_headers = {"User-Agent": "BeneventeResearchRadar/1.0 (+https://github.com/diegogallina1/benevente)"}
     request_headers.update(headers or {})
     with urllib.request.urlopen(urllib.request.Request(url, headers=request_headers), timeout=timeout) as response:
-        return response.read()
+        dados = response.read(limite + 1)
+    if len(dados) > limite:
+        raise RuntimeError(f"resposta acima do teto de {limite} bytes: {url.split('?')[0]}")
+    return dados
 
 
 def _clean(value: str | None) -> str:
@@ -142,6 +158,14 @@ def fetch_cvm_ipe(
     csv_names = [name for name in archive.namelist() if name.lower().endswith((".csv", ".txt"))]
     if not csv_names:
         raise RuntimeError("arquivo IPE sem tabela")
+    # O tamanho descomprimido é lido do cabeçalho antes de descomprimir: um ZIP
+    # pequeno pode declarar um membro de gigabytes, e archive.read() o traria
+    # inteiro para a memória. O nome do membro não vira caminho em disco aqui
+    # (leitura por nome, sem extractall), então travessia de caminho não se
+    # aplica; o que faltava era o teto de tamanho.
+    declarado = archive.getinfo(csv_names[0]).file_size
+    if declarado > MEMBRO_MAXIMO:
+        raise RuntimeError(f"membro IPE declara {declarado} bytes, acima do teto de {MEMBRO_MAXIMO}")
     raw = archive.read(csv_names[0])
     decoded = raw.decode("latin-1")
     reader = csv.DictReader(io.StringIO(decoded), delimiter=";")
@@ -215,7 +239,7 @@ def deterministic_classification(event: dict[str, Any], portfolio_tickers: Itera
         impact = "positivo"
     else:
         impact = "incerto"
-    urgency = "critica" if score >= 85 else "alta" if score >= 70 else "media" if score >= 50 else "baixa"
+    urgency = _urgencia_por_nota(score)
     return {
         "materiality": score,
         "confidence": 0.55 if event.get("source_tier") == "primaria_oficial" else 0.35,
@@ -287,11 +311,53 @@ def classify_with_gemini(events: list[dict[str, Any]], api_key: str, model: str)
     for item in parsed.get("alerts", []):
         if item.get("id") not in allowed:
             continue
-        item["materiality"] = max(0, min(100, int(item["materiality"])))
-        item["confidence"] = max(0.0, min(1.0, float(item["confidence"])))
-        item["classifier"] = f"gemini:{model}"
-        result[item["id"]] = item
+        result[item["id"]] = _classificacao_saneada(item, model)
     return result
+
+
+URGENCIAS = ("baixa", "media", "alta", "critica")
+IMPACTOS = ("positivo", "negativo", "misto", "incerto")
+HORIZONTES = ("intradiario", "dias", "semanas", "meses", "indeterminado")
+TICKER = re.compile(r"^[A-Z0-9]{4,8}$")
+
+
+def _classificacao_saneada(item: dict[str, Any], model: str) -> dict[str, Any]:
+    """Reconstrói a classificação a partir de campos conhecidos e validados.
+
+    A entrada do modelo inclui manchete escrita por terceiro, então a saída dele
+    é dado não confiável: é injeção de prompt por construção. O responseSchema
+    é aplicado no servidor do provedor, não aqui, e antes disso o código
+    devolvia o dicionário do modelo direto para o arquivo publicado, aceitando
+    qualquer chave e qualquer valor nos campos de texto e de enumeração. Agora
+    só passa o que está previsto, com valor dentro do conjunto declarado, e
+    chave desconhecida é descartada em vez de publicada.
+    """
+    materialidade = max(0, min(100, int(item.get("materiality") or 0)))
+    urgencia = str(item.get("urgency") or "").strip().lower()
+    impacto = str(item.get("impact") or "").strip().lower()
+    horizonte = str(item.get("horizon") or "").strip().lower()
+    brutos = item.get("impacted_tickers")
+    tickers = [t for t in [str(x).strip().upper() for x in brutos[:20]] if TICKER.match(t)] if isinstance(brutos, list) else []
+    return {
+        "id": item["id"],
+        "materiality": materialidade,
+        "confidence": max(0.0, min(1.0, float(item.get("confidence") or 0.0))),
+        "urgency": urgencia if urgencia in URGENCIAS else _urgencia_por_nota(materialidade),
+        "impact": impacto if impacto in IMPACTOS else "incerto",
+        "horizon": horizonte if horizonte in HORIZONTES else "indeterminado",
+        "impacted_tickers": tickers,
+        "summary": str(item.get("summary") or "")[:900],
+        "rationale": str(item.get("rationale") or "")[:900],
+        # A regra de revisão humana é da política, não do modelo: pedir no
+        # prompt e confiar na resposta deixaria o modelo dispensar a revisão de
+        # um evento material.
+        "needs_human_review": bool(item.get("needs_human_review")) or materialidade >= 50,
+        "classifier": f"gemini:{model}",
+    }
+
+
+def _urgencia_por_nota(score: int) -> str:
+    return "critica" if score >= 85 else "alta" if score >= 70 else "media" if score >= 50 else "baixa"
 
 
 def _state(score: int) -> str:

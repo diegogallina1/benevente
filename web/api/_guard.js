@@ -50,8 +50,18 @@ export function isRateLimited(request, { limit, windowMs, name }) {
 export function hasAllowedOrigin(request) {
   const origin = request.headers.origin;
   if (!origin) return true; // same-origin GETs and server-side calls send none
+  // The canonical domain has to be in the default list, not only in an
+  // environment variable. It was not, and no environment variable was set on
+  // the project, so every POST from the site people actually visit was
+  // answered with 403: browsers send Origin on non-GET requests even when the
+  // request is same-origin. A default that excludes the production domain is a
+  // switch that is off by the time anyone needs it.
+  const DEFAULT_ORIGINS = [
+    "https://benevente.dgo.fi",
+    "https://benevente-wealth-system.vercel.app",
+  ].join(",");
   const allowed = new Set(
-    (process.env.BENEVENTE_ALLOWED_ORIGINS || "https://benevente-wealth-system.vercel.app")
+    (process.env.BENEVENTE_ALLOWED_ORIGINS || DEFAULT_ORIGINS)
       .split(",").map(item => item.trim()).filter(Boolean),
   );
   if (process.env.VERCEL_URL) allowed.add(`https://${process.env.VERCEL_URL}`);

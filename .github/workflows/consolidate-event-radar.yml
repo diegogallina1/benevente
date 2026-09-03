@@ -23,12 +23,16 @@ jobs:
       GEMINI_MODEL: ${{ vars.GEMINI_MODEL || 'gemini-3.5-flash' }}
     steps:
       - name: Baixar repositório
-        uses: actions/checkout@v6
+        # Presa ao SHA, nao a tag: uma tag e um ponteiro que o dono da action
+        # pode mover, e estes jobs rodam com contents:write (e o do radar com
+        # segredo no ambiente). Para atualizar, releia o SHA da tag desejada com
+        # gh api repos/<acao>/git/ref/tags/<tag> --jq .object.sha
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           fetch-depth: 0
 
       - name: Preparar Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
         with:
           python-version: "3.12"
           cache: pip
@@ -39,7 +43,7 @@ jobs:
       - name: Consolidar fontes e validar contrato
         run: |
           python tools/update_event_radar.py
-          python -m pytest tests/test_event_radar.py -q
+          python -m pytest tests/test_event_radar.py tests/test_seguranca_do_site.py -q
 
       - name: Abrir alerta de revisão para evento crítico
         env:
