@@ -70,6 +70,20 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
         assert f'data-strategy-decisions="{mode}"' in unified, mode
 
 
+def familias_hospedadas() -> set[str]:
+    """As famílias que o site de fato serve, lidas da folha local.
+
+    Desde 03/09/2026 as fontes não vêm mais do Google: quem manda o navegador
+    buscar o arquivo é web/fontes.css, gerado por tools/fetch_fonts.py. Antes
+    disso a verificação olhava para o parâmetro family= da URL do Google, e é
+    esta função que substitui aquele parâmetro como fonte da verdade.
+    """
+    folha = (ROOT / "web" / "fontes.css").read_text(encoding="utf-8")
+    familias = set(re.findall(r"font-family:\s*'([^']+)'", folha))
+    assert familias, "web/fontes.css não declara nenhuma família"
+    return familias
+
+
 def test_benevente_2_has_direct_benchmarks_and_shared_design_system() -> None:
     pages = [ROOT / "web" / name for name in (
         "index.html", "versoes.html", "metodo.html", "para-escritorios.html", "quant-ai.html"
@@ -81,9 +95,14 @@ def test_benevente_2_has_direct_benchmarks_and_shared_design_system() -> None:
         # duas nunca se encontraram e a página inteira caía na fonte do
         # sistema. Um teste que aceitasse só "carrega alguma fonte" deixaria
         # esse defeito passar de novo.
-        assert "family=Figtree" in source, path
+        assert "Figtree" in familias_hospedadas()
+        assert 'href="./fontes.css' in source, path
         assert "DM+Mono" not in source, path
         assert "design-system.css" in source, path
+        # A fonte é servida do próprio domínio: nenhuma página pode voltar a
+        # mandar o navegador do visitante falar com o Google.
+        assert "fonts.googleapis.com" not in source, path
+        assert "fonts.gstatic.com" not in source, path
     # The two version pages were consolidated into one tab; the old URLs stay as
     # redirects so external links keep landing somewhere sensible.
     unified = (ROOT / "web" / "versoes.html").read_text(encoding="utf-8")
@@ -218,9 +237,10 @@ def test_o_app_pede_so_fontes_que_ele_carrega() -> None:
     """
     for nome in ("app.html", ):
         fonte = (ROOT / "web" / nome).read_text(encoding="utf-8")
-        carregadas = set(re.findall(r"family=([A-Za-z0-9+]+)", fonte))
-        carregadas = {f.replace("+", " ") for f in carregadas}
-        assert carregadas, nome
+        # Quem faz o navegador buscar o arquivo é a folha local, então é dela
+        # que sai a lista de famílias carregadas.
+        assert 'href="./fontes.css' in fonte, nome
+        carregadas = familias_hospedadas()
         pedidas = set()
         for pilha in re.findall(r"font-family:\s*([^;}]+)", fonte):
             pedidas.update(re.findall(r'"([^"]+)"', pilha))

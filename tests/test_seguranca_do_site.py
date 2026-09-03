@@ -126,6 +126,56 @@ def test_a_csp_permite_exatamente_as_origens_externas_que_as_paginas_usam() -> N
     assert permitidas <= usadas, f"a CSP permite origem que nenhuma página usa: {sorted(permitidas - usadas)}"
 
 
+def test_a_csp_nao_admite_nenhuma_origem_externa() -> None:
+    """Desde que as fontes são hospedadas aqui, não há terceiro a permitir."""
+    csp = _csp()
+    assert csp["font-src"] == "'self'", csp["font-src"]
+    externas = [parte for valor in csp.values() for parte in valor.split() if parte.startswith("http")]
+    assert not externas, f"a CSP ainda abre origem externa: {externas}"
+
+
+@pytest.mark.parametrize("pagina", sorted(WEB.glob("*.html")), ids=lambda p: p.name)
+def test_nenhuma_pagina_manda_o_visitante_falar_com_terceiro(pagina: Path) -> None:
+    # Enquanto a folha vinha do Google, o IP de cada visitante chegava lá antes
+    # da primeira letra aparecer. Isso é privacidade, e some se alguém colar de
+    # volta um <link> de conveniência.
+    texto = pagina.read_text(encoding="utf-8")
+    for terceiro in re.findall(r'(?:href|src)="(https?://[^"]+)"', texto):
+        assert terceiro.startswith(dominio_canonico()), f"{pagina.name} busca {terceiro}"
+
+
+def test_toda_fonte_declarada_existe_no_diretorio_publicado() -> None:
+    """url() apontando para arquivo ausente cai calado na fonte do sistema.
+
+    É o defeito que este repositório já cometeu duas vezes com nome de família;
+    ao passar a hospedar os arquivos, o mesmo silêncio passa a ser possível por
+    caminho errado.
+    """
+    folha = WEB / "fontes.css"
+    referencias = re.findall(r"url\('\./([^']+)'\)", folha.read_text(encoding="utf-8"))
+    assert referencias, "web/fontes.css não referencia nenhum arquivo"
+    ausentes = sorted({ref for ref in referencias if not (WEB / ref).exists()})
+    assert not ausentes, f"fontes.css aponta para arquivo que não existe: {ausentes}"
+    # E nenhum arquivo publicado sem regra que o use.
+    usados = {Path(ref).name for ref in referencias}
+    orfaos = sorted(p.name for p in (WEB / "fonts").glob("*.woff2") if p.name not in usados)
+    assert not orfaos, f"fonte publicada que nenhuma regra usa: {orfaos}"
+
+
+def test_as_fontes_tem_cache_imutavel_e_nome_com_hash() -> None:
+    """Cache eterno só é seguro porque o nome muda quando o conteúdo muda."""
+    regra = [r for r in VERCEL["headers"] if r["source"] == "/fonts/(.*)"]
+    assert regra, "falta a regra de cache para /fonts/"
+    cache = {item["key"]: item["value"] for item in regra[0]["headers"]}["Cache-Control"]
+    assert "immutable" in cache and "max-age=31536000" in cache, cache
+    for arquivo in sorted((WEB / "fonts").glob("*.woff2")):
+        digest = arquivo.name.split(".")[-2]
+        assert re.fullmatch(r"[0-9a-f]{8}", digest), f"{arquivo.name} sem hash no nome"
+        import hashlib
+        real = hashlib.sha256(arquivo.read_bytes()).hexdigest()[:8]
+        assert digest == real, f"{arquivo.name} tem hash de outro conteúdo ({real})"
+
+
 # --- o radar renderiza texto de terceiro ------------------------------------
 
 def test_todo_campo_de_terceiro_no_radar_passa_por_escape() -> None:

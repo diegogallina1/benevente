@@ -90,13 +90,12 @@ MONO = '"Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
 #: navegador não achava a primeira, não usava a segunda, e caía na fonte do
 #: sistema. Toda a tipografia do site era acidental, e ninguém veria isso numa
 #: revisão de código: só medindo a página renderizada.
-FONTES_LINK = (
-    '<link rel="preconnect" href="https://fonts.googleapis.com">\n'
-    '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
-    '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?'
-    'family=Figtree:wght@400;500;600;700&'
-    'family=Spline+Sans+Mono:wght@400;500&display=swap">'
-)
+#: As fontes são servidas do próprio domínio desde 03/09/2026. Enquanto vinham
+#: do Google, o IP de cada visitante ia para lá antes da primeira letra aparecer
+#: e a CSP precisava abrir duas origens externas. Os arquivos estão em
+#: web/fonts/, a folha é gerada por tools/fetch_fonts.py e a procedência de cada
+#: um, com SHA-256, está em data/fontes_hospedadas.json.
+FONTES_LINK = '<link rel="stylesheet" href="./fontes.css">'
 
 
 def _bloco(seletor: str, valores: dict) -> str:

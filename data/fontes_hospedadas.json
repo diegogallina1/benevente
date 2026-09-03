@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0.0",
+  "fetched_on": "2026-09-03",
+  "source": "https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap",
+  "why": "Servir as fontes do próprio domínio: nenhum visitante fala com o Google para ler o site, e a CSP fecha style-src e font-src em 'self'.",
+  "license": "Figtree e Spline Sans Mono são SIL Open Font License 1.1, que permite hospedagem própria e redistribuição.",
+  "stylesheet": "web/fontes.css",
+  "note": "Ambas as famílias são variáveis: o mesmo arquivo serve todos os pesos declarados, e por isso há menos arquivos do que regras @font-face.",
+  "files": [
+    {
+      "file": "web/fonts/figtree-latin-ext.bf7828e2.woff2",
+      "family": "Figtree",
+      "style": "normal",
+      "subset": "latin-ext",
+      "weights": [
+        "400",
+        "500",
+        "600",
+        "700"
+      ],
+      "bytes": 10280,
+      "source_url": "https://fonts.gstatic.com/s/figtree/v9/_Xms-HUzqDCFdgfMm4q9DbZs.woff2",
+      "sha256": "bf7828e2c258cffcfa50a048ee388a36b95bc16b452e8d36fa797635dbe15965"
+    },
+    {
+      "file": "web/fonts/figtree-latin.4ba7d3d0.woff2",
+      "family": "Figtree",
+      "style": "normal",
+      "subset": "latin",
+      "weights": [
+        "400",
+        "500",
+        "600",
+        "700"
+      ],
+      "bytes": 20156,
+      "source_url": "https://fonts.gstatic.com/s/figtree/v9/_Xms-HUzqDCFdgfMm4S9DQ.woff2",
+      "sha256": "4ba7d3d096695818fe0686be4f1e82c6b05134e18a22260336130335027462dd"
+    },
+    {
+      "file": "web/fonts/spline-sans-mono-latin-ext.0ca9a398.woff2",
+      "family": "Spline Sans Mono",
+      "style": "normal",
+      "subset": "latin-ext",
+      "weights": [
+        "400",
+        "500"
+      ],
+      "bytes": 20816,
+      "source_url": "https://fonts.gstatic.com/s/splinesansmono/v13/R70BjzAei_CDNLfgZxrW6wrZOF2WX5yZmF2a.woff2",
+      "sha256": "0ca9a3989044d1f9b4da1f303cea3c3091f5cb02fe54da04fd51fceaf676ecf9"
+    },
+    {
+      "file": "web/fonts/spline-sans-mono-latin.46b7dcaf.woff2",
+      "family": "Spline Sans Mono",
+      "style": "normal",
+      "subset": "latin",
+      "weights": [
+        "400",
+        "500"
+      ],
+      "bytes": 36476,
+      "source_url": "https://fonts.gstatic.com/s/splinesansmono/v13/R70BjzAei_CDNLfgZxrW6wrZOF2WX5KZmA.woff2",
+      "sha256": "46b7dcafe3e51dbe87be1bafaac3fed7646db1fe0a146647a6ffce3699f2752d"
+    }
+  ]
+}
