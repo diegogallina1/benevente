@@ -97,6 +97,16 @@ MONO = '"Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, monospace'
 #: um, com SHA-256, está em data/fontes_hospedadas.json.
 FONTES_LINK = '<link rel="stylesheet" href="./fontes.css">'
 
+#: A analítica de acesso, servida do próprio domínio.
+#:
+#: A Cloudflare injetava o beacon dela na borda, de um domínio de terceiro, e a
+#: CSP bloqueava: a medição não funcionava e cada visita registrava dois erros
+#: no console. Este script vem de /_vercel/insights/, ou seja, da mesma origem,
+#: então passa em script-src 'self' e o envio passa em connect-src 'self', sem
+#: abrir nenhuma origem externa. Ele responde 404 enquanto a analítica estiver
+#: desligada no painel do projeto, o que é inofensivo e some ao ligar.
+ANALITICA_LINK = '<script defer src="/_vercel/insights/script.js"></script>'
+
 
 def _bloco(seletor: str, valores: dict) -> str:
     linhas = "\n".join(f"  --{nome}: {valor};" for nome, valor in valores.items())

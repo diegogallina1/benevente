@@ -15,7 +15,7 @@ import sys
 ROOT_PARA_MOTOR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from build_calibration_web import nota_do_instrumento  # noqa: E402
-from design_tokens import FONTES_LINK, MONO, SANS, css as tokens_css  # noqa: E402
+from design_tokens import ANALITICA_LINK, FONTES_LINK, MONO, SANS, css as tokens_css  # noqa: E402
 sys.path.insert(0, str(ROOT_PARA_MOTOR))
 from fixed_income_catalog import motor_para_navegador  # noqa: E402
 
@@ -1803,7 +1803,7 @@ def main() -> None:
                   # O rodapé nomeava a tipografia à mão e nomeava a errada. Sai
                   # das mesmas constantes que a folha de estilo usa.
                   .replace("__TIPOGRAFIA__", f"Tipografia {_familia(SANS)} e {_familia(MONO)}.")
-                  .replace("__FONTES__", FONTES_LINK)
+                  .replace("__FONTES__", "\n".join((FONTES_LINK, ANALITICA_LINK)))
                   .replace("__TOKENS__", tokens_css(com_cabecalho=False)))
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(pagina, encoding="utf-8")

@@ -144,6 +144,23 @@ def test_nenhuma_pagina_manda_o_visitante_falar_com_terceiro(pagina: Path) -> No
         assert terceiro.startswith(dominio_canonico()), f"{pagina.name} busca {terceiro}"
 
 
+@pytest.mark.parametrize("pagina", sorted(WEB.glob("*.html")), ids=lambda p: p.name)
+def test_a_analitica_e_de_primeira_parte(pagina: Path) -> None:
+    """Medir acesso não pode custar a privacidade que o site acabou de comprar.
+
+    A analítica da Cloudflare era injetada na borda a partir de um domínio de
+    terceiro e a CSP a bloqueava. Esta vem de /_vercel/, mesma origem: passa em
+    script-src 'self' e o envio passa em connect-src 'self'. Um script de
+    medição apontando para fora quebra este teste, que é o objetivo.
+    """
+    texto = pagina.read_text(encoding="utf-8")
+    marcas = re.findall(r'<script[^>]+src="([^"]+)"', texto)
+    analitica = [src for src in marcas if "insights" in src or "analytics" in src or "beacon" in src]
+    assert analitica, f"{pagina.name} não carrega a analítica"
+    for src in analitica:
+        assert src.startswith("/_vercel/"), f"{pagina.name} mede acesso por terceiro: {src}"
+
+
 def test_toda_fonte_declarada_existe_no_diretorio_publicado() -> None:
     """url() apontando para arquivo ausente cai calado na fonte do sistema.
 
