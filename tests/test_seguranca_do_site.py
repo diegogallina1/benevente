@@ -159,6 +159,22 @@ def test_a_analitica_e_de_primeira_parte(pagina: Path) -> None:
     assert analitica, f"{pagina.name} não carrega a analítica"
     for src in analitica:
         assert src.startswith("/_vercel/"), f"{pagina.name} mede acesso por terceiro: {src}"
+    # Uma tag por produto. A integração automática da Vercel empilhou quatro por
+    # página, medindo a mesma visita duas vezes e cobrando dois carregamentos.
+    assert sorted(analitica) == ["/_vercel/insights/script.js", "/_vercel/speed-insights/script.js"], analitica
+
+
+def test_o_site_nao_precisa_de_passo_de_build() -> None:
+    """Um package.json em web/ faz a Vercel buscar um diretório de saída que não existe.
+
+    Foi assim que a publicação parou: a integração automática instalou
+    @vercel/speed-insights, um pacote de framework que este site estático não
+    usa, e o passo de build que veio junto derrubou o deploy com "No Output
+    Directory named public". As duas tags de mesma origem medem sem nada disso.
+    """
+    for nome in ("package.json", "pnpm-lock.yaml", "package-lock.json", "yarn.lock"):
+        assert not (WEB / nome).exists(), (
+            f"web/{nome} faz a Vercel rodar um build neste site estático e a publicação falha")
 
 
 def test_toda_fonte_declarada_existe_no_diretorio_publicado() -> None:

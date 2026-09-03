@@ -105,7 +105,17 @@ FONTES_LINK = '<link rel="stylesheet" href="./fontes.css">'
 #: então passa em script-src 'self' e o envio passa em connect-src 'self', sem
 #: abrir nenhuma origem externa. Ele responde 404 enquanto a analítica estiver
 #: desligada no painel do projeto, o que é inofensivo e some ao ligar.
-ANALITICA_LINK = '<script defer src="/_vercel/insights/script.js"></script>'
+#:
+#: A integração automática da Vercel, aceita em três pull requests, acrescentou
+#: por cima disto um segundo carregamento a partir de cdn.vercel-insights.com,
+#: reabriu script-src e connect-src para esse domínio e para o curinga
+#: *.vercel-insights.com, e trouxe um package.json cujo passo de build derrubou
+#: a publicação inteira. Nada disso é necessário num site estático: os dois
+#: caminhos abaixo saem do próprio domínio e medem a mesma coisa.
+ANALITICA_LINK = (
+    '<script defer src="/_vercel/insights/script.js"></script>\n'
+    '<script defer data-framework="vanilla" src="/_vercel/speed-insights/script.js"></script>'
+)
 
 
 def _bloco(seletor: str, valores: dict) -> str:
