@@ -1,0 +1,62 @@
+{
+  "document": "reatestação dos hashes de código",
+  "policy": "benevente_profile_ladder_v4",
+  "re_attestation_of": {
+    "file": "data/benevente_profile_ladder_v4_registration.json",
+    "registered_at": "2026-08-30T13:38:13.367905-03:00",
+    "registration_sha256": "4d8fb114c92188239d456370550b173cab8fadbdd5f5a2ab1cfc1bd8648400ba"
+  },
+  "approved_by": "Diego Gallina",
+  "approval_source": "explicit",
+  "re_attested_at": "2026-09-04T12:28:18.823285-03:00",
+  "why": "Os hashes de código da v4 foram tirados às 13:38:13 de 30/08/2026. O quarto degrau foi acrescentado a portfolio_risk.py e profile_ladder_v2.py em seguida, e registro e código entraram no mesmo commit (bfd80e5) às 13:54. O registro hasheou arquivos que ainda não continham a implementação do degrau que ele declara. Não é o código derivando da política ao longo do tempo: é a fotografia tirada dezesseis minutos cedo demais.",
+  "parameters_changed": "none",
+  "parameters_checked": "Os quatro degraus e, em cada um, o teto de renda variável e o número de emissores foram comparados entre a declaração da v4 e o que profile_ladder_v2.LADDER_V2 expõe hoje. São idênticos, e o script recusa emitir este documento se deixarem de ser.",
+  "confirmatory_sample_starts": "first B3 trading session of 2027",
+  "what_this_does_not_do": "Não cria versão nova, porque não houve mudança material, e a linhagem do projeto reserva versão nova para isso. Não move a fronteira temporal: a amostra confirmatória continua começando no primeiro pregão de 2027. Não apaga o registro da v4, que fica como foi assinado.",
+  "difference_meanings": {
+    "inalterado": "O hash registrado bate com o arquivo que o repositório entrega.",
+    "fim_de_linha": "O conteúdo nunca mudou. O hash registrado foi calculado sobre bytes com CRLF numa cópia de trabalho no Windows, e o repositório entrega LF.",
+    "implementado_apos_a_fotografia": "O arquivo recebeu a implementação do quarto degrau depois de o registro ter sido gerado, no mesmo commit."
+  },
+  "code": [
+    {
+      "file": "annual_walk_forward.py",
+      "registered_sha256": "da664570088a10afee85a26264e87ead60eef3abb5d612ed9744c22089cf5baf",
+      "sha256": "59b1d17849ddcb256f584e24728f51392335ed1e9ffdcfc4111393fe545bd1ee",
+      "difference": "fim_de_linha"
+    },
+    {
+      "file": "portfolio_risk.py",
+      "registered_sha256": "5d6a46dd329b154788c762562b2dff4bd9d082068cb592968d0e2b48b6f040bf",
+      "sha256": "5421431eb817a664cb1f26d1bff888bb1d18184b265762ec46563ff774c153db",
+      "difference": "implementado_apos_a_fotografia"
+    },
+    {
+      "file": "profile_ladder.py",
+      "registered_sha256": "a5074512297d85450e53a7fba11653339175d373060aa15b8cc590f9dd8c6ae0",
+      "sha256": "c5fb74fd32a9f0d0d87ff47e952063fc07e7723b58f8197cb7ba4f7bf486afdb",
+      "difference": "fim_de_linha"
+    },
+    {
+      "file": "profile_ladder_v2.py",
+      "registered_sha256": "5afe66aa0d5519dc285d3940e5e1281df251ad0d2412295785b7632016f141cb",
+      "sha256": "dc135b694940c29ff8bec07b686224d1a98833085c19863f14c36a253bdf49e2",
+      "difference": "implementado_apos_a_fotografia"
+    },
+    {
+      "file": "profile_ladder_v3.py",
+      "registered_sha256": "748539cb892636bec4d2190477367e3d0d80ab7df25e0537b00b5742adf4ecf9",
+      "sha256": "748539cb892636bec4d2190477367e3d0d80ab7df25e0537b00b5742adf4ecf9",
+      "difference": "inalterado"
+    },
+    {
+      "file": "tesouro_selic_series.py",
+      "registered_sha256": "7db6a0d2edfe2b6155a1819c629c4544bc7b9ddefce21bfbc6b456c5d474fbb7",
+      "sha256": "20fe30389cc8a3b18f6d08848d34999086c2a962b74fe08a9b3f8467959c566b",
+      "difference": "fim_de_linha"
+    }
+  ],
+  "how_to_check": "python tools/verify_published_hashes.py",
+  "reattestation_sha256": "6f25eaf1cdf58645408ebcbb3e8226da87aedafdf35c38c995b70d8ce363c0cb"
+}

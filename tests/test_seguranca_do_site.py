@@ -352,7 +352,7 @@ def test_editar_arquivo_declarado_pela_politica_reprova(monkeypatch) -> None:
     assert not modulo.confere_politica_vigente(), "a política deveria estar em ordem antes do teste"
 
     original = modulo.blob
-    alvo = "profile_ladder_v3.py"  # o único cujo hash declarado confere hoje
+    alvo = "profile_ladder_v3.py"  # o único cujo hash do registro confere hoje
 
     def blob_adulterado(caminho: str):
         conteudo = original(caminho)
@@ -362,7 +362,37 @@ def test_editar_arquivo_declarado_pela_politica_reprova(monkeypatch) -> None:
 
     monkeypatch.setattr(modulo, "blob", blob_adulterado)
     problemas = modulo.confere_politica_vigente()
-    assert any(alvo in p and "não está assumida" in p for p in problemas), problemas
+    # Desde a reatestação de 04/09 os seis arquivos declarados têm hash assinado,
+    # então uma edição cai em "mudou de novo" e não em "não está assumida". O que
+    # importa é que ela seja recusada, nomeando o arquivo.
+    assert any(alvo in p for p in problemas), problemas
+
+
+def test_a_reatestacao_prova_que_os_parametros_nao_mudaram() -> None:
+    """A reatestação afirma que nenhum parâmetro mudou; aqui se confere a afirmação.
+
+    Um documento que só fala de si mesmo não atesta nada. O script que o gera
+    compara os quatro degraus e, em cada um, o teto de renda variável e o número
+    de emissores, entre a declaração da v4 e o que o código expõe. Se deixarem
+    de ser idênticos, aquilo não é reatestação, é política nova.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "reatestar", ROOT / "tools" / "reatestar_politica_v4.py")
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    iguais, diferencas = modulo.parametros_conferem()
+    assert iguais, diferencas
+
+    documento = json.loads(
+        (ROOT / "data" / "benevente_profile_ladder_v4_code_reattestation.json").read_text(encoding="utf-8"))
+    assert documento["parameters_changed"] == "none"
+    assert documento["approved_by"], "reatestação sem assinante"
+    # A fronteira temporal não se move numa reatestação.
+    registro = json.loads(
+        (ROOT / "data" / "benevente_profile_ladder_v4_registration.json").read_text(encoding="utf-8"))
+    assert documento["confirmatory_sample_starts"] == registro["confirmatory_sample_starts"]
+    assert documento["re_attestation_of"]["registration_sha256"] == registro["registration_sha256"]
 
 
 def test_mudar_de_novo_um_arquivo_ja_assumido_reprova(monkeypatch) -> None:

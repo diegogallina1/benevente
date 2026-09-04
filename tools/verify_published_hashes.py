@@ -176,6 +176,12 @@ def confere_politica_vigente() -> list[str]:
         for item in correcao["divergences"]
         if item["registration"] == f"data/{politica.REGISTRO.name}" and item["file"]
     }
+    # A reatestação é a fonte mais forte: ela é assinada, diz a causa de cada
+    # divergência e prova que os parâmetros não mudaram. Onde ela fala, manda.
+    reatestacao = ROOT / "data" / f"{politica.REGISTRO.stem.replace('_registration', '')}_code_reattestation.json"
+    if reatestacao.exists():
+        documento = json.loads(reatestacao.read_text(encoding="utf-8"))
+        assumidas.update({item["file"]: item["sha256"] for item in documento["code"]})
 
     problemas = []
     for arquivo, declarado in registro.get("code", {}).items():
