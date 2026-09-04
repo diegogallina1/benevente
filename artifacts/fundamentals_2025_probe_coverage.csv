@@ -1,0 +1,348 @@
+decision_date,ticker,status,reason
+2025-01-02,VALE3.SA,blocked,no_fre_share_count
+2025-01-02,PETR4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,ITUB4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,B3SA3.SA,blocked,No ITR available by 2025-01-02 for B3SA3.SA
+2025-01-02,BBDC4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,BBAS3.SA,blocked,No ITR available by 2025-01-02 for BBAS3.SA
+2025-01-02,ABEV3.SA,blocked,No ITR available by 2025-01-02 for ABEV3.SA
+2025-01-02,RENT3.SA,blocked,No ITR available by 2025-01-02 for RENT3.SA
+2025-01-02,SUZB3.SA,blocked,No ITR available by 2025-01-02 for SUZB3.SA
+2025-01-02,PETR3.SA,blocked,No ITR available by 2025-01-02 for PETR3.SA
+2025-01-02,SBSP3.SA,blocked,No ITR available by 2025-01-02 for SBSP3.SA
+2025-01-02,PRIO3.SA,blocked,No ITR available by 2025-01-02 for PRIO3.SA
+2025-01-02,ELET3.SA,blocked,No ITR available by 2025-01-02 for ELET3.SA
+2025-01-02,WEGE3.SA,blocked,No ITR available by 2025-01-02 for WEGE3.SA
+2025-01-02,EMBR3.SA,blocked,No ITR available by 2025-01-02 for EMBR3.SA
+2025-01-02,EQTL3.SA,blocked,No ITR available by 2025-01-02 for EQTL3.SA
+2025-01-02,BPAC11.SA,blocked,unsupported_share_class:UNT EX  N2
+2025-01-02,RAIL3.SA,blocked,No ITR available by 2025-01-02 for RAIL3.SA
+2025-01-02,HAPV3.SA,blocked,No ITR available by 2025-01-02 for HAPV3.SA
+2025-01-02,GGBR4.SA,blocked,No ITR available by 2025-01-02 for GGBR4.SA
+2025-01-02,ITSA4.SA,blocked,No ITR available by 2025-01-02 for ITSA4.SA
+2025-01-02,LREN3.SA,blocked,No ITR available by 2025-01-02 for LREN3.SA
+2025-01-02,MGLU3.SA,blocked,No ITR available by 2025-01-02 for MGLU3.SA
+2025-01-02,BRFS3.SA,blocked,No ITR available by 2025-01-02 for BRFS3.SA
+2025-01-02,VBBR3.SA,blocked,No ITR available by 2025-01-02 for VBBR3.SA
+2025-01-02,RADL3.SA,blocked,No ITR available by 2025-01-02 for RADL3.SA
+2025-01-02,ASAI3.SA,blocked,No ITR available by 2025-01-02 for ASAI3.SA
+2025-01-02,CPLE6.SA,blocked,No ITR available by 2025-01-02 for CPLE6.SA
+2025-01-02,BRAV3.SA,blocked,No ITR available by 2025-01-02 for BRAV3.SA
+2025-01-02,RDOR3.SA,blocked,No ITR available by 2025-01-02 for RDOR3.SA
+2025-01-02,BBSE3.SA,blocked,No ITR available by 2025-01-02 for BBSE3.SA
+2025-01-02,HYPE3.SA,blocked,No ITR available by 2025-01-02 for HYPE3.SA
+2025-01-02,CSAN3.SA,blocked,No ITR available by 2025-01-02 for CSAN3.SA
+2025-01-02,CMIG4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,MRFG3.SA,blocked,no_fre_share_count
+2025-01-02,CYRE3.SA,blocked,No ITR available by 2025-01-02 for CYRE3.SA
+2025-01-02,NTCO3.SA,blocked,No ITR available by 2025-01-02 for NTCO3.SA
+2025-01-02,ENGI11.SA,blocked,unsupported_share_class:UNT     N2
+2025-01-02,TIMS3.SA,blocked,no_fre_share_count
+2025-01-02,VIVT3.SA,blocked,No ITR available by 2025-01-02 for VIVT3.SA
+2025-01-02,KLBN11.SA,blocked,unsupported_share_class:UNT     N2
+2025-01-02,TOTS3.SA,blocked,No ITR available by 2025-01-02 for TOTS3.SA
+2025-01-02,AZUL4.SA,blocked,no_fre_share_count
+2025-01-02,UGPA3.SA,blocked,No ITR available by 2025-01-02 for UGPA3.SA
+2025-01-02,BBDC3.SA,blocked,No ITR available by 2025-01-02 for BBDC3.SA
+2025-01-02,ENEV3.SA,blocked,No ITR available by 2025-01-02 for ENEV3.SA
+2025-01-02,ALOS3.SA,blocked,No ITR available by 2025-01-02 for ALOS3.SA
+2025-01-02,CRFB3.SA,blocked,No ITR available by 2025-01-02 for CRFB3.SA
+2025-01-02,CSNA3.SA,blocked,No ITR available by 2025-01-02 for CSNA3.SA
+2025-01-02,GOAU4.SA,blocked,No ITR available by 2025-01-02 for GOAU4.SA
+2025-01-02,MULT3.SA,blocked,No ITR available by 2025-01-02 for MULT3.SA
+2025-01-02,MRVE3.SA,blocked,No ITR available by 2025-01-02 for MRVE3.SA
+2025-01-02,POMO4.SA,blocked,No ITR available by 2025-01-02 for POMO4.SA
+2025-01-02,BRAP4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,PSSA3.SA,blocked,No ITR available by 2025-01-02 for PSSA3.SA
+2025-01-02,STBP3.SA,blocked,No ITR available by 2025-01-02 for STBP3.SA
+2025-01-02,ISAE4.SA,blocked,No ITR available by 2025-01-02 for ISAE4.SA
+2025-01-02,USIM5.SA,blocked,No ITR available by 2025-01-02 for USIM5.SA
+2025-01-02,VIVA3.SA,blocked,No ITR available by 2025-01-02 for VIVA3.SA
+2025-01-02,SANB11.SA,blocked,unsupported_share_class:UNT
+2025-01-02,AZZA3.SA,blocked,No ITR available by 2025-01-02 for AZZA3.SA
+2025-01-02,TAEE11.SA,blocked,unsupported_share_class:UNT     N2
+2025-01-02,CXSE3.SA,blocked,No ITR available by 2025-01-02 for CXSE3.SA
+2025-01-02,DIRR3.SA,blocked,No ITR available by 2025-01-02 for DIRR3.SA
+2025-01-02,ELET6.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,VAMO3.SA,blocked,No ITR available by 2025-01-02 for VAMO3.SA
+2025-01-02,CEAB3.SA,blocked,No ITR available by 2025-01-02 for CEAB3.SA
+2025-01-02,AURE3.SA,blocked,No ITR available by 2025-01-02 for AURE3.SA
+2025-01-02,CPFE3.SA,blocked,No ITR available by 2025-01-02 for CPFE3.SA
+2025-01-02,CPLE3.SA,blocked,No ITR available by 2025-01-02 for CPLE3.SA
+2025-01-02,IGTI11.SA,blocked,unsupported_share_class:UNT     N1
+2025-01-02,COGN3.SA,blocked,No ITR available by 2025-01-02 for COGN3.SA
+2025-01-02,EGIE3.SA,blocked,No ITR available by 2025-01-02 for EGIE3.SA
+2025-01-02,BEEF3.SA,blocked,No ITR available by 2025-01-02 for BEEF3.SA
+2025-01-02,CVCB3.SA,blocked,No ITR available by 2025-01-02 for CVCB3.SA
+2025-01-02,BRKM5.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,IRBR3.SA,blocked,No ITR available by 2025-01-02 for IRBR3.SA
+2025-01-02,SMFT3.SA,blocked,No ITR available by 2025-01-02 for SMFT3.SA
+2025-01-02,CURY3.SA,blocked,No ITR available by 2025-01-02 for CURY3.SA
+2025-01-02,TEND3.SA,blocked,No ITR available by 2025-01-02 for TEND3.SA
+2025-01-02,YDUQ3.SA,blocked,No ITR available by 2025-01-02 for YDUQ3.SA
+2025-01-02,CMIN3.SA,blocked,No ITR available by 2025-01-02 for CMIN3.SA
+2025-01-02,PORT3.SA,blocked,No ITR available by 2025-01-02 for PORT3.SA
+2025-01-02,FLRY3.SA,blocked,No ITR available by 2025-01-02 for FLRY3.SA
+2025-01-02,PCAR3.SA,blocked,No ITR available by 2025-01-02 for PCAR3.SA
+2025-01-02,CSMG3.SA,blocked,No ITR available by 2025-01-02 for CSMG3.SA
+2025-01-02,SLCE3.SA,blocked,No ITR available by 2025-01-02 for SLCE3.SA
+2025-01-02,RECV3.SA,blocked,No ITR available by 2025-01-02 for RECV3.SA
+2025-01-02,RAIZ4.SA,blocked,No ITR available by 2025-01-02 for RAIZ4.SA
+2025-01-02,PETZ3.SA,blocked,No ITR available by 2025-01-02 for PETZ3.SA
+2025-01-02,SAPR11.SA,blocked,unsupported_share_class:UNT EJ  N2
+2025-01-02,MOVI3.SA,blocked,No ITR available by 2025-01-02 for MOVI3.SA
+2025-01-02,EZTC3.SA,blocked,No ITR available by 2025-01-02 for EZTC3.SA
+2025-01-02,GGPS3.SA,blocked,No ITR available by 2025-01-02 for GGPS3.SA
+2025-01-02,AMBP3.SA,blocked,No ITR available by 2025-01-02 for AMBP3.SA
+2025-01-02,AMER3.SA,blocked,No ITR available by 2025-01-02 for AMER3.SA
+2025-01-02,SMTO3.SA,blocked,No ITR available by 2025-01-02 for SMTO3.SA
+2025-01-02,AMOB3.SA,blocked,no_fre_share_count
+2025-01-02,NEOE3.SA,blocked,No ITR available by 2025-01-02 for NEOE3.SA
+2025-01-02,GMAT3.SA,blocked,No ITR available by 2025-01-02 for GMAT3.SA
+2025-01-02,SBFG3.SA,blocked,No ITR available by 2025-01-02 for SBFG3.SA
+2025-01-02,ECOR3.SA,blocked,No ITR available by 2025-01-02 for ECOR3.SA
+2025-01-02,ALUP11.SA,blocked,unsupported_share_class:UNT     N2
+2025-01-02,LWSA3.SA,blocked,No ITR available by 2025-01-02 for LWSA3.SA
+2025-01-02,MDIA3.SA,blocked,No ITR available by 2025-01-02 for MDIA3.SA
+2025-01-02,DXCO3.SA,blocked,No ITR available by 2025-01-02 for DXCO3.SA
+2025-01-02,ORVR3.SA,blocked,No ITR available by 2025-01-02 for ORVR3.SA
+2025-01-02,CBAV3.SA,blocked,No ITR available by 2025-01-02 for CBAV3.SA
+2025-01-02,ONCO3.SA,blocked,No ITR available by 2025-01-02 for ONCO3.SA
+2025-01-02,ANIM3.SA,blocked,No ITR available by 2025-01-02 for ANIM3.SA
+2025-01-02,RAPT4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,SIMH3.SA,blocked,No ITR available by 2025-01-02 for SIMH3.SA
+2025-01-02,INTB3.SA,blocked,No ITR available by 2025-01-02 for INTB3.SA
+2025-01-02,ALPA4.SA,blocked,No ITR available by 2025-01-02 for ALPA4.SA
+2025-01-02,SRNA3.SA,blocked,No ITR available by 2025-01-02 for SRNA3.SA
+2025-01-02,CLSA3.SA,blocked,No ITR available by 2025-01-02 for CLSA3.SA
+2025-01-02,BPAN4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,ITUB3.SA,blocked,No ITR available by 2025-01-02 for ITUB3.SA
+2025-01-02,TTEN3.SA,blocked,No ITR available by 2025-01-02 for TTEN3.SA
+2025-01-02,ABCB4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,JHSF3.SA,blocked,No ITR available by 2025-01-02 for JHSF3.SA
+2025-01-02,MYPK3.SA,blocked,No ITR available by 2025-01-02 for MYPK3.SA
+2025-01-02,BRSR6.SA,blocked,No ITR available by 2025-01-02 for BRSR6.SA
+2025-01-02,LJQQ3.SA,blocked,No ITR available by 2025-01-02 for LJQQ3.SA
+2025-01-02,PLPL3.SA,blocked,No ITR available by 2025-01-02 for PLPL3.SA
+2025-01-02,QUAL3.SA,blocked,No ITR available by 2025-01-02 for QUAL3.SA
+2025-01-02,VLID3.SA,blocked,No ITR available by 2025-01-02 for VLID3.SA
+2025-01-02,LEVE3.SA,blocked,No ITR available by 2025-01-02 for LEVE3.SA
+2025-01-02,BHIA3.SA,blocked,No ITR available by 2025-01-02 for BHIA3.SA
+2025-01-02,HBSA3.SA,blocked,No ITR available by 2025-01-02 for HBSA3.SA
+2025-01-02,MILS3.SA,blocked,No ITR available by 2025-01-02 for MILS3.SA
+2025-01-02,VULC3.SA,blocked,No ITR available by 2025-01-02 for VULC3.SA
+2025-01-02,MDNE3.SA,blocked,No ITR available by 2025-01-02 for MDNE3.SA
+2025-01-02,ELMD3.SA,blocked,No ITR available by 2025-01-02 for ELMD3.SA
+2025-01-02,KEPL3.SA,blocked,No ITR available by 2025-01-02 for KEPL3.SA
+2025-01-02,SAPR4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,LOGG3.SA,blocked,No ITR available by 2025-01-02 for LOGG3.SA
+2025-01-02,UNIP6.SA,blocked,No ITR available by 2025-01-02 for UNIP6.SA
+2025-01-02,OIBR3.SA,blocked,No ITR available by 2025-01-02 for OIBR3.SA
+2025-01-02,RCSL4.SA,blocked,ambiguous_preferred_share_count
+2025-01-02,TGMA3.SA,blocked,No ITR available by 2025-01-02 for TGMA3.SA
+2025-01-02,RCSL3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,EVEN3.SA,blocked,No ITR available by 2025-01-02 for EVEN3.SA
+2025-01-02,GOLL4.SA,blocked,No ITR available by 2025-01-02 for GOLL4.SA
+2025-01-02,POSI3.SA,blocked,No ITR available by 2025-01-02 for POSI3.SA
+2025-01-02,GFSA3.SA,blocked,No ITR available by 2025-01-02 for GFSA3.SA
+2025-01-02,ARML3.SA,blocked,No ITR available by 2025-01-02 for ARML3.SA
+2025-01-02,SOJA3.SA,blocked,No ITR available by 2025-01-02 for SOJA3.SA
+2025-01-02,SYNE3.SA,blocked,No ITR available by 2025-01-02 for SYNE3.SA
+2025-01-02,KLBN4.SA,blocked,No ITR available by 2025-01-02 for KLBN4.SA
+2025-01-02,FRAS3.SA,blocked,No ITR available by 2025-01-02 for FRAS3.SA
+2025-01-02,AGRO3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,RANI3.SA,blocked,No ITR available by 2025-01-02 for RANI3.SA
+2025-01-02,GRND3.SA,blocked,No ITR available by 2025-01-02 for GRND3.SA
+2025-01-02,LAVV3.SA,blocked,No ITR available by 2025-01-02 for LAVV3.SA
+2025-01-02,BRBI11.SA,blocked,unsupported_share_class:UNT     N2
+2025-01-02,VVEO3.SA,blocked,No ITR available by 2025-01-02 for VVEO3.SA
+2025-01-02,PRNR3.SA,blocked,No ITR available by 2025-01-02 for PRNR3.SA
+2025-01-02,TFCO4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,SEQL3.SA,blocked,No ITR available by 2025-01-02 for SEQL3.SA
+2025-01-02,BLAU3.SA,blocked,No ITR available by 2025-01-02 for BLAU3.SA
+2025-01-02,JSLG3.SA,blocked,no_fre_share_count
+2025-01-02,JALL3.SA,blocked,No ITR available by 2025-01-02 for JALL3.SA
+2025-01-02,AERI3.SA,blocked,No ITR available by 2025-01-02 for AERI3.SA
+2025-01-02,CAML3.SA,blocked,No ITR available by 2025-01-02 for CAML3.SA
+2025-01-02,FESA4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,LIGT3.SA,blocked,No ITR available by 2025-01-02 for LIGT3.SA
+2025-01-02,BMOB3.SA,blocked,No ITR available by 2025-01-02 for BMOB3.SA
+2025-01-02,SEER3.SA,blocked,No ITR available by 2025-01-02 for SEER3.SA
+2025-01-02,CASH3.SA,blocked,No ITR available by 2025-01-02 for CASH3.SA
+2025-01-02,POMO3.SA,blocked,No ITR available by 2025-01-02 for POMO3.SA
+2025-01-02,OPCT3.SA,blocked,No ITR available by 2025-01-02 for OPCT3.SA
+2025-01-02,PNVL3.SA,blocked,No ITR available by 2025-01-02 for PNVL3.SA
+2025-01-02,AZEV4.SA,blocked,No ITR available by 2025-01-02 for AZEV4.SA
+2025-01-02,MLAS3.SA,blocked,No ITR available by 2025-01-02 for MLAS3.SA
+2025-01-02,TASA4.SA,blocked,No ITR available by 2025-01-02 for TASA4.SA
+2025-01-02,TRIS3.SA,blocked,No ITR available by 2025-01-02 for TRIS3.SA
+2025-01-02,MATD3.SA,blocked,No ITR available by 2025-01-02 for MATD3.SA
+2025-01-02,WIZC3.SA,blocked,No ITR available by 2025-01-02 for WIZC3.SA
+2025-01-02,SHUL4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,PGMN3.SA,blocked,No ITR available by 2025-01-02 for PGMN3.SA
+2025-01-02,CMIG3.SA,blocked,No ITR available by 2025-01-02 for CMIG3.SA
+2025-01-02,MTRE3.SA,blocked,No ITR available by 2025-01-02 for MTRE3.SA
+2025-01-02,HBRE3.SA,blocked,No ITR available by 2025-01-02 for HBRE3.SA
+2025-01-02,BMGB4.SA,blocked,No ITR available by 2025-01-02 for BMGB4.SA
+2025-01-02,LOGN3.SA,blocked,No ITR available by 2025-01-02 for LOGN3.SA
+2025-01-02,DASA3.SA,blocked,No ITR available by 2025-01-02 for DASA3.SA
+2025-01-02,ITSA3.SA,blocked,No ITR available by 2025-01-02 for ITSA3.SA
+2025-01-02,SANB4.SA,blocked,ambiguous_preferred_share_count
+2025-01-02,CSED3.SA,blocked,No ITR available by 2025-01-02 for CSED3.SA
+2025-01-02,USIM3.SA,blocked,No ITR available by 2025-01-02 for USIM3.SA
+2025-01-02,MELK3.SA,blocked,No ITR available by 2025-01-02 for MELK3.SA
+2025-01-02,PFRM3.SA,blocked,No ITR available by 2025-01-02 for PFRM3.SA
+2025-01-02,ROMI3.SA,blocked,No ITR available by 2025-01-02 for ROMI3.SA
+2025-01-02,COCE5.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,DESK3.SA,blocked,No ITR available by 2025-01-02 for DESK3.SA
+2025-01-02,GGBR3.SA,blocked,No ITR available by 2025-01-02 for GGBR3.SA
+2025-01-02,ZAMP3.SA,blocked,No ITR available by 2025-01-02 for ZAMP3.SA
+2025-01-02,TAEE4.SA,blocked,No ITR available by 2025-01-02 for TAEE4.SA
+2025-01-02,SANB3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,PTBL3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,VITT3.SA,blocked,No ITR available by 2025-01-02 for VITT3.SA
+2025-01-02,KLBN3.SA,blocked,No ITR available by 2025-01-02 for KLBN3.SA
+2025-01-02,HBOR3.SA,blocked,No ITR available by 2025-01-02 for HBOR3.SA
+2025-01-02,FIQE3.SA,blocked,No ITR available by 2025-01-02 for FIQE3.SA
+2025-01-02,BRAP3.SA,blocked,No ITR available by 2025-01-02 for BRAP3.SA
+2025-01-02,SAPR3.SA,blocked,No ITR available by 2025-01-02 for SAPR3.SA
+2025-01-02,NGRD3.SA,blocked,no_fre_share_count
+2025-01-02,VTRU3.SA,blocked,No ITR available by 2025-01-02 for VTRU3.SA
+2025-01-02,PINE4.SA,blocked,No ITR available by 2025-01-02 for PINE4.SA
+2025-01-02,BMEB4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,ETER3.SA,blocked,no_fre_share_count
+2025-01-02,IFCM3.SA,blocked,No ITR available by 2025-01-02 for IFCM3.SA
+2025-01-02,ENJU3.SA,blocked,No ITR available by 2025-01-02 for ENJU3.SA
+2025-01-02,FRIO3.SA,blocked,No ITR available by 2025-01-02 for FRIO3.SA
+2025-01-02,GOAU3.SA,blocked,No ITR available by 2025-01-02 for GOAU3.SA
+2025-01-02,TAEE3.SA,blocked,No ITR available by 2025-01-02 for TAEE3.SA
+2025-01-02,BIOM3.SA,blocked,No ITR available by 2025-01-02 for BIOM3.SA
+2025-01-02,TECN3.SA,blocked,No ITR available by 2025-01-02 for TECN3.SA
+2025-01-02,CSUD3.SA,blocked,No ITR available by 2025-01-02 for CSUD3.SA
+2025-01-02,SCAR3.SA,blocked,no_fre_share_count
+2025-01-02,DEXP3.SA,blocked,No ITR available by 2025-01-02 for DEXP3.SA
+2025-01-02,BRST3.SA,blocked,no_fre_share_count
+2025-01-02,AGXY3.SA,blocked,No ITR available by 2025-01-02 for AGXY3.SA
+2025-01-02,AZEV3.SA,blocked,No ITR available by 2025-01-02 for AZEV3.SA
+2025-01-02,ALLD3.SA,blocked,No ITR available by 2025-01-02 for ALLD3.SA
+2025-01-02,DMVF3.SA,blocked,No ITR available by 2025-01-02 for DMVF3.SA
+2025-01-02,EUCA4.SA,blocked,No ITR available by 2025-01-02 for EUCA4.SA
+2025-01-02,KRSA3.SA,blocked,No ITR available by 2025-01-02 for KRSA3.SA
+2025-01-02,MEAL3.SA,blocked,no_fre_share_count
+2025-01-02,LAND3.SA,blocked,No ITR available by 2025-01-02 for LAND3.SA
+2025-01-02,FHER3.SA,blocked,No ITR available by 2025-01-02 for FHER3.SA
+2025-01-02,UNIP3.SA,blocked,No ITR available by 2025-01-02 for UNIP3.SA
+2025-01-02,ATED3.SA,blocked,no_fre_share_count
+2025-01-02,TPIS3.SA,blocked,No ITR available by 2025-01-02 for TPIS3.SA
+2025-01-02,ALPK3.SA,blocked,No ITR available by 2025-01-02 for ALPK3.SA
+2025-01-02,FICT3.SA,blocked,No ITR available by 2025-01-02 for FICT3.SA
+2025-01-02,PDGR3.SA,blocked,No ITR available by 2025-01-02 for PDGR3.SA
+2025-01-02,CAMB3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,BRKM3.SA,blocked,No ITR available by 2025-01-02 for BRKM3.SA
+2025-01-02,VSTE3.SA,blocked,No ITR available by 2025-01-02 for VSTE3.SA
+2025-01-02,ESPA3.SA,blocked,No ITR available by 2025-01-02 for ESPA3.SA
+2025-01-02,LUPA3.SA,blocked,No ITR available by 2025-01-02 for LUPA3.SA
+2025-01-02,RAPT3.SA,blocked,No ITR available by 2025-01-02 for RAPT3.SA
+2025-01-02,JFEN3.SA,blocked,No ITR available by 2025-01-02 for JFEN3.SA
+2025-01-02,AALR3.SA,blocked,No ITR available by 2025-01-02 for AALR3.SA
+2025-01-02,CLSC4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,RNEW4.SA,blocked,no_fre_share_count
+2025-01-02,AMAR3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,NINJ3.SA,blocked,No ITR available by 2025-01-02 for NINJ3.SA
+2025-01-02,LPSB3.SA,blocked,No ITR available by 2025-01-02 for LPSB3.SA
+2025-01-02,CGRA4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,OIBR4.SA,blocked,No ITR available by 2025-01-02 for OIBR4.SA
+2025-01-02,EALT4.SA,blocked,No ITR available by 2025-01-02 for EALT4.SA
+2025-01-02,RSID3.SA,blocked,No ITR available by 2025-01-02 for RSID3.SA
+2025-01-02,TCSA3.SA,blocked,No ITR available by 2025-01-02 for TCSA3.SA
+2025-01-02,BAZA3.SA,blocked,no_fre_share_count
+2025-01-02,CEBR6.SA,blocked,No ITR available by 2025-01-02 for CEBR6.SA
+2025-01-02,BOBR4.SA,blocked,ambiguous_preferred_share_count
+2025-01-02,DOTZ3.SA,blocked,No ITR available by 2025-01-02 for DOTZ3.SA
+2025-01-02,ALUP4.SA,blocked,No ITR available by 2025-01-02 for ALUP4.SA
+2025-01-02,ISAE3.SA,blocked,No ITR available by 2025-01-02 for ISAE3.SA
+2025-01-02,VIVR3.SA,blocked,No ITR available by 2025-01-02 for VIVR3.SA
+2025-01-02,CGAS5.SA,blocked,No ITR available by 2025-01-02 for CGAS5.SA
+2025-01-02,IGTI3.SA,blocked,No ITR available by 2025-01-02 for IGTI3.SA
+2025-01-02,OFSA3.SA,blocked,No ITR available by 2025-01-02 for OFSA3.SA
+2025-01-02,MTSA4.SA,blocked,no_fre_share_count
+2025-01-02,TASA3.SA,blocked,No ITR available by 2025-01-02 for TASA3.SA
+2025-01-02,SHOW3.SA,blocked,No ITR available by 2025-01-02 for SHOW3.SA
+2025-01-02,RNEW3.SA,blocked,no_fre_share_count
+2025-01-02,BMEB3.SA,blocked,No ITR available by 2025-01-02 for BMEB3.SA
+2025-01-02,BEES3.SA,blocked,No ITR available by 2025-01-02 for BEES3.SA
+2025-01-02,CEBR3.SA,blocked,No ITR available by 2025-01-02 for CEBR3.SA
+2025-01-02,UCAS3.SA,blocked,No ITR available by 2025-01-02 for UCAS3.SA
+2025-01-02,BRSR3.SA,blocked,No ITR available by 2025-01-02 for BRSR3.SA
+2025-01-02,RSUL4.SA,blocked,No ITR available by 2025-01-02 for RSUL4.SA
+2025-01-02,ENGI4.SA,blocked,No ITR available by 2025-01-02 for ENGI4.SA
+2025-01-02,BPAC3.SA,blocked,no_fre_share_count
+2025-01-02,PDTC3.SA,blocked,No ITR available by 2025-01-02 for PDTC3.SA
+2025-01-02,EPAR3.SA,blocked,No ITR available by 2025-01-02 for EPAR3.SA
+2025-01-02,EMAE4.SA,blocked,No ITR available by 2025-01-02 for EMAE4.SA
+2025-01-02,INEP3.SA,blocked,No ITR available by 2025-01-02 for INEP3.SA
+2025-01-02,EALT3.SA,blocked,No ITR available by 2025-01-02 for EALT3.SA
+2025-01-02,ALUP3.SA,blocked,No ITR available by 2025-01-02 for ALUP3.SA
+2025-01-02,ENGI3.SA,blocked,No ITR available by 2025-01-02 for ENGI3.SA
+2025-01-02,PTNT4.SA,blocked,No ITR available by 2025-01-02 for PTNT4.SA
+2025-01-02,CGRA3.SA,blocked,No ITR available by 2025-01-02 for CGRA3.SA
+2025-01-02,WHRL4.SA,blocked,No ITR available by 2025-01-02 for WHRL4.SA
+2025-01-02,TKNO4.SA,blocked,no_fre_share_count
+2025-01-02,CEBR5.SA,blocked,No ITR available by 2025-01-02 for CEBR5.SA
+2025-01-02,BPAC5.SA,blocked,no_fre_share_count
+2025-01-02,ALPA3.SA,blocked,No ITR available by 2025-01-02 for ALPA3.SA
+2025-01-02,EKTR4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,WEST3.SA,blocked,No ITR available by 2025-01-02 for WEST3.SA
+2025-01-02,RPMG3.SA,blocked,no_fre_share_count
+2025-01-02,CRPG5.SA,blocked,No ITR available by 2025-01-02 for CRPG5.SA
+2025-01-02,DEXP4.SA,blocked,No ITR available by 2025-01-02 for DEXP4.SA
+2025-01-02,INEP4.SA,blocked,No ITR available by 2025-01-02 for INEP4.SA
+2025-01-02,WLMM4.SA,blocked,ambiguous_preferred_share_count
+2025-01-02,UNIP5.SA,blocked,No ITR available by 2025-01-02 for UNIP5.SA
+2025-01-02,TELB4.SA,blocked,No ITR available by 2025-01-02 for TELB4.SA
+2025-01-02,MNDL3.SA,blocked,No ITR available by 2025-01-02 for MNDL3.SA
+2025-01-02,BEES4.SA,blocked,No ITR available by 2025-01-02 for BEES4.SA
+2025-01-02,CEEB3.SA,blocked,No ITR available by 2025-01-02 for CEEB3.SA
+2025-01-02,EQPA3.SA,blocked,no_fre_share_count
+2025-01-02,HAGA3.SA,blocked,No ITR available by 2025-01-02 for HAGA3.SA
+2025-01-02,RNEW11.SA,blocked,unsupported_share_class:UNT     N2
+2025-01-02,OSXB3.SA,blocked,no_fre_share_count
+2025-01-02,PINE3.SA,blocked,No ITR available by 2025-01-02 for PINE3.SA
+2025-01-02,SNSY5.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,EQMA3B.SA,blocked,no_fre_share_count
+2025-01-02,HAGA4.SA,blocked,No ITR available by 2025-01-02 for HAGA4.SA
+2025-01-02,BIED3.SA,blocked,No ITR available by 2025-01-02 for BIED3.SA
+2025-01-02,PEAB3.SA,blocked,No ITR available by 2025-01-02 for PEAB3.SA
+2025-01-02,NUTR3.SA,blocked,No ITR available by 2025-01-02 for NUTR3.SA
+2025-01-02,TELB3.SA,blocked,No ITR available by 2025-01-02 for TELB3.SA
+2025-01-02,BGIP4.SA,blocked,No ITR available by 2025-01-02 for BGIP4.SA
+2025-01-02,BMKS3.SA,blocked,No ITR available by 2025-01-02 for BMKS3.SA
+2025-01-02,RDNI3.SA,blocked,no_fre_share_count
+2025-01-02,WHRL3.SA,blocked,No ITR available by 2025-01-02 for WHRL3.SA
+2025-01-02,SNSY3.SA,blocked,No ITR available by 2025-01-02 for SNSY3.SA
+2025-01-02,ATMP3.SA,blocked,no_fre_share_count
+2025-01-02,REDE3.SA,blocked,No ITR available by 2025-01-02 for REDE3.SA
+2025-01-02,MGEL4.SA,blocked,No ITR available by 2025-01-02 for MGEL4.SA
+2025-01-02,CRPG6.SA,blocked,No ITR available by 2025-01-02 for CRPG6.SA
+2025-01-02,PATI3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,HOOT4.SA,blocked,No ITR available by 2025-01-02 for HOOT4.SA
+2025-01-02,EUCA3.SA,blocked,No ITR available by 2025-01-02 for EUCA3.SA
+2025-01-02,GEPA3.SA,blocked,No ITR available by 2025-01-02 for GEPA3.SA
+2025-01-02,HBTS5.SA,blocked,no_fre_share_count
+2025-01-02,NORD3.SA,blocked,No ITR available by 2025-01-02 for NORD3.SA
+2025-01-02,BMIN4.SA,blocked,No ITR available by 2025-01-02 for BMIN4.SA
+2025-01-02,AHEB3.SA,blocked,no_fre_share_count
+2025-01-02,CTSA4.SA,blocked,No ITR available by 2025-01-02 for CTSA4.SA
+2025-01-02,BGIP3.SA,blocked,No ITR available by 2025-01-02 for BGIP3.SA
+2025-01-02,CPLE5.SA,blocked,No ITR available by 2025-01-02 for CPLE5.SA
+2025-01-02,BSLI4.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,NEXP3.SA,blocked,No ITR available by 2025-01-02 for NEXP3.SA
+2025-01-02,BSLI3.SA,blocked,No ITR available by 2025-01-02 for BSLI3.SA
+2025-01-02,DOHL4.SA,blocked,No ITR available by 2025-01-02 for DOHL4.SA
+2025-01-02,JOPA3.SA,blocked,no_fre_share_count
+2025-01-02,BRKM6.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,AFLT3.SA,blocked,No ITR available by 2025-01-02 for AFLT3.SA
+2025-01-02,MWET3.SA,blocked,no_fre_share_count
+2025-01-02,CTSA3.SA,blocked,No ITR available by 2025-01-02 for CTSA3.SA
+2025-01-02,TXRX4.SA,blocked,No ITR available by 2025-01-02 for TXRX4.SA
+2025-01-02,DTCY3.SA,blocked,ambiguous_ordinary_share_count

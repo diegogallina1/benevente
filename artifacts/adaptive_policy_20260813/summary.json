@@ -1,0 +1,24 @@
+{
+  "train": {
+    "cagr": 0.19191233469217228,
+    "mvo_cagr": 0.15745896178310392,
+    "cdi_cagr": 0.08511971475667113,
+    "excess_mvo": 0.03445337290906836,
+    "excess_cdi": 0.10679261993550115,
+    "worst_year": 0.023304987166445173,
+    "negative_years": 0,
+    "average_turnover": 0.34999999896048545
+  },
+  "holdout": {
+    "cagr": 0.08419352696533444,
+    "mvo_cagr": 0.10105716521638808,
+    "cdi_cagr": 0.10347591307479975,
+    "excess_mvo": -0.016863638251053636,
+    "excess_cdi": -0.01928238610946531,
+    "worst_year": -0.09312921532671732,
+    "negative_years": 1,
+    "average_turnover": 0.38999999940272556
+  },
+  "passes_holdout": false,
+  "rule": "At each January, factor and equity cap are selected using prior decisions only."
+}

@@ -1,0 +1,43 @@
+{
+  "config": {
+    "transaction_cost": 0.001,
+    "slippage": 0.0005,
+    "max_asset_weight": 0.15,
+    "risk_aversion_gamma": 2.5,
+    "rebalance_threshold": 0.03,
+    "rolling_window_days": 252,
+    "rebalance_days": 21,
+    "risk_free_rate_annual": 0.105,
+    "llm_alpha_influence": 0.3,
+    "value_quality_influence": 0.35,
+    "initial_wealth": 100.0,
+    "initial_portfolio_value_brl": 1000000.0,
+    "cdi_bcb_series": 12,
+    "selic_bcb_series": 432,
+    "ipca_bcb_series": 433,
+    "min_market_cap_brl": 2000000000,
+    "min_free_cash_flow_yield": 0.02,
+    "min_roic": 0.08,
+    "min_roe": 0.08,
+    "max_debt_to_ebitda": 3.0,
+    "min_interest_coverage": 2.0,
+    "max_position_adv_participation": 0.05,
+    "tickers": [
+      "PETR4.SA",
+      "VALE3.SA",
+      "ITUB4.SA",
+      "BBDC4.SA",
+      "WEGE3.SA",
+      "RENT3.SA",
+      "ABEV3.SA",
+      "BBAS3.SA",
+      "TITULO_CDI"
+    ]
+  },
+  "start": "2023-01-01",
+  "end": "2026-07-01",
+  "sources": {
+    "mode": "synthetic deterministic test data",
+    "seed": 2026
+  }
+}

@@ -1,0 +1,7 @@
+mapping_status,match_method,tickers,share_of_equities
+accepted,official_b3_isin_cnpj,3796,0.862335302135393
+accepted,official_b3_issuer_unique_prefix,124,0.028169014084507043
+accepted,unique_cotahist_prefix,46,0.010449795547478418
+accepted,exact_normalised_name,12,0.0027260336210813267
+review_required,no_deterministic_cnpj_match,390,0.08859609268514311
+review_required,b3_isin_cnpj_not_in_cvm_master,34,0.007723761926397092

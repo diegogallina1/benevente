@@ -1,0 +1,20 @@
+{
+  "status": "research_only",
+  "split_year": 2020,
+  "input_manifest_status": "blocked_before_performance",
+  "evidence": {
+    "training_years": 7.0,
+    "holdout_years": 6.0,
+    "holdout_start_year": 2020.0,
+    "holdout_cumulative_return": 0.771561000000001,
+    "holdout_cagr": 0.10000000000000009,
+    "holdout_cdi_cagr": 0.08000000000000007,
+    "holdout_mvo_cagr": 0.09000000000000008,
+    "holdout_excess_vs_cdi": 0.1163839343706603,
+    "holdout_excess_vs_mvo": 0.05632394187347112,
+    "holdout_excess_sharpe_cdi": 20000000000.000004,
+    "holdout_max_drawdown": 0.0,
+    "annual_validation_status": "research_only",
+    "annual_validation_reasons": "total_return_input_not_verified"
+  }
+}

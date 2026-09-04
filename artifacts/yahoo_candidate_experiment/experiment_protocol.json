@@ -1,0 +1,13 @@
+{
+  "candidates": [
+    "value_quality",
+    "momentum_12m",
+    "low_volatility",
+    "triple_factor"
+  ],
+  "split_year": 2021,
+  "selection_data": "decision years < 2021",
+  "holdout_data": "decision years >= 2021",
+  "selection_rule": "positive net cumulative excess versus CDI and eligible MVO; drawdown >= -35%; then score net excesses minus turnover penalty",
+  "source_tier": "public_reproducible_research"
+}

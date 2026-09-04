@@ -1,0 +1,105 @@
+{
+  "rule_held_fixed": {
+    "factor": "triple_factor",
+    "maximum_equity_weight": 0.55,
+    "maximum_asset_weight": 0.176,
+    "top_assets": 5
+  },
+  "evaluation_window": "2015-2025",
+  "cadences": {
+    "anual": {
+      "periods": 11,
+      "periods_per_year": 1.0,
+      "decisions_per_year": 1.0,
+      "cagr_gross": 0.18579619758913735,
+      "cagr_net_of_cost": 0.18512156611375197,
+      "cagr_after_tax": 0.17093516196211445,
+      "average_turnover_per_review": 0.6211512960355918,
+      "annual_turnover": 0.6211512960355918,
+      "annual_execution_cost": 0.0006696081277214231,
+      "annual_tax_drag": 0.015788978837967125,
+      "median_holding_days": 365.0,
+      "fixed_income_rate_applied": 0.175,
+      "average_realised_share": 0.391559615010539,
+      "years_beating_cdi": 7,
+      "years": 11
+    },
+    "trimestral": {
+      "periods": 44,
+      "periods_per_year": 4.0,
+      "decisions_per_year": 4.0,
+      "cagr_gross": 0.1637305602593333,
+      "cagr_net_of_cost": 0.16250800022290868,
+      "cagr_after_tax": 0.1560321490577503,
+      "average_turnover_per_review": 0.2900057262870168,
+      "annual_turnover": 1.1600229051480673,
+      "annual_execution_cost": 0.0010819501117293432,
+      "annual_tax_drag": 0.0060990588548581045,
+      "median_holding_days": 91.0,
+      "fixed_income_rate_applied": 0.225,
+      "average_realised_share": 0.1663604105278775,
+      "years_beating_cdi": 8,
+      "years": 11
+    },
+    "mensal": {
+      "periods": 132,
+      "periods_per_year": 12.0,
+      "decisions_per_year": 12.0,
+      "cagr_gross": 0.13917224955070173,
+      "cagr_net_of_cost": 0.1374746580193975,
+      "cagr_after_tax": 0.13318696058016433,
+      "average_turnover_per_review": 0.14798103682653435,
+      "annual_turnover": 1.7757724419184122,
+      "annual_execution_cost": 0.0015105937817641761,
+      "annual_tax_drag": 0.004036607782902243,
+      "median_holding_days": 30.0,
+      "fixed_income_rate_applied": 0.225,
+      "average_realised_share": 0.08150895119384668,
+      "years_beating_cdi": 8,
+      "years": 11
+    }
+  },
+  "paired_comparisons": [
+    {
+      "comparison": "trimestral vs anual, líquido de custo",
+      "usable": true,
+      "paired_years": 11,
+      "mean_annual_difference": -0.0244248577353217,
+      "years_faster_won": 3,
+      "t_statistic": -1.3460510279884448,
+      "p_value": 0.2080058741589692,
+      "reading": "A cadence only counts as better if its advantage over the annual decision survives a paired test across the whole window. A positive mean with a large p-value is noise, not evidence."
+    },
+    {
+      "comparison": "trimestral vs anual, após imposto",
+      "usable": true,
+      "paired_years": 11,
+      "mean_annual_difference": -0.015525509571076951,
+      "years_faster_won": 3,
+      "t_statistic": -0.925642749668862,
+      "p_value": 0.3764295457219219,
+      "reading": "A cadence only counts as better if its advantage over the annual decision survives a paired test across the whole window. A positive mean with a large p-value is noise, not evidence."
+    },
+    {
+      "comparison": "mensal vs anual, líquido de custo",
+      "usable": true,
+      "paired_years": 11,
+      "mean_annual_difference": -0.044009864285257105,
+      "years_faster_won": 5,
+      "t_statistic": -1.4231111486905614,
+      "p_value": 0.18514423824532408,
+      "reading": "A cadence only counts as better if its advantage over the annual decision survives a paired test across the whole window. A positive mean with a large p-value is noise, not evidence."
+    },
+    {
+      "comparison": "mensal vs anual, após imposto",
+      "usable": true,
+      "paired_years": 11,
+      "mean_annual_difference": -0.03273439035246595,
+      "years_faster_won": 7,
+      "t_statistic": -1.0791148464071132,
+      "p_value": 0.3058765735792819,
+      "reading": "A cadence only counts as better if its advantage over the annual decision survives a paired test across the whole window. A positive mean with a large p-value is noise, not evidence."
+    }
+  ],
+  "note": "Only the cadence varies. The rule, the universe, the limits and the panel are identical across arms, so any difference is attributable to how often the basket is reselected and to the cost, realisation and tax rate that frequency creates."
+}

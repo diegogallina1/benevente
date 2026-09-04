@@ -1,0 +1,12 @@
+{
+  "start_year": 2013,
+  "end_year": 2026,
+  "horizon_years": 5,
+  "maximum_equity_weight": 0.45,
+  "maximum_asset_weight": 0.15,
+  "minimum_history_days": 252,
+  "factor": "triple_factor",
+  "minimum_factor_training_years": 3,
+  "top_assets": 4,
+  "minimum_average_daily_value_brl": 10000000
+}

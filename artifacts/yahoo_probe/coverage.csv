@@ -1,0 +1,6 @@
+ticker,status,reason,from_cache,first_date,last_date,adjusted_close_rows,cash_dividend_events,stock_split_events
+ABCB4.SA,accepted,,False,2013-01-02,2025-12-30,3233.0,29.0,0.0
+ABEV3.SA,accepted,,False,2013-01-02,2025-12-30,3233.0,32.0,1.0
+ABRE3.SA,blocked,$ABRE3.SA: possibly delisted; no price data found  (1d 2013-01-01 -> 2026-01-01),,,,,,
+ADHM3.SA,accepted,,False,2013-01-02,2024-08-06,2883.0,0.0,2.0
+AEDU3.SA,blocked,$AEDU3.SA: possibly delisted; no price data found  (1d 2013-01-01 -> 2026-01-01),,,,,,

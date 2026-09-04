@@ -1,0 +1,68 @@
+{
+  "profile": "arrojado",
+  "status": "retrospective_fixed_overlay_not_prospective_validation",
+  "configuration": {
+    "alert_drawdown": 0.1,
+    "severe_drawdown": 0.2,
+    "alert_volatility": 0.3,
+    "severe_volatility": 0.5,
+    "recovery_days": 10,
+    "cost_bps": 10.0,
+    "profile_alert_multiplier": 0.85,
+    "profile_severe_multiplier": 0.6,
+    "signal_lag_sessions": 1
+  },
+  "full_period": {
+    "base": {
+      "years": 11,
+      "cumulative_return": 3.284988850316225,
+      "cagr": 0.14143181226726576,
+      "annual_volatility": 0.17081658025595556,
+      "max_drawdown": -0.3759931513822473
+    },
+    "protected": {
+      "years": 11,
+      "cumulative_return": 3.078992650220152,
+      "cagr": 0.13633088599537713,
+      "annual_volatility": 0.14930023008205479,
+      "max_drawdown": -0.29289181754085913
+    },
+    "CDI": {
+      "years": 11,
+      "cumulative_return": 1.7436789940148651,
+      "cagr": 0.09609571930908345,
+      "annual_volatility": 0.002468326722964206,
+      "max_drawdown": 0.0
+    }
+  },
+  "holdout_2019_2025": {
+    "base": {
+      "years": 7,
+      "cumulative_return": 1.363474789855827,
+      "cagr": 0.13074434612165398,
+      "annual_volatility": 0.17589382001397533,
+      "max_drawdown": -0.3759931513822473
+    },
+    "protected": {
+      "years": 7,
+      "cumulative_return": 1.2706528476453567,
+      "cagr": 0.12429085302336595,
+      "annual_volatility": 0.15029187678000294,
+      "max_drawdown": -0.29289181754085913
+    },
+    "CDI": {
+      "years": 7,
+      "cumulative_return": 0.8222786595492078,
+      "cagr": 0.08950865391736551,
+      "annual_volatility": 0.0026174639681321834,
+      "max_drawdown": 0.0
+    }
+  },
+  "overlay_turnover": 7.174075168655281,
+  "overlay_cost_rate_sum": 0.007174075168655282,
+  "limitations": [
+    "The overlay was designed after crises visible in the sample.",
+    "Intrayear tax consequences are not yet included.",
+    "The signal reacts to price stress; it does not forecast the cause of the crisis."
+  ]
+}

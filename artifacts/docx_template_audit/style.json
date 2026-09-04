@@ -1,0 +1,91 @@
+{
+  "input": "outputs/Benevente_Wealth_System_BTECH.docx",
+  "fonts_by_char_count": {},
+  "direct_run_formatting_runs": 11,
+  "direct_paragraph_formatting_paragraphs": 0,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 50,
+      "text": "Oferta",
+      "style": "normal"
+    },
+    {
+      "para_index": 51,
+      "text": "Cliente",
+      "style": "normal"
+    },
+    {
+      "para_index": 52,
+      "text": "Valor entregue",
+      "style": "normal"
+    },
+    {
+      "para_index": 53,
+      "text": "M\u00e9trica de valida\u00e7\u00e3o",
+      "style": "normal"
+    },
+    {
+      "para_index": 66,
+      "text": "Janela",
+      "style": "normal"
+    },
+    {
+      "para_index": 67,
+      "text": "Estrat\u00e9gia",
+      "style": "normal"
+    },
+    {
+      "para_index": 69,
+      "text": "CAGR",
+      "style": "normal"
+    },
+    {
+      "para_index": 70,
+      "text": "Volatilidade",
+      "style": "normal"
+    },
+    {
+      "para_index": 71,
+      "text": "M\u00e1x. DD",
+      "style": "normal"
+    },
+    {
+      "para_index": 72,
+      "text": "Leitura",
+      "style": "normal"
+    }
+  ],
+  "examples": {
+    "direct_run_formatting": [
+      {
+        "para_index": 50,
+        "run_text": "Oferta",
+        "style": "normal"
+      },
+      {
+        "para_index": 51,
+        "run_text": "Cliente",
+        "style": "normal"
+      },
+      {
+        "para_index": 52,
+        "run_text": "Valor entregue",
+        "style": "normal"
+      },
+      {
+        "para_index": 53,
+        "run_text": "M\u00e9trica de valida\u00e7\u00e3o",
+        "style": "normal"
+      },
+      {
+        "para_index": 66,
+        "run_text": "Janela",
+        "style": "normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}

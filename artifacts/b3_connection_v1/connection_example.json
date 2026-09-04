@@ -1,0 +1,176 @@
+{
+  "status": "demonstration_only",
+  "warning": "Custódia e negociações sintéticas, escritas para exercitar o módulo.",
+  "source": "APIs da Área do Investidor da B3, Manual Técnico",
+  "base_starts": "2019-11-01",
+  "consent": {
+    "documento_hash": "7ec94663084bd506d4f0c3e21042df233681fd7426e93f397c921b1d3e397bba",
+    "licenciado": "Benevente",
+    "concedido_em": "2026-08-26T09:12:00-03:00",
+    "escopo": [
+      "Posição",
+      "Movimentação",
+      "Negociação de Ativos",
+      "Eventos Provisionados"
+    ],
+    "revogavel_em": "investidor.b3.com.br, em Minha Conta, Segurança, Aplicativos e Sites",
+    "registro_anterior_sha256": null,
+    "credencial_armazenada": false,
+    "registro_sha256": "569421c0f6aa7777dcbf50d5f80ca19dd39021aadd53fe8be712735d556d2768"
+  },
+  "coverage": {
+    "entrega": [
+      "Ações, ETFs, BDRs e fundos imobiliários que você tem na B3",
+      "Tesouro Direto",
+      "Suas compras e vendas desde 01/11/2019"
+    ],
+    "entrega_pela_metade": [
+      "CDB, LCI, LCA e afins: quantidade e vencimento, sem valor e sem preço de compra"
+    ],
+    "nao_entrega": [
+      "Por quanto você comprou: a B3 não guarda esse dado",
+      "Qualquer coisa anterior a 01/11/2019",
+      "O que está fora da B3: previdência, cripto, conta no exterior",
+      "Imóveis e participação em empresa"
+    ],
+    "condicoes": [
+      "A leitura depende de contrato com a B3; o ambiente de testes é livre, o de produção não",
+      "Você autoriza dentro do site da B3 e desliga lá, sem passar por nós",
+      "Os dados são do dia anterior, publicados a partir das 8h, uma vez por dia",
+      "A B3 garante 97% de disponibilidade no mês: a carteira pode não chegar num dia"
+    ]
+  },
+  "cost_basis": {
+    "CURY3": {
+      "valor_brl": 23050.0,
+      "qualidade": "reconstruído das negociações na B3",
+      "cobertura": 1.0,
+      "observacao": "2 compra(s) desde 12/03/2021"
+    },
+    "MGLU3": {
+      "valor_brl": 192000.0,
+      "qualidade": "reconstruído das negociações na B3",
+      "cobertura": 1.0,
+      "observacao": "2 compra(s) desde 01/06/2021"
+    },
+    "WEGE3": {
+      "valor_brl": 38000.0,
+      "qualidade": "reconstruído só em parte: há posição anterior a 01/11/2019",
+      "cobertura": 0.3333,
+      "observacao": "2000 de 3000 unidades sem compra na base (anteriores a 01/11/2019 ou transferidas de outra corretora)"
+    }
+  },
+  "gaps": {
+    "total_posicoes": 3,
+    "com_custo_defensavel": 2,
+    "pendentes": {
+      "WEGE3": {
+        "qualidade": "reconstruído só em parte: há posição anterior a 01/11/2019",
+        "observacao": "2000 de 3000 unidades sem compra na base (anteriores a 01/11/2019 ou transferidas de outra corretora)",
+        "cobertura": 0.3333
+      }
+    },
+    "consequencia": "Sem custo defensável, o imposto do plano é parcial. O mapa apura o que dá e nomeia o resto. Não estima: imposto estimado se parece com imposto medido e leva à mesma decisão de vender."
+  },
+  "posicoes": [
+    {
+      "nome": "CURY3",
+      "tipo": "ação",
+      "origem": "veio da B3",
+      "valor_brl": 44000.0,
+      "quantidade": 4000,
+      "vencimento": null,
+      "emissor": null,
+      "completa": true,
+      "falta": ""
+    },
+    {
+      "nome": "MGLU3",
+      "tipo": "ação",
+      "origem": "veio da B3",
+      "valor_brl": 25000.0,
+      "quantidade": 10000,
+      "vencimento": null,
+      "emissor": null,
+      "completa": true,
+      "falta": ""
+    },
+    {
+      "nome": "WEGE3",
+      "tipo": "ação",
+      "origem": "veio da B3",
+      "valor_brl": 180000.0,
+      "quantidade": 3000,
+      "vencimento": null,
+      "emissor": null,
+      "completa": true,
+      "falta": ""
+    },
+    {
+      "nome": "LCA Banco Beta 2028",
+      "tipo": "LCA",
+      "origem": "veio da B3 pela metade",
+      "valor_brl": null,
+      "quantidade": 1,
+      "vencimento": "2028-03-15",
+      "emissor": "Banco Beta",
+      "completa": false,
+      "falta": "falta o valor: a B3 manda quantidade e vencimento, o valor fica com o emissor"
+    },
+    {
+      "nome": "CDB Banco Beta 2027",
+      "tipo": "CDB",
+      "origem": "veio da B3 pela metade",
+      "valor_brl": null,
+      "quantidade": 1,
+      "vencimento": "2027-11-20",
+      "emissor": "Banco Beta",
+      "completa": false,
+      "falta": "falta o valor: a B3 manda quantidade e vencimento, o valor fica com o emissor"
+    },
+    {
+      "nome": "LCI Banco Gama 2029",
+      "tipo": "LCI",
+      "origem": "veio da B3 pela metade",
+      "valor_brl": null,
+      "quantidade": 1,
+      "vencimento": "2029-06-01",
+      "emissor": "Banco Gama",
+      "completa": false,
+      "falta": "falta o valor: a B3 manda quantidade e vencimento, o valor fica com o emissor"
+    }
+  ],
+  "consolidado": {
+    "total_conhecido_brl": 249000.0,
+    "posicoes": 6,
+    "sem_valor": 3,
+    "sem_valor_nomes": [
+      "LCA Banco Beta 2028",
+      "CDB Banco Beta 2027",
+      "LCI Banco Gama 2029"
+    ],
+    "por_origem": {
+      "veio da B3": 249000.0,
+      "veio da B3 pela metade": 0,
+      "informado por você": 0
+    },
+    "completo": false
+  },
+  "freshness": {
+    "reference": "D-1, publicado a partir das 8h",
+    "sla_monthly": 0.97,
+    "why_it_matters": "Com 97% de disponibilidade ao mês, a carteira deixa de chegar por volta de uma vez por mês. Uma tela que trata 'sem movimentação' e 'não atualizou' do mesmo jeito mostra a posição de anteontem como se fosse a de ontem, sem avisar.",
+    "states": {
+      "atual": "atualizado com o fechamento de ontem",
+      "sem_movimento": "sem movimentação: a posição de ontem continua valendo",
+      "nao_atualizou": "não atualizou hoje: o dado exibido é de antes",
+      "cedo": "ainda antes das 8h: o dado de ontem só é publicado depois"
+    },
+    "example": {
+      "state": "sem_movimento",
+      "explicacao": "sem movimentação: a posição de ontem continua valendo",
+      "data_referencia": "2026-08-26",
+      "utilizavel": true
+    }
+  }
+}

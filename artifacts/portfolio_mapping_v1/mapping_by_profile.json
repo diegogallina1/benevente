@@ -1,0 +1,1718 @@
+{
+  "status": "demonstration_only",
+  "warning": "Carteira sintética escrita à mão para exercitar o módulo.",
+  "questionnaire": {
+    "method": "A restrição mais apertada define o perfil. Não há pontuação: cada resposta impõe um teto e vale o menor deles.",
+    "worst_measured_drawdown": {
+      "ultraconservador": -0.0081,
+      "conservador": -0.0917,
+      "equilibrado": -0.1788,
+      "arrojado": -0.2895
+    },
+    "questions": [
+      {
+        "key": "horizonte",
+        "prompt": "Quando vai precisar do dinheiro?",
+        "help": "Prazo curto não dá tempo de uma queda se recuperar.",
+        "kind": "escolha",
+        "options": [
+          {
+            "value": "ate_2",
+            "label": "Até dois anos",
+            "brief": "até 2 anos",
+            "caps_profile": "conservador",
+            "note": "com prazo curto, uma queda não tem tempo de se recuperar"
+          },
+          {
+            "value": "2_a_5",
+            "label": "De dois a cinco anos",
+            "brief": "2 a 5 anos",
+            "caps_profile": "equilibrado",
+            "note": "cinco anos cobrem a maior parte das quedas medidas, mas não todas"
+          },
+          {
+            "value": "5_mais",
+            "label": "Cinco anos ou mais",
+            "brief": "5+ anos",
+            "caps_profile": null,
+            "note": ""
+          }
+        ]
+      },
+      {
+        "key": "queda",
+        "prompt": "Qual queda você aguenta sem vender?",
+        "help": "Na janela medida: ultraconservador 0,8%, conservador 9,2%, equilibrado 17,9%, arrojado 28,9%.",
+        "kind": "escolha",
+        "options": [
+          {
+            "value": "ate_2",
+            "label": "Até 2%",
+            "brief": "queda até 2%",
+            "caps_profile": "ultraconservador",
+            "note": "só o ultraconservador ficou dentro desse limite na janela medida"
+          },
+          {
+            "value": "ate_10",
+            "label": "Até 10%",
+            "brief": "queda até 10%",
+            "caps_profile": "conservador",
+            "note": "só o conservador ficou dentro desse limite na janela medida"
+          },
+          {
+            "value": "ate_20",
+            "label": "Até 20%",
+            "brief": "queda até 20%",
+            "caps_profile": "equilibrado",
+            "note": "o arrojado passou de 28% na pior queda, além do que foi declarado"
+          },
+          {
+            "value": "acima_20",
+            "label": "Mais de 20%",
+            "brief": "queda acima de 20%",
+            "caps_profile": null,
+            "note": ""
+          }
+        ]
+      },
+      {
+        "key": "reserva",
+        "prompt": "Tem reserva de emergência separada?",
+        "help": "Sem reserva, o primeiro imprevisto vira venda forçada.",
+        "kind": "escolha",
+        "options": [
+          {
+            "value": "sim",
+            "label": "Sim",
+            "brief": "com reserva",
+            "caps_profile": null,
+            "note": ""
+          },
+          {
+            "value": "nao",
+            "label": "Ainda não",
+            "brief": "sem reserva",
+            "caps_profile": "conservador",
+            "note": "sem reserva, este dinheiro é a reserva na prática"
+          }
+        ]
+      },
+      {
+        "key": "retirada",
+        "prompt": "Vai retirar todo mês?",
+        "help": "Retirada mensal exige caixa e limita o que pode oscilar.",
+        "kind": "escolha",
+        "options": [
+          {
+            "value": "nao",
+            "label": "Não",
+            "brief": "sem retirada",
+            "caps_profile": null,
+            "note": ""
+          },
+          {
+            "value": "sim",
+            "label": "Sim",
+            "brief": "com retirada",
+            "caps_profile": "equilibrado",
+            "note": "retirada recorrente exige caixa e reduz o que pode oscilar"
+          }
+        ]
+      },
+      {
+        "key": "prejuizo",
+        "prompt": "Tem prejuízo a compensar em ações?",
+        "help": "Ele abate o imposto das vendas de agora. Sem informar, o custo sai maior.",
+        "kind": "valor",
+        "options": []
+      },
+      {
+        "key": "travar",
+        "prompt": "Alguma posição que não pode vender?",
+        "help": "Carência, ação de família. O mapa respeita e registra.",
+        "kind": "texto",
+        "options": []
+      }
+    ]
+  },
+  "profiles": {
+    "ultraconservador": {
+      "decision": "2026-01-02",
+      "adequar": {
+        "path": "adequar",
+        "path_label": "Adequar a carteira ao perfil",
+        "modules": [
+          "Módulo 1 — Seleção",
+          "Módulo 2 — Proteção"
+        ],
+        "track_record_applies": true,
+        "carried_loss_brl": 0.0,
+        "locked_tickers": [],
+        "total_brl": 700000,
+        "alignment": 0.6192,
+        "turnover_brl": 145528.0,
+        "transition_cost_brl": 291.05,
+        "transition_tax_brl": 0.0,
+        "transition_total_brl": 291.05,
+        "transition_cost_pct": 0.00042,
+        "exempt_month_assumed": false,
+        "tax_is_complete": false,
+        "positions_without_cost_basis": [
+          {
+            "ticker": "WEGE3",
+            "sale_brl": 180000.0,
+            "sale_fraction": 1.0,
+            "bucket": "renda_variavel",
+            "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+          }
+        ],
+        "unpriced_sale_brl": 180000.0,
+        "pending_resolution": {
+          "positions": [
+            {
+              "ticker": "WEGE3",
+              "sale_brl": 180000.0,
+              "sale_fraction": 1.0,
+              "bucket": "renda_variavel",
+              "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+            }
+          ],
+          "buckets": {
+            "renda_variavel": {
+              "other_gain_brl": -147703.15,
+              "rate": 0.15,
+              "exempt_month": false,
+              "carried_loss_brl": 0.0
+            }
+          },
+          "fixed_brl": 291.05
+        },
+        "tax_by_bucket": {
+          "fora_do_escopo": {
+            "realised_gain_brl": -9000.0,
+            "tax_brl": 0.0
+          },
+          "renda_variavel": {
+            "realised_gain_brl": -147703.15,
+            "tax_brl": 0.0
+          }
+        },
+        "fgc_breaches": {
+          "Beta": 310000.0
+        },
+        "fgc_exposure": {
+          "Beta": 310000.0
+        },
+        "sources": [
+          "Open Finance (compartilhamento de investimentos)",
+          "extrato da Área do Investidor da B3",
+          "lançamento manual"
+        ],
+        "moves": [
+          {
+            "ticker": "WEGE3",
+            "action": "vender",
+            "from_brl": 180000,
+            "to_brl": 0.0,
+            "delta_brl": -180000.0,
+            "reason": "não faz parte da carteira do perfil",
+            "trade_cost_brl": 180.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "imposto ainda não calculado: falta informar quanto você pagou"
+            ]
+          },
+          {
+            "ticker": "MGLU3",
+            "action": "vender",
+            "from_brl": 25000,
+            "to_brl": 0.0,
+            "delta_brl": -25000.0,
+            "reason": "não faz parte da carteira do perfil",
+            "trade_cost_brl": 25.0,
+            "realised_gain_brl": -167000.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "prejuízo realizado: abate o ganho das outras vendas do mesmo tipo"
+            ]
+          },
+          {
+            "ticker": "Cripto",
+            "action": "vender",
+            "from_brl": 21000,
+            "to_brl": 0.0,
+            "delta_brl": -21000.0,
+            "reason": "fora do que a política escolhe",
+            "trade_cost_brl": 21.0,
+            "realised_gain_brl": -9000.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "regime tributário próprio: o imposto desta venda não é apurado aqui"
+            ]
+          },
+          {
+            "ticker": "CURY3",
+            "action": "reduzir",
+            "from_brl": 44000,
+            "to_brl": 3472.0,
+            "delta_brl": -40528.0,
+            "reason": "acima do peso declarado",
+            "trade_cost_brl": 40.53,
+            "realised_gain_brl": 19296.85,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "IVVB11",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 5600.0,
+            "delta_brl": 5600.0,
+            "reason": "fatia em bolsa dos EUA, declarada pela política",
+            "trade_cost_brl": 5.6,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "CMIN3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 3472.0,
+            "delta_brl": 3472.0,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 3.47,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "VIVA3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 3472.0,
+            "delta_brl": 3472.0,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 3.47,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "BBSE3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 3113.6,
+            "delta_brl": 3113.6,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 3.11,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "LEVE3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 1794.8,
+            "delta_brl": 1794.8,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 1.79,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "PLPL3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 1350.3,
+            "delta_brl": 1350.3,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 1.35,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "COGN3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 1225.7,
+            "delta_brl": 1225.7,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 1.23,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "TEND3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 1107.4,
+            "delta_brl": 1107.4,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 1.11,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "TFCO4",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 1020.6,
+            "delta_brl": 1020.6,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 1.02,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "ECOR3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 821.1,
+            "delta_brl": 821.1,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 0.82,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "RDOR3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 819.0,
+            "delta_brl": 819.0,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 0.82,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "B3SA3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 731.5,
+            "delta_brl": 731.5,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 0.73,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          }
+        ],
+        "honesty": "O custo inclui o imposto que a venda realiza, que é o número que costuma faltar. E não dizemos em quanto tempo a mudança se paga: isso exigiria prever retorno, e projeções assim erram a favor de quem as faz."
+      },
+      "adaptar": {
+        "path": "adaptar",
+        "path_label": "Manter a carteira e aplicar a proteção",
+        "modules": [
+          "Módulo 2 — Proteção"
+        ],
+        "track_record_applies": false,
+        "carried_loss_brl": 0.0,
+        "locked_tickers": [],
+        "total_brl": 700000,
+        "alignment": 1.0,
+        "equity_before": 0.3557,
+        "equity_budget": 0.04,
+        "equity_after": 0.04,
+        "equity_below_budget": false,
+        "issuer_cap": 0.2371,
+        "issuer_cap_rule": "dobro do peso médio dos emissores que o cliente já tem; limite escolhido para este caminho, não medido no histórico",
+        "unrealised_loss_kept_brl": 0,
+        "tax_left_on_table_brl": 0.0,
+        "out_of_scope_brl": 21000,
+        "turnover_brl": 110500.0,
+        "transition_cost_brl": 221.0,
+        "transition_tax_brl": 0.0,
+        "transition_total_brl": 221.0,
+        "transition_cost_pct": 0.00032,
+        "exempt_month_assumed": false,
+        "tax_is_complete": false,
+        "positions_without_cost_basis": [
+          {
+            "ticker": "WEGE3",
+            "sale_brl": 159759.04,
+            "sale_fraction": 0.88755,
+            "bucket": "renda_variavel",
+            "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+          }
+        ],
+        "unpriced_sale_brl": 159759.04,
+        "pending_resolution": {
+          "positions": [
+            {
+              "ticker": "WEGE3",
+              "sale_brl": 159759.04,
+              "sale_fraction": 0.88755,
+              "bucket": "renda_variavel",
+              "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+            }
+          ],
+          "buckets": {
+            "renda_variavel": {
+              "other_gain_brl": -129626.71,
+              "rate": 0.15,
+              "exempt_month": false,
+              "carried_loss_brl": 0.0
+            }
+          },
+          "fixed_brl": 221.0
+        },
+        "tax_by_bucket": {
+          "renda_variavel": {
+            "realised_gain_brl": -129626.71,
+            "tax_brl": 0.0
+          }
+        },
+        "fgc_breaches": {
+          "Beta": 310000.0
+        },
+        "fgc_exposure": {
+          "Beta": 310000.0
+        },
+        "sources": [
+          "Open Finance (compartilhamento de investimentos)",
+          "extrato da Área do Investidor da B3",
+          "lançamento manual"
+        ],
+        "moves": [
+          {
+            "ticker": "WEGE3",
+            "action": "reduzir",
+            "from_brl": 180000,
+            "to_brl": 20240.96,
+            "delta_brl": -159759.04,
+            "reason": "orçamento de ações do perfil",
+            "trade_cost_brl": 159.76,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "imposto ainda não calculado: falta informar quanto você pagou"
+            ]
+          },
+          {
+            "ticker": "CURY3",
+            "action": "reduzir",
+            "from_brl": 44000,
+            "to_brl": 4947.79,
+            "delta_brl": -39052.21,
+            "reason": "orçamento de ações do perfil",
+            "trade_cost_brl": 39.05,
+            "realised_gain_brl": 18594.18,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "MGLU3",
+            "action": "reduzir",
+            "from_brl": 25000,
+            "to_brl": 2811.24,
+            "delta_brl": -22188.76,
+            "reason": "orçamento de ações do perfil",
+            "trade_cost_brl": 22.19,
+            "realised_gain_brl": -148220.88,
+            "tax_brl": 0.0,
+            "notes": [
+              "prejuízo realizado: abate o ganho das outras vendas do mesmo tipo"
+            ]
+          },
+          {
+            "ticker": "CDB Banco Beta",
+            "action": "manter",
+            "from_brl": 310000,
+            "to_brl": 310000,
+            "delta_brl": 0,
+            "reason": "renda fixa mantida",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "Cripto",
+            "action": "manter",
+            "from_brl": 21000,
+            "to_brl": 21000,
+            "delta_brl": 0,
+            "reason": "fora do que a política escolhe",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "a camada de proteção não observa nem cobre esta posição"
+            ]
+          },
+          {
+            "ticker": "Tesouro Selic",
+            "action": "manter",
+            "from_brl": 120000,
+            "to_brl": 120000,
+            "delta_brl": 0,
+            "reason": "renda fixa mantida",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          }
+        ],
+        "honesty": "Seus ativos ficam e ganham a proteção. O retorno publicado foi medido escolhendo os ativos e protegendo juntos, então ele não descreve esta carteira. A proteção reduz a exposição quando o mercado cai. Quanto ela renderia aqui, ninguém mediu."
+      }
+    },
+    "conservador": {
+      "decision": "2026-01-02",
+      "adequar": {
+        "path": "adequar",
+        "path_label": "Adequar a carteira ao perfil",
+        "modules": [
+          "Módulo 1 — Seleção",
+          "Módulo 2 — Proteção"
+        ],
+        "track_record_applies": true,
+        "carried_loss_brl": 0.0,
+        "locked_tickers": [],
+        "total_brl": 700000,
+        "alignment": 0.6577,
+        "turnover_brl": 227119.3,
+        "transition_cost_brl": 454.22,
+        "transition_tax_brl": 0.0,
+        "transition_total_brl": 454.22,
+        "transition_cost_pct": 0.00065,
+        "exempt_month_assumed": false,
+        "tax_is_complete": false,
+        "positions_without_cost_basis": [
+          {
+            "ticker": "WEGE3",
+            "sale_brl": 180000.0,
+            "sale_fraction": 1.0,
+            "bucket": "renda_variavel",
+            "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+          }
+        ],
+        "unpriced_sale_brl": 180000.0,
+        "pending_resolution": {
+          "positions": [
+            {
+              "ticker": "WEGE3",
+              "sale_brl": 180000.0,
+              "sale_fraction": 1.0,
+              "bucket": "renda_variavel",
+              "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+            }
+          ],
+          "buckets": {
+            "renda_variavel": {
+              "other_gain_brl": -160515.02,
+              "rate": 0.15,
+              "exempt_month": false,
+              "carried_loss_brl": 0.0
+            }
+          },
+          "fixed_brl": 454.22
+        },
+        "tax_by_bucket": {
+          "fora_do_escopo": {
+            "realised_gain_brl": -9000.0,
+            "tax_brl": 0.0
+          },
+          "renda_variavel": {
+            "realised_gain_brl": -160515.02,
+            "tax_brl": 0.0
+          }
+        },
+        "fgc_breaches": {
+          "Beta": 310000.0
+        },
+        "fgc_exposure": {
+          "Beta": 310000.0
+        },
+        "sources": [
+          "Open Finance (compartilhamento de investimentos)",
+          "extrato da Área do Investidor da B3",
+          "lançamento manual"
+        ],
+        "moves": [
+          {
+            "ticker": "WEGE3",
+            "action": "vender",
+            "from_brl": 180000,
+            "to_brl": 0.0,
+            "delta_brl": -180000.0,
+            "reason": "não faz parte da carteira do perfil",
+            "trade_cost_brl": 180.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "imposto ainda não calculado: falta informar quanto você pagou"
+            ]
+          },
+          {
+            "ticker": "MGLU3",
+            "action": "vender",
+            "from_brl": 25000,
+            "to_brl": 0.0,
+            "delta_brl": -25000.0,
+            "reason": "não faz parte da carteira do perfil",
+            "trade_cost_brl": 25.0,
+            "realised_gain_brl": -167000.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "prejuízo realizado: abate o ganho das outras vendas do mesmo tipo"
+            ]
+          },
+          {
+            "ticker": "Cripto",
+            "action": "vender",
+            "from_brl": 21000,
+            "to_brl": 0.0,
+            "delta_brl": -21000.0,
+            "reason": "fora do que a política escolhe",
+            "trade_cost_brl": 21.0,
+            "realised_gain_brl": -9000.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "regime tributário próprio: o imposto desta venda não é apurado aqui"
+            ]
+          },
+          {
+            "ticker": "IVVB11",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 49000.0,
+            "delta_brl": 49000.0,
+            "reason": "fatia em bolsa dos EUA, declarada pela política",
+            "trade_cost_brl": 49.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "CMIN3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 30380.0,
+            "delta_brl": 30380.0,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 30.38,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "VIVA3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 30380.0,
+            "delta_brl": 30380.0,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 30.38,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "BBSE3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 27244.0,
+            "delta_brl": 27244.0,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 27.24,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "LEVE3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 15702.4,
+            "delta_brl": 15702.4,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 15.7,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "CURY3",
+            "action": "reduzir",
+            "from_brl": 44000,
+            "to_brl": 30380.0,
+            "delta_brl": -13620.0,
+            "reason": "acima do peso declarado",
+            "trade_cost_brl": 13.62,
+            "realised_gain_brl": 6484.98,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "PLPL3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 11813.9,
+            "delta_brl": 11813.9,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 11.81,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "COGN3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 10723.3,
+            "delta_brl": 10723.3,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 10.72,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "TEND3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 9689.4,
+            "delta_brl": 9689.4,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 9.69,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "TFCO4",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 8932.0,
+            "delta_brl": 8932.0,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 8.93,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "ECOR3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 7184.1,
+            "delta_brl": 7184.1,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 7.18,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "RDOR3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 7168.0,
+            "delta_brl": 7168.0,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 7.17,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "B3SA3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 6401.5,
+            "delta_brl": 6401.5,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 6.4,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          }
+        ],
+        "honesty": "O custo inclui o imposto que a venda realiza, que é o número que costuma faltar. E não dizemos em quanto tempo a mudança se paga: isso exigiria prever retorno, e projeções assim erram a favor de quem as faz."
+      },
+      "adaptar": {
+        "path": "adaptar",
+        "path_label": "Manter a carteira e aplicar a proteção",
+        "modules": [
+          "Módulo 2 — Proteção"
+        ],
+        "track_record_applies": false,
+        "carried_loss_brl": 0.0,
+        "locked_tickers": [],
+        "total_brl": 700000,
+        "alignment": 1.0,
+        "equity_before": 0.3557,
+        "equity_budget": 0.35,
+        "equity_after": 0.3341,
+        "equity_below_budget": false,
+        "issuer_cap": 0.2371,
+        "issuer_cap_rule": "dobro do peso médio dos emissores que o cliente já tem; limite escolhido para este caminho, não medido no histórico",
+        "unrealised_loss_kept_brl": 0,
+        "tax_left_on_table_brl": 0.0,
+        "out_of_scope_brl": 21000,
+        "turnover_brl": 7554.41,
+        "transition_cost_brl": 15.11,
+        "transition_tax_brl": 0.0,
+        "transition_total_brl": 15.11,
+        "transition_cost_pct": 2e-05,
+        "exempt_month_assumed": true,
+        "tax_is_complete": false,
+        "positions_without_cost_basis": [
+          {
+            "ticker": "WEGE3",
+            "sale_brl": 14000.0,
+            "sale_fraction": 0.077778,
+            "bucket": "renda_variavel",
+            "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+          }
+        ],
+        "unpriced_sale_brl": 14000.0,
+        "pending_resolution": {
+          "positions": [
+            {
+              "ticker": "WEGE3",
+              "sale_brl": 14000.0,
+              "sale_fraction": 0.077778,
+              "bucket": "renda_variavel",
+              "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+            }
+          ],
+          "buckets": {
+            "renda_variavel": {
+              "other_gain_brl": -2347.01,
+              "rate": 0.15,
+              "exempt_month": true,
+              "carried_loss_brl": 0.0
+            }
+          },
+          "fixed_brl": 15.11
+        },
+        "tax_by_bucket": {
+          "renda_variavel": {
+            "realised_gain_brl": -2347.01,
+            "tax_brl": 0.0
+          }
+        },
+        "fgc_breaches": {
+          "Beta": 310000.0
+        },
+        "fgc_exposure": {
+          "Beta": 310000.0
+        },
+        "sources": [
+          "Open Finance (compartilhamento de investimentos)",
+          "extrato da Área do Investidor da B3",
+          "lançamento manual"
+        ],
+        "moves": [
+          {
+            "ticker": "WEGE3",
+            "action": "reduzir",
+            "from_brl": 180000,
+            "to_brl": 166000.0,
+            "delta_brl": -14000.0,
+            "reason": "teto de concentração por emissor",
+            "trade_cost_brl": 14.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "imposto ainda não calculado: falta informar quanto você pagou"
+            ]
+          },
+          {
+            "ticker": "CURY3",
+            "action": "reduzir",
+            "from_brl": 44000,
+            "to_brl": 43292.93,
+            "delta_brl": -707.07,
+            "reason": "orçamento de ações do perfil",
+            "trade_cost_brl": 0.71,
+            "realised_gain_brl": 336.66,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "MGLU3",
+            "action": "reduzir",
+            "from_brl": 25000,
+            "to_brl": 24598.25,
+            "delta_brl": -401.75,
+            "reason": "orçamento de ações do perfil",
+            "trade_cost_brl": 0.4,
+            "realised_gain_brl": -2683.67,
+            "tax_brl": 0.0,
+            "notes": [
+              "prejuízo realizado: abate o ganho das outras vendas do mesmo tipo"
+            ]
+          },
+          {
+            "ticker": "CDB Banco Beta",
+            "action": "manter",
+            "from_brl": 310000,
+            "to_brl": 310000,
+            "delta_brl": 0,
+            "reason": "renda fixa mantida",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "Cripto",
+            "action": "manter",
+            "from_brl": 21000,
+            "to_brl": 21000,
+            "delta_brl": 0,
+            "reason": "fora do que a política escolhe",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "a camada de proteção não observa nem cobre esta posição"
+            ]
+          },
+          {
+            "ticker": "Tesouro Selic",
+            "action": "manter",
+            "from_brl": 120000,
+            "to_brl": 120000,
+            "delta_brl": 0,
+            "reason": "renda fixa mantida",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          }
+        ],
+        "honesty": "Seus ativos ficam e ganham a proteção. O retorno publicado foi medido escolhendo os ativos e protegendo juntos, então ele não descreve esta carteira. A proteção reduz a exposição quando o mercado cai. Quanto ela renderia aqui, ninguém mediu."
+      }
+    },
+    "equilibrado": {
+      "decision": "2026-01-02",
+      "adequar": {
+        "path": "adequar",
+        "path_label": "Adequar a carteira ao perfil",
+        "modules": [
+          "Módulo 1 — Seleção",
+          "Módulo 2 — Proteção"
+        ],
+        "track_record_applies": true,
+        "carried_loss_brl": 0.0,
+        "locked_tickers": [],
+        "total_brl": 700000,
+        "alignment": 0.6771,
+        "turnover_brl": 283500.0,
+        "transition_cost_brl": 567.0,
+        "transition_tax_brl": 0.0,
+        "transition_total_brl": 567.0,
+        "transition_cost_pct": 0.00081,
+        "exempt_month_assumed": false,
+        "tax_is_complete": false,
+        "positions_without_cost_basis": [
+          {
+            "ticker": "WEGE3",
+            "sale_brl": 180000.0,
+            "sale_fraction": 1.0,
+            "bucket": "renda_variavel",
+            "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+          }
+        ],
+        "unpriced_sale_brl": 180000.0,
+        "pending_resolution": {
+          "positions": [
+            {
+              "ticker": "WEGE3",
+              "sale_brl": 180000.0,
+              "sale_fraction": 1.0,
+              "bucket": "renda_variavel",
+              "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+            }
+          ],
+          "buckets": {
+            "renda_variavel": {
+              "other_gain_brl": -167000.0,
+              "rate": 0.15,
+              "exempt_month": false,
+              "carried_loss_brl": 0.0
+            }
+          },
+          "fixed_brl": 567.0
+        },
+        "tax_by_bucket": {
+          "fora_do_escopo": {
+            "realised_gain_brl": -9000.0,
+            "tax_brl": 0.0
+          },
+          "renda_variavel": {
+            "realised_gain_brl": -167000.0,
+            "tax_brl": 0.0
+          }
+        },
+        "fgc_breaches": {
+          "Beta": 310000.0
+        },
+        "fgc_exposure": {
+          "Beta": 310000.0
+        },
+        "sources": [
+          "Open Finance (compartilhamento de investimentos)",
+          "extrato da Área do Investidor da B3",
+          "lançamento manual"
+        ],
+        "moves": [
+          {
+            "ticker": "WEGE3",
+            "action": "vender",
+            "from_brl": 180000,
+            "to_brl": 0.0,
+            "delta_brl": -180000.0,
+            "reason": "não faz parte da carteira do perfil",
+            "trade_cost_brl": 180.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "imposto ainda não calculado: falta informar quanto você pagou"
+            ]
+          },
+          {
+            "ticker": "MGLU3",
+            "action": "vender",
+            "from_brl": 25000,
+            "to_brl": 0.0,
+            "delta_brl": -25000.0,
+            "reason": "não faz parte da carteira do perfil",
+            "trade_cost_brl": 25.0,
+            "realised_gain_brl": -167000.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "prejuízo realizado: abate o ganho das outras vendas do mesmo tipo"
+            ]
+          },
+          {
+            "ticker": "Cripto",
+            "action": "vender",
+            "from_brl": 21000,
+            "to_brl": 0.0,
+            "delta_brl": -21000.0,
+            "reason": "fora do que a política escolhe",
+            "trade_cost_brl": 21.0,
+            "realised_gain_brl": -9000.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "regime tributário próprio: o imposto desta venda não é apurado aqui"
+            ]
+          },
+          {
+            "ticker": "IVVB11",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 77000.0,
+            "delta_brl": 77000.0,
+            "reason": "fatia em bolsa dos EUA, declarada pela política",
+            "trade_cost_brl": 77.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "CMIN3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 68530.0,
+            "delta_brl": 68530.0,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 68.53,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "VIVA3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 68530.0,
+            "delta_brl": 68530.0,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 68.53,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "BBSE3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 41770.4,
+            "delta_brl": 41770.4,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 41.77,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "CURY3",
+            "action": "comprar",
+            "from_brl": 44000,
+            "to_brl": 68530.0,
+            "delta_brl": 24530.0,
+            "reason": "abaixo do peso declarado",
+            "trade_cost_brl": 24.53,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "LEVE3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 21646.8,
+            "delta_brl": 21646.8,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 21.65,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "PLPL3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 14866.6,
+            "delta_brl": 14866.6,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 14.87,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "COGN3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 12964.0,
+            "delta_brl": 12964.0,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 12.96,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "TEND3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 11162.2,
+            "delta_brl": 11162.2,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 11.16,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          }
+        ],
+        "honesty": "O custo inclui o imposto que a venda realiza, que é o número que costuma faltar. E não dizemos em quanto tempo a mudança se paga: isso exigiria prever retorno, e projeções assim erram a favor de quem as faz."
+      },
+      "adaptar": {
+        "path": "adaptar",
+        "path_label": "Manter a carteira e aplicar a proteção",
+        "modules": [
+          "Módulo 2 — Proteção"
+        ],
+        "track_record_applies": false,
+        "carried_loss_brl": 0.0,
+        "locked_tickers": [],
+        "total_brl": 700000,
+        "alignment": 1.0,
+        "equity_before": 0.3557,
+        "equity_budget": 0.55,
+        "equity_after": 0.3357,
+        "equity_below_budget": true,
+        "issuer_cap": 0.2371,
+        "issuer_cap_rule": "dobro do peso médio dos emissores que o cliente já tem; limite escolhido para este caminho, não medido no histórico",
+        "unrealised_loss_kept_brl": 167000,
+        "tax_left_on_table_brl": 0.0,
+        "out_of_scope_brl": 21000,
+        "turnover_brl": 7000.0,
+        "transition_cost_brl": 14.0,
+        "transition_tax_brl": 0,
+        "transition_total_brl": 14.0,
+        "transition_cost_pct": 2e-05,
+        "exempt_month_assumed": true,
+        "tax_is_complete": false,
+        "positions_without_cost_basis": [
+          {
+            "ticker": "WEGE3",
+            "sale_brl": 14000.0,
+            "sale_fraction": 0.077778,
+            "bucket": "renda_variavel",
+            "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+          }
+        ],
+        "unpriced_sale_brl": 14000.0,
+        "pending_resolution": {
+          "positions": [
+            {
+              "ticker": "WEGE3",
+              "sale_brl": 14000.0,
+              "sale_fraction": 0.077778,
+              "bucket": "renda_variavel",
+              "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+            }
+          ],
+          "buckets": {
+            "renda_variavel": {
+              "other_gain_brl": 0.0,
+              "rate": 0.15,
+              "exempt_month": true,
+              "carried_loss_brl": 0.0
+            }
+          },
+          "fixed_brl": 14.0
+        },
+        "tax_by_bucket": {},
+        "fgc_breaches": {
+          "Beta": 310000.0
+        },
+        "fgc_exposure": {
+          "Beta": 310000.0
+        },
+        "sources": [
+          "Open Finance (compartilhamento de investimentos)",
+          "extrato da Área do Investidor da B3",
+          "lançamento manual"
+        ],
+        "moves": [
+          {
+            "ticker": "WEGE3",
+            "action": "reduzir",
+            "from_brl": 180000,
+            "to_brl": 166000.0,
+            "delta_brl": -14000.0,
+            "reason": "teto de concentração por emissor",
+            "trade_cost_brl": 14.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "imposto ainda não calculado: falta informar quanto você pagou"
+            ]
+          },
+          {
+            "ticker": "CDB Banco Beta",
+            "action": "manter",
+            "from_brl": 310000,
+            "to_brl": 310000,
+            "delta_brl": 0,
+            "reason": "renda fixa mantida",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "CURY3",
+            "action": "manter",
+            "from_brl": 44000,
+            "to_brl": 44000,
+            "delta_brl": 0,
+            "reason": "dentro dos limites do perfil",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "Cripto",
+            "action": "manter",
+            "from_brl": 21000,
+            "to_brl": 21000,
+            "delta_brl": 0,
+            "reason": "fora do que a política escolhe",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "a camada de proteção não observa nem cobre esta posição"
+            ]
+          },
+          {
+            "ticker": "MGLU3",
+            "action": "manter",
+            "from_brl": 25000,
+            "to_brl": 25000,
+            "delta_brl": 0,
+            "reason": "dentro dos limites do perfil",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "Tesouro Selic",
+            "action": "manter",
+            "from_brl": 120000,
+            "to_brl": 120000,
+            "delta_brl": 0,
+            "reason": "renda fixa mantida",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          }
+        ],
+        "honesty": "Seus ativos ficam e ganham a proteção. O retorno publicado foi medido escolhendo os ativos e protegendo juntos, então ele não descreve esta carteira. A proteção reduz a exposição quando o mercado cai. Quanto ela renderia aqui, ninguém mediu."
+      }
+    },
+    "arrojado": {
+      "decision": "2026-01-02",
+      "adequar": {
+        "path": "adequar",
+        "path_label": "Adequar a carteira ao perfil",
+        "modules": [
+          "Módulo 1 — Seleção",
+          "Módulo 2 — Proteção"
+        ],
+        "track_record_applies": true,
+        "carried_loss_brl": 0.0,
+        "locked_tickers": [],
+        "total_brl": 700000,
+        "alignment": 0.6771,
+        "turnover_brl": 353500.0,
+        "transition_cost_brl": 706.99,
+        "transition_tax_brl": 0.0,
+        "transition_total_brl": 706.99,
+        "transition_cost_pct": 0.00101,
+        "exempt_month_assumed": false,
+        "tax_is_complete": false,
+        "positions_without_cost_basis": [
+          {
+            "ticker": "WEGE3",
+            "sale_brl": 180000.0,
+            "sale_fraction": 1.0,
+            "bucket": "renda_variavel",
+            "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+          }
+        ],
+        "unpriced_sale_brl": 180000.0,
+        "pending_resolution": {
+          "positions": [
+            {
+              "ticker": "WEGE3",
+              "sale_brl": 180000.0,
+              "sale_fraction": 1.0,
+              "bucket": "renda_variavel",
+              "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+            }
+          ],
+          "buckets": {
+            "renda_variavel": {
+              "other_gain_brl": -167000.0,
+              "rate": 0.15,
+              "exempt_month": false,
+              "carried_loss_brl": 0.0
+            }
+          },
+          "fixed_brl": 706.99
+        },
+        "tax_by_bucket": {
+          "fora_do_escopo": {
+            "realised_gain_brl": -9000.0,
+            "tax_brl": 0.0
+          },
+          "renda_variavel": {
+            "realised_gain_brl": -167000.0,
+            "tax_brl": 0.0
+          }
+        },
+        "fgc_breaches": {
+          "Beta": 310000.0
+        },
+        "fgc_exposure": {
+          "Beta": 310000.0
+        },
+        "sources": [
+          "Open Finance (compartilhamento de investimentos)",
+          "extrato da Área do Investidor da B3",
+          "lançamento manual"
+        ],
+        "moves": [
+          {
+            "ticker": "WEGE3",
+            "action": "vender",
+            "from_brl": 180000,
+            "to_brl": 0.0,
+            "delta_brl": -180000.0,
+            "reason": "não faz parte da carteira do perfil",
+            "trade_cost_brl": 180.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "imposto ainda não calculado: falta informar quanto você pagou"
+            ]
+          },
+          {
+            "ticker": "MGLU3",
+            "action": "vender",
+            "from_brl": 25000,
+            "to_brl": 0.0,
+            "delta_brl": -25000.0,
+            "reason": "não faz parte da carteira do perfil",
+            "trade_cost_brl": 25.0,
+            "realised_gain_brl": -167000.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "prejuízo realizado: abate o ganho das outras vendas do mesmo tipo"
+            ]
+          },
+          {
+            "ticker": "Cripto",
+            "action": "vender",
+            "from_brl": 21000,
+            "to_brl": 0.0,
+            "delta_brl": -21000.0,
+            "reason": "fora do que a política escolhe",
+            "trade_cost_brl": 21.0,
+            "realised_gain_brl": -9000.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "regime tributário próprio: o imposto desta venda não é apurado aqui"
+            ]
+          },
+          {
+            "ticker": "VIVA3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 142800.0,
+            "delta_brl": 142800.0,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 142.8,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "IVVB11",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 105000.0,
+            "delta_brl": 105000.0,
+            "reason": "fatia em bolsa dos EUA, declarada pela política",
+            "trade_cost_brl": 105.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "CMIN3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 90470.8,
+            "delta_brl": 90470.8,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 90.47,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "CURY3",
+            "action": "comprar",
+            "from_brl": 44000,
+            "to_brl": 121275.0,
+            "delta_brl": 77275.0,
+            "reason": "abaixo do peso declarado",
+            "trade_cost_brl": 77.27,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "BBSE3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 48242.6,
+            "delta_brl": 48242.6,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 48.24,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "LEVE3",
+            "action": "comprar",
+            "from_brl": 0.0,
+            "to_brl": 17211.6,
+            "delta_brl": 17211.6,
+            "reason": "entra pela seleção do perfil",
+            "trade_cost_brl": 17.21,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          }
+        ],
+        "honesty": "O custo inclui o imposto que a venda realiza, que é o número que costuma faltar. E não dizemos em quanto tempo a mudança se paga: isso exigiria prever retorno, e projeções assim erram a favor de quem as faz."
+      },
+      "adaptar": {
+        "path": "adaptar",
+        "path_label": "Manter a carteira e aplicar a proteção",
+        "modules": [
+          "Módulo 2 — Proteção"
+        ],
+        "track_record_applies": false,
+        "carried_loss_brl": 0.0,
+        "locked_tickers": [],
+        "total_brl": 700000,
+        "alignment": 1.0,
+        "equity_before": 0.3557,
+        "equity_budget": 0.75,
+        "equity_after": 0.3357,
+        "equity_below_budget": true,
+        "issuer_cap": 0.2371,
+        "issuer_cap_rule": "dobro do peso médio dos emissores que o cliente já tem; limite escolhido para este caminho, não medido no histórico",
+        "unrealised_loss_kept_brl": 167000,
+        "tax_left_on_table_brl": 0.0,
+        "out_of_scope_brl": 21000,
+        "turnover_brl": 7000.0,
+        "transition_cost_brl": 14.0,
+        "transition_tax_brl": 0,
+        "transition_total_brl": 14.0,
+        "transition_cost_pct": 2e-05,
+        "exempt_month_assumed": true,
+        "tax_is_complete": false,
+        "positions_without_cost_basis": [
+          {
+            "ticker": "WEGE3",
+            "sale_brl": 14000.0,
+            "sale_fraction": 0.077778,
+            "bucket": "renda_variavel",
+            "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+          }
+        ],
+        "unpriced_sale_brl": 14000.0,
+        "pending_resolution": {
+          "positions": [
+            {
+              "ticker": "WEGE3",
+              "sale_brl": 14000.0,
+              "sale_fraction": 0.077778,
+              "bucket": "renda_variavel",
+              "cost_quality": "reconstruído só em parte: há posição anterior a 01/11/2019"
+            }
+          ],
+          "buckets": {
+            "renda_variavel": {
+              "other_gain_brl": 0.0,
+              "rate": 0.15,
+              "exempt_month": true,
+              "carried_loss_brl": 0.0
+            }
+          },
+          "fixed_brl": 14.0
+        },
+        "tax_by_bucket": {},
+        "fgc_breaches": {
+          "Beta": 310000.0
+        },
+        "fgc_exposure": {
+          "Beta": 310000.0
+        },
+        "sources": [
+          "Open Finance (compartilhamento de investimentos)",
+          "extrato da Área do Investidor da B3",
+          "lançamento manual"
+        ],
+        "moves": [
+          {
+            "ticker": "WEGE3",
+            "action": "reduzir",
+            "from_brl": 180000,
+            "to_brl": 166000.0,
+            "delta_brl": -14000.0,
+            "reason": "teto de concentração por emissor",
+            "trade_cost_brl": 14.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "imposto ainda não calculado: falta informar quanto você pagou"
+            ]
+          },
+          {
+            "ticker": "CDB Banco Beta",
+            "action": "manter",
+            "from_brl": 310000,
+            "to_brl": 310000,
+            "delta_brl": 0,
+            "reason": "renda fixa mantida",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "CURY3",
+            "action": "manter",
+            "from_brl": 44000,
+            "to_brl": 44000,
+            "delta_brl": 0,
+            "reason": "dentro dos limites do perfil",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "Cripto",
+            "action": "manter",
+            "from_brl": 21000,
+            "to_brl": 21000,
+            "delta_brl": 0,
+            "reason": "fora do que a política escolhe",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": [
+              "a camada de proteção não observa nem cobre esta posição"
+            ]
+          },
+          {
+            "ticker": "MGLU3",
+            "action": "manter",
+            "from_brl": 25000,
+            "to_brl": 25000,
+            "delta_brl": 0,
+            "reason": "dentro dos limites do perfil",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          },
+          {
+            "ticker": "Tesouro Selic",
+            "action": "manter",
+            "from_brl": 120000,
+            "to_brl": 120000,
+            "delta_brl": 0,
+            "reason": "renda fixa mantida",
+            "trade_cost_brl": 0.0,
+            "realised_gain_brl": 0.0,
+            "tax_brl": 0.0,
+            "notes": []
+          }
+        ],
+        "honesty": "Seus ativos ficam e ganham a proteção. O retorno publicado foi medido escolhendo os ativos e protegendo juntos, então ele não descreve esta carteira. A proteção reduz a exposição quando o mercado cai. Quanto ela renderia aqui, ninguém mediu."
+      }
+    }
+  }
+}

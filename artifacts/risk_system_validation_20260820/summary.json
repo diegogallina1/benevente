@@ -1,0 +1,629 @@
+{
+  "as_of": "2026-08-20",
+  "status": "retrospective_research_only",
+  "source_manifest": "data/prices_b3_total_return_full_2011_2025_manifest.json",
+  "institutional_total_return_verified": false,
+  "profiles": [
+    {
+      "profile": "conservador",
+      "method_status": "retrospective_policy_experiment_not_prospective_validation",
+      "full_period": {
+        "years": 11,
+        "cumulative_return": 2.3878025164515013,
+        "cagr": 0.11731176418323952,
+        "annual_volatility": 0.06695557111872204,
+        "worst_year": 0.0256516496898531
+      },
+      "full_period_after_tax": {
+        "years": 11,
+        "cumulative_return": 2.1978387164569346,
+        "cagr": 0.11146566345287878,
+        "annual_volatility": 0.06301461056747587,
+        "worst_year": 0.0243059477891922
+      },
+      "holdout_2019_2025_after_tax": {
+        "years": 7,
+        "cumulative_return": 0.9228968165385878,
+        "cagr": 0.09790595342766029,
+        "annual_volatility": 0.06284661903557925,
+        "worst_year": 0.0243059477891922
+      },
+      "comparators_after_tax": {
+        "CDI": {
+          "years": 11,
+          "cumulative_return": 1.3168491829121334,
+          "cagr": 0.07937542023896715,
+          "annual_volatility": 0.034039408065902006,
+          "worst_year": 0.0225438298529366
+        },
+        "MVO": {
+          "years": 11,
+          "cumulative_return": 3.5989215567970723,
+          "cagr": 0.1487921379952164,
+          "annual_volatility": 0.19563286537017543,
+          "worst_year": -0.1734087286456863
+        }
+      },
+      "daily_max_drawdown": -0.18886010499008554,
+      "fixed_cap_baseline": {
+        "cagr": 0.14497981322791942,
+        "daily_max_drawdown": -0.18887283925960574
+      },
+      "minimum_positions_observed": 5,
+      "bootstrap": {
+        "CDI": {
+          "samples": 100000,
+          "seed": 20260820,
+          "probability_positive_excess": 0.9629,
+          "p2_5": -0.00295085740900165,
+          "median": 0.03163239749046798,
+          "p97_5": 0.07007438689943325
+        },
+        "MVO": {
+          "samples": 100000,
+          "seed": 20260820,
+          "probability_positive_excess": 0.18892,
+          "p2_5": -0.12300559036480099,
+          "median": -0.03838870595012178,
+          "p97_5": 0.04534528554912284
+        }
+      },
+      "cost_stress": [
+        {
+          "execution_cost_multiplier": 1,
+          "cagr": 0.11731176418323952
+        },
+        {
+          "execution_cost_multiplier": 2,
+          "cagr": 0.11706400664525085
+        },
+        {
+          "execution_cost_multiplier": 5,
+          "cagr": 0.11632063804180026
+        }
+      ],
+      "single_year_equity_shock": [
+        {
+          "additional_equity_shock": -0.1,
+          "worst_shocked_year": 2020,
+          "worst_full_period_cagr": 0.11379063250537302
+        },
+        {
+          "additional_equity_shock": -0.2,
+          "worst_shocked_year": 2020,
+          "worst_full_period_cagr": 0.1101545364315426
+        },
+        {
+          "additional_equity_shock": -0.35,
+          "worst_shocked_year": 2020,
+          "worst_full_period_cagr": 0.10446669853395019
+        }
+      ],
+      "prolonged_bear": {
+        "years": 3,
+        "equity_return_each_year": -0.15,
+        "equity_weight": 0.168547755332183,
+        "cash_return_each_year": 0.1077709035346763,
+        "annual_portfolio_return": 0.06413883657470963,
+        "cumulative_return": 0.20502173452302075,
+        "interpretation": "deterministic sensitivity; no probability is assigned"
+      },
+      "fixed_intrayear_overlay": {
+        "profile": "conservador",
+        "status": "retrospective_fixed_overlay_not_prospective_validation",
+        "configuration": {
+          "alert_drawdown": 0.1,
+          "severe_drawdown": 0.2,
+          "alert_volatility": 0.3,
+          "severe_volatility": 0.5,
+          "recovery_days": 10,
+          "cost_bps": 10.0,
+          "profile_alert_multiplier": 0.55,
+          "profile_severe_multiplier": 0.25,
+          "signal_lag_sessions": 1
+        },
+        "full_period": {
+          "base": {
+            "years": 11,
+            "cumulative_return": 2.387802516451505,
+            "cagr": 0.11731176418323974,
+            "annual_volatility": 0.06711942087105659,
+            "max_drawdown": -0.18886010499008576
+          },
+          "protected": {
+            "years": 11,
+            "cumulative_return": 2.213578165733672,
+            "cagr": 0.11196187478284592,
+            "annual_volatility": 0.05055211562582344,
+            "max_drawdown": -0.09859658492162293
+          },
+          "CDI": {
+            "years": 11,
+            "cumulative_return": 1.7436789940148651,
+            "cagr": 0.09609571930908345,
+            "annual_volatility": 0.002468326722964206,
+            "max_drawdown": 0.0
+          }
+        },
+        "holdout_2019_2025": {
+          "base": {
+            "years": 7,
+            "cumulative_return": 1.0102519317413008,
+            "cagr": 0.10489624672934461,
+            "annual_volatility": 0.07241088170961534,
+            "max_drawdown": -0.18886010499008543
+          },
+          "protected": {
+            "years": 7,
+            "cumulative_return": 0.9130825005155123,
+            "cagr": 0.09710367872174652,
+            "annual_volatility": 0.05224885446642173,
+            "max_drawdown": -0.09859658492162293
+          },
+          "CDI": {
+            "years": 7,
+            "cumulative_return": 0.8222786595492078,
+            "cagr": 0.08950865391736551,
+            "annual_volatility": 0.0026174639681321834,
+            "max_drawdown": 0.0
+          }
+        },
+        "overlay_turnover": 5.397445303728325,
+        "overlay_cost_rate_sum": 0.005397445303728326,
+        "limitations": [
+          "The overlay was designed after crises visible in the sample.",
+          "Intrayear tax consequences are not yet included.",
+          "The signal reacts to price stress; it does not forecast the cause of the crisis."
+        ]
+      },
+      "block_monte_carlo": {
+        "samples": 5000,
+        "seed": 20260821,
+        "block_length_sessions": 21,
+        "strategy_cagr": {
+          "p2_5": 0.07834978708874281,
+          "median": 0.11414541866455774,
+          "p97_5": 0.14797965875612218
+        },
+        "maximum_drawdown": {
+          "p2_5": -0.14200905908598283,
+          "median": -0.08083675833199178,
+          "p97_5": -0.036438689563932945
+        },
+        "probability_cagr_above_paired_cdi": 0.8248,
+        "interpretation": "retrospective circular block resampling; not prospective evidence"
+      },
+      "drawdown_assessment": {
+        "annual_selection_only": -0.18886010499008554,
+        "with_fixed_intrayear_overlay": -0.09859658492162293,
+        "profile_tolerance": -0.15
+      },
+      "gates": {
+        "primary_total_return_verified": false,
+        "minimum_five_issuers": true,
+        "drawdown_within_profile_tolerance": true,
+        "full_period_after_tax_above_cdi": true,
+        "full_period_after_tax_above_mvo": false,
+        "prospective_observations_sufficient": false,
+        "intrayear_tax_model_complete": false
+      },
+      "approval": "blocked"
+    },
+    {
+      "profile": "equilibrado",
+      "method_status": "retrospective_policy_experiment_not_prospective_validation",
+      "full_period": {
+        "years": 11,
+        "cumulative_return": 2.830536121127503,
+        "cagr": 0.12985730160222375,
+        "annual_volatility": 0.11033155454954463,
+        "worst_year": -0.0135537400842139
+      },
+      "full_period_after_tax": {
+        "years": 11,
+        "cumulative_return": 2.50722897254077,
+        "cagr": 0.12083631274808093,
+        "annual_volatility": 0.10179935362436333,
+        "worst_year": -0.0151710580717013
+      },
+      "holdout_2019_2025_after_tax": {
+        "years": 7,
+        "cumulative_return": 1.0618248020593808,
+        "cagr": 0.1089018512454869,
+        "annual_volatility": 0.10101949062123552,
+        "worst_year": -0.0151710580717013
+      },
+      "comparators_after_tax": {
+        "CDI": {
+          "years": 11,
+          "cumulative_return": 1.3168491829121334,
+          "cagr": 0.07937542023896715,
+          "annual_volatility": 0.034039408065902006,
+          "worst_year": 0.0225438298529366
+        },
+        "MVO": {
+          "years": 11,
+          "cumulative_return": 3.5987631926237356,
+          "cagr": 0.14878854169032651,
+          "annual_volatility": 0.19563614998679632,
+          "worst_year": -0.1734169602672919
+        }
+      },
+      "daily_max_drawdown": -0.28107474196226534,
+      "fixed_cap_baseline": {
+        "cagr": 0.1476592990309098,
+        "daily_max_drawdown": -0.2810922684712399
+      },
+      "minimum_positions_observed": 5,
+      "bootstrap": {
+        "CDI": {
+          "samples": 100000,
+          "seed": 20260820,
+          "probability_positive_excess": 0.91894,
+          "p2_5": -0.015756621432152788,
+          "median": 0.041440082953453916,
+          "p97_5": 0.1011951333747774
+        },
+        "MVO": {
+          "samples": 100000,
+          "seed": 20260820,
+          "probability_positive_excess": 0.23186,
+          "p2_5": -0.10427767384685883,
+          "median": -0.028976387396193237,
+          "p97_5": 0.047280103336131966
+        }
+      },
+      "cost_stress": [
+        {
+          "execution_cost_multiplier": 1,
+          "cagr": 0.12985730160222375
+        },
+        {
+          "execution_cost_multiplier": 2,
+          "cagr": 0.12943280292268433
+        },
+        {
+          "execution_cost_multiplier": 5,
+          "cagr": 0.12815912628673343
+        }
+      ],
+      "single_year_equity_shock": [
+        {
+          "additional_equity_shock": -0.1,
+          "worst_shocked_year": 2020,
+          "worst_full_period_cagr": 0.12420976682104135
+        },
+        {
+          "additional_equity_shock": -0.2,
+          "worst_shocked_year": 2020,
+          "worst_full_period_cagr": 0.11826342677000645
+        },
+        {
+          "additional_equity_shock": -0.35,
+          "worst_shocked_year": 2020,
+          "worst_full_period_cagr": 0.10870471520838865
+        }
+      ],
+      "prolonged_bear": {
+        "years": 3,
+        "equity_return_each_year": -0.15,
+        "equity_weight": 0.3593383172199678,
+        "cash_return_each_year": 0.1077709035346763,
+        "annual_portfolio_return": 0.01476942526337498,
+        "cumulative_return": 0.044965905300162534,
+        "interpretation": "deterministic sensitivity; no probability is assigned"
+      },
+      "fixed_intrayear_overlay": {
+        "profile": "equilibrado",
+        "status": "retrospective_fixed_overlay_not_prospective_validation",
+        "configuration": {
+          "alert_drawdown": 0.1,
+          "severe_drawdown": 0.2,
+          "alert_volatility": 0.3,
+          "severe_volatility": 0.5,
+          "recovery_days": 10,
+          "cost_bps": 10.0,
+          "profile_alert_multiplier": 0.7,
+          "profile_severe_multiplier": 0.4,
+          "signal_lag_sessions": 1
+        },
+        "full_period": {
+          "base": {
+            "years": 11,
+            "cumulative_return": 2.8305361211274715,
+            "cagr": 0.12985730160222286,
+            "annual_volatility": 0.10956242030818726,
+            "max_drawdown": -0.28107474196226556
+          },
+          "protected": {
+            "years": 11,
+            "cumulative_return": 2.5845314287830434,
+            "cagr": 0.12305996254432028,
+            "annual_volatility": 0.08794659685591326,
+            "max_drawdown": -0.17893741799893392
+          },
+          "CDI": {
+            "years": 11,
+            "cumulative_return": 1.7436789940148651,
+            "cagr": 0.09609571930908345,
+            "annual_volatility": 0.002468326722964206,
+            "max_drawdown": 0.0
+          }
+        },
+        "holdout_2019_2025": {
+          "base": {
+            "years": 7,
+            "cumulative_return": 1.2013971292899934,
+            "cagr": 0.11932682965094976,
+            "annual_volatility": 0.1167940629700789,
+            "max_drawdown": -0.28107474196226523
+          },
+          "protected": {
+            "years": 7,
+            "cumulative_return": 1.080081950281233,
+            "cagr": 0.11029929393891291,
+            "annual_volatility": 0.09056283485168112,
+            "max_drawdown": -0.1789374179989336
+          },
+          "CDI": {
+            "years": 7,
+            "cumulative_return": 0.8222786595492078,
+            "cagr": 0.08950865391736551,
+            "annual_volatility": 0.0026174639681321834,
+            "max_drawdown": 0.0
+          }
+        },
+        "overlay_turnover": 7.281646984188039,
+        "overlay_cost_rate_sum": 0.007281646984188039,
+        "limitations": [
+          "The overlay was designed after crises visible in the sample.",
+          "Intrayear tax consequences are not yet included.",
+          "The signal reacts to price stress; it does not forecast the cause of the crisis."
+        ]
+      },
+      "block_monte_carlo": {
+        "samples": 5000,
+        "seed": 20260822,
+        "block_length_sessions": 21,
+        "strategy_cagr": {
+          "p2_5": 0.06495076275083901,
+          "median": 0.12535759208228514,
+          "p97_5": 0.18733019252931415
+        },
+        "maximum_drawdown": {
+          "p2_5": -0.2768630053914927,
+          "median": -0.1559414486251703,
+          "p97_5": -0.07009874978430457
+        },
+        "probability_cagr_above_paired_cdi": 0.8052,
+        "interpretation": "retrospective circular block resampling; not prospective evidence"
+      },
+      "drawdown_assessment": {
+        "annual_selection_only": -0.28107474196226534,
+        "with_fixed_intrayear_overlay": -0.17893741799893392,
+        "profile_tolerance": -0.25
+      },
+      "gates": {
+        "primary_total_return_verified": false,
+        "minimum_five_issuers": true,
+        "drawdown_within_profile_tolerance": true,
+        "full_period_after_tax_above_cdi": true,
+        "full_period_after_tax_above_mvo": false,
+        "prospective_observations_sufficient": false,
+        "intrayear_tax_model_complete": false
+      },
+      "approval": "blocked"
+    },
+    {
+      "profile": "arrojado",
+      "method_status": "retrospective_policy_experiment_not_prospective_validation",
+      "full_period": {
+        "years": 11,
+        "cumulative_return": 3.284988850316216,
+        "cagr": 0.14143181226726553,
+        "annual_volatility": 0.16966283975258045,
+        "worst_year": -0.0902057855537453
+      },
+      "full_period_after_tax": {
+        "years": 11,
+        "cumulative_return": 2.7753370816966054,
+        "cagr": 0.12836737640433404,
+        "annual_volatility": 0.15735880770182045,
+        "worst_year": -0.0938452475402308
+      },
+      "holdout_2019_2025_after_tax": {
+        "years": 7,
+        "cumulative_return": 1.1672727963215666,
+        "cagr": 0.11683149900273437,
+        "annual_volatility": 0.14795489179543744,
+        "worst_year": -0.0678726984329924
+      },
+      "comparators_after_tax": {
+        "CDI": {
+          "years": 11,
+          "cumulative_return": 1.3168491829121334,
+          "cagr": 0.07937542023896715,
+          "annual_volatility": 0.034039408065902006,
+          "worst_year": 0.0225438298529366
+        },
+        "MVO": {
+          "years": 11,
+          "cumulative_return": 3.5985584093126324,
+          "cagr": 0.14878389108253653,
+          "annual_volatility": 0.1956404128557567,
+          "worst_year": -0.1734274357597754
+        }
+      },
+      "daily_max_drawdown": -0.3759931513822473,
+      "fixed_cap_baseline": {
+        "cagr": 0.15170208930939033,
+        "daily_max_drawdown": -0.376004944607197
+      },
+      "minimum_positions_observed": 5,
+      "bootstrap": {
+        "CDI": {
+          "samples": 100000,
+          "seed": 20260820,
+          "probability_positive_excess": 0.85438,
+          "p2_5": -0.040848401395363734,
+          "median": 0.049731502149698126,
+          "p97_5": 0.14147040343938053
+        },
+        "MVO": {
+          "samples": 100000,
+          "seed": 20260820,
+          "probability_positive_excess": 0.31061,
+          "p2_5": -0.10188441560371748,
+          "median": -0.02028803116054445,
+          "p97_5": 0.057352692818580644
+        }
+      },
+      "cost_stress": [
+        {
+          "execution_cost_multiplier": 1,
+          "cagr": 0.14143181226726553
+        },
+        {
+          "execution_cost_multiplier": 2,
+          "cagr": 0.14073994821595082
+        },
+        {
+          "execution_cost_multiplier": 5,
+          "cagr": 0.1386641104219719
+        }
+      ],
+      "single_year_equity_shock": [
+        {
+          "additional_equity_shock": -0.1,
+          "worst_shocked_year": 2024,
+          "worst_full_period_cagr": 0.1327715294353089
+        },
+        {
+          "additional_equity_shock": -0.2,
+          "worst_shocked_year": 2024,
+          "worst_full_period_cagr": 0.12339379946690654
+        },
+        {
+          "additional_equity_shock": -0.35,
+          "worst_shocked_year": 2024,
+          "worst_full_period_cagr": 0.10766961718803425
+        }
+      ],
+      "prolonged_bear": {
+        "years": 3,
+        "equity_return_each_year": -0.15,
+        "equity_weight": 0.6374999999999998,
+        "cash_return_each_year": 0.1077709035346763,
+        "annual_portfolio_return": -0.0572626901819666,
+        "cumulative_return": -0.16213878874465149,
+        "interpretation": "deterministic sensitivity; no probability is assigned"
+      },
+      "fixed_intrayear_overlay": {
+        "profile": "arrojado",
+        "status": "retrospective_fixed_overlay_not_prospective_validation",
+        "configuration": {
+          "alert_drawdown": 0.1,
+          "severe_drawdown": 0.2,
+          "alert_volatility": 0.3,
+          "severe_volatility": 0.5,
+          "recovery_days": 10,
+          "cost_bps": 10.0,
+          "profile_alert_multiplier": 0.85,
+          "profile_severe_multiplier": 0.6,
+          "signal_lag_sessions": 1
+        },
+        "full_period": {
+          "base": {
+            "years": 11,
+            "cumulative_return": 3.284988850316225,
+            "cagr": 0.14143181226726576,
+            "annual_volatility": 0.17081658025595556,
+            "max_drawdown": -0.3759931513822473
+          },
+          "protected": {
+            "years": 11,
+            "cumulative_return": 3.078992650220152,
+            "cagr": 0.13633088599537713,
+            "annual_volatility": 0.14930023008205479,
+            "max_drawdown": -0.29289181754085913
+          },
+          "CDI": {
+            "years": 11,
+            "cumulative_return": 1.7436789940148651,
+            "cagr": 0.09609571930908345,
+            "annual_volatility": 0.002468326722964206,
+            "max_drawdown": 0.0
+          }
+        },
+        "holdout_2019_2025": {
+          "base": {
+            "years": 7,
+            "cumulative_return": 1.363474789855827,
+            "cagr": 0.13074434612165398,
+            "annual_volatility": 0.17589382001397533,
+            "max_drawdown": -0.3759931513822473
+          },
+          "protected": {
+            "years": 7,
+            "cumulative_return": 1.2706528476453567,
+            "cagr": 0.12429085302336595,
+            "annual_volatility": 0.15029187678000294,
+            "max_drawdown": -0.29289181754085913
+          },
+          "CDI": {
+            "years": 7,
+            "cumulative_return": 0.8222786595492078,
+            "cagr": 0.08950865391736551,
+            "annual_volatility": 0.0026174639681321834,
+            "max_drawdown": 0.0
+          }
+        },
+        "overlay_turnover": 7.174075168655281,
+        "overlay_cost_rate_sum": 0.007174075168655282,
+        "limitations": [
+          "The overlay was designed after crises visible in the sample.",
+          "Intrayear tax consequences are not yet included.",
+          "The signal reacts to price stress; it does not forecast the cause of the crisis."
+        ]
+      },
+      "block_monte_carlo": {
+        "samples": 5000,
+        "seed": 20260823,
+        "block_length_sessions": 21,
+        "strategy_cagr": {
+          "p2_5": 0.032362261390841404,
+          "median": 0.14103343855113748,
+          "p97_5": 0.24679650038841106
+        },
+        "maximum_drawdown": {
+          "p2_5": -0.4912926637100562,
+          "median": -0.27719422653290293,
+          "p97_5": -0.132862585485564
+        },
+        "probability_cagr_above_paired_cdi": 0.7974,
+        "interpretation": "retrospective circular block resampling; not prospective evidence"
+      },
+      "drawdown_assessment": {
+        "annual_selection_only": -0.3759931513822473,
+        "with_fixed_intrayear_overlay": -0.29289181754085913,
+        "profile_tolerance": -0.4
+      },
+      "gates": {
+        "primary_total_return_verified": false,
+        "minimum_five_issuers": true,
+        "drawdown_within_profile_tolerance": true,
+        "full_period_after_tax_above_cdi": true,
+        "full_period_after_tax_above_mvo": false,
+        "prospective_observations_sufficient": false,
+        "intrayear_tax_model_complete": false
+      },
+      "approval": "blocked"
+    }
+  ],
+  "global_limitations": [
+    "The risk policy was designed after the historical period was visible.",
+    "The 2019-2025 slice is a frozen calculation window, not a genuinely prospective sample.",
+    "The current total-return panel is not institutionally verified against complete primary event records.",
+    "The fixed intrayear overlay includes turnover cost but does not yet model Brazilian tax lots and tax payments."
+  ]
+}

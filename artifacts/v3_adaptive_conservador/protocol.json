@@ -1,0 +1,23 @@
+{
+  "start_year": 2015,
+  "end_year": 2026,
+  "horizon_years": 5,
+  "maximum_equity_weight": 0.35,
+  "maximum_asset_weight": 0.1,
+  "minimum_history_days": 252,
+  "factor": "nested_annual_selection",
+  "minimum_factor_training_years": 3,
+  "top_assets": 5,
+  "minimum_average_daily_value_brl": 10000000,
+  "risk_profile": "conservador",
+  "factor_family": [
+    "value_quality",
+    "triple_factor",
+    "momentum_12m",
+    "low_volatility",
+    "mvo_neutral",
+    "mvo_risk_adjusted",
+    "mvo_low_volatility"
+  ],
+  "selection_rule": "For decision year t the factor is ranked on years start_year..t-1 only, by net cumulative return penalised by drawdown and turnover. Year t is then evaluated once. No year informs its own selection."
+}

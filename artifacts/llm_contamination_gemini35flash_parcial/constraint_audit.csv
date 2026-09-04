@@ -1,0 +1,68 @@
+decision_year,arm,issue,sum_before_normalisation,weights_above_cap,negative_weights,unknown_ids,missing_ids,detail
+2013,monolithic,constraint_audit,1.0,0.0,0.0,0.0,0.0,
+2015,monolithic,constraint_audit,1.0,0.0,0.0,0.0,0.0,
+2016,monolithic,constraint_audit,1.0,0.0,0.0,0.0,0.0,
+2017,monolithic,constraint_audit,1.0,0.0,0.0,0.0,0.0,
+2018,monolithic,constraint_audit,1.0000000000000002,0.0,0.0,0.0,0.0,
+2019,monolithic,constraint_audit,1.0,0.0,0.0,0.0,0.0,
+2020,monolithic,constraint_audit,1.0,0.0,0.0,0.0,0.0,
+2021,named,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2021,anonymised,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2021,monolithic,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2022,named,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2022,anonymised,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2022,monolithic,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2023,named,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2023,anonymised,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2023,monolithic,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2024,named,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2024,anonymised,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2024,monolithic,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2025,named,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2025,anonymised,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"
+2025,monolithic,call_failed,,,,,,"Gemini call failed after 4 attempts. HTTP 429: {
+  ""error"": {
+    ""code"": 429,
+    ""message"": ""You exceeded your current quota, please check your plan and billing details. For more information on this"

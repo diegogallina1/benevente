@@ -1,0 +1,10 @@
+{
+  "price_basis": "total_return",
+  "performance_permitted": true,
+  "status": "ready_for_performance",
+  "reasons": [],
+  "first_price_date": "2013-01-02",
+  "last_price_date": "2025-12-30",
+  "price_tickers": 359,
+  "fundamental_snapshots": 2748
+}

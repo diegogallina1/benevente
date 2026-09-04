@@ -1,0 +1,62 @@
+{
+  "candidates": {
+    "low_vol_eq15_asset10": [
+      0.15,
+      0.1,
+      5
+    ],
+    "low_vol_eq25_asset10": [
+      0.25,
+      0.1,
+      5
+    ],
+    "low_vol_eq35_asset10": [
+      0.35,
+      0.1,
+      5
+    ],
+    "low_vol_eq15_asset05": [
+      0.15,
+      0.05,
+      5
+    ]
+  },
+  "stability": [
+    {
+      "candidate": "low_vol_eq15_asset05",
+      "windows": 3,
+      "median_excess_mvo": 0.0045668815778689975,
+      "median_excess_cdi": 0.02110941619164275,
+      "minimum_excess_cdi": -0.0005691878950428997,
+      "minimum_excess_mvo": 0.00030619607189086295,
+      "pass_both": 2
+    },
+    {
+      "candidate": "low_vol_eq15_asset10",
+      "windows": 3,
+      "median_excess_mvo": 0.0012827417290546261,
+      "median_excess_cdi": 0.03393922149465922,
+      "minimum_excess_cdi": 0.02232179605734874,
+      "minimum_excess_mvo": -0.002311403992286465,
+      "pass_both": 2
+    },
+    {
+      "candidate": "low_vol_eq25_asset10",
+      "windows": 3,
+      "median_excess_mvo": 0.0047788103960537676,
+      "median_excess_cdi": 0.042599405624679454,
+      "minimum_excess_cdi": -0.0011278630626123665,
+      "minimum_excess_mvo": -7.146393161994169e-05,
+      "pass_both": 1
+    },
+    {
+      "candidate": "low_vol_eq35_asset10",
+      "windows": 3,
+      "median_excess_mvo": 0.004548259247740827,
+      "median_excess_cdi": 0.03531535779681039,
+      "minimum_excess_cdi": -0.011352464244781757,
+      "minimum_excess_mvo": -6.502522466966809e-05,
+      "pass_both": 1
+    }
+  ]
+}

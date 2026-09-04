@@ -1,0 +1,13 @@
+{
+  "status": "SHADOW_PORTFOLIO_ONLY",
+  "policy_id": "benevente-pilot-100k-001",
+  "initial_value_brl": 100000.0,
+  "latest_date": "2026-08-12",
+  "latest_value_brl": 100000.0,
+  "portfolio_return": 0.0,
+  "cdi_return": 0.0,
+  "ibovespa_return": 0.0,
+  "maximum_drawdown": 0.0,
+  "observation_count": 1,
+  "note": "Prospective tracking only; no return is guaranteed or inferred from this file."
+}

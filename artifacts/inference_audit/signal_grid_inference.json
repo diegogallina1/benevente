@@ -1,0 +1,32 @@
+{
+  "selection": {
+    "candidates": 73,
+    "published_candidate": "momentum_w252_e20_v10",
+    "rank_by_declared_training_score": 57,
+    "rank_by_holdout_excess_over_cdi": 1,
+    "declared_training_winner": "reversal_w126_e20_v00",
+    "declared_training_winner_holdout_excess": -0.113593733892336,
+    "candidates_with_positive_holdout_excess": 13,
+    "verdict": "The published candidate was not selected by the declared training criterion. Its rank improves from the training set to the holdout, which is only possible if the holdout was consulted. The holdout is therefore consumed and its excess return is an in-sample statistic."
+  },
+  "deflated_sharpe": {
+    "observed_sharpe": 0.901462993143936,
+    "expected_maximum_sharpe_under_null": 0.43983829111332695,
+    "trials": 73,
+    "observations": 11,
+    "skewness": 0.46154750414537943,
+    "kurtosis": 2.564325897971789,
+    "deflated_sharpe_probability": 0.9378857618955609,
+    "significant_at_95": false
+  },
+  "backtest_overfitting": {
+    "probability_of_backtest_overfitting": 0.16666666666666666,
+    "splits_evaluated": 6,
+    "expected_splits": 6,
+    "candidates": 73,
+    "periods": 11,
+    "median_out_of_sample_percentile": 0.7534246575342466
+  },
+  "reading": "A deflated Sharpe probability below 0.95 means the candidate's Sharpe ratio is not distinguishable from the best of 73 unskilled trials on 11 annual observations. An overfitting probability above 0.5 means the in-sample winner more often than not lands in the weaker half out of sample.",
+  "power_caveat": "Only 6 combinatorial splits fit in 11 annual observations, so the overfitting probability is coarse: its resolution is one part in 6. It cannot exonerate the selection, and the deflated Sharpe result does not depend on it."
+}

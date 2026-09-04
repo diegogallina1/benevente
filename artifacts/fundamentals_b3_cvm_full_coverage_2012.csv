@@ -1,0 +1,270 @@
+decision_date,ticker,status,reason
+2012-01-02,ABCB4.SA,blocked,no_fre_share_count
+2012-01-02,ABRE11.SA,blocked,unsupported_share_class:UNT     N2
+2012-01-02,AEDU3.SA,accepted,
+2012-01-02,AELP3.SA,accepted,
+2012-01-02,AFLT3.SA,accepted,
+2012-01-02,AGRO3.SA,blocked,'DataFrame' object has no attribute 'CNPJ_CIA'
+2012-01-02,ALLL3.SA,accepted,
+2012-01-02,ALPA4.SA,accepted,
+2012-01-02,ALSC3.SA,accepted,
+2012-01-02,AMAR3.SA,accepted,
+2012-01-02,AMBV3.SA,accepted,
+2012-01-02,AMBV4.SA,accepted,
+2012-01-02,AMIL3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,AUTM3.SA,accepted,
+2012-01-02,BAUH4.SA,accepted,
+2012-01-02,BAZA3.SA,blocked,no_fre_share_count
+2012-01-02,BBAS3.SA,accepted,
+2012-01-02,BBDC3.SA,accepted,
+2012-01-02,BBDC4.SA,accepted,
+2012-01-02,BDLL4.SA,accepted,
+2012-01-02,BEEF3.SA,accepted,
+2012-01-02,BEES3.SA,blocked,Missing annual/current/comparative CVM value for 3.13 of BEES3.SA
+2012-01-02,BEES4.SA,blocked,Missing annual/current/comparative CVM value for 3.13 of BEES4.SA
+2012-01-02,BEMA3.SA,accepted,
+2012-01-02,BHGR3.SA,accepted,
+2012-01-02,BICB4.SA,accepted,
+2012-01-02,BISA3.SA,accepted,
+2012-01-02,BMEB4.SA,accepted,
+2012-01-02,BMIN4.SA,accepted,
+2012-01-02,BMTO4.SA,accepted,
+2012-01-02,BNBR4.SA,accepted,
+2012-01-02,BPHA3.SA,blocked,no_fre_share_count
+2012-01-02,BPNM4.SA,blocked,ambiguous_preferred_share_count
+2012-01-02,BRAP3.SA,accepted,
+2012-01-02,BRAP4.SA,accepted,
+2012-01-02,BRFS3.SA,accepted,
+2012-01-02,BRGE3.SA,blocked,no_fre_share_count
+2012-01-02,BRIN3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,BRIV3.SA,blocked,no_fre_share_count
+2012-01-02,BRIV4.SA,blocked,no_fre_share_count
+2012-01-02,BRKM3.SA,accepted,
+2012-01-02,BRKM5.SA,blocked,ambiguous_preferred_class_share_count
+2012-01-02,BRML3.SA,blocked,Missing annual/current/comparative CVM value for 3.01 of BRML3.SA
+2012-01-02,BRPR3.SA,blocked,no_fre_share_count
+2012-01-02,BRSR5.SA,accepted,
+2012-01-02,BRSR6.SA,accepted,
+2012-01-02,BSLI3.SA,accepted,
+2012-01-02,BSLI4.SA,accepted,
+2012-01-02,CARD3.SA,accepted,
+2012-01-02,CBEE3.SA,accepted,
+2012-01-02,CBMA4.SA,accepted,
+2012-01-02,CCIM3.SA,accepted,
+2012-01-02,CEBR3.SA,blocked,No ITR available by 2012-01-02 for CEBR3.SA
+2012-01-02,CEPE6.SA,accepted,
+2012-01-02,CESP6.SA,accepted,
+2012-01-02,CGAS3.SA,accepted,
+2012-01-02,CGAS5.SA,blocked,ambiguous_preferred_class_share_count
+2012-01-02,CGRA3.SA,blocked,"1 validation error for FundamentalSnapshot
+ev_to_ebit
+  Input should be greater than 0 [type=greater_than, input_value=-1.5484909091677608, input_type=float]
+    For further information visit https://errors.pydantic.dev/2.13/v/greater_than"
+2012-01-02,CGRA4.SA,blocked,ambiguous_preferred_share_count
+2012-01-02,CIEL3.SA,accepted,
+2012-01-02,CLSC6.SA,blocked,ambiguous_preferred_class_share_count
+2012-01-02,CMIG3.SA,accepted,
+2012-01-02,CMIG4.SA,accepted,
+2012-01-02,CNFB4.SA,accepted,
+2012-01-02,COCE3.SA,accepted,
+2012-01-02,COCE5.SA,accepted,
+2012-01-02,CPFE3.SA,accepted,
+2012-01-02,CPLE3.SA,accepted,
+2012-01-02,CPLE6.SA,blocked,ambiguous_preferred_class_share_count
+2012-01-02,CREM3.SA,accepted,
+2012-01-02,CRIV3.SA,blocked,no_fre_share_count
+2012-01-02,CRIV4.SA,blocked,no_fre_share_count
+2012-01-02,CRUZ3.SA,blocked,no_fre_share_count
+2012-01-02,CSAN3.SA,blocked,'DataFrame' object has no attribute 'CNPJ_CIA'
+2012-01-02,CSMG3.SA,accepted,
+2012-01-02,CSNA3.SA,accepted,
+2012-01-02,CTAX3.SA,accepted,
+2012-01-02,CTKA4.SA,blocked,no_fre_share_count
+2012-01-02,CTPC3.SA,blocked,'DataFrame' object has no attribute 'CNPJ_CIA'
+2012-01-02,CYRE3.SA,accepted,
+2012-01-02,CZRS4.SA,blocked,Missing annual/current/comparative CVM value for 3.13 of CZRS4.SA
+2012-01-02,DASA3.SA,accepted,
+2012-01-02,DAYC4.SA,accepted,
+2012-01-02,DIRR3.SA,accepted,
+2012-01-02,DTCY3.SA,accepted,
+2012-01-02,DTEX3.SA,blocked,no_fre_share_count
+2012-01-02,EALT4.SA,accepted,
+2012-01-02,EBTP3.SA,blocked,no_fre_share_count
+2012-01-02,ECOR3.SA,accepted,
+2012-01-02,ELET3.SA,blocked,no_fre_share_count
+2012-01-02,ELET6.SA,blocked,no_fre_share_count
+2012-01-02,ELPL4.SA,blocked,no_fre_share_count
+2012-01-02,EMAE4.SA,accepted,
+2012-01-02,EMBR3.SA,accepted,
+2012-01-02,ENBR3.SA,accepted,
+2012-01-02,ENGI11.SA,blocked,unsupported_share_class:UNT
+2012-01-02,ENGI3.SA,blocked,no_fre_share_count
+2012-01-02,EQTL3.SA,accepted,
+2012-01-02,ESTC3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,ESTR4.SA,accepted,
+2012-01-02,ETER3.SA,accepted,
+2012-01-02,EUCA4.SA,accepted,
+2012-01-02,EVEN3.SA,accepted,
+2012-01-02,EZTC3.SA,accepted,
+2012-01-02,FBMC4.SA,blocked,no_fre_share_count
+2012-01-02,FESA4.SA,blocked,no_fre_share_count
+2012-01-02,FHER3.SA,accepted,
+2012-01-02,FIBR3.SA,accepted,
+2012-01-02,FLRY3.SA,accepted,
+2012-01-02,FRAS4.SA,accepted,
+2012-01-02,FRIO3.SA,accepted,
+2012-01-02,FTRX3.SA,accepted,
+2012-01-02,FTRX4.SA,accepted,
+2012-01-02,GFSA3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,GGBR3.SA,accepted,
+2012-01-02,GGBR4.SA,accepted,
+2012-01-02,GOAU3.SA,accepted,
+2012-01-02,GOAU4.SA,accepted,
+2012-01-02,GOLL4.SA,blocked,ambiguous_preferred_share_count
+2012-01-02,GRND3.SA,blocked,Missing annual/current/comparative CVM value for 3.01 of GRND3.SA
+2012-01-02,GSHP3.SA,accepted,
+2012-01-02,GTDP3B.SA,accepted,
+2012-01-02,GTDP4B.SA,accepted,
+2012-01-02,HAGA4.SA,blocked,'DataFrame' object has no attribute 'CNPJ_CIA'
+2012-01-02,HBOR3.SA,accepted,
+2012-01-02,HBTS5.SA,blocked,ambiguous_preferred_class_share_count
+2012-01-02,HETA4.SA,blocked,no_fre_share_count
+2012-01-02,HGTX3.SA,accepted,
+2012-01-02,HOOT4.SA,accepted,
+2012-01-02,HYPE3.SA,accepted,
+2012-01-02,IENG3.SA,accepted,
+2012-01-02,IENG5.SA,accepted,
+2012-01-02,IGBR3.SA,blocked,no_fre_share_count
+2012-01-02,IMBI3.SA,accepted,
+2012-01-02,IMBI4.SA,accepted,
+2012-01-02,IMCH3.SA,accepted,
+2012-01-02,INEP3.SA,accepted,
+2012-01-02,INEP4.SA,accepted,
+2012-01-02,ITSA3.SA,accepted,
+2012-01-02,ITSA4.SA,accepted,
+2012-01-02,ITUB3.SA,accepted,
+2012-01-02,ITUB4.SA,accepted,
+2012-01-02,JHSF3.SA,accepted,
+2012-01-02,JSLG3.SA,accepted,
+2012-01-02,KEPL3.SA,accepted,
+2012-01-02,KLBN4.SA,accepted,
+2012-01-02,LAME3.SA,accepted,
+2012-01-02,LAME4.SA,accepted,
+2012-01-02,LEVE3.SA,accepted,
+2012-01-02,LFFE3.SA,blocked,Missing annual/current/comparative CVM value for 3.01 of LFFE3.SA
+2012-01-02,LIGT3.SA,blocked,no_fre_share_count
+2012-01-02,LLIS3.SA,accepted,
+2012-01-02,LOGN3.SA,accepted,
+2012-01-02,LPSB3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,LREN3.SA,accepted,
+2012-01-02,LUPA3.SA,accepted,
+2012-01-02,MAGG3.SA,accepted,
+2012-01-02,MDIA3.SA,accepted,
+2012-01-02,MGEL4.SA,accepted,
+2012-01-02,MGLU3.SA,blocked,no_fre_share_count
+2012-01-02,MILS3.SA,blocked,no_fre_share_count
+2012-01-02,MMXM3.SA,accepted,
+2012-01-02,MNDL3.SA,blocked,no_fre_share_count
+2012-01-02,MNDL4.SA,blocked,no_fre_share_count
+2012-01-02,MNPR3.SA,accepted,
+2012-01-02,MOAR3.SA,blocked,no_fre_share_count
+2012-01-02,MPLU3.SA,accepted,
+2012-01-02,MRFG3.SA,accepted,
+2012-01-02,MRSL4.SA,accepted,
+2012-01-02,MRVE3.SA,accepted,
+2012-01-02,MTIG3.SA,accepted,
+2012-01-02,MTIG4.SA,accepted,
+2012-01-02,MULT3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,MWET4.SA,accepted,
+2012-01-02,MYPK3.SA,accepted,
+2012-01-02,NATU3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,NETC4.SA,blocked,ambiguous_preferred_share_count
+2012-01-02,NUTR3M.SA,accepted,
+2012-01-02,OGXP3.SA,accepted,
+2012-01-02,OSXB3.SA,accepted,
+2012-01-02,PCAR4.SA,accepted,
+2012-01-02,PDGR3.SA,accepted,
+2012-01-02,PETR3.SA,accepted,
+2012-01-02,PETR4.SA,accepted,
+2012-01-02,PINE4.SA,accepted,
+2012-01-02,PLAS3.SA,accepted,
+2012-01-02,PMET6.SA,blocked,no_fre_share_count
+2012-01-02,PNVL3.SA,accepted,
+2012-01-02,POMO3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,POMO4.SA,blocked,ambiguous_preferred_share_count
+2012-01-02,POSI3.SA,accepted,
+2012-01-02,PRBC4.SA,accepted,
+2012-01-02,PRVI3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,PSSA3.SA,accepted,
+2012-01-02,PTBL3.SA,blocked,'DataFrame' object has no attribute 'CNPJ_CIA'
+2012-01-02,PTNT4.SA,blocked,'DataFrame' object has no attribute 'CNPJ_CIA'
+2012-01-02,QGEP3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,QUAL3.SA,blocked,no_fre_share_count
+2012-01-02,RADL3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,RAPT4.SA,accepted,
+2012-01-02,RCSL4.SA,accepted,
+2012-01-02,RDCD3.SA,accepted,
+2012-01-02,RDNI3.SA,accepted,
+2012-01-02,RENT3.SA,accepted,
+2012-01-02,RHDS3.SA,accepted,
+2012-01-02,RJCP3.SA,blocked,'DataFrame' object has no attribute 'CNPJ_CIA'
+2012-01-02,RNEW11.SA,blocked,unsupported_share_class:UNT     N2
+2012-01-02,ROMI3.SA,accepted,
+2012-01-02,RPMG3.SA,accepted,
+2012-01-02,RPMG4.SA,accepted,
+2012-01-02,RSID3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,RSIP4.SA,accepted,
+2012-01-02,SANB11.SA,blocked,unsupported_share_class:UNT ED  N2
+2012-01-02,SANB3.SA,accepted,
+2012-01-02,SANB4.SA,accepted,
+2012-01-02,SAPR4.SA,accepted,
+2012-01-02,SBSP3.SA,accepted,
+2012-01-02,SCAR3.SA,accepted,
+2012-01-02,SCLO4.SA,blocked,Missing annual/current/comparative CVM value for 3.01 of SCLO4.SA
+2012-01-02,SFSA4.SA,accepted,
+2012-01-02,SHOW3.SA,blocked,no_fre_share_count
+2012-01-02,SLCE3.SA,accepted,
+2012-01-02,SLED4.SA,accepted,
+2012-01-02,SMTO3.SA,blocked,'DataFrame' object has no attribute 'CNPJ_CIA'
+2012-01-02,SNSY5.SA,blocked,no_fre_share_count
+2012-01-02,SPRI3.SA,accepted,
+2012-01-02,SPRI5.SA,accepted,
+2012-01-02,STBP11.SA,blocked,unsupported_share_class:UNT     N2
+2012-01-02,SULA11.SA,blocked,unsupported_share_class:UNT     N2
+2012-01-02,SULT4.SA,blocked,no_fre_share_count
+2012-01-02,SUZB5.SA,blocked,ambiguous_preferred_class_share_count
+2012-01-02,TAMM3.SA,blocked,no_fre_share_count
+2012-01-02,TAMM4.SA,blocked,no_fre_share_count
+2012-01-02,TBLE3.SA,accepted,
+2012-01-02,TCNO3.SA,blocked,'DataFrame' object has no attribute 'CNPJ_CIA'
+2012-01-02,TCSA3.SA,accepted,
+2012-01-02,TECN3.SA,blocked,no_fre_share_count
+2012-01-02,TEKA3.SA,accepted,
+2012-01-02,TEKA4.SA,accepted,
+2012-01-02,TELB3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,TELB4.SA,blocked,ambiguous_preferred_share_count
+2012-01-02,TEMP3.SA,blocked,no_fre_share_count
+2012-01-02,TERI3.SA,blocked,'DataFrame' object has no attribute 'CNPJ_CIA'
+2012-01-02,TGMA3.SA,accepted,
+2012-01-02,TIBR5.SA,accepted,
+2012-01-02,TMAR5.SA,blocked,ambiguous_preferred_class_share_count
+2012-01-02,TOTS3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,TOYB3.SA,blocked,no_fre_share_count
+2012-01-02,TOYB4.SA,blocked,no_fre_share_count
+2012-01-02,TPIS3.SA,accepted,
+2012-01-02,TRIS3.SA,accepted,
+2012-01-02,TRPN3.SA,blocked,ambiguous_ordinary_share_count
+2012-01-02,UGPA3.SA,accepted,
+2012-01-02,UNIP3.SA,blocked,no_fre_share_count
+2012-01-02,UNIP6.SA,blocked,no_fre_share_count
+2012-01-02,UOLL4.SA,accepted,
+2012-01-02,USIM3.SA,accepted,
+2012-01-02,USIM5.SA,accepted,
+2012-01-02,VALE3.SA,accepted,
+2012-01-02,VALE5.SA,blocked,ambiguous_preferred_class_share_count
+2012-01-02,VIVR3.SA,accepted,
+2012-01-02,VIVT3.SA,accepted,
+2012-01-02,VLID3.SA,accepted,
+2012-01-02,WEGE3.SA,accepted,
+2012-01-02,WHRL4.SA,accepted,
+2012-01-02,WISA4.SA,blocked,No ITR available by 2012-01-02 for WISA4.SA

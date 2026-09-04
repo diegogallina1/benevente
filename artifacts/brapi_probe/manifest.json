@@ -1,0 +1,17 @@
+{
+  "price_basis": "total_return",
+  "source_tier": "public_reproducible_research",
+  "provider": "brapi.dev /api/v2/stocks/historical adjustedClose",
+  "extraction_timestamp": "2026-08-13T13:53:25Z",
+  "coverage_start": "2013-01-02",
+  "coverage_end": "2025-12-30",
+  "corporate_actions": "brapi adjustedClose; raw brapi cashDividends (dividendos/JCP), stockDividends (bonificações/desdobramentos/grupamentos) and subscriptions archived per ticker",
+  "cdi_source": "Banco Central do Brasil SGS 12 (CDI diário), raw response archived",
+  "file_sha256": "3c52543e68569c52794103df1de97955e0f0fc76eb4f01ba1217718c3aa14b39",
+  "coverage_report": "artifacts\\brapi_probe\\coverage.csv",
+  "raw_response_directory": "work\\brapi_probe",
+  "requested_tickers": 4,
+  "accepted_tickers": 4,
+  "blocked_tickers": 0,
+  "research_restriction": "Public reproducible source. Reconcile with first-party B3/CVM corporate-event records before institutional or commercial claims."
+}

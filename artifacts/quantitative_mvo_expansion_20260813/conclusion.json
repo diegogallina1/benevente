@@ -1,0 +1,48 @@
+{
+  "purpose": "five-stock quantitative MVO expansion; research only",
+  "data": {
+    "provider": "Yahoo Finance via yfinance adjusted close",
+    "coverage": [
+      "2013-01-02",
+      "2025-12-30"
+    ],
+    "price_instruments": 358,
+    "minimum_equity_positions": 5
+  },
+  "candidate_count": 54,
+  "selection_period": "2015-2020",
+  "holdout_period": "2021-2025",
+  "winner": {
+    "train_signal": "momentum_12_1",
+    "train_equity_cap": 0.55,
+    "train_alpha_strength": 0.5,
+    "train_split": "train",
+    "train_years": 6,
+    "train_cagr": 0.3436022920082398,
+    "train_cdi_cagr": 0.0860290624962976,
+    "train_neutral_mvo_cagr": 0.354193621750285,
+    "train_excess_cdi": 0.25757322951194217,
+    "train_excess_mvo": -0.010591329742045241,
+    "train_hit_both": 0.5,
+    "train_worst_year": -0.05500581704374402,
+    "train_max_drawdown": 0.0,
+    "train_average_turnover": 0.8146886941686238,
+    "holdout_signal": "momentum_12_1",
+    "holdout_equity_cap": 0.55,
+    "holdout_alpha_strength": 0.5,
+    "holdout_split": "holdout",
+    "holdout_years": 5,
+    "holdout_cagr": 0.1725121901442659,
+    "holdout_cdi_cagr": 0.1087137638826996,
+    "holdout_neutral_mvo_cagr": 0.1648558386754071,
+    "holdout_excess_cdi": 0.06379842626156629,
+    "holdout_excess_mvo": 0.007656351468858791,
+    "holdout_hit_both": 0.6,
+    "holdout_worst_year": 0.022732115969598073,
+    "holdout_max_drawdown": 0.0,
+    "holdout_average_turnover": 0.6158032281764088,
+    "train_score": 0.2225412389448382
+  },
+  "winner_passes_holdout_both": true,
+  "all_holdout_both_pass_count": 21
+}

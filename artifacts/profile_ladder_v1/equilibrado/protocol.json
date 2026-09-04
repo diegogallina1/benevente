@@ -1,0 +1,22 @@
+{
+  "start_year": 2012,
+  "end_year": 2026,
+  "horizon_years": 5,
+  "maximum_equity_weight": 0.55,
+  "maximum_asset_weight": 0.11,
+  "minimum_history_days": 252,
+  "factor": "triple_factor",
+  "minimum_factor_training_years": 3,
+  "top_assets": 8,
+  "minimum_average_daily_value_brl": 10000000,
+  "risk_profile": null,
+  "rebalance_months": 12,
+  "turnover_penalty": 0.0,
+  "retention_buffer": 0,
+  "apply_profile_risk_layer": false,
+  "target_volatility": null,
+  "minimum_equity_positions": 0,
+  "top_assets_universe_fraction": null,
+  "top_assets_minimum": 5,
+  "maximum_names_per_sector": 3
+}

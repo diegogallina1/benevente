@@ -1,0 +1,6 @@
+{
+  "component_rules": 73,
+  "first_decision": 2018,
+  "rule": "At January t, select from prior realised annual observations only; no current or later-year return is read.",
+  "warning": "Selecting a meta-policy after observing this report would itself require independent validation."
+}

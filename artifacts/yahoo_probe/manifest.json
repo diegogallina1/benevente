@@ -1,0 +1,19 @@
+{
+  "price_basis": "total_return",
+  "source_tier": "public_reproducible_research",
+  "provider": "Yahoo Finance via yfinance adjusted close",
+  "provider_library_version": "1.5.2",
+  "extraction_timestamp": "2026-08-13T14:03:02Z",
+  "coverage_start": "2013-01-02",
+  "coverage_end": "2025-12-30",
+  "corporate_actions": "Yahoo adjusted close; archived yfinance action observations for cash dividends and stock splits. JCP classification is not supplied separately by Yahoo.",
+  "cdi_source": "Banco Central do Brasil SGS 12 (CDI diário), raw response archived",
+  "file_sha256": "450f09f9cd7caca95bb9ef0d9dc1a5fb7dfd5ca6296baf2df00e98a2b25a1628",
+  "coverage_report": "artifacts\\yahoo_probe\\coverage.csv",
+  "raw_response_directory": "work\\yahoo_probe",
+  "requested_tickers": 5,
+  "accepted_tickers": 3,
+  "blocked_tickers": 2,
+  "b3_reconciliation_source": "Official B3 COTAHIST is retained for dated universe and unadjusted-price reconciliation.",
+  "research_restriction": "Public reproducible secondary source; reconcile event samples against B3/CVM primary records before institutional or commercial claims."
+}

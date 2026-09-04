@@ -1,0 +1,6 @@
+{
+  "lookback_sessions": 252,
+  "cost_rate_per_unit_turnover": 0.0015,
+  "selection": "all instruments with complete 252-session history; no fundamental, liquidity, issuer, sector, position or asset-count filters",
+  "known_limitation": "holding-period quote gaps are marked at the prior observed total-return value; delisting proceeds are not separately reconstructed"
+}

@@ -1,0 +1,41 @@
+{
+  "model": "gemini-3.5-flash",
+  "arms": {
+    "anonymised": {
+      "years": 7,
+      "cagr": 0.12593901651041195,
+      "cdi_cagr": 0.08521729531481115,
+      "years_beating_cdi": 4,
+      "average_equity_weight": 0.49342857307612775,
+      "worst_year": -0.04429781346409591
+    },
+    "monolithic": {
+      "years": 7,
+      "cagr": 0.07222176680375036,
+      "cdi_cagr": 0.08521729531481115,
+      "years_beating_cdi": 2,
+      "average_equity_weight": 0.5499999999999999,
+      "worst_year": -0.07637557464482002
+    },
+    "named": {
+      "years": 7,
+      "cagr": 0.14929701731929312,
+      "cdi_cagr": 0.08521729531481115,
+      "years_beating_cdi": 4,
+      "average_equity_weight": 0.518571427831135,
+      "worst_year": -0.12953211362933176
+    }
+  },
+  "contamination": {
+    "paired_years": 7,
+    "named_cagr": 0.14929701731929312,
+    "anonymised_cagr": 0.12593901651041195,
+    "contamination_annualised": 0.023358000808881174,
+    "mean_annual_difference": 0.02909795252771333,
+    "p_value": 0.4292689353351514,
+    "years_named_won": 5,
+    "reading": "A positive, significant gap means the named arm profited from recognising companies rather than from reading their figures. The anonymised arm is then the only defensible number for this period."
+  },
+  "decoupling_note": "In the named and anonymised arms the model never sets a weight: its bounded score tilts expected return inside the convex optimiser, which still enforces every cap. The monolithic arm is the counterfactual where the model is trusted with weights; see constraint_audit.csv.",
+  "cache_directory": "work/llm_contamination"
+}

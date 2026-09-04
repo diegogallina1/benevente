@@ -1,0 +1,498 @@
+ticker,source_symbol,status,reason,from_cache,first_date,last_date,adjusted_close_rows,cash_dividend_events,stock_split_events
+ABCB4,ABCB4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,29.0,0.0
+ABEV3,ABEV3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,32.0,1.0
+ABRE3,ABRE3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ADHM3,ADHM3.SA,accepted,,True,2013-01-02,2024-08-06,2883.0,0.0,2.0
+AEDU3,AEDU3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+AELP3,AELP3.SA,accepted,,True,2013-01-02,2018-09-06,1399.0,3.0,0.0
+AERI3,AERI3.SA,accepted,,True,2020-11-12,2025-12-30,1278.0,1.0,1.0
+AESB3,AESB3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+AFLT3,AFLT3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,23.0,0.0
+AGRO3,AGRO3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,14.0,0.0
+AGXY3,AGXY3.SA,accepted,,True,2021-07-27,2025-12-30,1107.0,2.0,1.0
+ALLD3,ALLD3.SA,accepted,,True,2021-04-12,2025-12-30,1180.0,9.0,0.0
+ALLL3,ALLL3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ALOS3,ALOS3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,27.0,0.0
+ALPA3,ALPA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,30.0,3.0
+ALPA4,ALPA4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,32.0,3.0
+ALSC3,ALSC3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ALUP3,ALUP3.SA,accepted,,True,2016-10-04,2025-12-30,2302.0,21.0,3.0
+ALUP4,ALUP4.SA,accepted,,True,2016-09-09,2025-12-30,2319.0,21.0,3.0
+AMAR3,AMAR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,3.0,2.0
+AMBP3,AMBP3.SA,accepted,,True,2020-07-13,2025-12-30,1363.0,3.0,1.0
+AMBV3,AMBV3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+AMBV4,AMBV4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+AMER3,AMER3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,1.0,4.0
+ANIM3,ANIM3.SA,accepted,,True,2013-10-28,2025-12-30,3027.0,8.0,1.0
+ARML3,ARML3.SA,accepted,,True,2021-07-29,2025-12-30,1105.0,15.0,0.0
+ARTR3,ARTR3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ASAI3,ASAI3.SA,accepted,,True,2021-03-01,2025-12-30,1209.0,7.0,1.0
+AURE3,AURE3.SA,accepted,,True,2022-03-28,2025-12-30,941.0,5.0,0.0
+AUTM3,AUTM3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+AVLL3,AVLL3.SA,accepted,,True,2021-01-04,2025-12-30,1246.0,0.0,0.0
+AZEV3,AZEV3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,3.0,1.0
+AZEV4,AZEV4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,3.0,1.0
+AZUL4,AZUL4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+AZZA3,AZZA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,45.0,0.0
+B3SA3,B3SA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,57.0,2.0
+BALM4,BALM4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,19.0,1.0
+BAUH4,BAUH4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,11.0,0.0
+BBAS3,BBAS3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,96.0,1.0
+BBDC3,BBDC3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,190.0,9.0
+BBDC4,BBDC4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,188.0,9.0
+BBSE3,BBSE3.SA,accepted,,True,2013-04-29,2025-12-30,3154.0,27.0,0.0
+BEEF3,BEEF3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,10.0,0.0
+BEES3,BEES3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,175.0,2.0
+BEES4,BEES4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,176.0,2.0
+BEMA3,BEMA3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BGIP3,BGIP3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,32.0,1.0
+BGIP4,BGIP4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,32.0,1.0
+BHGR3,BHGR3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BHIA3,BHIA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,7.0,3.0
+BICB4,BICB4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BIDI3,BIDI3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BIDI4,BIDI4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BIED3,BIED3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,4.0,2.0
+BIOM3,BIOM3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+BISA3,BISA3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BLAU3,BLAU3.SA,accepted,,True,2021-04-19,2025-12-30,1175.0,19.0,0.0
+BLUT3,BLUT3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BLUT4,BLUT4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BMEB3,BMEB3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,17.0,1.0
+BMEB4,BMEB4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,21.0,1.0
+BMGB4,BMGB4.SA,accepted,,True,2019-11-29,2025-12-30,1514.0,17.0,0.0
+BMIN3,BMIN3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,11.0,1.0
+BMIN4,BMIN4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,17.0,1.0
+BMKS3,BMKS3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,15.0,0.0
+BMOB3,BMOB3.SA,accepted,,True,2021-02-11,2025-12-30,1219.0,7.0,0.0
+BMTO4,BMTO4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BNBR3,BNBR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,25.0,0.0
+BNBR4,BNBR4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BOAS3,BOAS3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BOBR4,BOBR4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,0.0
+BPAC3,BPAC3.SA,accepted,,True,2016-07-11,2025-12-30,2362.0,24.0,1.0
+BPAN10,BPAN10.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BPAN4,BPAN4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BPHA3,BPHA3.SA,accepted,,True,2013-01-02,2024-08-06,2883.0,0.0,1.0
+BRAP3,BRAP3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,28.0,1.0
+BRAP4,BRAP4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,28.0,1.0
+BRAV3,BRAV3.SA,accepted,,True,2020-11-12,2025-12-30,1278.0,1.0,0.0
+BRFS3,BRFS3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BRGE11,BRGE11.SA,accepted,,True,2025-09-24,2025-09-24,1.0,0.0,0.0
+BRGE12,BRGE12.SA,accepted,,True,2025-09-24,2025-09-24,1.0,0.0,0.0
+BRGE3,BRGE3.SA,accepted,,True,2025-09-24,2025-09-24,1.0,0.0,0.0
+BRGE5,BRGE5.SA,accepted,,True,2025-09-24,2025-09-24,1.0,0.0,0.0
+BRGE8,BRGE8.SA,accepted,,True,2025-09-24,2025-09-24,1.0,0.0,0.0
+BRIN3,BRIN3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BRIT3,BRIT3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BRIV3,BRIV3.SA,accepted,,True,2025-09-24,2025-09-24,1.0,0.0,0.0
+BRIV4,BRIV4.SA,accepted,,True,2025-09-24,2025-09-24,1.0,0.0,0.0
+BRKM3,BRKM3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,9.0,0.0
+BRKM6,BRKM6.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,7.0,0.0
+BRML3,BRML3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BRPR3,BRPR3.SA,accepted,,True,2013-01-02,2024-08-06,2883.0,13.0,2.0
+BRSR3,BRSR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,69.0,0.0
+BRSR5,BRSR5.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,68.0,0.0
+BRSR6,BRSR6.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,68.0,0.0
+BSEV3,BSEV3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+BSLI3,BSLI3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,51.0,1.0
+BSLI4,BSLI4.SA,accepted,,True,2013-01-02,2025-12-30,3226.0,49.0,1.0
+CAMB3,CAMB3.SA,accepted,,True,2013-01-02,2025-12-30,2813.0,17.0,2.0
+CAML3,CAML3.SA,accepted,,True,2017-09-28,2025-12-30,2055.0,34.0,0.0
+CARD3,CARD3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CASH3,CASH3.SA,accepted,,True,2020-11-09,2025-12-30,1281.0,1.0,2.0
+CBAV3,CBAV3.SA,accepted,,True,2021-07-16,2025-12-30,1114.0,3.0,0.0
+CBAV9,CBAV9.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CBEE3,CBEE3.SA,accepted,,True,2013-01-02,2025-12-30,3227.0,8.0,1.0
+CBMA3,CBMA3.SA,accepted,,True,2013-01-02,2019-02-15,1539.0,0.0,0.0
+CBMA4,CBMA4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CCXC3,CCXC3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CEAB3,CEAB3.SA,accepted,,True,2019-11-05,2025-12-30,1530.0,4.0,0.0
+CEDO3,CEDO3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,2.0,0.0
+CEDO4,CEDO4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,1.0,0.0
+CEEB3,CEEB3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,42.0,0.0
+CEED3,CEED3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+CEGR3,CEGR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,26.0,2.0
+CEPE5,CEPE5.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CEPE6,CEPE6.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CESP3,CESP3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CESP5,CESP5.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CESP6,CESP6.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CGAS3,CGAS3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,32.0,0.0
+CGAS5,CGAS5.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,32.0,0.0
+CGRA3,CGRA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,24.0,1.0
+CGRA4,CGRA4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,23.0,1.0
+CIEL3,CIEL3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CLSA3,CLSA3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CLSC3,CLSC3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,31.0,0.0
+CLSC4,CLSC4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,29.0,0.0
+CMIG10,CMIG10.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CMIG3,CMIG3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,43.0,5.0
+CMIG4,CMIG4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,43.0,6.0
+CMIG9,CMIG9.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CMIN3,CMIN3.SA,accepted,,True,2021-02-22,2025-12-30,1214.0,15.0,0.0
+COCE3,COCE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,16.0,0.0
+COGN3,COGN3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,29.0,3.0
+CPFE3,CPFE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,15.0,2.0
+CPLE3,CPLE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,24.0,1.0
+CPLE5,CPLE5.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CPLE6,CPLE6.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CPRE3,CPRE3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CREM3,CREM3.SA,accepted,,True,2013-01-02,2018-11-13,1445.0,12.0,0.0
+CRFB3,CRFB3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CRIV3,CRIV3.SA,accepted,,True,2025-09-24,2025-09-24,1.0,0.0,0.0
+CRIV4,CRIV4.SA,accepted,,True,2025-09-24,2025-09-24,1.0,0.0,0.0
+CRPG5,CRPG5.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,21.0,2.0
+CRPG6,CRPG6.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,21.0,2.0
+CSAB3,CSAB3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CSAB4,CSAB4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CSAN3,CSAN3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,17.0,2.0
+CSED3,CSED3.SA,accepted,,True,2021-02-11,2025-12-30,1219.0,7.0,0.0
+CSMG3,CSMG3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,56.0,1.0
+CSNA3,CSNA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,19.0,0.0
+CSRN3,CSRN3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CSRN5,CSRN5.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+CSUD3,CSUD3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,40.0,0.0
+CTAX3,CTAX3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,4.0,3.0
+CTKA4,CTKA4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+CTSA3,CTSA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,11.0,5.0
+CTSA4,CTSA4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,11.0,4.0
+CURY3,CURY3.SA,accepted,,True,2020-09-21,2025-12-30,1314.0,15.0,0.0
+CVCB3,CVCB3.SA,accepted,,True,2013-12-09,2025-12-30,2999.0,13.0,0.0
+CXSE3,CXSE3.SA,accepted,,True,2021-04-30,2025-12-30,1167.0,12.0,0.0
+CYRE3,CYRE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,18.0,0.0
+DASA3,DASA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,11.0,0.0
+DAYC4,DAYC4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+DESK3,DESK3.SA,accepted,,True,2021-07-22,2025-12-30,1110.0,5.0,0.0
+DEXP3,DEXP3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,10.0,4.0
+DIRR3,DIRR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,19.0,1.0
+DMVF3,DMVF3.SA,accepted,,True,2020-08-10,2025-12-30,1343.0,0.0,0.0
+DOHL4,DOHL4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,12.0,3.0
+DOTZ3,DOTZ3.SA,accepted,,True,2021-05-31,2025-12-30,1146.0,0.0,1.0
+DTCY3,DTCY3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+DUQE4,DUQE4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+DXCO3,DXCO3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,20.0,5.0
+EALT3,EALT3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,18.0,1.0
+EALT4,EALT4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,19.0,1.0
+ECOR3,ECOR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,15.0,0.0
+ECPR3,ECPR3.SA,accepted,,True,2013-01-02,2024-08-06,2883.0,4.0,0.0
+ECPR4,ECPR4.SA,accepted,,True,2013-01-02,2024-08-06,2883.0,4.0,0.0
+EEEL3,EEEL3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+EEEL4,EEEL4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+EGIE3,EGIE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,40.0,3.0
+EKTR3,EKTR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,44.0,0.0
+EKTR4,EKTR4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,44.0,0.0
+ELEK3,ELEK3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ELEK4,ELEK4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ELET3,ELET3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ELMD3,ELMD3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ELPL3,ELPL3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ELPL4,ELPL4.SA,accepted,,True,2013-01-02,2018-03-12,1293.0,4.0,0.0
+EMAE4,EMAE4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,20.0,0.0
+EMBR3,EMBR3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ENAT3,ENAT3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ENBR3,ENBR3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ENEV3,ENEV3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,2.0
+ENGI3,ENGI3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,30.0,1.0
+ENGI4,ENGI4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,30.0,1.0
+ENJU3,ENJU3.SA,accepted,,True,2020-11-09,2025-12-30,1281.0,0.0,0.0
+ENMT3,ENMT3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,22.0,0.0
+ENMT4,ENMT4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,28.0,0.0
+EPAR3,EPAR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,6.0,1.0
+EQMA3B,EQMA3B.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,17.0,0.0
+EQPA3,EQPA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,18.0,0.0
+EQPA5,EQPA5.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,18.0,0.0
+EQPA6,EQPA6.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,18.0,0.0
+EQPA7,EQPA7.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,18.0,0.0
+EQTL3,EQTL3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,20.0,2.0
+ESPA3,ESPA3.SA,accepted,,True,2021-02-04,2025-12-30,1224.0,3.0,0.0
+ESTC3,ESTC3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ESTR4,ESTR4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,2.0
+ETER3,ETER3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,27.0,2.0
+EUCA3,EUCA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,12.0,0.0
+EUCA4,EUCA4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,12.0,0.0
+EVEN3,EVEN3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,14.0,0.0
+EZTC3,EZTC3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,26.0,4.0
+FESA3,FESA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,45.0,1.0
+FESA4,FESA4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,46.0,1.0
+FHER3,FHER3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,0.0
+FIBR3,FIBR3.SA,accepted,,True,2013-01-02,2019-01-02,1485.0,0.0,0.0
+FICT3,FICT3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,3.0,3.0
+FIQE3,FIQE3.SA,accepted,,True,2021-07-29,2025-12-30,1105.0,11.0,1.0
+FLRY3,FLRY3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,34.0,2.0
+FRAS3,FRAS3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,34.0,1.0
+FRAS4,FRAS4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+FRIO3,FRIO3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,2.0
+FRTA3,FRTA3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+FTRX4,FTRX4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+GEPA3,GEPA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,34.0,0.0
+GEPA4,GEPA4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,34.0,0.0
+GFSA3,GFSA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,3.0,4.0
+GGBR3,GGBR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,48.0,2.0
+GGBR4,GGBR4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,48.0,2.0
+GGPS3,GGPS3.SA,accepted,,True,2021-04-28,2025-12-30,1169.0,5.0,1.0
+GMAT3,GMAT3.SA,accepted,,True,2020-10-13,2025-12-30,1299.0,8.0,0.0
+GNDI3,GNDI3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+GOAU3,GOAU3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,43.0,1.0
+GOAU4,GOAU4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,43.0,1.0
+GOLL4,GOLL4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+GRND3,GRND3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,53.0,1.0
+GSHP3,GSHP3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,1.0,1.0
+GTDP3B,GTDP3B.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+GTDP4B,GTDP4B.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+HAPV3,HAPV3.SA,accepted,,True,2018-04-26,2025-12-30,1909.0,11.0,2.0
+HBOR3,HBOR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,9.0,3.0
+HBRE3,HBRE3.SA,accepted,,True,2021-01-26,2025-12-30,1231.0,0.0,0.0
+HBSA3,HBSA3.SA,accepted,,True,2020-09-25,2025-12-30,1310.0,0.0,0.0
+HGTX3,HGTX3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+HOOT4,HOOT4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+HYPE3,HYPE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,44.0,0.0
+IFCM3,IFCM3.SA,accepted,,True,2021-05-07,2025-12-30,1162.0,0.0,3.0
+IGBR3,IGBR3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+IGTI3,IGTI3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,13.0,2.0
+IGTI4,IGTI4.SA,accepted,,True,2023-03-17,2025-12-30,697.0,5.0,0.0
+IMBI3,IMBI3.SA,accepted,,True,2013-01-02,2019-02-15,1539.0,0.0,1.0
+IMBI4,IMBI4.SA,accepted,,True,2013-01-02,2019-02-15,1518.0,0.0,1.0
+INEP3,INEP3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,4.0
+INEP4,INEP4.SA,accepted,,True,2013-01-02,2025-12-30,3186.0,0.0,4.0
+INTB3,INTB3.SA,accepted,,True,2021-02-08,2025-12-30,1222.0,15.0,0.0
+IRBR3,IRBR3.SA,accepted,,True,2017-07-31,2025-12-30,2098.0,6.0,2.0
+ISAE3,ISAE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,37.0,1.0
+ISAE4,ISAE4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,36.0,1.0
+ITEC3,ITEC3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ITSA3,ITSA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,100.0,10.0
+ITSA4,ITSA4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,102.0,10.0
+ITUB3,ITUB3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,201.0,7.0
+ITUB4,ITUB4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,202.0,7.0
+JALL3,JALL3.SA,accepted,,True,2021-02-08,2025-12-30,1222.0,5.0,0.0
+JFEN3,JFEN3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,2.0,3.0
+JHSF3,JHSF3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,44.0,0.0
+JOPA3,JOPA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,14.0,0.0
+JSLG3,JSLG3.SA,accepted,,True,2020-09-10,2025-12-30,1321.0,8.0,0.0
+KEPL3,KEPL3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,27.0,2.0
+KLBN3,KLBN3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,42.0,3.0
+KLBN4,KLBN4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,49.0,3.0
+KRSA3,KRSA3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+LAME3,LAME3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+LAME4,LAME4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+LAND3,LAND3.SA,accepted,,True,2021-08-10,2025-12-30,1097.0,4.0,0.0
+LAVV3,LAVV3.SA,accepted,,True,2020-09-03,2025-12-30,1325.0,19.0,0.0
+LCAM3,LCAM3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+LEVE3,LEVE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,36.0,0.0
+LFFE3,LFFE3.SA,accepted,,True,2013-01-02,2019-02-15,1512.0,2.0,1.0
+LFFE4,LFFE4.SA,accepted,,True,2013-01-02,2019-02-15,1518.0,2.0,1.0
+LIGT3,LIGT3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,9.0,0.0
+LIPR3,LIPR3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+LIXC3,LIXC3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+LIXC4,LIXC4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+LJQQ3,LJQQ3.SA,accepted,,True,2020-08-10,2025-12-30,1343.0,5.0,0.0
+LLIS3,LLIS3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+LOGG3,LOGG3.SA,accepted,,True,2018-12-21,2025-12-30,1746.0,11.0,0.0
+LOGN3,LOGN3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+LPSB3,LPSB3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,8.0,1.0
+LREN3,LREN3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,60.0,7.0
+LUPA3,LUPA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+LUXM3,LUXM3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+LUXM4,LUXM4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,16.0,4.0
+LWSA3,LWSA3.SA,accepted,,True,2020-02-06,2025-12-30,1469.0,4.0,1.0
+MAGG3,MAGG3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+MATD3,MATD3.SA,accepted,,True,2021-05-13,2025-12-30,1158.0,5.0,0.0
+MDIA3,MDIA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,41.0,1.0
+MDNE3,MDNE3.SA,accepted,,True,2020-02-13,2025-12-30,1464.0,3.0,0.0
+MEAL3,MEAL3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,3.0,0.0
+MELK3,MELK3.SA,accepted,,True,2020-09-29,2025-12-30,1308.0,16.0,0.0
+MERC4,MERC4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+MGEL4,MGEL4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+MGLU3,MGLU3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,15.0,6.0
+MILS3,MILS3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,25.0,0.0
+MLAS3,MLAS3.SA,accepted,,True,2021-07-22,2025-12-30,1110.0,1.0,0.0
+MLFT4,MLFT4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+MMXM3,MMXM3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+MNDL3,MNDL3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,2.0
+MNPR3,MNPR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,2.0
+MOAR3,MOAR3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+MODL3,MODL3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+MOSI3,MOSI3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+MOVI3,MOVI3.SA,accepted,,True,2017-05-24,2025-12-30,2146.0,24.0,0.0
+MPLU3,MPLU3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+MRFG3,MRFG3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+MRSA3B,MRSA3B.SA,accepted,,True,2013-01-17,2025-12-30,3222.0,17.0,0.0
+MRVE3,MRVE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,18.0,0.0
+MTIG3,MTIG3.SA,accepted,,True,2013-01-02,2022-10-21,2468.0,1.0,2.0
+MTIG4,MTIG4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+MTRE3,MTRE3.SA,accepted,,True,2020-02-11,2025-12-30,1466.0,30.0,0.0
+MULT3,MULT3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,36.0,1.0
+MWET4,MWET4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+MYPK3,MYPK3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,22.0,0.0
+NATU3,NATU3.SA,accepted,,True,2013-01-02,2025-12-30,1830.0,14.0,1.0
+NEOE3,NEOE3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+NEXP3,NEXP3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,3.0,2.0
+NGRD3,NGRD3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+NINJ3,NINJ3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+NORD3,NORD3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+NTCO3,NTCO3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+NUTR3,NUTR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,2.0
+NUTR3M,NUTR3M.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+OFSA3,OFSA3.SA,accepted,,True,2014-10-21,2025-12-30,2785.0,21.0,0.0
+OGXP3,OGXP3.SA,accepted,,True,2013-01-02,2019-01-10,1487.0,0.0,1.0
+OIBR3,OIBR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,2.0,4.0
+OIBR4,OIBR4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,2.0,5.0
+OMGE3,OMGE3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+ONCO3,ONCO3.SA,accepted,,True,2021-09-21,2025-12-30,1068.0,0.0,0.0
+OPCT3,OPCT3.SA,accepted,,True,2021-02-12,2025-12-30,1218.0,0.0,0.0
+ORVR3,ORVR3.SA,accepted,,True,2021-02-17,2025-12-30,1217.0,0.0,0.0
+OSXB3,OSXB3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+PARD3,PARD3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+PCAR3,PCAR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,23.0,0.0
+PCAR4,PCAR4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+PDGR3,PDGR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,9.0
+PDTC3,PDTC3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,1.0,1.0
+PEAB3,PEAB3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,23.0,0.0
+PEAB4,PEAB4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,22.0,0.0
+PETR3,PETR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,30.0,0.0
+PETR4,PETR4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,33.0,0.0
+PETZ3,PETZ3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+PFRM3,PFRM3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,11.0,0.0
+PGMN3,PGMN3.SA,accepted,,True,2020-09-03,2025-12-30,1325.0,4.0,0.0
+PINE10,PINE10.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+PINE3,PINE3.SA,accepted,,True,2013-02-04,2025-12-30,3211.0,26.0,1.0
+PINE4,PINE4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,27.0,1.0
+PLAS3,PLAS3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+PLPL3,PLPL3.SA,accepted,,True,2020-09-18,2025-12-30,1315.0,6.0,0.0
+PNVL3,PNVL3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,34.0,1.0
+POMO3,POMO3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,34.0,3.0
+POMO4,POMO4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,35.0,3.0
+PORT3,PORT3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+POSI3,POSI3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,10.0,0.0
+POWE3,POWE3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+PRBC4,PRBC4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+PRIO3,PRIO3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,1.0,4.0
+PRML3,PRML3.SA,accepted,,True,2013-01-02,2018-03-09,1270.0,0.0,1.0
+PRNR3,PRNR3.SA,accepted,,True,2020-02-17,2025-12-30,1462.0,5.0,0.0
+PSSA3,PSSA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,40.0,1.0
+PTBL3,PTBL3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,20.0,0.0
+PTNT3,PTNT3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+PTNT4,PTNT4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+QGEP3,QGEP3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+QUAL3,QUAL3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,19.0,0.0
+RADL3,RADL3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,58.0,3.0
+RAIL3,RAIL3.SA,accepted,,True,2015-04-02,2025-12-30,2675.0,4.0,1.0
+RAIZ4,RAIZ4.SA,accepted,,True,2021-08-05,2025-12-30,1100.0,10.0,0.0
+RANI3,RANI3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,38.0,0.0
+RANI4,RANI4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+RAPT3,RAPT3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,26.0,1.0
+RAPT4,RAPT4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,26.0,1.0
+RCSL3,RCSL3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,7.0
+RCSL4,RCSL4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,7.0
+RDNI3,RDNI3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+RDOR3,RDOR3.SA,accepted,,True,2020-12-15,2025-12-30,1256.0,19.0,0.0
+RDTR3,RDTR3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+RECV3,RECV3.SA,accepted,,True,2021-05-05,2025-12-30,1164.0,8.0,0.0
+REDE3,REDE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,26.0,0.0
+RENT3,RENT3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,60.0,4.0
+RHDS3,RHDS3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+RLOG3,RLOG3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+RNEW3,RNEW3.SA,accepted,,True,2013-08-30,2025-12-30,3068.0,1.0,2.0
+RNEW4,RNEW4.SA,accepted,,True,2017-03-28,2025-12-30,2184.0,0.0,2.0
+ROMI3,ROMI3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,35.0,4.0
+RPAD3,RPAD3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,6.0,0.0
+RPAD5,RPAD5.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,27.0,0.0
+RPAD6,RPAD6.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,6.0,0.0
+RPMG3,RPMG3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+RPMG4,RPMG4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+RSID3,RSID3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,2.0
+RSID9,RSID9.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+RSIP3,RSIP3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+RSUL4,RSUL4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,5.0,1.0
+RUMO3,RUMO3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+SANB3,SANB3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,51.0,1.0
+SANB4,SANB4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,51.0,2.0
+SAPR3,SAPR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,32.0,1.0
+SAPR4,SAPR4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,33.0,1.0
+SBFG3,SBFG3.SA,accepted,,True,2019-04-17,2025-12-30,1670.0,4.0,0.0
+SBSP3,SBSP3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,14.0,2.0
+SCAR3,SCAR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,17.0,0.0
+SEDU3,SEDU3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+SEER3,SEER3.SA,accepted,,True,2013-10-29,2025-12-30,3026.0,19.0,0.0
+SEQL3,SEQL3.SA,accepted,,True,2020-10-08,2025-12-30,1301.0,0.0,2.0
+SFSA4,SFSA4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+SGPS3,SGPS3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+SHOW3,SHOW3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,4.0,1.0
+SHUL4,SHUL4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,40.0,3.0
+SIMH3,SIMH3.SA,accepted,,True,2020-09-18,2025-12-30,1315.0,7.0,1.0
+SLCE3,SLCE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,18.0,6.0
+SLED3,SLED3.SA,accepted,,False,2013-01-02,2024-08-06,2883.0,3.0,1.0
+SLED4,SLED4.SA,accepted,,True,2013-01-02,2024-08-06,2883.0,3.0,1.0
+SMFT3,SMFT3.SA,accepted,,True,2021-07-14,2025-12-30,1116.0,8.0,0.0
+SMLE3,SMLE3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+SMTO3,SMTO3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,21.0,1.0
+SNSY3,SNSY3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,2.0
+SNSY5,SNSY5.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,2.0
+SOJA3,SOJA3.SA,accepted,,True,2021-04-30,2025-12-30,1167.0,8.0,1.0
+SOMA3,SOMA3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+SOND5,SOND5.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,16.0,0.0
+SPRI3,SPRI3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+SPRI5,SPRI5.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+SPRI6,SPRI6.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+SQIA3,SQIA3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+SRNA3,SRNA3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+STBP3,STBP3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+SUZB3,SUZB3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,14.0,0.0
+SUZB5,SUZB5.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+SYNE3,SYNE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,15.0,0.0
+TAEE3,TAEE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,49.0,0.0
+TAEE4,TAEE4.SA,accepted,,True,2017-05-10,2025-12-30,2156.0,38.0,0.0
+TASA3,TASA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,6.0,2.0
+TASA4,TASA4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,6.0,2.0
+TBLE3,TBLE3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+TCSA3,TCSA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,3.0,1.0
+TECN3,TECN3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,10.0,0.0
+TEKA3,TEKA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+TEKA4,TEKA4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+TELB3,TELB3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+TELB4,TELB4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+TEMP3,TEMP3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+TEND3,TEND3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,12.0,2.0
+TERI3,TERI3.SA,accepted,,True,2013-01-02,2018-10-04,1442.0,2.0,1.0
+TESA3,TESA3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+TFCO4,TFCO4.SA,accepted,,True,2020-10-26,2025-12-30,1290.0,21.0,0.0
+TGMA3,TGMA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,31.0,0.0
+TIBR5,TIBR5.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+TIBR6,TIBR6.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+TIET3,TIET3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+TIET4,TIET4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+TOTS3,TOTS3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,36.0,1.0
+TOYB3,TOYB3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+TOYB4,TOYB4.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+TPIS3,TPIS3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,9.0,1.0
+TRIS3,TRIS3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,16.0,2.0
+TRPN3,TRPN3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,
+TTEN3,TTEN3.SA,accepted,,True,2021-07-16,2025-12-30,1113.0,4.0,0.0
+TXRX4,TXRX4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,1.0
+UCAS3,UCAS3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,13.0,0.0
+UGPA3,UGPA3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,26.0,1.0
+UNIP3,UNIP3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,28.0,5.0
+UNIP5,UNIP5.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,27.0,5.0
+UNIP6,UNIP6.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,28.0,5.0
+USIM3,USIM3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,13.0,0.0
+USIM5,USIM5.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,13.0,0.0
+USIM6,USIM6.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,13.0,0.0
+VALE3,VALE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,28.0,0.0
+VAMO3,VAMO3.SA,accepted,,True,2021-02-02,2025-12-30,1226.0,6.0,1.0
+VBBR3,VBBR3.SA,accepted,,True,2018-03-14,2025-12-30,1939.0,21.0,1.0
+VITT3,VITT3.SA,accepted,,True,2021-09-02,2025-12-30,1080.0,11.0,1.0
+VIVA3,VIVA3.SA,accepted,,True,2019-10-11,2025-12-30,1547.0,9.0,0.0
+VIVR3,VIVR3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,0.0,5.0
+VIVT3,VIVT3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,94.0,1.0
+VLID3,VLID3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,37.0,1.0
+VSTE3,VSTE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,7.0,2.0
+VTRU3,VTRU3.SA,accepted,,True,2024-06-11,2025-12-30,391.0,1.0,0.0
+VULC3,VULC3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,31.0,1.0
+VVEO3,VVEO3.SA,accepted,,True,2021-08-09,2025-12-30,1098.0,4.0,0.0
+WEGE3,WEGE3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,79.0,4.0
+WEST3,WEST3.SA,accepted,,True,2021-02-12,2025-12-30,1218.0,0.0,1.0
+WHRL3,WHRL3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,23.0,0.0
+WHRL4,WHRL4.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,23.0,0.0
+WIZC3,WIZC3.SA,accepted,,True,2015-06-05,2025-12-30,2633.0,18.0,1.0
+YDUQ3,YDUQ3.SA,accepted,,True,2013-01-02,2025-12-30,3233.0,17.0,1.0
+ZAMP3,ZAMP3.SA,blocked,Yahoo returned no adjusted-close history,,,,,,

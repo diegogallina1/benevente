@@ -1,0 +1,12 @@
+decision_year,selected_factor,selection_end_year_exclusive,training_observations,selection_status
+2015,momentum_12m,2015,2,selected_from_prior_years
+2016,momentum_12m,2016,3,selected_from_prior_years
+2017,momentum_12m,2017,4,selected_from_prior_years
+2018,momentum_12m,2018,5,selected_from_prior_years
+2019,value_quality,2019,6,selected_from_prior_years
+2020,value_quality,2020,7,selected_from_prior_years
+2021,value_quality,2021,8,selected_from_prior_years
+2022,value_quality,2022,9,selected_from_prior_years
+2023,value_quality,2023,10,selected_from_prior_years
+2024,value_quality,2024,11,selected_from_prior_years
+2025,value_quality,2025,12,selected_from_prior_years

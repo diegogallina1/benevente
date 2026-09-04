@@ -1,0 +1,10 @@
+{
+  "start_year": 2012,
+  "end_year": 2026,
+  "horizon_years": 5,
+  "maximum_equity_weight": 0.55,
+  "maximum_asset_weight": 0.12,
+  "minimum_history_days": 252,
+  "factor": "value_quality",
+  "minimum_factor_training_years": 3
+}

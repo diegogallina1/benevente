@@ -11,7 +11,22 @@ outputs/*.out
 .env
 .env.local
 .vercel/
-artifacts/
+# artifacts/ deixou de ser ignorado em 04/09/2026.
+#
+# A regra antiga excluía a pasta inteira, e com ela a evidência que os registros
+# publicados apontam pelo hash. Dezesseis testes e dois dos três verificadores
+# não rodavam num clone limpo, o que é o oposto do que este repositório existe
+# para provar. As pastas de experimento abandonado ficam junto de propósito:
+# elas são a contagem de tentativas que a declaração de data-snooping cita.
+#
+# Fica de fora só renderização, que é derivada e pesa 27 MB: páginas do PDF
+# viradas em PNG para revisão visual, e capturas de tela da interface. Nada ali
+# é evidência de nada, e o PDF de origem continua versionado.
+artifacts/*_qa_*/
+artifacts/btech_b2_qa*/
+artifacts/docx_template_audit/render/
+artifacts/ui/
+artifacts/*.png
 .pytest_cache/
 .pytest_tmp/
 .mypy_cache/

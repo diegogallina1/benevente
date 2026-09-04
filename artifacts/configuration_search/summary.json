@@ -1,0 +1,38 @@
+{
+  "configurations_evaluated": 36,
+  "years_evaluated": 8,
+  "evaluation_window": "2018-2025",
+  "nested": {
+    "cagr": 0.13733196307444695,
+    "cagr_after_tax": 0.12328330114428332,
+    "excess_sharpe_vs_cdi": 0.35783083815865246,
+    "years_beating_cdi": 4,
+    "years_beating_mvo": 6,
+    "years_beating_ibovespa": 4,
+    "years_beating_bova11": 4,
+    "configuration_switches": 2,
+    "final_configuration": "eq55_n5_triple_factor"
+  },
+  "references": {
+    "cdi_cagr": 0.08624485271192084,
+    "mvo_cagr": 0.060762782748437605,
+    "ibovespa_cagr": 0.09565812192850442,
+    "bova11_cagr": 0.09667184109247562
+  },
+  "hindsight": {
+    "full_sample_best_configuration": "eq55_n5_triple_factor",
+    "full_sample_best_cagr": 0.1847812480251989,
+    "premium_over_nested": 0.04744928495075196,
+    "warning": "This row is what publishing the search winner would have advertised. It is not achievable: the ranking that produced it used the years it is measured on."
+  },
+  "deflated_sharpe": {
+    "observed_sharpe": 0.8062323865987467,
+    "expected_maximum_sharpe_under_null": 0.3436669682524408,
+    "trials": 36,
+    "observations": 8,
+    "skewness": 0.8556488758114207,
+    "kurtosis": 2.061724217397123,
+    "deflated_sharpe_probability": 0.9609263003812274,
+    "significant_at_95": true
+  }
+}

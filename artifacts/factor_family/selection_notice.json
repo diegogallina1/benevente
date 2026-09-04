@@ -1,0 +1,7 @@
+{
+  "candidates": 7,
+  "purpose": "descriptive_only",
+  "warning": "Selecting the top row of this table as the live strategy would consume the sample that ranked it. The live rule is chosen by the nested annual protocol in artifacts/v3_adaptive_*.",
+  "best_by_cagr": "triple_factor",
+  "spread_in_cagr": 0.05479190459212857
+}

@@ -1,0 +1,15 @@
+{
+  "months_evaluated": 118,
+  "evaluation_window": "2016-03-31 a 2025-12-31",
+  "rules_tested": 7,
+  "static_cagr": 0.21153201357741924,
+  "oracle_binary_cagr": 0.7277466503092604,
+  "prize_for_perfect_monthly_timing": 0.5162146367318412,
+  "best_rule": "linear_short_volatility",
+  "best_rule_cagr": 0.2178592546539584,
+  "rules_beating_static_significantly": [],
+  "rules_losing_to_static_significantly": [
+    "mean_variance"
+  ],
+  "reading": "A rule only counts if its advantage over the published static weight survives a paired test across the whole window. Five rules were tried, so a single p-value near five per cent is not yet evidence; it is one draw from five."
+}

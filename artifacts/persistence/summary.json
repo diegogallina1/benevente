@@ -1,0 +1,143 @@
+{
+  "buffers_evaluated": [
+    0,
+    1,
+    2,
+    3,
+    5,
+    8
+  ],
+  "evaluation_window": "2015-2025",
+  "fixed_buffer_arms": {
+    "0": {
+      "cagr": 0.18512156611375197,
+      "excess_sharpe_vs_cdi": 0.5974124716310086,
+      "average_turnover": 0.6211512960355918,
+      "years_beating_cdi": 7,
+      "carryover_rate": 0.36,
+      "distinct_names": 35,
+      "names_lasting_one_year": 21,
+      "names_lasting_three_or_more": 3
+    },
+    "1": {
+      "cagr": 0.18800501610319365,
+      "excess_sharpe_vs_cdi": 0.6061591373699629,
+      "average_turnover": 0.605023577152412,
+      "years_beating_cdi": 7,
+      "carryover_rate": 0.42,
+      "distinct_names": 32,
+      "names_lasting_one_year": 16,
+      "names_lasting_three_or_more": 4
+    },
+    "2": {
+      "cagr": 0.18699438012722114,
+      "excess_sharpe_vs_cdi": 0.6096831639340098,
+      "average_turnover": 0.6060822069400086,
+      "years_beating_cdi": 7,
+      "carryover_rate": 0.42,
+      "distinct_names": 32,
+      "names_lasting_one_year": 16,
+      "names_lasting_three_or_more": 4
+    },
+    "3": {
+      "cagr": 0.18494688110269775,
+      "excess_sharpe_vs_cdi": 0.5926246051081999,
+      "average_turnover": 0.6066360122963058,
+      "years_beating_cdi": 7,
+      "carryover_rate": 0.44,
+      "distinct_names": 31,
+      "names_lasting_one_year": 15,
+      "names_lasting_three_or_more": 5
+    },
+    "5": {
+      "cagr": 0.18302389730647328,
+      "excess_sharpe_vs_cdi": 0.5788630443731998,
+      "average_turnover": 0.6080038022461115,
+      "years_beating_cdi": 7,
+      "carryover_rate": 0.44,
+      "distinct_names": 31,
+      "names_lasting_one_year": 15,
+      "names_lasting_three_or_more": 5
+    },
+    "8": {
+      "cagr": 0.18300056507829776,
+      "excess_sharpe_vs_cdi": 0.5684920588367288,
+      "average_turnover": 0.5861748303121174,
+      "years_beating_cdi": 7,
+      "carryover_rate": 0.5,
+      "distinct_names": 28,
+      "names_lasting_one_year": 10,
+      "names_lasting_three_or_more": 7
+    }
+  },
+  "nested_choice": {
+    "cagr": 0.18610703622963887,
+    "excess_sharpe_vs_cdi": 0.6031111858933149,
+    "buffer_by_year": {
+      "2015": 0,
+      "2016": 0,
+      "2017": 1,
+      "2018": 1,
+      "2019": 1,
+      "2020": 1,
+      "2021": 1,
+      "2022": 1,
+      "2023": 1,
+      "2024": 1,
+      "2025": 2
+    }
+  },
+  "paired_vs_published_hard_cut": [
+    {
+      "buffer": 1,
+      "mean_annual_difference": 0.003306947166069774,
+      "years_won": 4,
+      "paired_years": 11,
+      "t_statistic": 1.610340365507022,
+      "p_value": 0.1384011690653858
+    },
+    {
+      "buffer": 2,
+      "mean_annual_difference": 0.0018448264082234487,
+      "years_won": 5,
+      "paired_years": 11,
+      "t_statistic": 1.707916382410893,
+      "p_value": 0.11845319399345977
+    },
+    {
+      "buffer": 3,
+      "mean_annual_difference": 0.00020352924096203533,
+      "years_won": 9,
+      "paired_years": 11,
+      "t_statistic": 0.06959830042687923,
+      "p_value": 0.9458854894022993
+    },
+    {
+      "buffer": 5,
+      "mean_annual_difference": -0.0016893416196409946,
+      "years_won": 8,
+      "paired_years": 11,
+      "t_statistic": -0.5108847408335092,
+      "p_value": 0.6205203205599024
+    },
+    {
+      "buffer": 8,
+      "mean_annual_difference": -0.0010562243649979853,
+      "years_won": 5,
+      "paired_years": 11,
+      "t_statistic": -0.22728599685515155,
+      "p_value": 0.8247806801418974
+    }
+  ],
+  "deflated_sharpe": {
+    "observed_sharpe": 1.1864285330595672,
+    "expected_maximum_sharpe_under_null": 0.031219556212883474,
+    "trials": 6,
+    "observations": 11,
+    "skewness": 0.04752734532985903,
+    "kurtosis": 1.5016523192390294,
+    "deflated_sharpe_probability": 0.9997213874046532,
+    "significant_at_95": true
+  },
+  "note": "Only the persistence penalty varies; the factor, the limits, the universe and the panel are identical across arms. The published protocol is the kappa = 0 arm."
+}

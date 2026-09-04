@@ -1,0 +1,14 @@
+decision_year,arm,issue,sum_before_normalisation,weights_above_cap,negative_weights,unknown_ids,missing_ids
+2013,monolithic,constraint_audit,0.9200000000000002,0,0,0,0
+2014,monolithic,constraint_audit,1.00041,0,0,0,0
+2015,monolithic,constraint_audit,1.0,0,0,0,0
+2016,monolithic,constraint_audit,0.9997,0,0,0,0
+2017,monolithic,constraint_audit,0.9743999999999998,0,0,0,0
+2018,monolithic,constraint_audit,0.94,0,0,0,0
+2019,monolithic,constraint_audit,1.0,0,0,0,0
+2020,monolithic,constraint_audit,0.995,0,0,0,0
+2021,monolithic,constraint_audit,1.0,0,0,0,65
+2022,monolithic,constraint_audit,1.0,0,0,0,83
+2023,monolithic,constraint_audit,1.0,0,0,0,0
+2024,monolithic,constraint_audit,1.0000039999999997,0,0,0,0
+2025,monolithic,constraint_audit,1.0173999999999999,0,0,0,0

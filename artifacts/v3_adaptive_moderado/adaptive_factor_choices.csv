@@ -1,0 +1,9 @@
+decision_year,selected_factor,selection_end_year_exclusive,training_observations,selection_status
+2018,value_quality,2018,3,selected_from_prior_years
+2019,triple_factor,2019,4,selected_from_prior_years
+2020,triple_factor,2020,5,selected_from_prior_years
+2021,triple_factor,2021,6,selected_from_prior_years
+2022,triple_factor,2022,7,selected_from_prior_years
+2023,triple_factor,2023,8,selected_from_prior_years
+2024,triple_factor,2024,9,selected_from_prior_years
+2025,triple_factor,2025,10,selected_from_prior_years

@@ -1,0 +1,6 @@
+decision_year,factor,equity_cap,status
+2021,triple_factor,1.0,selected_from_prior_decisions
+2022,triple_factor,1.0,selected_from_prior_decisions
+2023,low_volatility,0.35,selected_from_prior_decisions
+2024,low_volatility,0.35,selected_from_prior_decisions
+2025,low_volatility,0.35,selected_from_prior_decisions

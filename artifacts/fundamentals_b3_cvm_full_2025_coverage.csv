@@ -1,0 +1,357 @@
+decision_date,ticker,status,reason
+2025-01-02,VALE3.SA,blocked,no_fre_share_count
+2025-01-02,PETR4.SA,accepted,
+2025-01-02,ITUB4.SA,accepted,
+2025-01-02,B3SA3.SA,accepted,
+2025-01-02,BBDC4.SA,accepted,
+2025-01-02,BBAS3.SA,accepted,
+2025-01-02,ABEV3.SA,accepted,
+2025-01-02,RENT3.SA,accepted,
+2025-01-02,SUZB3.SA,accepted,
+2025-01-02,PETR3.SA,accepted,
+2025-01-02,SBSP3.SA,accepted,
+2025-01-02,PRIO3.SA,accepted,
+2025-01-02,ELET3.SA,accepted,
+2025-01-02,WEGE3.SA,accepted,
+2025-01-02,EMBR3.SA,accepted,
+2025-01-02,EQTL3.SA,accepted,
+2025-01-02,BPAC11.SA,blocked,unsupported_share_class:UNT EX  N2
+2025-01-02,RAIL3.SA,accepted,
+2025-01-02,HAPV3.SA,accepted,
+2025-01-02,GGBR4.SA,accepted,
+2025-01-02,ITSA4.SA,accepted,
+2025-01-02,LREN3.SA,accepted,
+2025-01-02,MGLU3.SA,accepted,
+2025-01-02,BRFS3.SA,accepted,
+2025-01-02,VBBR3.SA,accepted,
+2025-01-02,RADL3.SA,accepted,
+2025-01-02,ASAI3.SA,accepted,
+2025-01-02,CPLE6.SA,accepted,
+2025-01-02,BRAV3.SA,accepted,
+2025-01-02,RDOR3.SA,accepted,
+2025-01-02,BBSE3.SA,accepted,
+2025-01-02,HYPE3.SA,accepted,
+2025-01-02,CSAN3.SA,accepted,
+2025-01-02,CMIG4.SA,accepted,
+2025-01-02,MRFG3.SA,blocked,no_fre_share_count
+2025-01-02,CYRE3.SA,accepted,
+2025-01-02,NTCO3.SA,accepted,
+2025-01-02,ENGI11.SA,blocked,unsupported_share_class:UNT     N2
+2025-01-02,TIMS3.SA,blocked,no_fre_share_count
+2025-01-02,VIVT3.SA,accepted,
+2025-01-02,KLBN11.SA,blocked,unsupported_share_class:UNT     N2
+2025-01-02,TOTS3.SA,accepted,
+2025-01-02,AZUL4.SA,blocked,no_fre_share_count
+2025-01-02,UGPA3.SA,accepted,
+2025-01-02,BBDC3.SA,accepted,
+2025-01-02,ENEV3.SA,accepted,
+2025-01-02,ALOS3.SA,accepted,
+2025-01-02,CRFB3.SA,accepted,
+2025-01-02,CSNA3.SA,accepted,
+2025-01-02,GOAU4.SA,accepted,
+2025-01-02,MULT3.SA,accepted,
+2025-01-02,MRVE3.SA,accepted,
+2025-01-02,POMO4.SA,accepted,
+2025-01-02,BRAP4.SA,accepted,
+2025-01-02,PSSA3.SA,accepted,
+2025-01-02,STBP3.SA,accepted,
+2025-01-02,ISAE4.SA,accepted,
+2025-01-02,USIM5.SA,accepted,
+2025-01-02,VIVA3.SA,blocked,"1 validation error for FundamentalSnapshot
+ev_to_ebit
+  Input should be greater than 0 [type=greater_than, input_value=-0.11338606939778363, input_type=float]
+    For further information visit https://errors.pydantic.dev/2.13/v/greater_than"
+2025-01-02,SANB11.SA,blocked,unsupported_share_class:UNT
+2025-01-02,AZZA3.SA,accepted,
+2025-01-02,TAEE11.SA,blocked,unsupported_share_class:UNT     N2
+2025-01-02,CXSE3.SA,accepted,
+2025-01-02,DIRR3.SA,accepted,
+2025-01-02,ELET6.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,VAMO3.SA,accepted,
+2025-01-02,CEAB3.SA,accepted,
+2025-01-02,AURE3.SA,accepted,
+2025-01-02,CPFE3.SA,accepted,
+2025-01-02,CPLE3.SA,accepted,
+2025-01-02,IGTI11.SA,blocked,unsupported_share_class:UNT     N1
+2025-01-02,COGN3.SA,accepted,
+2025-01-02,EGIE3.SA,accepted,
+2025-01-02,BEEF3.SA,accepted,
+2025-01-02,CVCB3.SA,accepted,
+2025-01-02,BRKM5.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,IRBR3.SA,accepted,
+2025-01-02,SMFT3.SA,accepted,
+2025-01-02,CURY3.SA,accepted,
+2025-01-02,TEND3.SA,accepted,
+2025-01-02,YDUQ3.SA,accepted,
+2025-01-02,CMIN3.SA,blocked,Missing annual/current/comparative CVM value for 3.01 of CMIN3.SA
+2025-01-02,PORT3.SA,accepted,
+2025-01-02,FLRY3.SA,accepted,
+2025-01-02,PCAR3.SA,accepted,
+2025-01-02,CSMG3.SA,accepted,
+2025-01-02,SLCE3.SA,accepted,
+2025-01-02,RECV3.SA,accepted,
+2025-01-02,RAIZ4.SA,accepted,
+2025-01-02,PETZ3.SA,accepted,
+2025-01-02,SAPR11.SA,blocked,unsupported_share_class:UNT EJ  N2
+2025-01-02,MOVI3.SA,accepted,
+2025-01-02,EZTC3.SA,accepted,
+2025-01-02,GGPS3.SA,accepted,
+2025-01-02,AMBP3.SA,accepted,
+2025-01-02,AMER3.SA,accepted,
+2025-01-02,SMTO3.SA,accepted,
+2025-01-02,AMOB3.SA,blocked,no_fre_share_count
+2025-01-02,NEOE3.SA,accepted,
+2025-01-02,GMAT3.SA,accepted,
+2025-01-02,SBFG3.SA,accepted,
+2025-01-02,ECOR3.SA,accepted,
+2025-01-02,ALUP11.SA,blocked,unsupported_share_class:UNT     N2
+2025-01-02,LWSA3.SA,accepted,
+2025-01-02,MDIA3.SA,accepted,
+2025-01-02,DXCO3.SA,accepted,
+2025-01-02,ORVR3.SA,blocked,Missing annual/current/comparative CVM value for 3.01 of ORVR3.SA
+2025-01-02,CBAV3.SA,accepted,
+2025-01-02,ONCO3.SA,accepted,
+2025-01-02,ANIM3.SA,accepted,
+2025-01-02,RAPT4.SA,accepted,
+2025-01-02,SIMH3.SA,accepted,
+2025-01-02,INTB3.SA,accepted,
+2025-01-02,ALPA4.SA,accepted,
+2025-01-02,SRNA3.SA,accepted,
+2025-01-02,CLSA3.SA,accepted,
+2025-01-02,BPAN4.SA,accepted,
+2025-01-02,ITUB3.SA,accepted,
+2025-01-02,TTEN3.SA,accepted,
+2025-01-02,ABCB4.SA,accepted,
+2025-01-02,JHSF3.SA,accepted,
+2025-01-02,MYPK3.SA,accepted,
+2025-01-02,BRSR6.SA,accepted,
+2025-01-02,LJQQ3.SA,accepted,
+2025-01-02,PLPL3.SA,accepted,
+2025-01-02,QUAL3.SA,accepted,
+2025-01-02,VLID3.SA,accepted,
+2025-01-02,LEVE3.SA,accepted,
+2025-01-02,BHIA3.SA,accepted,
+2025-01-02,HBSA3.SA,accepted,
+2025-01-02,MILS3.SA,accepted,
+2025-01-02,VULC3.SA,accepted,
+2025-01-02,MDNE3.SA,accepted,
+2025-01-02,ELMD3.SA,accepted,
+2025-01-02,KEPL3.SA,accepted,
+2025-01-02,SAPR4.SA,accepted,
+2025-01-02,LOGG3.SA,accepted,
+2025-01-02,UNIP6.SA,accepted,
+2025-01-02,OIBR3.SA,accepted,
+2025-01-02,RCSL4.SA,blocked,ambiguous_preferred_share_count
+2025-01-02,TGMA3.SA,accepted,
+2025-01-02,RCSL3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,EVEN3.SA,accepted,
+2025-01-02,GOLL4.SA,accepted,
+2025-01-02,POSI3.SA,accepted,
+2025-01-02,GFSA3.SA,accepted,
+2025-01-02,ARML3.SA,accepted,
+2025-01-02,SOJA3.SA,accepted,
+2025-01-02,SYNE3.SA,accepted,
+2025-01-02,KLBN4.SA,accepted,
+2025-01-02,FRAS3.SA,accepted,
+2025-01-02,AGRO3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,RANI3.SA,accepted,
+2025-01-02,GRND3.SA,accepted,
+2025-01-02,LAVV3.SA,accepted,
+2025-01-02,BRBI11.SA,blocked,unsupported_share_class:UNT     N2
+2025-01-02,VVEO3.SA,accepted,
+2025-01-02,PRNR3.SA,accepted,
+2025-01-02,TFCO4.SA,accepted,
+2025-01-02,SEQL3.SA,accepted,
+2025-01-02,BLAU3.SA,accepted,
+2025-01-02,JSLG3.SA,blocked,no_fre_share_count
+2025-01-02,JALL3.SA,accepted,
+2025-01-02,AERI3.SA,accepted,
+2025-01-02,CAML3.SA,accepted,
+2025-01-02,FESA4.SA,accepted,
+2025-01-02,LIGT3.SA,accepted,
+2025-01-02,BMOB3.SA,accepted,
+2025-01-02,SEER3.SA,accepted,
+2025-01-02,CASH3.SA,accepted,
+2025-01-02,POMO3.SA,accepted,
+2025-01-02,OPCT3.SA,blocked,Missing annual/current/comparative CVM value for 3.01 of OPCT3.SA
+2025-01-02,PNVL3.SA,accepted,
+2025-01-02,AZEV4.SA,accepted,
+2025-01-02,MLAS3.SA,blocked,Missing annual/current/comparative CVM value for 3.01 of MLAS3.SA
+2025-01-02,TASA4.SA,accepted,
+2025-01-02,TRIS3.SA,accepted,
+2025-01-02,MATD3.SA,accepted,
+2025-01-02,WIZC3.SA,accepted,
+2025-01-02,SHUL4.SA,accepted,
+2025-01-02,PGMN3.SA,accepted,
+2025-01-02,CMIG3.SA,accepted,
+2025-01-02,MTRE3.SA,accepted,
+2025-01-02,HBRE3.SA,accepted,
+2025-01-02,BMGB4.SA,accepted,
+2025-01-02,LOGN3.SA,accepted,
+2025-01-02,DASA3.SA,accepted,
+2025-01-02,ITSA3.SA,accepted,
+2025-01-02,SANB4.SA,blocked,ambiguous_preferred_share_count
+2025-01-02,CSED3.SA,accepted,
+2025-01-02,USIM3.SA,accepted,
+2025-01-02,MELK3.SA,accepted,
+2025-01-02,PFRM3.SA,accepted,
+2025-01-02,ROMI3.SA,accepted,
+2025-01-02,COCE5.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,DESK3.SA,accepted,
+2025-01-02,GGBR3.SA,accepted,
+2025-01-02,ZAMP3.SA,accepted,
+2025-01-02,TAEE4.SA,accepted,
+2025-01-02,SANB3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,PTBL3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,VITT3.SA,accepted,
+2025-01-02,KLBN3.SA,accepted,
+2025-01-02,HBOR3.SA,accepted,
+2025-01-02,FIQE3.SA,accepted,
+2025-01-02,BRAP3.SA,accepted,
+2025-01-02,SAPR3.SA,accepted,
+2025-01-02,NGRD3.SA,blocked,no_fre_share_count
+2025-01-02,VTRU3.SA,accepted,
+2025-01-02,PINE4.SA,accepted,
+2025-01-02,BMEB4.SA,accepted,
+2025-01-02,ETER3.SA,blocked,no_fre_share_count
+2025-01-02,IFCM3.SA,accepted,
+2025-01-02,ENJU3.SA,accepted,
+2025-01-02,FRIO3.SA,accepted,
+2025-01-02,GOAU3.SA,accepted,
+2025-01-02,TAEE3.SA,accepted,
+2025-01-02,BIOM3.SA,accepted,
+2025-01-02,TECN3.SA,blocked,Missing annual/current/comparative CVM value for 3.01 of TECN3.SA
+2025-01-02,CSUD3.SA,accepted,
+2025-01-02,SCAR3.SA,blocked,no_fre_share_count
+2025-01-02,DEXP3.SA,accepted,
+2025-01-02,BRST3.SA,blocked,no_fre_share_count
+2025-01-02,AGXY3.SA,accepted,
+2025-01-02,AZEV3.SA,accepted,
+2025-01-02,ALLD3.SA,accepted,
+2025-01-02,DMVF3.SA,accepted,
+2025-01-02,EUCA4.SA,accepted,
+2025-01-02,KRSA3.SA,accepted,
+2025-01-02,MEAL3.SA,blocked,no_fre_share_count
+2025-01-02,LAND3.SA,accepted,
+2025-01-02,FHER3.SA,accepted,
+2025-01-02,UNIP3.SA,accepted,
+2025-01-02,ATED3.SA,blocked,no_fre_share_count
+2025-01-02,TPIS3.SA,accepted,
+2025-01-02,ALPK3.SA,blocked,Missing annual/current/comparative CVM value for 6.01 of ALPK3.SA
+2025-01-02,FICT3.SA,accepted,
+2025-01-02,PDGR3.SA,accepted,
+2025-01-02,CAMB3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,BRKM3.SA,accepted,
+2025-01-02,VSTE3.SA,accepted,
+2025-01-02,ESPA3.SA,accepted,
+2025-01-02,LUPA3.SA,accepted,
+2025-01-02,RAPT3.SA,accepted,
+2025-01-02,JFEN3.SA,accepted,
+2025-01-02,AALR3.SA,blocked,Missing annual/current/comparative CVM value for 3.01 of AALR3.SA
+2025-01-02,CLSC4.SA,accepted,
+2025-01-02,RNEW4.SA,blocked,no_fre_share_count
+2025-01-02,AMAR3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,NINJ3.SA,accepted,
+2025-01-02,LPSB3.SA,accepted,
+2025-01-02,CGRA4.SA,accepted,
+2025-01-02,OIBR4.SA,accepted,
+2025-01-02,EALT4.SA,accepted,
+2025-01-02,RSID3.SA,accepted,
+2025-01-02,TCSA3.SA,accepted,
+2025-01-02,BAZA3.SA,blocked,no_fre_share_count
+2025-01-02,CEBR6.SA,blocked,Missing annual/current/comparative CVM value for 6.01 of CEBR6.SA
+2025-01-02,BOBR4.SA,blocked,ambiguous_preferred_share_count
+2025-01-02,DOTZ3.SA,accepted,
+2025-01-02,ALUP4.SA,accepted,
+2025-01-02,ISAE3.SA,accepted,
+2025-01-02,VIVR3.SA,accepted,
+2025-01-02,CGAS5.SA,accepted,
+2025-01-02,IGTI3.SA,accepted,
+2025-01-02,OFSA3.SA,accepted,
+2025-01-02,MTSA4.SA,blocked,no_fre_share_count
+2025-01-02,TASA3.SA,accepted,
+2025-01-02,SHOW3.SA,accepted,
+2025-01-02,RNEW3.SA,blocked,no_fre_share_count
+2025-01-02,BMEB3.SA,accepted,
+2025-01-02,BEES3.SA,accepted,
+2025-01-02,CEBR3.SA,blocked,Missing annual/current/comparative CVM value for 6.01 of CEBR3.SA
+2025-01-02,UCAS3.SA,blocked,Missing annual/current/comparative CVM value for 3.01 of UCAS3.SA
+2025-01-02,BRSR3.SA,accepted,
+2025-01-02,RSUL4.SA,accepted,
+2025-01-02,ENGI4.SA,accepted,
+2025-01-02,BPAC3.SA,blocked,no_fre_share_count
+2025-01-02,PDTC3.SA,accepted,
+2025-01-02,EPAR3.SA,accepted,
+2025-01-02,EMAE4.SA,accepted,
+2025-01-02,INEP3.SA,accepted,
+2025-01-02,EALT3.SA,accepted,
+2025-01-02,ALUP3.SA,accepted,
+2025-01-02,ENGI3.SA,accepted,
+2025-01-02,PTNT4.SA,accepted,
+2025-01-02,CGRA3.SA,accepted,
+2025-01-02,WHRL4.SA,accepted,
+2025-01-02,TKNO4.SA,blocked,no_fre_share_count
+2025-01-02,CEBR5.SA,blocked,Missing annual/current/comparative CVM value for 6.01 of CEBR5.SA
+2025-01-02,BPAC5.SA,blocked,no_fre_share_count
+2025-01-02,ALPA3.SA,accepted,
+2025-01-02,EKTR4.SA,accepted,
+2025-01-02,WEST3.SA,accepted,
+2025-01-02,RPMG3.SA,blocked,no_fre_share_count
+2025-01-02,CRPG5.SA,accepted,
+2025-01-02,DEXP4.SA,blocked,"1 validation error for FundamentalSnapshot
+ev_to_ebit
+  Input should be greater than 0 [type=greater_than, input_value=-0.3448621444381041, input_type=float]
+    For further information visit https://errors.pydantic.dev/2.13/v/greater_than"
+2025-01-02,INEP4.SA,accepted,
+2025-01-02,WLMM4.SA,blocked,ambiguous_preferred_share_count
+2025-01-02,UNIP5.SA,accepted,
+2025-01-02,TELB4.SA,accepted,
+2025-01-02,MNDL3.SA,accepted,
+2025-01-02,BEES4.SA,accepted,
+2025-01-02,CEEB3.SA,accepted,
+2025-01-02,EQPA3.SA,blocked,no_fre_share_count
+2025-01-02,HAGA3.SA,blocked,Missing annual/current/comparative CVM value for 6.01 of HAGA3.SA
+2025-01-02,RNEW11.SA,blocked,unsupported_share_class:UNT     N2
+2025-01-02,OSXB3.SA,blocked,no_fre_share_count
+2025-01-02,PINE3.SA,accepted,
+2025-01-02,SNSY5.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,EQMA3B.SA,blocked,no_fre_share_count
+2025-01-02,HAGA4.SA,blocked,Missing annual/current/comparative CVM value for 6.01 of HAGA4.SA
+2025-01-02,BIED3.SA,accepted,
+2025-01-02,PEAB3.SA,accepted,
+2025-01-02,NUTR3.SA,blocked,Missing annual/current/comparative CVM value for 3.01 of NUTR3.SA
+2025-01-02,TELB3.SA,accepted,
+2025-01-02,BGIP4.SA,accepted,
+2025-01-02,BMKS3.SA,blocked,"1 validation error for FundamentalSnapshot
+ev_to_ebit
+  Input should be greater than 0 [type=greater_than, input_value=-0.3917226634086744, input_type=float]
+    For further information visit https://errors.pydantic.dev/2.13/v/greater_than"
+2025-01-02,RDNI3.SA,blocked,no_fre_share_count
+2025-01-02,WHRL3.SA,accepted,
+2025-01-02,SNSY3.SA,accepted,
+2025-01-02,ATMP3.SA,blocked,no_fre_share_count
+2025-01-02,REDE3.SA,accepted,
+2025-01-02,MGEL4.SA,accepted,
+2025-01-02,CRPG6.SA,accepted,
+2025-01-02,PATI3.SA,blocked,ambiguous_ordinary_share_count
+2025-01-02,HOOT4.SA,accepted,
+2025-01-02,EUCA3.SA,accepted,
+2025-01-02,GEPA3.SA,accepted,
+2025-01-02,HBTS5.SA,blocked,no_fre_share_count
+2025-01-02,NORD3.SA,accepted,
+2025-01-02,BMIN4.SA,accepted,
+2025-01-02,AHEB3.SA,blocked,no_fre_share_count
+2025-01-02,CTSA4.SA,blocked,No ITR available by 2025-01-02 for CTSA4.SA
+2025-01-02,BGIP3.SA,accepted,
+2025-01-02,CPLE5.SA,accepted,
+2025-01-02,BSLI4.SA,blocked,Missing annual/current/comparative CVM value for 3.13 of BSLI4.SA
+2025-01-02,NEXP3.SA,accepted,
+2025-01-02,BSLI3.SA,blocked,Missing annual/current/comparative CVM value for 3.13 of BSLI3.SA
+2025-01-02,DOHL4.SA,accepted,
+2025-01-02,JOPA3.SA,blocked,no_fre_share_count
+2025-01-02,BRKM6.SA,blocked,ambiguous_preferred_class_share_count
+2025-01-02,AFLT3.SA,accepted,
+2025-01-02,MWET3.SA,blocked,no_fre_share_count
+2025-01-02,CTSA3.SA,blocked,No ITR available by 2025-01-02 for CTSA3.SA
+2025-01-02,TXRX4.SA,accepted,
+2025-01-02,DTCY3.SA,blocked,ambiguous_ordinary_share_count

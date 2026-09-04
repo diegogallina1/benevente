@@ -1,0 +1,13 @@
+reference,window_years,windows,windows_strategy_wins,win_rate,independent_windows
+CDI,1,8,4,0.5,8
+CDI,3,6,4,0.6666666666666666,2
+CDI,5,4,3,0.75,1
+MVO de referência,1,8,6,0.75,8
+MVO de referência,3,6,6,1.0,2
+MVO de referência,5,4,4,1.0,1
+Ibovespa,1,8,5,0.625,8
+Ibovespa,3,6,4,0.6666666666666666,2
+Ibovespa,5,4,4,1.0,1
+BOVA11 (ETF investível),1,8,5,0.625,8
+BOVA11 (ETF investível),3,6,4,0.6666666666666666,2
+BOVA11 (ETF investível),5,4,4,1.0,1

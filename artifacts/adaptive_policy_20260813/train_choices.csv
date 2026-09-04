@@ -1,0 +1,7 @@
+decision_year,factor,equity_cap,status
+2015,value_quality,0.35,baseline_before_three_observations
+2016,value_quality,0.35,baseline_before_three_observations
+2017,value_quality,0.35,baseline_before_three_observations
+2018,triple_factor,1.0,selected_from_prior_decisions
+2019,triple_factor,1.0,selected_from_prior_decisions
+2020,triple_factor,1.0,selected_from_prior_decisions

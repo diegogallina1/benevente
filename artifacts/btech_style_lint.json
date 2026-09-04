@@ -1,0 +1,171 @@
+{
+  "input": "outputs/Benevente_Wealth_System_BTECH.docx",
+  "fonts_by_char_count": {
+    "Times New Roman": 1967,
+    "Courier New": 252
+  },
+  "direct_run_formatting_runs": 187,
+  "direct_paragraph_formatting_paragraphs": 44,
+  "heading_like_paragraphs_not_heading_style": [
+    {
+      "para_index": 144,
+      "text": "Camada",
+      "style": "normal"
+    },
+    {
+      "para_index": 145,
+      "text": "Fun\u00e7\u00e3o",
+      "style": "normal"
+    },
+    {
+      "para_index": 146,
+      "text": "Sa\u00edda audit\u00e1vel",
+      "style": "normal"
+    },
+    {
+      "para_index": 162,
+      "text": "S\u00e9rie",
+      "style": "normal"
+    },
+    {
+      "para_index": 163,
+      "text": "CAGR",
+      "style": "normal"
+    },
+    {
+      "para_index": 164,
+      "text": "R$ 100 mil viram",
+      "style": "normal"
+    },
+    {
+      "para_index": 165,
+      "text": "Anos vencidos",
+      "style": "normal"
+    },
+    {
+      "para_index": 166,
+      "text": "Queda m\u00e1xima di\u00e1ria",
+      "style": "normal"
+    },
+    {
+      "para_index": 167,
+      "text": "Benevente",
+      "style": "normal"
+    },
+    {
+      "para_index": 168,
+      "text": "17,86%",
+      "style": "normal"
+    },
+    {
+      "para_index": 169,
+      "text": "R$ 609.832",
+      "style": "normal"
+    },
+    {
+      "para_index": 197,
+      "text": "Estat\u00edstica",
+      "style": "normal"
+    },
+    {
+      "para_index": 198,
+      "text": "Valor",
+      "style": "normal"
+    },
+    {
+      "para_index": 203,
+      "text": "Sharpe deflacionado",
+      "style": "normal"
+    },
+    {
+      "para_index": 204,
+      "text": "0,986",
+      "style": "normal"
+    },
+    {
+      "para_index": 207,
+      "text": "Pr\u00eamio de retrospectiva",
+      "style": "normal"
+    },
+    {
+      "para_index": 208,
+      "text": "0,65 p.p. ao ano",
+      "style": "normal"
+    },
+    {
+      "para_index": 209,
+      "text": "Cad\u00eancia",
+      "style": "normal"
+    },
+    {
+      "para_index": 210,
+      "text": "Decis\u00f5es",
+      "style": "normal"
+    },
+    {
+      "para_index": 211,
+      "text": "CAGR bruto",
+      "style": "normal"
+    }
+  ],
+  "examples": {
+    "direct_paragraph_formatting": [
+      {
+        "para_index": 1,
+        "text": "Benevente Wealth System: um artefato de decis\u00e3o e governan\u00e7a de carteira para escrit\u00f3rios de investimento do Esp\u00edrito Sa",
+        "style": "Heading 1"
+      },
+      {
+        "para_index": 9,
+        "text": "1. Quais dados existiam naquela data. Um balan\u00e7o republicado em 2024 n\u00e3o pode aparecer como se estivesse dispon\u00edvel em j",
+        "style": "normal"
+      },
+      {
+        "para_index": 10,
+        "text": "2. Qual regra foi aplicada. N\u00e3o a regra que o escrit\u00f3rio usa hoje, mas a que estava vigente naquele janeiro, com os limi",
+        "style": "normal"
+      },
+      {
+        "para_index": 11,
+        "text": "3. Quem aprovou. Uma decis\u00e3o de aloca\u00e7\u00e3o sem respons\u00e1vel identificado n\u00e3o \u00e9 audit\u00e1vel, e a automa\u00e7\u00e3o sem aprova\u00e7\u00e3o human",
+        "style": "normal"
+      },
+      {
+        "para_index": 46,
+        "text": "\u2022 Taxas da B3 e corretagem por ordem.",
+        "style": "normal"
+      }
+    ],
+    "direct_run_formatting": [
+      {
+        "para_index": 2,
+        "run_text": "Produ\u00e7\u00e3o t\u00e9cnica. Fucape Business School, BTech 2026.",
+        "style": "normal"
+      },
+      {
+        "para_index": 5,
+        "run_text": "Palavras-chave:",
+        "style": "normal"
+      },
+      {
+        "para_index": 9,
+        "run_text": "Quais dados existiam naquela data.",
+        "style": "normal"
+      },
+      {
+        "para_index": 10,
+        "run_text": "Qual regra foi aplicada.",
+        "style": "normal"
+      },
+      {
+        "para_index": 11,
+        "run_text": "Quem aprovou.",
+        "style": "normal"
+      }
+    ]
+  },
+  "notes": [
+    "Direct formatting is not always wrong, but it often causes inconsistent output when templates change.",
+    "Heading-like paragraphs not using Heading styles can break TOC and accessibility."
+  ]
+}

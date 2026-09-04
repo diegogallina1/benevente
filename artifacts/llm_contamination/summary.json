@@ -1,0 +1,69 @@
+{
+  "model": "gemini-3.1-flash-lite",
+  "arms": {
+    "anonymised": {
+      "years": 13,
+      "cagr": 0.12619921234298515,
+      "cdi_cagr": 0.09592447813040694,
+      "years_beating_cdi": 10,
+      "average_equity_weight": 0.4467692275700878,
+      "worst_year": -0.12953211833210157
+    },
+    "deterministic": {
+      "years": 13,
+      "cagr": 0.12668245698371816,
+      "cdi_cagr": 0.09592447813040694,
+      "years_beating_cdi": 8,
+      "average_equity_weight": 0.522360705848863,
+      "worst_year": -0.10001972707054779
+    },
+    "monolithic": {
+      "years": 13,
+      "cagr": 0.11814747258718983,
+      "cdi_cagr": 0.09592447813040694,
+      "years_beating_cdi": 7,
+      "average_equity_weight": 0.5499999999999999,
+      "worst_year": -0.028193924537466795
+    },
+    "named": {
+      "years": 13,
+      "cagr": 0.13004392696188094,
+      "cdi_cagr": 0.09592447813040694,
+      "years_beating_cdi": 7,
+      "average_equity_weight": 0.4378400233078873,
+      "worst_year": -0.12953211831429048
+    }
+  },
+  "contamination": {
+    "paired_years": 13,
+    "named_cagr": 0.13004392696188094,
+    "anonymised_cagr": 0.12619921234298515,
+    "contamination_annualised": 0.003844714618895795,
+    "mean_annual_difference": 0.002322926086066941,
+    "p_value": 0.9051817707472174,
+    "years_named_won": 7,
+    "reading": "A positive, significant gap means the named arm profited from recognising companies rather than from reading their figures. The anonymised arm is then the only defensible number for this period."
+  },
+  "model_added_value_vs_deterministic": {
+    "paired_years": 13,
+    "anonymised_cagr": 0.12619921234298515,
+    "deterministic_cagr": 0.12668245698371816,
+    "annualised_gap": -0.000483244640733016,
+    "mean_annual_difference": -0.0005301264269149098,
+    "p_value": 0.988568943566898,
+    "years_anonymised_won": 6,
+    "reading": "The control ranks the same eligible universe by the pre-declared factor score. A gap near zero means the model reproduces the deterministic ranking rather than adding judgement; a negative gap means it subtracts. Only a positive, significant gap supports the claim that the model contributes."
+  },
+  "decoupled_vs_monolithic": {
+    "paired_years": 13,
+    "anonymised_cagr": 0.12619921234298515,
+    "monolithic_cagr": 0.11814747258718983,
+    "annualised_gap": 0.008051739755795317,
+    "mean_annual_difference": 0.01082508199452603,
+    "p_value": 0.7767939716197756,
+    "years_anonymised_won": 7,
+    "reading": "Both arms receive the same information. One returns a bounded score that a convex optimiser turns into weights; the other returns weights directly. The gap is what the decoupling is worth."
+  },
+  "decoupling_note": "In the named and anonymised arms the model never sets a weight: its bounded score tilts expected return inside the convex optimiser, which still enforces every cap. The monolithic arm is the counterfactual where the model is trusted with weights; see constraint_audit.csv.",
+  "cache_directory": "work/llm_contamination"
+}

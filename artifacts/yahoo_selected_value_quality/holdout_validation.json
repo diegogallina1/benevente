@@ -1,0 +1,22 @@
+{
+  "status": "research_only",
+  "split_year": 2021,
+  "input_manifest_status": "ready_for_performance",
+  "total_return_source_tier": "public_reproducible_research",
+  "institutional_performance_verified": false,
+  "evidence": {
+    "training_years": 6.0,
+    "holdout_years": 4.0,
+    "holdout_start_year": 2021.0,
+    "holdout_cumulative_return": 0.6643694940727365,
+    "holdout_cagr": 0.135827650146922,
+    "holdout_cdi_cagr": 0.08368893930227728,
+    "holdout_mvo_cagr": 0.1348862021106716,
+    "holdout_excess_vs_cdi": 0.20678855871563306,
+    "holdout_excess_vs_mvo": 0.0033223424649633237,
+    "holdout_excess_sharpe_cdi": 0.529622009584359,
+    "holdout_max_drawdown": 0.0,
+    "annual_validation_status": "research_only",
+    "annual_validation_reasons": "total_return_input_not_verified"
+  }
+}

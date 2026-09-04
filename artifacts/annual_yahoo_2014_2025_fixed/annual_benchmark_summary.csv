@@ -1,0 +1,6 @@
+strategy,annual_observations,cumulative_return,cagr,annual_volatility,max_drawdown,positive_year_hit_rate
+Benevente Quant AI,1,-0.006773713681619942,-0.006773713681619942,,0.0,
+MVO elegível,1,-0.07782358868798922,-0.07782358868798922,,0.0,
+CDI,1,0.08222592706285003,0.08222592706285003,,0.0,
+Benevente excess vs CDI,1,-0.08223757952834676,-0.08223757952834676,,0.0,0.0
+Benevente excess vs MVO elegível,1,0.077045860352559,0.077045860352559,,0.0,1.0

@@ -1,0 +1,7 @@
+reference,reference_column,strategy_column,years,years_strategy_wins,win_rate,strategy_cagr,reference_cagr,annualised_excess
+CDI,cdi_net_return,net_return,8,4,0.5,0.11156970133797017,0.08624485271192084,0.025324848626049334
+MVO de referência,mvo_eligible_net_return,net_return,8,6,0.75,0.11156970133797017,0.06089573229627776,0.05067396904169241
+Ibovespa,benchmark_IBOVESPA,net_return,8,5,0.625,0.11156970133797017,0.09565812192850442,0.015911579409465748
+BOVA11 (ETF investível),benchmark_BOVA11,net_return,8,5,0.625,0.11156970133797017,0.09667184109247562,0.014897860245494554
+CDI após IR,cdi_net_return_after_tax,net_return_after_tax,8,5,0.625,0.10022024273546659,0.07125542293847453,0.02896481979699206
+MVO de referência após IR,mvo_net_return_after_tax,net_return_after_tax,8,6,0.75,0.10022024273546659,0.04762704943318341,0.05259319330228318

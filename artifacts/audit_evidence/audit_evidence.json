@@ -1,0 +1,217 @@
+{
+  "source": "artifacts/published_nested/annual_results.csv",
+  "strategy_column": "net_return",
+  "years": 11,
+  "period": "2015-2025",
+  "strategy_cagr": 0.1786442942659776,
+  "strategy_cagr_after_tax": 0.16027289798042021,
+  "max_drawdown": -0.030831784094738746,
+  "annual_scoreboard": [
+    {
+      "reference": "CDI",
+      "reference_column": "cdi_net_return",
+      "strategy_column": "net_return",
+      "years": 11,
+      "years_strategy_wins": 6,
+      "win_rate": 0.5454545455,
+      "strategy_cagr": 0.1786442943,
+      "reference_cagr": 0.0960957193,
+      "annualised_excess": 0.082548575
+    },
+    {
+      "reference": "MVO de referência",
+      "reference_column": "mvo_eligible_net_return",
+      "strategy_column": "net_return",
+      "years": 11,
+      "years_strategy_wins": 10,
+      "win_rate": 0.9090909091,
+      "strategy_cagr": 0.1786442943,
+      "reference_cagr": 0.0783413494,
+      "annualised_excess": 0.1003029448
+    },
+    {
+      "reference": "Ibovespa",
+      "reference_column": "benchmark_IBOVESPA",
+      "strategy_column": "net_return",
+      "years": 11,
+      "years_strategy_wins": 7,
+      "win_rate": 0.6363636364,
+      "strategy_cagr": 0.1786442943,
+      "reference_cagr": 0.1176971188,
+      "annualised_excess": 0.0609471755
+    },
+    {
+      "reference": "BOVA11 (ETF investível)",
+      "reference_column": "benchmark_BOVA11",
+      "strategy_column": "net_return",
+      "years": 11,
+      "years_strategy_wins": 7,
+      "win_rate": 0.6363636364,
+      "strategy_cagr": 0.1786442943,
+      "reference_cagr": 0.117241182,
+      "annualised_excess": 0.0614031123
+    },
+    {
+      "reference": "CDI após IR",
+      "reference_column": "cdi_net_return_after_tax",
+      "strategy_column": "net_return_after_tax",
+      "years": 11,
+      "years_strategy_wins": 6,
+      "win_rate": 0.5454545455,
+      "strategy_cagr": 0.160272898,
+      "reference_cagr": 0.0793754202,
+      "annualised_excess": 0.0808974777
+    },
+    {
+      "reference": "MVO de referência após IR",
+      "reference_column": "mvo_net_return_after_tax",
+      "strategy_column": "net_return_after_tax",
+      "years": 11,
+      "years_strategy_wins": 10,
+      "win_rate": 0.9090909091,
+      "strategy_cagr": 0.160272898,
+      "reference_cagr": 0.0632998505,
+      "annualised_excess": 0.0969730474
+    }
+  ],
+  "rolling_windows": [
+    {
+      "reference": "CDI",
+      "window_years": 1,
+      "windows": 11,
+      "windows_strategy_wins": 6,
+      "win_rate": 0.5454545455,
+      "independent_windows": 11
+    },
+    {
+      "reference": "CDI",
+      "window_years": 3,
+      "windows": 9,
+      "windows_strategy_wins": 8,
+      "win_rate": 0.8888888889,
+      "independent_windows": 3
+    },
+    {
+      "reference": "CDI",
+      "window_years": 5,
+      "windows": 7,
+      "windows_strategy_wins": 6,
+      "win_rate": 0.8571428571,
+      "independent_windows": 2
+    },
+    {
+      "reference": "CDI",
+      "window_years": 10,
+      "windows": 2,
+      "windows_strategy_wins": 2,
+      "win_rate": 1.0,
+      "independent_windows": 1
+    },
+    {
+      "reference": "MVO de referência",
+      "window_years": 1,
+      "windows": 11,
+      "windows_strategy_wins": 10,
+      "win_rate": 0.9090909091,
+      "independent_windows": 11
+    },
+    {
+      "reference": "MVO de referência",
+      "window_years": 3,
+      "windows": 9,
+      "windows_strategy_wins": 9,
+      "win_rate": 1.0,
+      "independent_windows": 3
+    },
+    {
+      "reference": "MVO de referência",
+      "window_years": 5,
+      "windows": 7,
+      "windows_strategy_wins": 7,
+      "win_rate": 1.0,
+      "independent_windows": 2
+    },
+    {
+      "reference": "MVO de referência",
+      "window_years": 10,
+      "windows": 2,
+      "windows_strategy_wins": 2,
+      "win_rate": 1.0,
+      "independent_windows": 1
+    },
+    {
+      "reference": "Ibovespa",
+      "window_years": 1,
+      "windows": 11,
+      "windows_strategy_wins": 7,
+      "win_rate": 0.6363636364,
+      "independent_windows": 11
+    },
+    {
+      "reference": "Ibovespa",
+      "window_years": 3,
+      "windows": 9,
+      "windows_strategy_wins": 7,
+      "win_rate": 0.7777777778,
+      "independent_windows": 3
+    },
+    {
+      "reference": "Ibovespa",
+      "window_years": 5,
+      "windows": 7,
+      "windows_strategy_wins": 7,
+      "win_rate": 1.0,
+      "independent_windows": 2
+    },
+    {
+      "reference": "Ibovespa",
+      "window_years": 10,
+      "windows": 2,
+      "windows_strategy_wins": 2,
+      "win_rate": 1.0,
+      "independent_windows": 1
+    },
+    {
+      "reference": "BOVA11 (ETF investível)",
+      "window_years": 1,
+      "windows": 11,
+      "windows_strategy_wins": 7,
+      "win_rate": 0.6363636364,
+      "independent_windows": 11
+    },
+    {
+      "reference": "BOVA11 (ETF investível)",
+      "window_years": 3,
+      "windows": 9,
+      "windows_strategy_wins": 7,
+      "win_rate": 0.7777777778,
+      "independent_windows": 3
+    },
+    {
+      "reference": "BOVA11 (ETF investível)",
+      "window_years": 5,
+      "windows": 7,
+      "windows_strategy_wins": 7,
+      "win_rate": 1.0,
+      "independent_windows": 2
+    },
+    {
+      "reference": "BOVA11 (ETF investível)",
+      "window_years": 10,
+      "windows": 2,
+      "windows_strategy_wins": 2,
+      "win_rate": 1.0,
+      "independent_windows": 1
+    }
+  ],
+  "readiness": {
+    "status": "research_only",
+    "commercial_alpha_claim_permitted": false,
+    "reasons": [
+      "a amostra 2015-2025 foi usada para escolher regra, família de fatores e restrições; por definição ela não é um holdout congelado"
+    ],
+    "years_evaluated": 11,
+    "max_drawdown": -0.030831784094738746,
+    "note": "O status só pode mudar com anos avaliados depois do registro congelado. Nenhuma reanálise do período histórico altera esta conclusão."
+  }
+}

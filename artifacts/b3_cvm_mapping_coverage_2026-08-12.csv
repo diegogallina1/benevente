@@ -1,0 +1,4 @@
+mapping_status,match_method,tickers,share_of_equities
+accepted,unique_cotahist_prefix,89,0.260233918128655
+accepted,exact_normalised_name,76,0.2222222222222222
+review_required,fuzzy_candidate_requires_review,177,0.5175438596491229

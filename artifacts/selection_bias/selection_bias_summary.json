@@ -1,0 +1,10 @@
+{
+  "evaluation_window_first_year": 2018,
+  "years_evaluated": 8,
+  "candidates_in_family": 7,
+  "hindsight_winner": "triple_factor",
+  "hindsight_winner_cagr": 0.1546442928663938,
+  "nested_selection_cagr": 0.11156970133797017,
+  "hindsight_premium": 0.043074591528423634,
+  "reading": "The nested rule never saw the year it was evaluated on. The difference against the best full-sample row is what a researcher would have added to the reported result purely by choosing after the fact."
+}

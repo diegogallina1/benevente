@@ -1,0 +1,33 @@
+{
+  "candidate_count": 73,
+  "selection": "highest train score only",
+  "winner": {
+    "train_kind": "reversal",
+    "train_lookback": 126,
+    "train_exponent": 2.0,
+    "train_volatility_power": 0.0,
+    "train_split": "train",
+    "train_years": 6,
+    "train_cagr": 0.5476640983628991,
+    "train_cdi_cagr": 0.08602906249629738,
+    "train_excess_cdi": 0.4616350358666017,
+    "train_worst_year": -0.1356183246188914,
+    "train_max_drawdown": 0.0,
+    "train_average_turnover": 1.1469890630474666,
+    "holdout_kind": "reversal",
+    "holdout_lookback": 126,
+    "holdout_exponent": 2.0,
+    "holdout_volatility_power": 0.0,
+    "holdout_split": "holdout",
+    "holdout_years": 5,
+    "holdout_cagr": -0.004879970009636692,
+    "holdout_cdi_cagr": 0.10871376388269938,
+    "holdout_excess_cdi": -0.11359373389233607,
+    "holdout_worst_year": -0.21737421434743848,
+    "holdout_max_drawdown": -0.21737421434743842,
+    "holdout_average_turnover": 1.1580103782765876,
+    "train_score": 0.4042855827142284
+  },
+  "winner_passes_holdout_cdi": false,
+  "holdout_positive_count": 13
+}

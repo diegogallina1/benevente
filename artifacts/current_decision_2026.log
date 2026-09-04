@@ -1,0 +1,76 @@
+{
+  "decision_date": "2026-01-02",
+  "status": "research_monitoring_only",
+  "universe": {
+    "all_instruments": 1424,
+    "equities_at_decision": 361,
+    "identifier_bridge_accepted": 311,
+    "liquid_equities_examined": 138,
+    "mapped_liquid_equities_processed": 126,
+    "fundamental_snapshots": 115,
+    "screened_with_complete_price_history": 114,
+    "eligible_after_screen": 91
+  },
+  "method": [
+    "universo B3 datado",
+    "ponte B3/CVM por ticker e ISIN",
+    "ITR/DFP disponível até a decisão",
+    "liquidez, valor, qualidade e limites de concentração"
+  ],
+  "holdings": [
+    {
+      "ticker": "VIVA3",
+      "weight": 0.176,
+      "score": 4.058999501405638,
+      "why": "Aprovado na triagem datada e classificado por qualidade, earnings yield e momento de 12 meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "CURY3",
+      "weight": 0.166174385588229,
+      "score": 2.263544327070749,
+      "why": "Aprovado na triagem datada e classificado por qualidade, earnings yield e momento de 12 meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "CMIN3",
+      "weight": 0.11978639787599599,
+      "score": 1.7575294657429243,
+      "why": "Aprovado na triagem datada e classificado por qualidade, earnings yield e momento de 12 meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "BBSE3",
+      "weight": 0.0651209233899438,
+      "score": 1.161221157154992,
+      "why": "Aprovado na triagem datada e classificado por qualidade, earnings yield e momento de 12 meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    },
+    {
+      "ticker": "LEVE3",
+      "weight": 0.02291829314583127,
+      "score": 0.7008615006180371,
+      "why": "Aprovado na triagem datada e classificado por qualidade, earnings yield e momento de 12 meses.",
+      "risk": "Revisar resultado, preço, liquidez e fatos relevantes antes de qualquer implementação."
+    }
+  ],
+  "cdi_weight": 0.44999999999999996,
+  "monitoring": {
+    "through": "2026-08-12",
+    "profiles": {
+      "benevente": {
+        "equity_weight": 0.55,
+        "cdi_weight": 0.44999999999999996,
+        "equity_price_return": -0.09484095309477358,
+        "cdi_return": 0.08532564247679741,
+        "portfolio_partial_return": -0.013765985087566643
+      }
+    },
+    "label": "Resultado parcial: preços de fechamento B3 nas ações e CDI diário do BCB. Ações ainda não incluem proventos."
+  },
+  "limitations": [
+    "Não é recomendação individual ou ordem.",
+    "O universo completo é inventariado; nesta versão, a seleção de ações exige ponte B3/CVM e fundamentos comparáveis.",
+    "Acompanhamento de 2026 usa preço oficial B3 sem ajuste de proventos; reconciliação é necessária antes de qualquer alegação institucional."
+  ]
+}

@@ -1,0 +1,2 @@
+decision_year,decision_date,holding_end_exclusive,gross_return,estimated_cost_brl,estimated_cost_rate,net_return,opening_wealth_brl,closing_wealth_brl,turnover,weights_at_decision,known_snapshot_count,factor,target_equity_weight,mvo_eligible_net_return,cdi_net_return
+2024,2024-01-02,2025-01-02,-0.006366968491320679,406.7451902992107,0.0004067451902992107,-0.00677371368161989,1000000.0,993226.28631838,1.0,BBSE3.SA:12.00% | CMIN3.SA:12.00% | KEPL3.SA:12.00% | VIVA3.SA:12.00% | TITULO_CDI:52.00%,286,triple_factor,0.48,-0.07782358868798928,0.08222592706285003

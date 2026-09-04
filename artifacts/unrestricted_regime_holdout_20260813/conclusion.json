@@ -1,0 +1,28 @@
+{
+  "selection_period": "2018-2020",
+  "holdout_period": "2021-2025",
+  "chosen_policy": "return_expanding",
+  "train": {
+    "years": 3,
+    "cagr": 0.42568073440795606,
+    "cdi_cagr": 0.050097682782992425,
+    "excess_cdi": 0.37558305162496364,
+    "cdi_hit_rate": 1.0,
+    "worst_year": 0.2186292525423331,
+    "max_drawdown": 0.0,
+    "average_turnover": 1.1886318570319434,
+    "unique_rules_used": 2
+  },
+  "holdout": {
+    "years": 5,
+    "cagr": 0.03387182343399231,
+    "cdi_cagr": 0.10871376388269938,
+    "excess_cdi": -0.07484194044870707,
+    "cdi_hit_rate": 0.4,
+    "worst_year": -0.2173742143474384,
+    "max_drawdown": -0.21737421434743842,
+    "average_turnover": 1.1781503371900919,
+    "unique_rules_used": 2
+  },
+  "passes_holdout": false
+}

@@ -1,0 +1,6 @@
+decision_year,decision_date,ticker,previous_weight,new_weight,reason,decision_action,factor
+2024,2024-01-02,BBSE3.SA,0.0,0.12,entered_after_point_in_time_screen,entered,triple_factor
+2024,2024-01-02,CMIN3.SA,0.0,0.12,entered_after_point_in_time_screen,entered,triple_factor
+2024,2024-01-02,KEPL3.SA,0.0,0.12,entered_after_point_in_time_screen,entered,triple_factor
+2024,2024-01-02,VIVA3.SA,0.0,0.12,entered_after_point_in_time_screen,entered,triple_factor
+2024,2024-01-02,TITULO_CDI,0.0,0.52,defensive_residual_adjustment,entered,triple_factor

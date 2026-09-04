@@ -1,0 +1,293 @@
+{
+  "schema_version": "1.0",
+  "generated_at_utc": "2026-08-26T04:35:58+00:00",
+  "status": "research_only",
+  "names": {
+    "academic": "Benevente Quant AI",
+    "commercial": "Benevente Wealth System",
+    "published_strategy": "Benevente"
+  },
+  "role_contract": {
+    "selection": "Fundamentalista multifatorial: qualidade, valor e momento, com liquidez e disponibilidade documental.",
+    "allocation": "Regra quantitativa anual, com configuração escolhida apenas pelos anos já encerrados.",
+    "llm": "Explica teses, riscos e perguntas de revisão; não seleciona ativos nem define pesos.",
+    "mvo": "Comparador quantitativo independente e alocador apenas nos braços experimentais.",
+    "benevente2": "Estratégia principal em acompanhamento: preserva a cesta anual e reduz exposição após estresse observável no fechamento anterior."
+  },
+  "evaluation": {
+    "decision_years": [
+      2015,
+      2025
+    ],
+    "annual_decisions": 11,
+    "selection_years": [
+      2012,
+      2014
+    ],
+    "prospective_status": "A validação prospectiva começa depois do registro congelado."
+  },
+  "claims": {
+    "strategy_cagr_net_costs": 0.1786442942659776,
+    "strategy_cagr_after_modeled_tax": 0.16027289798042021,
+    "cdi_cagr": 0.09609571930908412,
+    "ibovespa_cagr": 0.11769711878033418,
+    "mvo_reference_cagr": 0.07834134942607607,
+    "strategy_max_daily_drawdown": -0.47784912800289203,
+    "ibovespa_max_daily_drawdown": -0.4695421729681053,
+    "deflated_sharpe": 0.9856856039840576,
+    "hindsight_premium_annual": 0.006477271847774357,
+    "configurations_evaluated": 36,
+    "llm_named_cagr": 0.13004392696188094,
+    "llm_anonymised_cagr": 0.12619921234298515,
+    "deterministic_cagr": 0.12668245698371816,
+    "llm_added_value_p_value": 0.988568943566898,
+    "benevente2_candidate_cagr": 0.18446223898599223,
+    "benevente2_candidate_max_drawdown": -0.28745686793003866,
+    "benevente2_holdout_cagr": 0.18032880426354048,
+    "benevente2_paired_p_value": 0.9642115838783171,
+    "profile_risk_experiment": {
+      "conservador": {
+        "base_cagr": 0.11731176418323974,
+        "protected_cagr": 0.11196187478284592,
+        "base_max_drawdown": -0.18886010499008576,
+        "protected_max_drawdown": -0.09859658492162293
+      },
+      "equilibrado": {
+        "base_cagr": 0.12985730160222286,
+        "protected_cagr": 0.12305996254432028,
+        "base_max_drawdown": -0.28107474196226556,
+        "protected_max_drawdown": -0.17893741799893392
+      },
+      "arrojado": {
+        "base_cagr": 0.14143181226726576,
+        "protected_cagr": 0.13633088599537713,
+        "base_max_drawdown": -0.3759931513822473,
+        "protected_max_drawdown": -0.29289181754085913
+      }
+    }
+  },
+  "coverage": {
+    "price_tickers": 497,
+    "fundamental_records": 2868,
+    "historical_universe_records": 10286,
+    "historical_issuer_labels": 2051,
+    "evaluated_distinct_issuers": 514,
+    "historical_asset_classes": [
+      "bdr",
+      "equity",
+      "etf",
+      "fii",
+      "other"
+    ],
+    "cvm_source_archives": 0,
+    "primary_event_records": 9772,
+    "primary_event_tickers_endpoint_queried": 475,
+    "primary_event_tickers_historically_reconciled": 0,
+    "primary_event_tickers_requested": 497,
+    "unresolved_subscriptions": 127,
+    "unresolved_manual_events": 153
+  },
+  "sources": "B3 COTAHIST, CVM ITR/DFP e BCB SGS 12; complemento de retorno total público documentado no manifesto do painel.",
+  "source_tier": "public_reproducible_research",
+  "institutional_performance_verified": false,
+  "primary_reconciliation": {
+    "status": "blocked_not_institutionally_reconciled",
+    "scope": "published Benevente 1 equity holding-years, 2015-2025",
+    "holding_year_records": 56,
+    "distinct_published_tickers": 40,
+    "current_endpoint_compared_records": 54,
+    "current_endpoint_unavailable_records": 2,
+    "manual_events_overlapping_actual_holds": 0,
+    "material_differences_over_5pp": 7,
+    "median_absolute_difference": 0.0014079139995021028,
+    "weighted_mean_absolute_difference": 0.07570331719663898,
+    "endpoint_unavailable_share_of_equity_weight_years": 0.06060606114766819,
+    "material_difference_share_of_equity_weight_years": 0.11045932371416967,
+    "current_b3_endpoint_archive": {
+      "records": 9772,
+      "price_series_queried": 475,
+      "price_series_requested": 497,
+      "manual_events_unresolved": 153
+    },
+    "interpretation": "The current B3 page is useful primary evidence but is not a complete historical corporate-action ledger. It cannot reproduce every published holding return, so the provider-adjusted performance panel remains research-grade and no institutional reconciliation seal is granted.",
+    "material_difference_threshold": 0.05,
+    "inputs": {
+      "data/prices_b3_cotahist_price_return_only_2011_2025.csv": "48f541a4e0c0cbe723b0db27980e546b56dfa80d4b4b26fc273410fc95e20938",
+      "data/b3_primary_corporate_events_2011_2025.csv": "230465e490dc3600c4859253ca9050a19beb213cd5d82f9df5032525de1f8402",
+      "data/b3_primary_event_coverage_2011_2025.csv": "91d3addb9a8197c59dae782f228504c7b6985a2e385291af24349714eb9fecb2",
+      "data/b3_primary_events_2011_2025_manifest.json": "2bdbee0f97659421dfdbce58edb46bb6aaea32ce68a1cd1e95904dd6de196042",
+      "artifacts/published_nested/annual_holdings.csv": "91052211e7c4e7fd1cb0a34d5fee8e87ceb184722bc0afcdc1982c75d5d68222",
+      "artifacts/published_nested/annual_results.csv": "4433b1bf6205fb04be02ce237eba8d23023fae832f8d6cf6bff85e6abae72baf"
+    },
+    "detail_sha256": "55193e1e0d3741fbf3330b88eaca7adb9669cb604c10b239c69afda9042d1018"
+  },
+  "limitations": [
+    "A janela 2015–2025 também participou do desenvolvimento; não é validação prospectiva.",
+    "A página atual da B3 respondeu para 475 de 497 séries, mas não certifica a completude histórica dos eventos.",
+    "Há 153 eventos manuais, incluindo 127 subscrições, que exigem resolução explícita antes de uma reconciliação institucional.",
+    "Na auditoria das 56 observações ativo-ano realmente mantidas, 7 diferenças excederam 5 pontos percentuais e 2 observações não tiveram resposta do endpoint.",
+    "Parte das distribuições é imputada quando a fonte pública não cobre o papel.",
+    "Custos e tributos são modelados, não conciliados com notas reais de corretagem.",
+    "A camada de risco do Benevente 2 é retrospectiva; o imposto intranual é uma estimativa agregada, não uma conciliação por lote e nota de corretagem."
+  ],
+  "canonical_files": [
+    {
+      "path": "artifacts/published_nested/annual_results.csv",
+      "bytes": 7953,
+      "sha256": "4433b1bf6205fb04be02ce237eba8d23023fae832f8d6cf6bff85e6abae72baf"
+    },
+    {
+      "path": "artifacts/published_nested/annual_holdings.csv",
+      "bytes": 20001,
+      "sha256": "91052211e7c4e7fd1cb0a34d5fee8e87ceb184722bc0afcdc1982c75d5d68222"
+    },
+    {
+      "path": "artifacts/published_nested/annual_transitions.csv",
+      "bytes": 14404,
+      "sha256": "b0a610aec7e4d590a1497c7bb193f42fbbf69778dd00f4b67f8805157008c176"
+    },
+    {
+      "path": "artifacts/published_nested/daily_curve.csv",
+      "bytes": 478035,
+      "sha256": "4ebbac67f783e275385d392b61adf76eb745f8132b60a520a3c56290f29a7333"
+    },
+    {
+      "path": "artifacts/published_nested/protocol.json",
+      "bytes": 1081,
+      "sha256": "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d"
+    },
+    {
+      "path": "artifacts/audit_evidence/audit_evidence.json",
+      "bytes": 6079,
+      "sha256": "123b4dac353a26be36b72579378629af7127061443bb700a7cb63531d3ff2985"
+    },
+    {
+      "path": "artifacts/configuration_search_2012/summary.json",
+      "bytes": 1347,
+      "sha256": "e3330a04727f8a8d27f52633d7ab3cacfc1759aa0abc0da670361e6ef2f1bbfe"
+    },
+    {
+      "path": "artifacts/llm_contamination/summary.json",
+      "bytes": 3096,
+      "sha256": "0ec0eef5d7a2cc2c74f482bca123a08c9df94b2d18e76c78882bdc2202ccc8c4"
+    },
+    {
+      "path": "artifacts/llm_contamination/constraint_audit.csv",
+      "bytes": 779,
+      "sha256": "19a7d00e407543080378ec6683782b62f1f52266a0ed8c0671d5b3250609c0f2"
+    },
+    {
+      "path": "artifacts/benevente2_event_risk/summary.json",
+      "bytes": 20196,
+      "sha256": "8bc321fb4f6f18cb89675a2dc1b9c19561e0a3e018f227890421bc345c7d1a00"
+    },
+    {
+      "path": "artifacts/benevente2_event_risk/candidate_annual_comparison.csv",
+      "bytes": 1503,
+      "sha256": "5c6e4558bf7534400f01d95876096b0e3aae0bfc706f75ad66fe8580f06831f9"
+    },
+    {
+      "path": "artifacts/benevente2_event_risk/candidate_daily_comparison.csv",
+      "bytes": 1173370,
+      "sha256": "4b25dc16011b219e4d2d3a5022ec79490d52be5edfdff4474cf73b4a78fd7fae"
+    },
+    {
+      "path": "artifacts/benevente2_event_risk/sensitivity_grid.csv",
+      "bytes": 95826,
+      "sha256": "507a6eebfd6e4f909f19c4495ad5b3dc223c19bce19747f1041a496ad29280a1"
+    },
+    {
+      "path": "data/prices_b3_total_return_full_2011_2025.csv",
+      "bytes": 22756388,
+      "sha256": "9bc6ad08d6a3ca2dc1253e94f17541d863d36d5f30bbc1c232f81b43b11bef85"
+    },
+    {
+      "path": "data/prices_b3_total_return_full_2011_2025_manifest.json",
+      "bytes": 1745,
+      "sha256": "d41d364b757b8df207930dfc7b6ff25544bfdd2c6f7230c059fb6d3453350ca8"
+    },
+    {
+      "path": "data/fundamentals_b3_cvm_full_2012_2025.csv",
+      "bytes": 2111182,
+      "sha256": "2df683244a39134e245398cf785aa8817e380343266d7f871527493428c22abe"
+    },
+    {
+      "path": "data/b3_historical_universes_2012_2025.csv",
+      "bytes": 2189594,
+      "sha256": "8e0b2e87ed78b86531d924b75d2de709f9589e9151d44aba74d7427841bbf5e6"
+    },
+    {
+      "path": "data/b3_historical_cvm_ticker_map_2012_2025.csv",
+      "bytes": 1230054,
+      "sha256": "c89c39072ceb68da2bd269c4b8902416f91415405777dba1a07489d54e47a9ad"
+    },
+    {
+      "path": "data/benchmarks_market_2011_2025.csv",
+      "bytes": 140467,
+      "sha256": "658697bf27e9988f1e8cafdf564acacac0038969f743073dcdec0f9eea343c1b"
+    },
+    {
+      "path": "data/benchmarks_market_2011_2025_manifest.json",
+      "bytes": 1155,
+      "sha256": "76d4348035f91818aa59ff76f57f9c456ba35769260fa90127a3121089a57338"
+    },
+    {
+      "path": "data/b3_primary_corporate_events_2011_2025.csv",
+      "bytes": 3202492,
+      "sha256": "230465e490dc3600c4859253ca9050a19beb213cd5d82f9df5032525de1f8402"
+    },
+    {
+      "path": "data/b3_primary_event_coverage_2011_2025.csv",
+      "bytes": 149790,
+      "sha256": "91d3addb9a8197c59dae782f228504c7b6985a2e385291af24349714eb9fecb2"
+    },
+    {
+      "path": "data/b3_primary_events_2011_2025_manifest.json",
+      "bytes": 3967,
+      "sha256": "2bdbee0f97659421dfdbce58edb46bb6aaea32ce68a1cd1e95904dd6de196042"
+    },
+    {
+      "path": "artifacts/primary_reconciliation/summary.json",
+      "bytes": 2007,
+      "sha256": "1446908fcd756e12f15219a9bcce9ac33ba635f95c718b3577a861ef691c5f35"
+    },
+    {
+      "path": "artifacts/primary_reconciliation/strategy_holding_year_audit.csv",
+      "bytes": 10974,
+      "sha256": "55193e1e0d3741fbf3330b88eaca7adb9669cb604c10b239c69afda9042d1018"
+    },
+    {
+      "path": "data/benevente_profile_risk_v1_registration.json",
+      "bytes": 3778,
+      "sha256": "38369d8e00cf0227a1f49b1e90915488bc906202665c694001d0ee4b1c596c8e"
+    },
+    {
+      "path": "artifacts/risk_system_validation_20260820/summary.json",
+      "bytes": 22208,
+      "sha256": "3c4ba77e3c84e17490eed7acac0dbe57f78db6f9e1425d7a161f194fd29d0f50"
+    },
+    {
+      "path": "artifacts/risk_system_validation_20260820/annual_profile_comparison.csv",
+      "bytes": 7026,
+      "sha256": "e831a09de053dfc54fe3cd6068f00a91775d11c170345ef261cf1dc3252b8889"
+    },
+    {
+      "path": "artifacts/risk_profiles_v1/conservador_intrayear/summary.json",
+      "bytes": 2087,
+      "sha256": "4e400ab22610abc1114afe05fac15ea083418ebe17ac3537405a09b0c622fa48"
+    },
+    {
+      "path": "artifacts/risk_profiles_v1/equilibrado_intrayear/summary.json",
+      "bytes": 2084,
+      "sha256": "601b4fc68c06ccd69e7fdec150bd51f5149651c15973a98cb6cc3a4c684b17e5"
+    },
+    {
+      "path": "artifacts/risk_profiles_v1/arrojado_intrayear/summary.json",
+      "bytes": 2080,
+      "sha256": "fd9d76d253333fa27ef61caca9450124457bd8b8880417222d6482a02419a8a4"
+    }
+  ],
+  "cvm_source_archives": [],
+  "audit_evidence_sha256": "123b4dac353a26be36b72579378629af7127061443bb700a7cb63531d3ff2985",
+  "audit_years": 11
+}

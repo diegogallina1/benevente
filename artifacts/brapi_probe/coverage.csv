@@ -1,0 +1,5 @@
+ticker,status,reason,historical_url,events_url,first_date,last_date,raw_price_rows,missing_adjusted_close,accepted_adjusted_close_rows,cash_dividends_jcp_events,stock_dividend_split_events,subscription_events
+ITUB4.SA,accepted,,https://brapi.dev/api/v2/stocks/historical?symbols=ITUB4&range=max&interval=1d,https://brapi.dev/api/v2/stocks/dividends?symbols=ITUB4,2013-01-02,2025-12-30,4273,1,3225,483,12,0
+MGLU3.SA,accepted,,https://brapi.dev/api/v2/stocks/historical?symbols=MGLU3&range=max&interval=1d,https://brapi.dev/api/v2/stocks/dividends?symbols=MGLU3,2013-01-02,2025-12-30,3793,1,3225,17,6,0
+PETR4.SA,accepted,,https://brapi.dev/api/v2/stocks/historical?symbols=PETR4&range=max&interval=1d,https://brapi.dev/api/v2/stocks/dividends?symbols=PETR4,2013-01-02,2025-12-30,6597,1,3225,168,3,0
+VALE3.SA,accepted,,https://brapi.dev/api/v2/stocks/historical?symbols=VALE3&range=max&interval=1d,https://brapi.dev/api/v2/stocks/dividends?symbols=VALE3,2013-01-02,2025-12-30,6591,1,3225,93,3,0
