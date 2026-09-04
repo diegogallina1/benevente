@@ -36,13 +36,26 @@ def _ensaio():
     return _carrega("ensaio_do_workflow", ROOT / "tools" / "ensaio_do_workflow.py")
 
 
+def _pular_se_faltar_insumo(modulo) -> None:
+    """Um guarda só, para os dois testes.
+
+    Escrito duas vezes ele ficou desigual: um conferia só o retrato do universo
+    e passava adiante num clone sem o painel de preços, que é o caso da CI. A
+    captura recusa por ausência antes de chegar onde o teste queria olhar.
+    """
+    if not (modulo.RETRATOS / "b3_universe_2025.csv").exists():
+        pytest.skip("o retrato histórico de 2025 não está neste clone")
+    captura = _carrega("capturar_insumos", ROOT / "tools" / "capturar_insumos.py")
+    faltando = [item["arquivo"] for papel, item in captura.INSUMOS.items()
+                if papel != "universe" and not (ROOT / item["arquivo"]).exists()]
+    if faltando:
+        pytest.skip(f"insumo fora do clone: {faltando}")
+
+
 @pytest.fixture(scope="module")
 def corrida():
     modulo = _ensaio()
-    if not (modulo.RETRATOS / "b3_universe_2025.csv").exists():
-        pytest.skip("o retrato histórico de 2025 não está neste clone")
-    if not (ROOT / "data" / "prices_b3_cotahist_2011_2026.csv").exists():
-        pytest.skip("o painel de preços não está neste clone")
+    _pular_se_faltar_insumo(modulo)
     return modulo.ensaiar(2025)
 
 
@@ -72,8 +85,7 @@ def test_carteira_com_menos_emissores_que_o_declarado_e_recusada() -> None:
     ter, e faltava justamente no passo que produz a carteira.
     """
     modulo = _ensaio()
-    if not (modulo.RETRATOS / "b3_universe_2025.csv").exists():
-        pytest.skip("o retrato histórico de 2025 não está neste clone")
+    _pular_se_faltar_insumo(modulo)
     relatorio = modulo.ensaiar(2025)
     passo = next(p for p in relatorio["passos"] if p["passo"] == "decisão a partir da captura")
     assert "recusada" in passo["detalhe"], passo
