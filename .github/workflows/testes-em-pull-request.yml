@@ -1,0 +1,63 @@
+# Roda a suíte inteira antes de qualquer coisa entrar no main.
+#
+# Por que este arquivo existe: os outros dois workflows só disparam por horário
+# ou por botão, então nada olhava para um pull request. Em 03/09/2026 três pull
+# requests automáticos da Vercel foram mesclados e levaram para o site um
+# segundo script de medição apontando para um domínio de terceiro, uma CSP
+# reaberta com curinga e um passo de build que derrubou a publicação. O teste
+# que proíbe medição de terceiro já existia e teria reprovado os três: ninguém
+# o executou. Um teste que não roda no momento da decisão não protege nada.
+
+name: Testes
+
+on:
+  pull_request:
+    branches: [main]
+  # O mesmo estrago pode chegar por push direto, inclusive dos meus.
+  push:
+    branches: [main]
+
+# Só leitura: um pull request vindo de um fork não recebe permissão de escrita
+# nem alcança segredo nenhum por aqui.
+permissions:
+  contents: read
+
+concurrency:
+  group: benevente-testes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Baixar repositório
+        # Presa ao SHA, nao a tag: uma tag e um ponteiro que o dono da action
+        # pode mover, e estes jobs rodam com contents:write (e o do radar com
+        # segredo no ambiente). Para atualizar, releia o SHA da tag desejada com
+        # gh api repos/<acao>/git/ref/tags/<tag> --jq .object.sha
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Preparar Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements-ci.txt
+
+      # A lista está em requirements-ci.txt com as versões presas, e o arquivo
+      # explica quem puxa cada pacote. Sem eles o pytest nem coleta os testes:
+      # os módulos de teste importam os do projeto no topo.
+      - name: Instalar dependências
+        run: python -m pip install -r requirements-ci.txt
+
+      - name: Rodar a suíte
+        run: python -m pytest -q
+
+      # Os dois verificadores não são testes: eles comparam o que está escrito
+      # no site e no aplicativo com o que os artefatos dizem. É o que impede um
+      # número de divergir da fonte sem ninguém perceber.
+      - name: Conferir que os números publicados batem com os artefatos
+        run: |
+          python tools/verify_published_numbers.py
+          python tools/verify_app_matches_site.py

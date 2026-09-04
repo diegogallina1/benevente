@@ -1,0 +1,31 @@
+# Dependências para rodar a suíte inteira numa máquina limpa.
+#
+# Não é a lista do que o projeto usa: é a lista mínima sem a qual o pytest nem
+# consegue COLETAR os testes, porque os módulos de teste importam os módulos do
+# projeto no topo do arquivo. Foi levantada empiricamente, num ambiente virtual
+# vazio, instalando só o que faltava até os 646 testes passarem.
+#
+# Quem puxa cada um:
+#   pytest        o executor
+#   numpy, scipy  portfolio_risk.py e model_validation.py
+#   pandas        quase todo carregamento de série
+#   cvxpy         o otimizador de carteira
+#   pydantic      os contratos de entrada anual
+#   yfinance      o adaptador de preços (só importado, não chamado nos testes)
+#   python-docx   os geradores de dossiê e do artigo
+#   pypdf         o teste que lê o selo da política dentro dos PDFs
+#   pillow        o gerador do diagrama de arquitetura do BTech
+#
+# Versões presas para que "os testes passaram" queira dizer alguma coisa. Para
+# atualizar: criar um ambiente virtual vazio, instalar sem versão, rodar a
+# suíte e trazer de volta o que o pip list --format=freeze devolver.
+pytest==9.1.1
+numpy==2.4.6
+scipy==1.17.1
+pandas==3.0.5
+cvxpy==1.9.2
+pydantic==2.13.5
+yfinance==1.7.0
+python-docx==1.2.0
+pypdf==6.16.2
+pillow==12.3.0
