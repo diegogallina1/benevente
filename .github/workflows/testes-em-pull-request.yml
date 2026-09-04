@@ -41,6 +41,11 @@ jobs:
         # segredo no ambiente). Para atualizar, releia o SHA da tag desejada com
         # gh api repos/<acao>/git/ref/tags/<tag> --jq .object.sha
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          # Histórico inteiro: o verificador de hashes confere uma entrada que
+          # aponta para o commit onde vive um documento substituído, e com o
+          # checkout raso esse commit não existe na máquina.
+          fetch-depth: 0
 
       - name: Preparar Python
         uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
