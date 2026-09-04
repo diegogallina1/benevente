@@ -165,7 +165,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--prices", default="data/prices_b3_cotahist_2011_2026.csv")
     parser.add_argument("--universe", default="artifacts/b3_universe_january_2026.csv")
-    parser.add_argument("--mapping", default="artifacts/b3_cvm_ticker_map_2026-08-12.csv")
+    # A ponte precisa trazer a coluna isin: current_mapping funde por ticker E
+    # isin, de propósito, para não carregar um vínculo por nome de papel. O
+    # padrão apontava para uma exportação sem essa coluna, e quem rodasse o
+    # comando como documentado recebia KeyError em vez da carteira.
+    parser.add_argument("--mapping", default="data/b3_historical_cvm_ticker_map_2012_2025.csv")
     parser.add_argument("--cache-dir", default="work/cvm_cache")
     parser.add_argument("--output", default="artifacts/profile_books_2026")
     args = parser.parse_args()
