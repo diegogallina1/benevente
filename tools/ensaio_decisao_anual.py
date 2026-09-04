@@ -117,21 +117,20 @@ def compara(publicado: dict, ensaiado: dict) -> list[dict]:
 
 
 def divergencia_do_ultraconservador(ensaiado: dict) -> dict:
-    """O único perfil com duas respostas, e a diferença é de método.
+    """O degrau derivado, e a conferência de que as duas fontes concordam.
 
-    O que o site publica vem de build_ultraconservador_book.py, que pega o livro
-    do conservador e escala os pesos pelo fator 0,114286, ou seja 4% sobre 35%.
-    O gerador calcula o degrau direto, com o teto por ativo próprio do
-    ultraconservador, e os pesos saem diferentes: o total em ações é o mesmo,
-    3,2%, mas a distribuição entre os papéis não.
+    Havia dois métodos e duas respostas: o site escalava a carteira do
+    conservador, o gerador refazia a triagem sob o teto por ativo do degrau.
+    Mesma fração em ações, distribuições diferentes nos doze papéis.
 
-    Qual dos dois é o certo não é questão aritmética, é de interpretação da
-    política, e por isso este programa relata em vez de escolher. A declaração
-    do quarto degrau diz que a regra "moveu o teto de ações, e só ele", e que o
-    degrau herda a camada do conservador em vez de ganhar multiplicadores
-    próprios escolhidos depois de ver resultado. Escalar os pesos do conservador
-    é fiel a essa frase. Recalcular sob um teto por ativo próprio é um segundo
-    método, e precisa ser declarado se for o escolhido.
+    Em 04/09/2026 ficou decidido escalar, e a razão está registrada em
+    data/decisao_metodo_do_ultraconservador_2026-09-04.json: a declaração do
+    degrau diz que a regra moveu o teto de ações e só ele, e refazer a triagem
+    seria uma segunda decisão sobre pesos que ela não autoriza.
+
+    Esta função deixou de relatar a divergência e passou a vigiar a
+    convergência: se as duas fontes voltarem a discordar, alguém reintroduziu um
+    segundo método.
     """
     caminho = ROOT / "web" / "current_decision_2026_ultraconservador.json"
     publicado = json.loads(caminho.read_text(encoding="utf-8"))
@@ -146,15 +145,17 @@ def divergencia_do_ultraconservador(ensaiado: dict) -> dict:
     # rotular como divergência o que é arredondamento.
     total_publicado = sum(peso for ticker, peso in pesos_pub.items() if ticker != "IVVB11")
     total_ensaio = refeito["domestic_equity"]
+    diferentes = [t for t in comuns if pesos_pub[t] != pesos_ens[t]]
     return {
-        "situacao": "dois métodos, duas respostas",
-        "publicado_por": "build_ultraconservador_book.py (escala o conservador por 0,114286)",
-        "ensaiado_por": "build_profile_books_2026.py (calcula o degrau sob o teto por ativo próprio)",
+        "situacao": "convergem" if not diferentes else "DIVERGEM: um segundo método voltou",
+        "metodo": "escala da carteira do conservador (decidido em 2026-09-04)",
+        "registro_da_decisao": "data/decisao_metodo_do_ultraconservador_2026-09-04.json",
+        "publicado_por": "tools/build_ultraconservador_book.py",
+        "ensaiado_por": "build_profile_books_2026.py (escala_de)",
         "total_em_acoes": {"publicado": round(total_publicado, 6), "ensaio": round(total_ensaio, 6),
                            "igual": abs(total_publicado - total_ensaio) < 1e-4},
-        "pesos_diferentes_em": [t for t in comuns if pesos_pub[t] != pesos_ens[t]],
-        "exemplo": {t: {"publicado": pesos_pub[t], "ensaio": pesos_ens[t]} for t in comuns[:3]},
-        "quem_decide": "interpretação da política, não aritmética; ver a declaração do quarto degrau",
+        "pesos_diferentes_em": diferentes,
+        "papeis_conferidos": len(comuns),
     }
 
 
@@ -196,12 +197,14 @@ def main() -> int:
         print(f"  {linha['perfil']:<14} {marca}")
     print()
     divergencia = relatorio["divergencia_do_ultraconservador"]
-    print(f"  ultraconservador: {divergencia['situacao']}")
-    if divergencia.get("pesos_diferentes_em"):
-        total = divergencia["total_em_acoes"]
-        print(f"    total em ações: {total['publicado']:.4%} publicado, {total['ensaio']:.4%} no ensaio "
-              f"({'igual' if total['igual'] else 'DIFERENTE'})")
-        print(f"    distribuição entre papéis: diferente em {len(divergencia['pesos_diferentes_em'])} dos 12")
+    total = divergencia["total_em_acoes"]
+    print(f"  ultraconservador ({divergencia['metodo']}): as duas fontes {divergencia['situacao']}")
+    print(f"    total em ações: {total['publicado']:.4%} publicado, {total['ensaio']:.4%} no ensaio")
+    if divergencia["pesos_diferentes_em"]:
+        print(f"    ATENÇÃO: pesos diferentes em {len(divergencia['pesos_diferentes_em'])} "
+              f"de {divergencia['papeis_conferidos']} papéis")
+    else:
+        print(f"    pesos idênticos nos {divergencia['papeis_conferidos']} papéis")
     presentes = [p for p in relatorio["presos_a_2026"] if p["presente"]]
     resolvidas = [p for p in relatorio["presos_a_2026"] if not p["presente"]]
     print(f"\n  amarras a 2026: {len(resolvidas)} resolvida(s), {len(presentes)} de pé")

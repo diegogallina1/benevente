@@ -136,6 +136,42 @@ def book_for_profile(profile: str, inputs: dict) -> dict:
     }
 
 
+def escala_de(base: dict, degrau: str, origem: str) -> dict:
+    """O livro de um degrau derivado: a carteira da origem, inteira, em escala.
+
+    Escala tudo pelo mesmo fator, inclusive a perna global, e a diferença vai
+    para o caixa. Nenhum papel entra, sai ou troca de posição relativa: é a
+    mesma seleção, com menos dinheiro em cima dela. É isso que separa derivar de
+    decidir, e é o que a regra do degrau autoriza.
+    """
+    declarado_no_degrau = LADDER_V2[degrau]
+    fator = declarado_no_degrau["maximum_equity_weight"] / LADDER_V2[origem]["maximum_equity_weight"]
+    posicoes = [dict(p, weight=round(p["weight"] * fator, 6)) for p in base["positions"]]
+    domestico = round(sum(p["weight"] for p in posicoes), 6)
+    global_share = round(base["global_sleeve"] * fator, 6)
+    return {
+        "profile": degrau,
+        "declared": {"maximum_equity_weight": declarado_no_degrau["maximum_equity_weight"],
+                     "top_assets": declarado_no_degrau["top_assets"],
+                     "maximum_asset_weight": _issuer_cap(declarado_no_degrau["maximum_equity_weight"],
+                                                         declarado_no_degrau["top_assets"]),
+                     "global_share_of_portfolio": global_share},
+        "positions": posicoes,
+        "domestic_equity": domestico,
+        "global_sleeve": global_share,
+        "global_instrument": GLOBAL_TICKER,
+        "cash": round(1 - domestico - global_share, 6),
+        "issuers": len(posicoes),
+        "derivation": {
+            "derived_from": origem,
+            "factor": round(fator, 6),
+            "method": "escala da carteira inteira, sem nova triagem",
+            "decided_on": "2026-09-04",
+            "record": "data/decisao_metodo_do_ultraconservador_2026-09-04.json",
+        },
+    }
+
+
 def build(price_path, universe_path, mapping_path, cvm_cache, output) -> dict:
     destination = Path(output)
     inputs = _screen_inputs(price_path, universe_path, mapping_path, cvm_cache, destination)
@@ -145,7 +181,24 @@ def build(price_path, universe_path, mapping_path, cvm_cache, output) -> dict:
         sys.path.insert(0, str(ROOT / "tools"))
     from politica import REGISTRO
     registration = json.loads(REGISTRO.read_text(encoding="utf-8"))
-    books = {p: book_for_profile(p, inputs) for p in LADDER_V2}
+    # O ultraconservador é DERIVADO, não decidido, e a escolha do método é de
+    # 04/09/2026: ele escala a carteira do conservador em vez de refazer a
+    # triagem sob o próprio teto por ativo.
+    #
+    # Os dois caminhos davam a mesma fração em ações e distribuições diferentes
+    # entre os doze papéis, e o site publicava um enquanto o gerador produzia o
+    # outro. A regra do quarto degrau diz que ela "moveu o teto de ações, e só
+    # ele", e que o degrau herda a camada do conservador em vez de ganhar
+    # parâmetros próprios escolhidos depois de ver resultado. Recalcular a
+    # triagem sob um teto por ativo próprio é uma segunda decisão sobre pesos, e
+    # a declaração não autoriza uma. Escalar é o que ela descreve.
+    #
+    # A decisão está registrada em data/decisao_metodo_do_ultraconservador_2026-09-04.json.
+    derivados = {"ultraconservador": "conservador"}
+    books = {p: book_for_profile(p, inputs) for p in LADDER_V2 if p not in derivados}
+    for degrau, origem in derivados.items():
+        books[degrau] = escala_de(books[origem], degrau, origem)
+    books = {p: books[p] for p in LADDER_V2}
     # Reconstrução e decisão não são a mesma coisa, e a diferença é a data em
     # que isto rodou. Escrito à mão, o campo dizia "reconstrução" mesmo quando a
     # decisão fosse tomada no dia — que é exatamente o que 2027 exige para a

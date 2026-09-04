@@ -1,0 +1,19 @@
+{
+  "decision": "método de construção do degrau ultraconservador",
+  "decided_on": "2026-09-04",
+  "decided_by": "Diego Gallina",
+  "policy": "benevente_profile_ladder_v4",
+  "policy_registration_sha256": "4d8fb114c92188239d456370550b173cab8fadbdd5f5a2ab1cfc1bd8648400ba",
+  "question": "A regra do quarto degrau move o teto de renda variável. Ela não diz, em palavras, como os pesos por papel são obtidos, e duas leituras eram possíveis: escalar a carteira do conservador pelo fator entre os tetos, ou refazer a triagem sob o teto por ativo próprio do degrau. As duas davam a mesma fração em ações e distribuições diferentes entre os doze papéis, e o site publicava uma enquanto o gerador produzia a outra.",
+  "chosen": "escalar a carteira do conservador",
+  "factor": 0.114286,
+  "why": "A declaração do degrau diz que a regra moveu o teto de ações, e só ele, e que o degrau herda a camada de proteção do conservador em vez de ganhar parâmetros próprios escolhidos depois de ver resultado. Refazer a triagem sob um teto por ativo próprio é uma segunda decisão sobre pesos, e a declaração não autoriza uma. Escalar é o que ela descreve: mesma seleção, mesmo ordenamento, menos dinheiro em cima dela.",
+  "what_it_means": "O ultraconservador é derivado, não decidido. A seleção dele é a do conservador, congelada em 02/01/2026; o teto vem da regra do degrau, declarada em 30/08/2026. As duas datas são diferentes de propósito e continuam separadas no arquivo.",
+  "rejected": {
+    "method": "refazer a triagem sob o teto por ativo do degrau",
+    "why_not": "Produz pesos diferentes dos do conservador em todos os doze papéis, ou seja escolhe outra carteira, e nada na declaração autoriza essa escolha. Seria um parâmetro novo decidido depois de o ano estar em curso."
+  },
+  "what_changed_in_code": "build_profile_books_2026.py deixou de calcular o degrau pela triagem e passa a derivá-lo por escala, convergindo com tools/build_ultraconservador_book.py, que já publicava assim. Um teste exige que os dois continuem dando o mesmo resultado.",
+  "verified": "Depois da mudança, os pesos dos doze papéis e a perna global do livro gerado batem exatamente com os do arquivo publicado.",
+  "record_sha256": "a138972eef21fc0d973bbdf8da29713bac6e8ec4c290aa2fb2a45a7426505f1a"
+}

@@ -51,19 +51,39 @@ def test_a_decisao_de_janeiro_de_2026_ainda_reproduz(relatorio) -> None:
     assert not quebrados, quebrados
 
 
-def test_o_ultraconservador_continua_com_dois_metodos(relatorio) -> None:
-    """Enquanto a divergência existir, ela fica descrita em vez de esquecida.
+def test_o_ultraconservador_tem_um_metodo_so(relatorio) -> None:
+    """Decidido em 04/09/2026: escalar a carteira do conservador.
 
-    O site publica o degrau escalando os pesos do conservador; o gerador o
-    calcula sob o teto por ativo próprio. O total em ações é o mesmo, a
-    distribuição entre os papéis não. Qual dos dois governa é interpretação da
-    política, e o dia em que for decidido este teste muda junto.
+    Havia dois métodos e duas respostas. Ficou escalar, porque a declaração do
+    degrau diz que a regra moveu o teto de ações e só ele, e refazer a triagem
+    sob um teto por ativo próprio seria uma segunda decisão sobre pesos que ela
+    não autoriza. A razão está em data/decisao_metodo_do_ultraconservador_2026-09-04.json.
+
+    Este teste vigia a convergência: o gerador e o arquivo publicado têm de dar
+    exatamente os mesmos pesos. Se voltarem a discordar, alguém reintroduziu o
+    segundo método.
     """
     modulo, _, ensaiado = relatorio
-    divergencia = modulo.divergencia_do_ultraconservador(ensaiado)
-    assert divergencia["total_em_acoes"]["igual"], divergencia["total_em_acoes"]
-    assert divergencia["pesos_diferentes_em"], (
-        "os dois métodos convergiram: decida qual governa e atualize a descrição")
+    resultado = modulo.divergencia_do_ultraconservador(ensaiado)
+    assert resultado["total_em_acoes"]["igual"], resultado["total_em_acoes"]
+    assert not resultado["pesos_diferentes_em"], resultado["pesos_diferentes_em"]
+    assert resultado["papeis_conferidos"] == 12, resultado["papeis_conferidos"]
+
+
+def test_a_decisao_do_metodo_esta_registrada() -> None:
+    """A escolha é interpretação de política, então ela é declarada, não implícita."""
+    caminho = ROOT / "data" / "decisao_metodo_do_ultraconservador_2026-09-04.json"
+    registro = json.loads(caminho.read_text(encoding="utf-8"))
+    assert registro["chosen"] == "escalar a carteira do conservador"
+    assert registro["decided_by"], "decisão sem quem decidiu"
+    assert registro["rejected"]["why_not"], "o método recusado precisa dizer por quê"
+    assert len(registro["record_sha256"]) == 64
+    # O fator é o que a política implica, não um número escolhido à parte.
+    politica = json.loads(
+        (ROOT / "data" / "benevente_profile_ladder_v4_registration.json").read_text(encoding="utf-8"))
+    perfis = politica["profiles"]
+    esperado = perfis["ultraconservador"]["maximum_equity_weight"] / perfis["conservador"]["maximum_equity_weight"]
+    assert abs(registro["factor"] - esperado) < 1e-6
 
 
 def test_nenhuma_amarra_a_2026_voltou() -> None:
