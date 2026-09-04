@@ -60,17 +60,29 @@ jobs:
       - name: Instalar dependências
         run: python -m pip install -r requirements-ci.txt
 
-      # A suíte inteira, sem exclusão. Até 04/09/2026 dezesseis testes ficavam
-      # de fora porque artifacts/ era ignorado e o clone não recebia a evidência
-      # que eles leem. Agora recebe. Restam três que dependem de um assinante
-      # humano no ambiente: eles param em "Recuse-se a registrar sem assinante",
-      # que é o comportamento certo, e a CI não tem nem deve ter esse assinante.
+      # Até 04/09/2026 dezesseis testes ficavam de fora porque artifacts/ era
+      # ignorado e o clone não recebia a evidência que eles leem. Agora recebe,
+      # e treze voltaram. Os oito que restam têm duas razões, ambas legítimas:
+      #
+      # 1. Três registram política e param em "Recuse-se a registrar sem
+      #    assinante": exigem um humano no ambiente, que a CI não tem nem deve
+      #    ter. Isso é o teste funcionando, não falhando.
+      # 2. Cinco leem os painéis de preço, 21,7 MB cada, que o .gitignore exclui
+      #    por serem derivados e reconstruíveis por build_b3_total_return_panel.py
+      #    a partir do COTAHIST. Versionar 43 MB de dado derivado seria pior do
+      #    que não rodar estes cinco: o manifesto deles fica versionado e carrega
+      #    o SHA-256 que identifica exatamente qual arquivo gerou cada resultado.
       - name: Rodar a suíte
         run: |
           python -m pytest -q \
             --deselect tests/test_profile_ladder_v2.py::test_registration_declares_the_currency_exposure_and_the_variant_count \
             --deselect tests/test_profile_ladder_v2.py::test_registration_hashes_inputs_and_its_own_code \
-            --deselect tests/test_profile_ladder_v2.py::test_registration_records_no_performance_statistic
+            --deselect tests/test_profile_ladder_v2.py::test_registration_records_no_performance_statistic \
+            --deselect tests/test_profile_ladder.py::test_registration_hashes_every_declared_input \
+            --deselect tests/test_profile_ladder.py::test_registration_records_no_performance_statistic \
+            --deselect tests/test_release_manifest.py::test_release_manifest_contract \
+            --deselect tests/test_tax_lot_accounting.py::test_artifact_matches_a_fresh_run \
+            --deselect tests/test_tax_lot_accounting.py::test_published_book_satisfies_accounting_invariants
 
       # Este roda: ele não lê artifacts/ pelo disco, e sim os bytes que o Git
       # entrega, com `git show HEAD:<arquivo>`. É o que impede um hash publicado

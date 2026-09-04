@@ -249,7 +249,7 @@
     {
       "path": "artifacts/primary_reconciliation/summary.json",
       "bytes": 2007,
-      "sha256": "b4008245ff7b80af7f85766993dfed11fb754f846be628de850de41e6bede4e4"
+      "sha256": "aae2a53ba9e5989faf28b9bf41faa86e534478a6aeb01f587f2a7607bbda0bfa"
     },
     {
       "path": "artifacts/primary_reconciliation/strategy_holding_year_audit.csv",
@@ -447,6 +447,11 @@
         "file": "artifacts/risk_profiles_v1/arrojado_intrayear/summary.json",
         "was": "fd9d76d253333fa27ef61caca9450124457bd8b8880417222d6482a02419a8a4",
         "now": "2c3e98e5c1ff29262d6bdec98d9f413e4d9fbed2cba46b7e036503d70647e03a"
+      },
+      {
+        "file": "artifacts/primary_reconciliation/summary.json",
+        "was": "b4008245ff7b80af7f85766993dfed11fb754f846be628de850de41e6bede4e4",
+        "now": "aae2a53ba9e5989faf28b9bf41faa86e534478a6aeb01f587f2a7607bbda0bfa"
       }
     ],
     "note_on_second_pass": "O resumo da reconciliação primária foi regerado com fim de linha LF depois da primeira passada, então o hash dele entrou numa segunda correção no mesmo dia.",
