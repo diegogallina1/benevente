@@ -60,40 +60,17 @@ jobs:
       - name: Instalar dependências
         run: python -m pip install -r requirements-ci.txt
 
-      # Dezesseis testes não rodam num checkout limpo, e as três causas estão
-      # separadas abaixo. Nenhuma delas é falha do teste: são coisas que só
-      # existem na máquina de quem desenvolve. Quando a causa for resolvida, o
-      # bloco correspondente sai daqui.
-      #
-      # 1. Leem arquivos sob artifacts/ que o .gitignore exclui. Parte de
-      #    artifacts/ está versionada por ter entrado antes da regra; o resto
-      #    não existe no clone.
-      # 2. Registram política e param em "Recuse-se a registrar sem assinante":
-      #    exigem um assinante humano no ambiente, que a CI não tem nem deve ter.
-      # 3. Comparam SHA-256 de arquivos sob artifacts/ que o repositório entrega
-      #    com LF e cujo hash publicado foi calculado sobre bytes com CRLF. O
-      #    hash publicado está errado para quem clona: é defeito de verdade, e
-      #    corrigi-lo mexe em registro publicado, então fica anotado aqui em vez
-      #    de escondido atrás de um teste desligado sem explicação.
+      # A suíte inteira, sem exclusão. Até 04/09/2026 dezesseis testes ficavam
+      # de fora porque artifacts/ era ignorado e o clone não recebia a evidência
+      # que eles leem. Agora recebe. Restam três que dependem de um assinante
+      # humano no ambiente: eles param em "Recuse-se a registrar sem assinante",
+      # que é o comportamento certo, e a CI não tem nem deve ter esse assinante.
       - name: Rodar a suíte
         run: |
           python -m pytest -q \
-            --deselect tests/test_build_paper_release.py::test_paper_release_reconciles_canonical_metrics \
-            --deselect tests/test_build_paper_release.py::test_paper_release_writes_strict_json \
-            --deselect tests/test_primary_reconciliation_audit.py::test_strategy_scope_reconciliation_refuses_false_completion \
-            --deselect tests/test_release_manifest.py::test_release_manifest_contract \
-            --deselect tests/test_tax_lot_accounting.py::test_artifact_matches_a_fresh_run \
-            --deselect tests/test_tax_lot_accounting.py::test_published_book_satisfies_accounting_invariants \
-            --deselect tests/test_profile_ladder.py::test_registration_hashes_every_declared_input \
-            --deselect tests/test_profile_ladder.py::test_registration_records_no_performance_statistic \
-            --deselect tests/test_intake_and_paths.py::test_o_app_e_o_site_dizem_a_mesma_coisa \
-            --deselect tests/test_intake_and_paths.py::test_o_prototipo_publicado_nao_fica_para_tras_do_modulo \
-            --deselect tests/test_publication_contract.py::test_ieee_supplement_is_anonymous_and_self_manifested \
             --deselect tests/test_profile_ladder_v2.py::test_registration_declares_the_currency_exposure_and_the_variant_count \
             --deselect tests/test_profile_ladder_v2.py::test_registration_hashes_inputs_and_its_own_code \
-            --deselect tests/test_profile_ladder_v2.py::test_registration_records_no_performance_statistic \
-            --deselect tests/test_publication_contract.py::test_site_data_contract_matches_canonical_sources \
-            --deselect tests/test_strategy_decision_ledger.py::test_published_ledger_matches_the_builder
+            --deselect tests/test_profile_ladder_v2.py::test_registration_records_no_performance_statistic
 
       # Este roda: ele não lê artifacts/ pelo disco, e sim os bytes que o Git
       # entrega, com `git show HEAD:<arquivo>`. É o que impede um hash publicado
@@ -101,10 +78,10 @@ jobs:
       - name: Conferir que todo hash publicado bate com o que o clone recebe
         run: python tools/verify_published_hashes.py
 
-      # Os outros dois verificadores ficam de fora, e não por escolha: os dois leem
-      # caminhos sob artifacts/, que o clone não recebe inteiro, e morrem em
-      # FileNotFoundError antes de comparar qualquer coisa. Eles continuam
-      # sendo rodados à mão antes de publicar. Enquanto artifacts/ não for
-      # versionado ou reconstruível, é o máximo que a CI alcança — e isso está
-      # dito aqui em vez de dar a impressão de que ela confere mais do que
-      # confere.
+      # Os outros dois passam a rodar aqui: eles liam caminhos sob artifacts/ e
+      # morriam em FileNotFoundError enquanto a pasta era ignorada. Comparam o
+      # que está escrito no site e no aplicativo com o que os artefatos dizem.
+      - name: Conferir que os números publicados batem com os artefatos
+        run: |
+          python tools/verify_published_numbers.py
+          python tools/verify_app_matches_site.py

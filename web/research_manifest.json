@@ -139,17 +139,17 @@
     {
       "path": "artifacts/published_nested/annual_holdings.csv",
       "bytes": 20001,
-      "sha256": "91052211e7c4e7fd1cb0a34d5fee8e87ceb184722bc0afcdc1982c75d5d68222"
+      "sha256": "da6bcd2c073dc66cf298c0a9516211daed955ad8cb97d0cc3cda137223343fc9"
     },
     {
       "path": "artifacts/published_nested/annual_transitions.csv",
       "bytes": 14404,
-      "sha256": "b0a610aec7e4d590a1497c7bb193f42fbbf69778dd00f4b67f8805157008c176"
+      "sha256": "d2f10052ae39723989c53db7d75171bf210e8b1c152d06dab16277b3e50b0762"
     },
     {
       "path": "artifacts/published_nested/daily_curve.csv",
       "bytes": 478035,
-      "sha256": "4ebbac67f783e275385d392b61adf76eb745f8132b60a520a3c56290f29a7333"
+      "sha256": "14ad031da745d8a45312a0ae7bdb9d03276819001bd54e7f75368713436cb374"
     },
     {
       "path": "artifacts/published_nested/protocol.json",
@@ -159,7 +159,7 @@
     {
       "path": "artifacts/audit_evidence/audit_evidence.json",
       "bytes": 6079,
-      "sha256": "123b4dac353a26be36b72579378629af7127061443bb700a7cb63531d3ff2985"
+      "sha256": "bd67df5aa22fa105697e91979627965bb4bc5e631038ca16b260a8ef78de4ea0"
     },
     {
       "path": "artifacts/configuration_search_2012/summary.json",
@@ -169,12 +169,12 @@
     {
       "path": "artifacts/llm_contamination/summary.json",
       "bytes": 3096,
-      "sha256": "0ec0eef5d7a2cc2c74f482bca123a08c9df94b2d18e76c78882bdc2202ccc8c4"
+      "sha256": "063ebe882e315ebac18f66ed1b1772708ec43d03c2cb16c88952a6e9545fc052"
     },
     {
       "path": "artifacts/llm_contamination/constraint_audit.csv",
       "bytes": 779,
-      "sha256": "19a7d00e407543080378ec6683782b62f1f52266a0ed8c0671d5b3250609c0f2"
+      "sha256": "de913088523170857604c68285b505879dafbcf66bad2bd5e28fa39b9caf4c78"
     },
     {
       "path": "artifacts/benevente2_event_risk/summary.json",
@@ -264,27 +264,27 @@
     {
       "path": "artifacts/risk_system_validation_20260820/summary.json",
       "bytes": 22208,
-      "sha256": "3c4ba77e3c84e17490eed7acac0dbe57f78db6f9e1425d7a161f194fd29d0f50"
+      "sha256": "532f22b4bdb41468ad6e0a8b40af5470c2f38f61c241104fefce3c0557c05eac"
     },
     {
       "path": "artifacts/risk_system_validation_20260820/annual_profile_comparison.csv",
       "bytes": 7026,
-      "sha256": "e831a09de053dfc54fe3cd6068f00a91775d11c170345ef261cf1dc3252b8889"
+      "sha256": "03713cd34a36c3ebf45cb7daf34be955444a45d16a5983499c5e38d56ff2ea42"
     },
     {
       "path": "artifacts/risk_profiles_v1/conservador_intrayear/summary.json",
       "bytes": 2087,
-      "sha256": "4e400ab22610abc1114afe05fac15ea083418ebe17ac3537405a09b0c622fa48"
+      "sha256": "988917d462aa76328ebd18a672d2ab4778d17a632ad33fc482025ec3d41c116c"
     },
     {
       "path": "artifacts/risk_profiles_v1/equilibrado_intrayear/summary.json",
       "bytes": 2084,
-      "sha256": "601b4fc68c06ccd69e7fdec150bd51f5149651c15973a98cb6cc3a4c684b17e5"
+      "sha256": "90ae8b206473e181ad57a6c1f0f90de8d7caf9c3f485fb1caa3762cb90039d71"
     },
     {
       "path": "artifacts/risk_profiles_v1/arrojado_intrayear/summary.json",
       "bytes": 2080,
-      "sha256": "fd9d76d253333fa27ef61caca9450124457bd8b8880417222d6482a02419a8a4"
+      "sha256": "2c3e98e5c1ff29262d6bdec98d9f413e4d9fbed2cba46b7e036503d70647e03a"
     }
   ],
   "cvm_source_archives": [],
@@ -392,8 +392,64 @@
         "file": "artifacts/primary_reconciliation/summary.json",
         "was": "472ed8ac8e6bd9d1e3ec2821a66b61e1e80966c376493518b03ba7473c1a03ae",
         "now": "b4008245ff7b80af7f85766993dfed11fb754f846be628de850de41e6bede4e4"
+      },
+      {
+        "file": "artifacts/published_nested/annual_holdings.csv",
+        "was": "91052211e7c4e7fd1cb0a34d5fee8e87ceb184722bc0afcdc1982c75d5d68222",
+        "now": "da6bcd2c073dc66cf298c0a9516211daed955ad8cb97d0cc3cda137223343fc9"
+      },
+      {
+        "file": "artifacts/published_nested/annual_transitions.csv",
+        "was": "b0a610aec7e4d590a1497c7bb193f42fbbf69778dd00f4b67f8805157008c176",
+        "now": "d2f10052ae39723989c53db7d75171bf210e8b1c152d06dab16277b3e50b0762"
+      },
+      {
+        "file": "artifacts/published_nested/daily_curve.csv",
+        "was": "4ebbac67f783e275385d392b61adf76eb745f8132b60a520a3c56290f29a7333",
+        "now": "14ad031da745d8a45312a0ae7bdb9d03276819001bd54e7f75368713436cb374"
+      },
+      {
+        "file": "artifacts/audit_evidence/audit_evidence.json",
+        "was": "123b4dac353a26be36b72579378629af7127061443bb700a7cb63531d3ff2985",
+        "now": "bd67df5aa22fa105697e91979627965bb4bc5e631038ca16b260a8ef78de4ea0"
+      },
+      {
+        "file": "artifacts/llm_contamination/summary.json",
+        "was": "0ec0eef5d7a2cc2c74f482bca123a08c9df94b2d18e76c78882bdc2202ccc8c4",
+        "now": "063ebe882e315ebac18f66ed1b1772708ec43d03c2cb16c88952a6e9545fc052"
+      },
+      {
+        "file": "artifacts/llm_contamination/constraint_audit.csv",
+        "was": "19a7d00e407543080378ec6683782b62f1f52266a0ed8c0671d5b3250609c0f2",
+        "now": "de913088523170857604c68285b505879dafbcf66bad2bd5e28fa39b9caf4c78"
+      },
+      {
+        "file": "artifacts/risk_system_validation_20260820/summary.json",
+        "was": "3c4ba77e3c84e17490eed7acac0dbe57f78db6f9e1425d7a161f194fd29d0f50",
+        "now": "532f22b4bdb41468ad6e0a8b40af5470c2f38f61c241104fefce3c0557c05eac"
+      },
+      {
+        "file": "artifacts/risk_system_validation_20260820/annual_profile_comparison.csv",
+        "was": "e831a09de053dfc54fe3cd6068f00a91775d11c170345ef261cf1dc3252b8889",
+        "now": "03713cd34a36c3ebf45cb7daf34be955444a45d16a5983499c5e38d56ff2ea42"
+      },
+      {
+        "file": "artifacts/risk_profiles_v1/conservador_intrayear/summary.json",
+        "was": "4e400ab22610abc1114afe05fac15ea083418ebe17ac3537405a09b0c622fa48",
+        "now": "988917d462aa76328ebd18a672d2ab4778d17a632ad33fc482025ec3d41c116c"
+      },
+      {
+        "file": "artifacts/risk_profiles_v1/equilibrado_intrayear/summary.json",
+        "was": "601b4fc68c06ccd69e7fdec150bd51f5149651c15973a98cb6cc3a4c684b17e5",
+        "now": "90ae8b206473e181ad57a6c1f0f90de8d7caf9c3f485fb1caa3762cb90039d71"
+      },
+      {
+        "file": "artifacts/risk_profiles_v1/arrojado_intrayear/summary.json",
+        "was": "fd9d76d253333fa27ef61caca9450124457bd8b8880417222d6482a02419a8a4",
+        "now": "2c3e98e5c1ff29262d6bdec98d9f413e4d9fbed2cba46b7e036503d70647e03a"
       }
     ],
-    "note_on_second_pass": "O resumo da reconciliação primária foi regerado com fim de linha LF depois da primeira passada, então o hash dele entrou numa segunda correção no mesmo dia."
+    "note_on_second_pass": "O resumo da reconciliação primária foi regerado com fim de linha LF depois da primeira passada, então o hash dele entrou numa segunda correção no mesmo dia.",
+    "note_on_third_pass": "Onze hashes só puderam ser conferidos depois que artifacts/ entrou no controle de versão: antes o arquivo não existia para quem clonava, e o verificador não tinha contra o que comparar. Todos os onze estavam calculados sobre bytes com CRLF, mesma causa dos demais."
   }
 }
