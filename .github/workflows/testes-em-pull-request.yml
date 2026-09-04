@@ -28,6 +28,10 @@ concurrency:
 
 jobs:
   suite:
+    # O nome aparece como o check do pull request e é o texto que a proteção de
+    # branch exige. Sem ele o check se chamaria "suite", que não diz nada a
+    # quem abre o PR e nada a quem lê a regra de proteção meses depois.
+    name: Suite de testes
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
