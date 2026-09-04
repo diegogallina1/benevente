@@ -309,6 +309,81 @@ def test_todo_hash_publicado_confere_com_o_que_o_clone_recebe() -> None:
     assert resultado.returncode == 0, resultado.stdout + resultado.stderr
 
 
+def _verificador():
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "verify_published_hashes", ROOT / "tools" / "verify_published_hashes.py")
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    return modulo
+
+
+def test_editar_arquivo_declarado_pela_politica_reprova(monkeypatch) -> None:
+    """O guarda precisa morder, senão é decoração.
+
+    Dois arquivos foram editados depois de registrados na política e ninguém
+    notou por semanas, porque os testes conferiam que o hash declarado tem 64
+    caracteres, nunca que ele corresponde ao arquivo. Aqui se simula a edição de
+    um arquivo declarado e se exige que o verificador reclame.
+    """
+    modulo = _verificador()
+    assert not modulo.confere_politica_vigente(), "a política deveria estar em ordem antes do teste"
+
+    original = modulo.blob
+    alvo = "profile_ladder_v3.py"  # o único cujo hash declarado confere hoje
+
+    def blob_adulterado(caminho: str):
+        conteudo = original(caminho)
+        if caminho == alvo and conteudo is not None:
+            return conteudo + b"\n# edicao que ninguem assumiu\n"
+        return conteudo
+
+    monkeypatch.setattr(modulo, "blob", blob_adulterado)
+    problemas = modulo.confere_politica_vigente()
+    assert any(alvo in p and "não está assumida" in p for p in problemas), problemas
+
+
+def test_mudar_de_novo_um_arquivo_ja_assumido_reprova(monkeypatch) -> None:
+    """Assumir uma divergência uma vez não dá licença para as próximas."""
+    modulo = _verificador()
+    original = modulo.blob
+    alvo = "portfolio_risk.py"  # divergência já assumida na correção
+
+    def blob_adulterado(caminho: str):
+        conteudo = original(caminho)
+        if caminho == alvo and conteudo is not None:
+            return conteudo + b"\n# segunda edicao\n"
+        return conteudo
+
+    monkeypatch.setattr(modulo, "blob", blob_adulterado)
+    problemas = modulo.confere_politica_vigente()
+    assert any(alvo in p and "mudou de novo" in p for p in problemas), problemas
+
+
+def test_a_tabela_de_politica_do_app_concorda_com_o_artefato() -> None:
+    """A reserva escrita à mão não pode discordar da política que ela substitui.
+
+    web/app.js decide os pesos da prévia com o teto de renda variável e o teto
+    por ativo. Escritos à mão, eles diziam 10%, 17,6% e 15% enquanto a política
+    declara 4,67%, 11% e 24%. Os valores passaram a vir de ladder_v2.json; a
+    tabela ficou como reserva para o caso de o artefato não carregar, e aqui se
+    exige que as duas fontes digam a mesma coisa.
+    """
+    fonte = (WEB / "app.js").read_text(encoding="utf-8")
+    ladder = json.loads((WEB / "ladder_v2.json").read_text(encoding="utf-8"))
+    # A tabela usa o nome antigo do perfil do meio; o artefato usa o atual.
+    equivalencia = {"conservador": "conservador", "moderado": "equilibrado", "arrojado": "arrojado"}
+    achados = {nome: (equity, issuer) for nome, equity, issuer in
+               re.findall(r"(\w+):\s*\{\s*equity:\s*([0-9.]+),\s*issuer:\s*([0-9.]+)", fonte)}
+    assert set(achados) == set(equivalencia), f"a tabela do app mudou de forma: {sorted(achados)}"
+    for chave, (equity, issuer) in achados.items():
+        declarado = ladder["profiles"][equivalencia[chave]]["declared"]
+        assert float(equity) == pytest.approx(declarado["maximum_equity_weight"] * 100, abs=0.01), chave
+        assert float(issuer) == pytest.approx(declarado["maximum_asset_weight"] * 100, abs=0.01), chave
+    # E os tetos têm de sair do artefato, não da tabela.
+    assert "ladderEvidence?.profiles?.[activeProfileKey()]?.declared" in fonte
+
+
 # --- nada de segredo no que é publicado ------------------------------------
 
 def test_o_diretorio_publicado_nao_carrega_credencial() -> None:

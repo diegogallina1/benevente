@@ -149,12 +149,62 @@ def confere_congelados() -> list[str]:
     return problemas
 
 
+def confere_politica_vigente() -> list[str]:
+    """Todo arquivo que a política vigente declara: ou o hash bate, ou a divergência está assumida.
+
+    Este é o buraco por onde a deriva passou. Os testes existentes conferiam
+    que cada hash declarado tem 64 caracteres e que certa chave existe, nunca
+    que o valor corresponde ao arquivo. Dois arquivos foram editados depois de
+    registrados e ninguém notou por semanas.
+
+    Aqui, um arquivo declarado só pode divergir se a divergência estiver escrita
+    em data/correcao_hashes_2026_09_04.json com o valor de hoje. Editar de novo
+    um arquivo declarado passa a reprovar, e a saída é assumir a nova
+    divergência ou registrar uma política nova. Ficar calado deixa de ser uma
+    das opções.
+    """
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location("politica", ROOT / "tools" / "politica.py")
+    politica = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(politica)
+    registro = json.loads(politica.REGISTRO.read_text(encoding="utf-8"))
+
+    correcao = json.loads((ROOT / CONGELADOS).read_text(encoding="utf-8"))
+    assumidas = {
+        item["file"]: item["true_sha256"]
+        for item in correcao["divergences"]
+        if item["registration"] == f"data/{politica.REGISTRO.name}" and item["file"]
+    }
+
+    problemas = []
+    for arquivo, declarado in registro.get("code", {}).items():
+        conteudo = blob(arquivo)
+        if conteudo is None:
+            problemas.append(f"{politica.REGISTRO.name}: declara {arquivo}, que não está versionado")
+            continue
+        atual = _sha(conteudo)
+        if atual == declarado:
+            continue
+        if arquivo not in assumidas:
+            problemas.append(
+                f"{politica.REGISTRO.name}: {arquivo} não confere com o hash declarado e a "
+                f"divergência não está assumida em {CONGELADOS}")
+        elif assumidas[arquivo] != atual:
+            problemas.append(
+                f"{politica.REGISTRO.name}: {arquivo} mudou de novo depois da correção "
+                f"(assumido {assumidas[arquivo][:12]}, hoje {atual[:12]}). Assuma a nova "
+                "divergência ou registre uma política nova.")
+    return problemas
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--listar", action="store_true", help="Mostra o que foi conferido, não só o que falhou.")
     args = parser.parse_args()
 
-    problemas = confere_vivos() + confere_superados() + confere_congelados()
+    problemas = (confere_vivos() + confere_superados() + confere_congelados()
+                 + confere_politica_vigente())
     if args.listar:
         for registro in VIVOS:
             documento = json.loads((ROOT / registro).read_text(encoding="utf-8"))

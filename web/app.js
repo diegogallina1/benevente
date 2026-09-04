@@ -1,7 +1,7 @@
 const profiles = {
-  conservador: { equity: 35, issuer: 10, review: "anual", mix: [["Ações", 35], ["CDI / defensivo", 65]], insight: "Exposição menor a ações, com cinco emissores e o restante em CDI. O limite do perfil é aplicado antes da otimização." },
-  moderado: { equity: 55, issuer: 17.6, review: "anual", mix: [["Ações", 55], ["CDI / defensivo", 45]], insight: "Até 55% em ações entre cinco emissores. A configuração do ano é escolhida por Sharpe sobre os anos já encerrados, nunca sobre o ano avaliado." },
-  arrojado: { equity: 75, issuer: 15, review: "anual", mix: [["Ações", 75], ["CDI / defensivo", 25]], insight: "Até 75% em ações entre cinco emissores. Com o teto por emissor em 15%, os cinco ficam no limite e a cesta vira peso igual, o que reduz a inclinação para as maiores convicções." }
+  conservador: { equity: 35, issuer: 4.667, review: "anual", mix: [["Ações", 35], ["CDI / defensivo", 65]], insight: "Exposição menor a ações, com doze emissores e o restante em CDI. O limite do perfil é aplicado antes da otimização." },
+  moderado: { equity: 55, issuer: 11, review: "anual", mix: [["Ações", 55], ["CDI / defensivo", 45]], insight: "Até 55% em ações entre oito emissores. A configuração do ano é escolhida por Sharpe sobre os anos já encerrados, nunca sobre o ano avaliado." },
+  arrojado: { equity: 75, issuer: 24, review: "anual", mix: [["Ações", 75], ["CDI / defensivo", 25]], insight: "Até 75% em ações entre cinco emissores. Com o teto por ativo em 24%, os cinco ficam no limite e a cesta vira peso igual, o que reduz a inclinação para as maiores convicções." }
 };
 
 let researchData = null;
@@ -214,10 +214,19 @@ function activeProfileLabel() {
 
 function activePolicy() {
   const policy = profiles[currentProfile];
+  // Os tetos vêm do artefato da política, não da tabela acima. Escritos à mão,
+  // eles discordavam do registro: o teto por ativo aparecia como 10%, 17,6% e
+  // 15% enquanto a política declara 4,67%, 11% e 24%. Número repetido em dois
+  // lugares é a forma mais barata de publicar dois números diferentes, e aqui
+  // ele decide os pesos que a prévia mostra. A tabela fica como reserva para o
+  // caso de o artefato não carregar, e um teste exige que as duas concordem.
+  const declarado = ladderEvidence?.profiles?.[activeProfileKey()]?.declared;
+  const equity = declarado ? Number(declarado.maximum_equity_weight) * 100 : Number(policy.equity);
+  const issuer = declarado ? Number(declarado.maximum_asset_weight) * 100 : Number(policy.issuer);
   return {
     ...policy,
-    equity: Math.max(0, Math.min(100, Number(policy.equity) || 0)),
-    issuer: Math.max(1, Math.min(100, Number(policy.issuer) || 1)),
+    equity: Math.max(0, Math.min(100, equity || 0)),
+    issuer: Math.max(1, Math.min(100, issuer || 1)),
   };
 }
 
