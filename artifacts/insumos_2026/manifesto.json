@@ -1,6 +1,6 @@
 {
   "decision_date": "2026-01-02",
-  "captured_at": "2026-09-04T14:38:01.930574-03:00",
+  "captured_at": "2026-09-04T14:47:41.222524-03:00",
   "why": "Os quatro insumos da decisão de janeiro, guardados inteiros e com hash, para que a carteira do ano continue reproduzível a partir dos mesmos bytes. Dois deles mudam sozinhos com o tempo, e é por isso que a cópia existe: anotar o hash de um arquivo que muda não reproduz nada.",
   "point_in_time": "A triagem descarta formulário recebido depois da data da decisão, então a disciplina está na lógica. A captura garante que os bytes que a lógica leu continuem os mesmos.",
   "files": [
@@ -45,5 +45,5 @@
       "muda_sozinho": true
     }
   ],
-  "manifest_sha256": "f3bff4f280b895f7b80da67db68bb7f40d976047cb13a1c15708edff70c6b4b9"
+  "manifest_sha256": "69b3699a491ba26e214f52b4d6e1ee88341d5d41977110bea1c2df31d66c357b"
 }

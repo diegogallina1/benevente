@@ -74,12 +74,27 @@ def test_a_captura_recusa_data_que_nao_bate_com_o_retrato(tmp_path) -> None:
     não é, e isso é pior do que não capturar.
     """
     modulo = _modulo()
-    universo = ROOT / modulo.INSUMOS["universe"]["arquivo"]
-    if not universo.exists():
-        pytest.skip("o retrato do universo não está neste clone")
+    # Todos os insumos precisam existir para esta recusa ser a que dispara: com
+    # algum faltando, a que vem antes é a de insumo ausente. O painel de preços
+    # não é versionado, então num clone limpo este teste é pulado.
+    faltando = [item["arquivo"] for item in modulo.INSUMOS.values()
+                if not (ROOT / item["arquivo"]).exists()]
+    if faltando:
+        pytest.skip(f"insumo fora do clone: {faltando}")
     with pytest.raises(SystemExit) as erro:
         modulo.capturar("2099-01-04", tmp_path / "insumos")
     assert "retrato do universo" in str(erro.value)
+
+
+def test_a_captura_recusa_insumo_ausente(tmp_path, monkeypatch) -> None:
+    """Publicar carteira a partir de insumo faltando é o pior modo de falha."""
+    modulo = _modulo()
+    inventado = dict(modulo.INSUMOS)
+    inventado["prices"] = dict(inventado["prices"], arquivo="data/arquivo_que_nao_existe.csv")
+    monkeypatch.setattr(modulo, "INSUMOS", inventado)
+    with pytest.raises(SystemExit) as erro:
+        modulo.capturar("2026-01-02", tmp_path / "insumos")
+    assert "insumo ausente" in str(erro.value)
 
 
 def test_o_manifesto_descreve_cada_insumo_e_quem_o_produz() -> None:

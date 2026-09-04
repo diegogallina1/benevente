@@ -25,6 +25,13 @@
 *.dotx  binary
 *.potx  binary
 
+# A captura dos insumos de uma decisão é prova congelada: os bytes dela foram
+# hasheados no dia e o hash está no manifesto. O Git não pode reescrever nada lá
+# dentro, nem fim de linha, senão o que o clone entrega deixa de bater com o que
+# foi capturado — e a prova vira só um arquivo parecido. Marcada como binária
+# por isso, e não porque o conteúdo seja binário.
+artifacts/insumos_*/** binary
+
 # Os arquivos servidos de web/ tem o hash do proprio conteudo escrito no HTML
 # que os carrega (tools/stamp_assets.py, para invalidar cache). O hash e
 # calculado sobre os bytes do arquivo, entao ele depende do fim de linha.
