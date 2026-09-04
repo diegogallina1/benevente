@@ -177,6 +177,26 @@ def test_o_site_nao_precisa_de_passo_de_build() -> None:
             f"web/{nome} faz a Vercel rodar um build neste site estático e a publicação falha")
 
 
+def test_nenhum_arquivo_publicado_tem_fim_de_linha_do_windows() -> None:
+    """A cópia de trabalho precisa ser byte a byte o que o repositório entrega.
+
+    O .gitattributes guarda web/ com LF. Um gerador que escreva com o padrão do
+    Windows deixa CRLF na cópia local: os bytes passam a diferir dos que
+    qualquer clone recebe, o hash de cache carimbado no HTML é calculado sobre
+    os bytes errados, e o teste de carimbo passa aqui e quebra na CI. Já
+    aconteceu três vezes, por três geradores diferentes. Este teste falha na
+    primeira, e a correção é sempre a mesma: newline="\\n" em quem escreve.
+    """
+    culpados = []
+    for arquivo in sorted(WEB.rglob("*")):
+        if arquivo.is_file() and arquivo.suffix in {".js", ".css", ".html", ".json", ".txt", ".xml"}:
+            if b"\r\n" in arquivo.read_bytes():
+                culpados.append(str(arquivo.relative_to(WEB)))
+    assert not culpados, (
+        f"CRLF em arquivo publicado: {culpados}. Quem escreveu precisa passar "
+        'newline="\\n"; converta o arquivo antes de recarimbar.')
+
+
 def test_toda_fonte_declarada_existe_no_diretorio_publicado() -> None:
     """url() apontando para arquivo ausente cai calado na fonte do sistema.
 

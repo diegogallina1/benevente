@@ -1806,7 +1806,7 @@ def main() -> None:
                   .replace("__FONTES__", "\n".join((FONTES_LINK, ANALITICA_LINK)))
                   .replace("__TOKENS__", tokens_css(com_cabecalho=False)))
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(pagina, encoding="utf-8")
+    OUT.write_text(pagina, encoding="utf-8", newline="\n")
 
     # --- versão do site: mesmo conteúdo, script fora do documento ---
     marcacao, script = _partes(pagina)
@@ -1830,12 +1830,12 @@ def main() -> None:
         CABECALHO_SITE + '<link rel="stylesheet" href="./tokens.css">\n'
         + corpo[:corte] + "\n</head>\n<body>\n" + corpo[corte:]
         + '\n<script src="./plano.js"></script>\n</body>\n</html>\n',
-        encoding="utf-8")
+        encoding="utf-8", newline="\n")
     SITE_JS.write_text(
         "// Gerado por tools/build_mapa_prototype.py. Não edite à mão.\n"
         "// Separado do documento porque a CSP do site é script-src 'self'.\n"
         + (_TRAVA_JS.replace("__SHA__", SENHA_SHA256) if TRAVA_LIGADA else "")
-        + script, encoding="utf-8")
+        + script, encoding="utf-8", newline="\n")
 
     print(f"{OUT.relative_to(ROOT)}: {OUT.stat().st_size / 1024:.1f} KB · "
           f"{len(magro['profiles'])} perfis, "
@@ -1853,7 +1853,7 @@ def main() -> None:
     if ausentes:
         raise SystemExit(f"referência para arquivo inexistente: {ausentes}")
     if trocas:
-        SITE_HTML.write_text(carimbado, encoding="utf-8")
+        SITE_HTML.write_text(carimbado, encoding="utf-8", newline="\n")
 
     print(f"{SITE_HTML.relative_to(ROOT)} + {SITE_JS.relative_to(ROOT)}: "
           f"{(SITE_HTML.stat().st_size + SITE_JS.stat().st_size) / 1024:.1f} KB")

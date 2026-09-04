@@ -65,7 +65,10 @@ def main() -> int:
         if changes:
             stale.append(f"{page.name}: {changes} referência(s)")
             if not args.check:
-                page.write_text(updated, encoding="utf-8")
+                # newline explícito: no Windows o padrão grava CRLF, o
+                # .gitattributes entrega LF, e o hash carimbado deixa de
+                # bater com o arquivo que qualquer clone recebe.
+                page.write_text(updated, encoding="utf-8", newline="\n")
 
     for item in missing:
         print(f"AUSENTE  {item}", file=sys.stderr)
