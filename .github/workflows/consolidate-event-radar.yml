@@ -86,9 +86,25 @@ jobs:
           git commit -m "Atualiza radar consolidado de eventos [skip ci]"
           # Rebase antes de empurrar: se o main andou desde o checkout, o push
           # direto é recusado com non-fast-forward e a consolidação se perde.
-          # Aconteceu ao disparar duas execuções com treze segundos de
-          # diferença. Um conflito aqui não pode ser resolvido sozinho, porque
-          # os dois lados são o mesmo arquivo gerado: nesse caso o passo falha,
-          # que é o certo, e a execução seguinte reconstrói do zero.
-          git pull --rebase origin main
+          # Resolve o caso comum, que é outro workflow ter publicado outro
+          # arquivo no intervalo.
+          #
+          # Quando as duas execuções são do próprio radar, o rebase encontra
+          # conflito, porque os dois lados são o mesmo arquivo gerado. Escolher
+          # um dos lados seria inventar; refazer não é. O coletor acumula sobre
+          # o documento anterior, então basta jogá-lo fora, pegar o que já foi
+          # publicado e consolidar de novo em cima: o resultado contém os
+          # eventos das duas execuções, que é o que se queria desde o começo.
+          if ! git pull --rebase origin main; then
+            echo "Conflito no arquivo gerado; refazendo a consolidação sobre o que já está publicado."
+            git rebase --abort
+            git reset --hard origin/main
+            python tools/update_event_radar.py
+            git add web/event_radar.json
+            if git diff --cached --quiet; then
+              echo "Depois de refazer, nada de novo a publicar."
+              exit 0
+            fi
+            git commit -m "Atualiza radar consolidado de eventos [skip ci]"
+          fi
           git push
