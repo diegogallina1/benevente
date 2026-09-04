@@ -621,7 +621,13 @@ def main() -> None:
     for tk, n in sorted(conta.items(), key=lambda x: -x[1]):
         print(f"  {tk:<18}{n:>5}")
     if not args.dry_run:
-        SAIDA.write_text(css, encoding="utf-8")
+        # newline="\n" explícito: no Windows o padrão traduz para CRLF, e o
+        # .gitattributes guarda web/*.css como LF. O arquivo na cópia de
+        # trabalho ficava com bytes diferentes dos que o repositório entrega,
+        # tools/stamp_assets.py carimbava o hash do CRLF, e o carimbo não batia
+        # em nenhum clone limpo. É o defeito que o próprio .gitattributes
+        # descreve, voltando por outra porta: a de quem escreve o arquivo.
+        SAIDA.write_text(css, encoding="utf-8", newline="\n")
 
 
 if __name__ == "__main__":

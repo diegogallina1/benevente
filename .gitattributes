@@ -6,7 +6,17 @@
 # os bytes mudam, e o hash carimbado deixa de bater com o arquivo — o teste
 # de carimbo quebra num clone limpo enquanto passa na CI, que roda em Linux.
 # Isso ja aconteceu uma vez, e o sintoma nao aponta para a causa.
+# Os padrões abaixo usam ** porque web/*.js não alcança web/api/_guard.js: a
+# regra antiga cobria só o primeiro nível, e os arquivos das funções ficaram
+# guardados com CRLF enquanto os da raiz iam com LF.
+web/**/*.js   text eol=lf
+web/**/*.css  text eol=lf
+web/**/*.html text eol=lf
+web/**/*.json text eol=lf
 web/*.js   text eol=lf
 web/*.css  text eol=lf
 web/*.html text eol=lf
 web/*.json text eol=lf
+
+# Fontes hospedadas: binário, para o Git não tentar converter nada dentro.
+web/fonts/*.woff2 binary
