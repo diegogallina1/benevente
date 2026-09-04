@@ -13,6 +13,13 @@ web/**/*.js   text eol=lf
 web/**/*.css  text eol=lf
 web/**/*.html text eol=lf
 web/**/*.json text eol=lf
+# robots.txt e sitemap.xml estavam guardados com CRLF por terem sido
+# adicionados antes de qualquer regra: um clone limpo os recebia diferentes da
+# cópia daqui, que é justamente o que o teste de fim de linha proíbe.
+web/**/*.txt  text eol=lf
+web/**/*.xml  text eol=lf
+web/*.txt     text eol=lf
+web/*.xml     text eol=lf
 web/*.js   text eol=lf
 web/*.css  text eol=lf
 web/*.html text eol=lf
