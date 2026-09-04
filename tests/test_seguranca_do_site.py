@@ -128,6 +128,28 @@ def test_a_csp_permite_exatamente_as_origens_externas_que_as_paginas_usam() -> N
     assert permitidas <= usadas, f"a CSP permite origem que nenhuma página usa: {sorted(permitidas - usadas)}"
 
 
+def test_folha_de_estilo_injetada_e_bloqueada() -> None:
+    """<style> injetado não executa; atributo style= ainda sim, e por um motivo.
+
+    O ataque de injeção de CSS que interessa aqui usa um bloco <style> com
+    seletores de atributo para vazar conteúdo da página. `style-src-elem 'self'`
+    fecha essa porta sem tocar em nada que exista hoje.
+
+    O 'unsafe-inline' que resta vale só para atributo, e existe porque onze
+    trechos de JavaScript montam gráfico com valor calculado na hora: posição de
+    marcador, largura de barra, cor de série. Nenhum deles vira classe, porque o
+    valor só existe em tempo de execução. Nenhum HTML publicado tem style=.
+    """
+    csp = _csp()
+    assert csp.get("style-src-elem") == "'self'", csp.get("style-src-elem")
+    assert "'unsafe-inline'" not in csp.get("style-src-elem", "")
+    # E o HTML publicado não pode trazer estilo em atributo nem bloco <style>.
+    for pagina in sorted(WEB.glob("*.html")):
+        texto = pagina.read_text(encoding="utf-8")
+        assert 'style="' not in texto, f"{pagina.name} voltou a ter estilo em atributo"
+        assert "<style" not in texto, f"{pagina.name} voltou a ter bloco <style>"
+
+
 def test_a_csp_nao_admite_nenhuma_origem_externa() -> None:
     """Desde que as fontes são hospedadas aqui, não há terceiro a permitir."""
     csp = _csp()

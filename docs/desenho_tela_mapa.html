@@ -202,6 +202,12 @@ details > summary b { color: var(--fg); font-weight: 400; }
            text-transform: uppercase; color: var(--fg-2); }
 .legenda i { display: inline-block; width: 8px; height: 8px; border-radius: 2px;
              margin-right: 8px; vertical-align: 0; }
+/* A cor de cada quadradinho da legenda sai daqui, e não de um atributo style
+   na marcação: com estilo em atributo a CSP precisaria de style-src
+   'unsafe-inline', o que valeria para a página inteira. */
+.legenda .em-acoes { background: var(--acao); }
+.legenda .em-caixa { background: var(--line-strong); }
+.legenda .fora     { background: var(--neg); }
 
 /* --- perguntas --- */
 .q { padding: 24px 0; border-top: 1px solid var(--line); }
@@ -485,9 +491,9 @@ footer a { color: var(--acao); }
     <div class="barra-linha"><span>hoje</span><div id="bar-hoje"></div></div>
     <div class="barra-linha"><span>seu perfil</span><div id="bar-alvo"></div></div>
     <div class="legenda">
-      <span><i style="background:var(--acao)"></i>ações</span>
-      <span><i style="background:var(--line-strong)"></i>renda fixa e caixa</span>
-      <span><i style="background:var(--neg)"></i>fora da estratégia</span>
+      <span><i class="em-acoes"></i>ações</span>
+      <span><i class="em-caixa"></i>renda fixa e caixa</span>
+      <span><i class="fora"></i>fora da estratégia</span>
     </div>
   </div>
   <div class="aviso" id="fgc"></div>

@@ -291,6 +291,12 @@ details > summary b { color: var(--fg); font-weight: 400; }
            text-transform: uppercase; color: var(--fg-2); }
 .legenda i { display: inline-block; width: 8px; height: 8px; border-radius: 2px;
              margin-right: 8px; vertical-align: 0; }
+/* A cor de cada quadradinho da legenda sai daqui, e não de um atributo style
+   na marcação: com estilo em atributo a CSP precisaria de style-src
+   'unsafe-inline', o que valeria para a página inteira. */
+.legenda .em-acoes { background: var(--acao); }
+.legenda .em-caixa { background: var(--line-strong); }
+.legenda .fora     { background: var(--neg); }
 
 /* --- perguntas --- */
 .q { padding: 24px 0; border-top: 1px solid var(--line); }
@@ -574,9 +580,9 @@ footer a { color: var(--acao); }
     <div class="barra-linha"><span>hoje</span><div id="bar-hoje"></div></div>
     <div class="barra-linha"><span>seu perfil</span><div id="bar-alvo"></div></div>
     <div class="legenda">
-      <span><i style="background:var(--acao)"></i>ações</span>
-      <span><i style="background:var(--line-strong)"></i>renda fixa e caixa</span>
-      <span><i style="background:var(--neg)"></i>fora da estratégia</span>
+      <span><i class="em-acoes"></i>ações</span>
+      <span><i class="em-caixa"></i>renda fixa e caixa</span>
+      <span><i class="fora"></i>fora da estratégia</span>
     </div>
   </div>
   <div class="aviso" id="fgc"></div>
@@ -1656,6 +1662,7 @@ function razao(perfil, chave, rolar) {
 #: continua num documento só. Mesma fonte, dois empacotamentos.
 SITE_HTML = ROOT / "web" / "app.html"
 SITE_JS = ROOT / "web" / "plano.js"
+SITE_CSS = ROOT / "web" / "plano.css"
 
 #: Trava de conveniência, não de segurança. O conteúdo é sintético e a
 #: comparação roda no navegador, qualquer pessoa que abra o código passa. Serve
@@ -1825,10 +1832,22 @@ def main() -> None:
     # quebrado e ainda convida alguém a digitar uma senha num campo inerte.
     corpo = (marcacao.replace('<div class="wrap">', TRAVA + '<div class="wrap hidden" id="app">', 1)
              if TRAVA_LIGADA else marcacao)
+    # A folha do app sai do documento pelo mesmo motivo que o script saiu: para
+    # a CSP do site poder fechar em 'self'. Enquanto os 20 KB de CSS ficavam
+    # dentro de <style>, style-src precisava de 'unsafe-inline', e isso vale
+    # para a página inteira, não só para este bloco. A versão de docs/ continua
+    # sendo um arquivo só, porque ela não é servida sob a CSP.
+    abre = corpo.index("<style>")
     corte = corpo.index("</style>") + len("</style>")
+    SITE_CSS.write_text(
+        "/* Gerado por tools/build_mapa_prototype.py. Não edite à mão.\n"
+        " * Separado do documento porque a CSP do site é style-src 'self'. */\n"
+        + corpo[abre + len("<style>"):corte - len("</style>")],
+        encoding="utf-8", newline="\n")
     SITE_HTML.write_text(
         CABECALHO_SITE + '<link rel="stylesheet" href="./tokens.css">\n'
-        + corpo[:corte] + "\n</head>\n<body>\n" + corpo[corte:]
+        + corpo[:abre] + '<link rel="stylesheet" href="./plano.css">'
+        + "\n</head>\n<body>\n" + corpo[corte:]
         + '\n<script src="./plano.js"></script>\n</body>\n</html>\n',
         encoding="utf-8", newline="\n")
     SITE_JS.write_text(
