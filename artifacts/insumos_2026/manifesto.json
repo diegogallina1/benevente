@@ -1,0 +1,49 @@
+{
+  "decision_date": "2026-01-02",
+  "captured_at": "2026-09-04T14:38:01.930574-03:00",
+  "why": "Os quatro insumos da decisão de janeiro, guardados inteiros e com hash, para que a carteira do ano continue reproduzível a partir dos mesmos bytes. Dois deles mudam sozinhos com o tempo, e é por isso que a cópia existe: anotar o hash de um arquivo que muda não reproduz nada.",
+  "point_in_time": "A triagem descarta formulário recebido depois da data da decisão, então a disciplina está na lógica. A captura garante que os bytes que a lógica leu continuem os mesmos.",
+  "files": [
+    {
+      "papel": "prices",
+      "arquivo": "prices_b3_cotahist_2011_2026.csv",
+      "origem": "data/prices_b3_cotahist_2011_2026.csv",
+      "sha256": "1fed9c4028f338089b569a759576cdfab2ff2ee6e24ab717b72732e1f1b6b0be",
+      "bytes": 3284850,
+      "descricao": "painel de preços diários, do COTAHIST",
+      "produzido_por": "build_b3_total_return_panel.py, a partir do COTAHIST em cache",
+      "muda_sozinho": true
+    },
+    {
+      "papel": "universe",
+      "arquivo": "b3_universe_january_2026.csv",
+      "origem": "artifacts/b3_universe_january_2026.csv",
+      "sha256": "876ad0d6c1979bd64247f484c0cb406cca09334e461e99a88dd96863962cb600",
+      "bytes": 300637,
+      "descricao": "retrato do universo B3 na data da decisão, com liquidez",
+      "produzido_por": "build_b3_universe_snapshot.py",
+      "muda_sozinho": false
+    },
+    {
+      "papel": "mapping",
+      "arquivo": "b3_historical_cvm_ticker_map_2012_2025.csv",
+      "origem": "data/b3_historical_cvm_ticker_map_2012_2025.csv",
+      "sha256": "6340669c8720964a700d61555abe74ef9727c0812a5c95986866ea0954b99e6b",
+      "bytes": 1225337,
+      "descricao": "ponte B3/CVM auditada, com isin, que liga papel a emissor",
+      "produzido_por": "build_b3_cvm_mapping.py",
+      "muda_sozinho": false
+    },
+    {
+      "papel": "fundamentals",
+      "arquivo": "fundamentals_b3_cvm_full_2013_2025_v2.csv",
+      "origem": "data/fundamentals_b3_cvm_full_2013_2025_v2.csv",
+      "sha256": "e6ac76f94f129714020fcd1b4c079b0bd6aed4543a857e84d781a5bec50a8f86",
+      "bytes": 1995451,
+      "descricao": "ITR e DFP com data de recebimento pelo regulador",
+      "produzido_por": "cvm_fundamentals.py e refresh_recent_itr.py",
+      "muda_sozinho": true
+    }
+  ],
+  "manifest_sha256": "f3bff4f280b895f7b80da67db68bb7f40d976047cb13a1c15708edff70c6b4b9"
+}

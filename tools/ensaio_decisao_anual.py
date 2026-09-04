@@ -43,19 +43,23 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLICADO = ROOT / "artifacts" / "profile_books_2026" / "profile_books_2026.json"
 GERADOR = ROOT / "build_profile_books_2026.py"
 
-#: Cada insumo da decisão, e de onde ele viria para outro ano. Esta é a lista de
-#: compras de 2027, e ela está aqui, junto do que a usa, em vez de num documento
-#: que envelhece separado do código.
-INSUMOS = {
-    "prices": ("data/prices_b3_cotahist_2011_2026.csv",
-               "painel de preços do COTAHIST; reconstruível por build_b3_total_return_panel.py"),
-    "universe": ("artifacts/b3_universe_january_2026.csv",
-                 "retrato do universo B3 NA data da decisão; build_b3_universe_snapshot.py"),
-    "mapping": ("data/b3_historical_cvm_ticker_map_2012_2025.csv",
-                "ponte B3/CVM auditada, com isin; build_b3_cvm_mapping.py"),
-    "fundamentals": ("data/fundamentals_b3_cvm_full_2013_2025_v2.csv",
-                     "ITR e DFP com data de recebimento; cvm_fundamentals.py e refresh_recent_itr.py"),
-}
+def _catalogo_de_insumos() -> dict[str, tuple[str, str]]:
+    """A lista de insumos vem de tools/capturar_insumos.py, que é quem os congela.
+
+    Ela estava duplicada aqui, e duas listas do mesmo assunto divergem: era o
+    defeito que este repositório passou o dia inteiro corrigindo em outros
+    lugares. Quem manda é quem captura.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "capturar_insumos", Path(__file__).resolve().parent / "capturar_insumos.py")
+    modulo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(modulo)
+    return {papel: (item["arquivo"], f"{item['papel']}; {item['produzido_por']}")
+            for papel, item in modulo.INSUMOS.items()}
+
+
+INSUMOS = _catalogo_de_insumos()
 
 #: Tudo que amarra o fluxo a 2026. Vira a lista de mudanças para 2027.
 #:

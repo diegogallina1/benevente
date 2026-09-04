@@ -259,8 +259,21 @@ def main() -> None:
     parser.add_argument("--mapping", default="data/b3_historical_cvm_ticker_map_2012_2025.csv")
     parser.add_argument("--cache-dir", default="work/cvm_cache")
     parser.add_argument("--output", default="artifacts/profile_books_2026")
+    # Decidir a partir da captura, e não dos arquivos vivos, é o que torna a
+    # carteira reproduzível anos depois: os bytes ficam congelados no dia, com
+    # hash, e quem conferir lê os mesmos. Dois dos quatro insumos mudam sozinhos
+    # com o tempo, então sem isso a reprodução depende de sorte.
+    parser.add_argument("--insumos", type=Path, default=None,
+                        help="Pasta de captura criada por tools/capturar_insumos.py.")
     args = parser.parse_args()
-    result = build(args.prices, args.universe, args.mapping, args.cache_dir, args.output)
+    prices, universe, mapping = args.prices, args.universe, args.mapping
+    if args.insumos:
+        manifesto = json.loads((args.insumos / "manifesto.json").read_text(encoding="utf-8"))
+        caminhos = {item["papel"]: args.insumos / item["arquivo"] for item in manifesto["files"]}
+        prices, universe, mapping = caminhos["prices"], caminhos["universe"], caminhos["mapping"]
+        print(f"decidindo a partir da captura de {manifesto['decision_date']} "
+              f"(manifesto {manifesto['manifest_sha256'][:12]})")
+    result = build(prices, universe, mapping, args.cache_dir, args.output)
     print(f"decisão de {result['decision_date']} sob {result['policy']}\n")
     for name, book in result["books"].items():
         nomes = ", ".join(p["ticker"] for p in book["positions"])
