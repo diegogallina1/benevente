@@ -199,6 +199,27 @@ def build(price_path, universe_path, mapping_path, cvm_cache, output) -> dict:
     for degrau, origem in derivados.items():
         books[degrau] = escala_de(books[origem], degrau, origem)
     books = {p: books[p] for p in LADDER_V2}
+
+    # Carteira com menos nomes do que a política declara não é a carteira da
+    # política: é o que sobrou da triagem, publicado com o nome dela.
+    #
+    # O ensaio do workflow encontrou isto: com o cache da CVM incompleto, a
+    # triagem de 2025 enxergou quatro fundamentos em vez de cento e quinze, e
+    # saíram livros de três emissores onde o conservador declara doze. Nada
+    # reclamou. Numa execução de janeiro com a CVM meio fora do ar, o resultado
+    # seria uma cesta de três nomes publicada como o conservador declarado.
+    #
+    # Falhar aqui é a resposta certa: a decisão do ano pode esperar o dia
+    # seguinte, e a janela do portão vai até 15 de janeiro exatamente para isso.
+    curtos = [f"{nome}: {livro['issuers']} emissores, a política declara {LADDER_V2[nome]['top_assets']}"
+              for nome, livro in books.items()
+              if livro["issuers"] < LADDER_V2[nome]["top_assets"]]
+    if curtos:
+        raise SystemExit(
+            "decisão recusada: a triagem não preencheu o número de emissores declarado.\n  "
+            + "\n  ".join(curtos)
+            + f"\n\nA triagem viu {len(inputs['known'])} papéis com fundamento e histórico completo. "
+              "Confira se os formulários da CVM e o painel de preços cobrem a data antes de decidir.")
     # Reconstrução e decisão não são a mesma coisa, e a diferença é a data em
     # que isto rodou. Escrito à mão, o campo dizia "reconstrução" mesmo quando a
     # decisão fosse tomada no dia — que é exatamente o que 2027 exige para a
