@@ -51,5 +51,12 @@
       "previous_addendum_sha256": "3189755df404bcd7ba0ec023d8b0e671f03abd6a739eb2493da3df3a0d102a0a"
     }
   },
-  "addendum_sha256": "5328f337c4c4fdea9c0389ca64146b4022b137b9ddd6e014ae57be0e097c944f"
+  "correction_2026_09_04_hashes": {
+    "corrected_on": "2026-09-04",
+    "document": "data/correcao_hashes_2026_09_04.json",
+    "previous_addendum_sha256": "5328f337c4c4fdea9c0389ca64146b4022b137b9ddd6e014ae57be0e097c944f",
+    "what": "Os hashes de codigo que este adendo ja apontava como nao conferindo foram medidos um a um, junto com todos os outros hashes registrados. Sao duas causas diferentes e o documento ao lado as separa: 26 foram calculados sobre bytes com CRLF de uma copia de trabalho no Windows, e ai o conteudo esta intacto e so a conta estava errada; 8 apontam para arquivo que mudou depois do registro, que e selo quebrado. portfolio_risk.py e profile_ladder_v2.py sao do segundo grupo, como este adendo ja dizia.",
+    "how_to_check": "python tools/verify_published_hashes.py"
+  },
+  "addendum_sha256": "baf2efa0d9d52c2e2765784917133fd8819a85fd9617365b73ec23ef996e1232"
 }

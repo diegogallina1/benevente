@@ -157,7 +157,11 @@ def main() -> None:
     parser.add_argument("--output", type=Path, default=Path("web/strategy_decisions.json"))
     args = parser.parse_args()
     result = build_ledger(args.bundle, args.annual_risk, args.daily_risk)
-    args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    # newline explícito: este arquivo é publicado e carrega SHA-256 de outros
+    # arquivos. Escrito com o padrão do Windows ele sai com CRLF, diferente do
+    # que o repositório entrega, e o hash calculado sobre ele deixa de bater.
+    args.output.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n",
+                           encoding="utf-8", newline="\n")
     print(f"{len(result['annual_decisions'])} decisões anuais; {len(result['risk_transitions'])} trocas de estado")
 
 

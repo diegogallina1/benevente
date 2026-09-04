@@ -175,7 +175,9 @@ def build() -> dict:
 
     detail = pd.DataFrame(rows)
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    detail.to_csv(DETAIL, index=False)
+    # lineterminator explícito pelo mesmo motivo do resumo: o pandas usa o fim
+    # de linha do sistema, e o hash deste CSV é publicado.
+    detail.to_csv(DETAIL, index=False, lineterminator="\n")
     compared = detail[detail.endpoint_reconstructed_return.notna()]
     blocked_endpoint = detail.endpoint_archive_status.eq("blocked_endpoint_not_queried")
     material = detail.material_difference_over_5pp
@@ -221,7 +223,12 @@ def build() -> dict:
         },
     }
     summary["detail_sha256"] = sha256(DETAIL)
-    SUMMARY.write_text(json.dumps(summary, indent=2, ensure_ascii=False), encoding="utf-8")
+    # newline explícito: este resumo carrega SHA-256 de outros arquivos e o
+    # próprio hash dele é publicado no manifesto. Escrito com o padrão do
+    # Windows ele sai com CRLF, diferente do que o repositório entrega, e os
+    # dois hashes deixam de bater para quem clona.
+    SUMMARY.write_text(json.dumps(summary, indent=2, ensure_ascii=False),
+                       encoding="utf-8", newline="\n")
     return summary
 
 

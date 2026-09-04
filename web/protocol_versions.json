@@ -1,13 +1,13 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-09-02",
+  "updated_at": "2026-09-04",
   "versions": [
     {
       "name": "Benevente 1",
       "role": "seleção anual e controle sem proteção intranual",
       "registered_at": "2026-08-16",
       "source": "artifacts/published_nested/protocol.json",
-      "sha256": "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d",
+      "sha256": "8157af1f7908926e8c67ee68a19fb75daa47716f6371310f3113911e285ddf64",
       "2026_status": "carteira-sombra; a decisão ocorreu antes do registro"
     },
     {
@@ -24,7 +24,9 @@
       "registered_at": "2026-08-23",
       "source": "docs/live_monitoring_protocol.md",
       "sha256": "15d6f7957c35baaf551f866e1f76998006d3443b908f8d2f6795846e0493f8cd",
-      "2026_status": "substituído em 2026-09-02 pela versão 1.1.0; descrevia uma carteira de cinco ações com 45% em CDI"
+      "2026_status": "substituído em 2026-09-02 pela versão 1.1.0; descrevia uma carteira de cinco ações com 45% em CDI",
+      "superseded_content_retrievable_at": "git show 1c64574219c996d921db07aba94d2c7006155665:docs/live_monitoring_protocol.md",
+      "note": "O SHA-256 desta linha descreve o documento da versão 1.0.0, que não está mais neste caminho. Ele continua verificável no histórico do Git, no endereço acima."
     },
     {
       "name": "Acompanhamento diário 1.1.0",
@@ -36,5 +38,15 @@
     }
   ],
   "first_fully_post_registration_annual_decision": "próxima decisão anual tomada sem alteração posterior do método",
-  "interpretation": "Cada mudança material cria nova versão e nova fronteira temporal. Uma versão posterior não herda retrospectivamente a data de uma versão anterior."
+  "interpretation": "Cada mudança material cria nova versão e nova fronteira temporal. Uma versão posterior não herda retrospectivamente a data de uma versão anterior.",
+  "correction_2026_09_04": {
+    "why": "Os SHA-256 deste registro foram recalculados em 04/09/2026 sobre os bytes que o repositório entrega, que são LF. Os valores anteriores tinham sido calculados numa cópia de trabalho no Windows, onde o Git convertia para CRLF na saída: os bytes diferiam, e o hash publicado não batia com o arquivo que qualquer pessoa recebia ao clonar. Nenhum conteúdo mudou; o que estava errado era a ponta que calculava. O .gitattributes passou a fixar LF em todo arquivo de texto, para que o valor publicado e o valor que um terceiro calcula sejam o mesmo em qualquer sistema.",
+    "recomputed": [
+      {
+        "file": "artifacts/published_nested/protocol.json",
+        "was": "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d",
+        "now": "8157af1f7908926e8c67ee68a19fb75daa47716f6371310f3113911e285ddf64"
+      }
+    ]
+  }
 }

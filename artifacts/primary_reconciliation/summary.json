@@ -20,12 +20,12 @@
   "interpretation": "The current B3 page is useful primary evidence but is not a complete historical corporate-action ledger. It cannot reproduce every published holding return, so the provider-adjusted performance panel remains research-grade and no institutional reconciliation seal is granted.",
   "material_difference_threshold": 0.05,
   "inputs": {
-    "data/prices_b3_cotahist_price_return_only_2011_2025.csv": "48f541a4e0c0cbe723b0db27980e546b56dfa80d4b4b26fc273410fc95e20938",
-    "data/b3_primary_corporate_events_2011_2025.csv": "230465e490dc3600c4859253ca9050a19beb213cd5d82f9df5032525de1f8402",
-    "data/b3_primary_event_coverage_2011_2025.csv": "91d3addb9a8197c59dae782f228504c7b6985a2e385291af24349714eb9fecb2",
-    "data/b3_primary_events_2011_2025_manifest.json": "2bdbee0f97659421dfdbce58edb46bb6aaea32ce68a1cd1e95904dd6de196042",
+    "data/prices_b3_cotahist_price_return_only_2011_2025.csv": "e21d4e812cf2229845441fec6c712a1816ac2d03eec2f4397cc97d8a63464641",
+    "data/b3_primary_corporate_events_2011_2025.csv": "2fb466b6f5ead3ca600655f812f234d191b37b1d75d5324d010f476cdad545cd",
+    "data/b3_primary_event_coverage_2011_2025.csv": "3b5ea9344401d6b766f6433b34968f5c158d5b75c71e0dbfa10f8a944eb1f6d6",
+    "data/b3_primary_events_2011_2025_manifest.json": "bac01315f8f7bbd7fa9597712c0c8c3a8a9105295851ea79b758f0cbd967313b",
     "artifacts/published_nested/annual_holdings.csv": "91052211e7c4e7fd1cb0a34d5fee8e87ceb184722bc0afcdc1982c75d5d68222",
-    "artifacts/published_nested/annual_results.csv": "4433b1bf6205fb04be02ce237eba8d23023fae832f8d6cf6bff85e6abae72baf"
+    "artifacts/published_nested/annual_results.csv": "98f2f591a83ccb73478cfe00d22929a2886d95474637b285631a997773114b0f"
   },
-  "detail_sha256": "55193e1e0d3741fbf3330b88eaca7adb9669cb604c10b239c69afda9042d1018"
+  "detail_sha256": "aaa019d39fc183508b96a6e56b3ad6730940795c86f71146b3aa276baa55bbfc"
 }

@@ -1,3 +1,30 @@
+# Todo arquivo de texto sai com LF em qualquer sistema.
+#
+# O motivo não é estética: este repositório publica SHA-256 de arquivos como
+# prova de procedência. Com core.autocrlf=true, um clone no Windows recebia
+# CRLF, os bytes mudavam, e o hash publicado deixava de bater com o arquivo que
+# a pessoa tinha na frente. Vinte e três hashes publicados estavam nessa
+# situação em 03/09/2026, calculados sobre os bytes com CRLF de uma cópia de
+# trabalho no Windows. Nenhum blob jamais teve CRLF: o defeito estava só na
+# ponta que calculava.
+#
+# Com a regra abaixo, o que o Git entrega e o que qualquer pessoa calcula são
+# os mesmos bytes, e um hash publicado volta a ser verificável por terceiro.
+* text=auto eol=lf
+
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary
+*.zip   binary
+*.woff2 binary
+*.docx  binary
+*.xlsx  binary
+*.dotx  binary
+*.potx  binary
+
 # Os arquivos servidos de web/ tem o hash do proprio conteudo escrito no HTML
 # que os carrega (tools/stamp_assets.py, para invalidar cache). O hash e
 # calculado sobre os bytes do arquivo, entao ele depende do fim de linha.

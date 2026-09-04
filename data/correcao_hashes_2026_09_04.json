@@ -1,0 +1,295 @@
+{
+  "correction": "hashes dos registros congelados",
+  "corrected_on": "2026-09-04",
+  "amends": [
+    "data/benevente_profile_ladder_v3_registration.json",
+    "data/benevente_profile_ladder_v4_registration.json",
+    "data/benevente_profile_risk_v1_registration.json"
+  ],
+  "why_beside_and_not_inside": "Cada um destes registros carrega o próprio registration_sha256, calculado sobre o documento inteiro, e foi citado assim. Acrescentar um campo quebraria a auto-verificação, e reescrever um valor apagaria a procedência em vez de corrigi-la. A correção fica aqui, datada, e o registro continua como foi assinado.",
+  "two_different_problems": {
+    "crlf": "O conteúdo do arquivo não mudou. O hash foi calculado numa cópia de trabalho no Windows, onde o Git convertia LF em CRLF na saída, então os bytes hasheados não eram os que o repositório entrega. Quem clonasse e conferisse encontrava outro valor. Nenhum blob jamais teve CRLF: o defeito estava na ponta que calculava. Corrigido na origem em 04/09/2026, com * text=auto eol=lf no .gitattributes.",
+    "conteudo_mudou": "O arquivo foi editado depois do registro. Aqui o hash registrado está certo sobre o que existia na data, e o que mudou foi o arquivo. Isso é selo quebrado e não erro de cálculo: o que a política declarou não é mais exatamente o que o código faz. Para portfolio_risk.py e profile_ladder_v2.py isso já estava descrito no adendo da v4, e a descrição continua valendo."
+  },
+  "counts": {
+    "verified": 3,
+    "conteudo_mudou": 8,
+    "crlf": 26
+  },
+  "how_to_check": "python tools/verify_published_hashes.py",
+  "divergences": [
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "code.annual_walk_forward.py",
+      "file": "annual_walk_forward.py",
+      "registered_sha256": "da664570088a10afee85a26264e87ead60eef3abb5d612ed9744c22089cf5baf",
+      "true_sha256": "59b1d17849ddcb256f584e24728f51392335ed1e9ffdcfc4111393fe545bd1ee",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "code.portfolio_risk.py",
+      "file": "portfolio_risk.py",
+      "registered_sha256": "5d6a46dd329b154788c762562b2dff4bd9d082068cb592968d0e2b48b6f040bf",
+      "true_sha256": "5421431eb817a664cb1f26d1bff888bb1d18184b265762ec46563ff774c153db",
+      "cause": "conteudo_mudou"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "code.profile_ladder.py",
+      "file": "profile_ladder.py",
+      "registered_sha256": "a5074512297d85450e53a7fba11653339175d373060aa15b8cc590f9dd8c6ae0",
+      "true_sha256": "c5fb74fd32a9f0d0d87ff47e952063fc07e7723b58f8197cb7ba4f7bf486afdb",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "code.profile_ladder_v2.py",
+      "file": "profile_ladder_v2.py",
+      "registered_sha256": "5afe66aa0d5519dc285d3940e5e1281df251ad0d2412295785b7632016f141cb",
+      "true_sha256": "dc135b694940c29ff8bec07b686224d1a98833085c19863f14c36a253bdf49e2",
+      "cause": "conteudo_mudou"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "code.tesouro_selic_series.py",
+      "file": "tesouro_selic_series.py",
+      "registered_sha256": "7db6a0d2edfe2b6155a1819c629c4544bc7b9ddefce21bfbc6b456c5d474fbb7",
+      "true_sha256": "20fe30389cc8a3b18f6d08848d34999086c2a962b74fe08a9b3f8467959c566b",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "inputs.benchmarks",
+      "file": "data/benchmarks_market_2011_2025.csv",
+      "registered_sha256": "658697bf27e9988f1e8cafdf564acacac0038969f743073dcdec0f9eea343c1b",
+      "true_sha256": "f0ff656bd2291fdf0ce4c6d36333dc2113a397235b1ab0e0c4f115718b442109",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "inputs.cash_series",
+      "file": "data/tesouro_selic_cash_index.csv",
+      "registered_sha256": "a0c02f414d6fb8a39deab6795b53a3f1b888680bbb9918d39f94372eae43a4b4",
+      "true_sha256": "e6ded8f189043e12c0fce2b931b8ec6bcd03f0b4f18fe6e2a368944bc4320e60",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "inputs.cash_series_manifest",
+      "file": "data/tesouro_selic_cash_index_manifest.json",
+      "registered_sha256": "501e6d45896c366b659faa7e643d198fb542705e7d1578e5dae2a8ae6c7b388e",
+      "true_sha256": "1b4d3d61e14be6c2970c066a7ba3b3df2c05b9c79ada9c587a2da4b66b9524cc",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "inputs.fundamentals",
+      "file": "data/fundamentals_b3_cvm_full_2013_2025_v2.csv",
+      "registered_sha256": "c2e41b5285cac91568434b41bc75657d3da889bd1bec3ea7a57a88768224456f",
+      "true_sha256": "e6ac76f94f129714020fcd1b4c079b0bd6aed4543a857e84d781a5bec50a8f86",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "inputs.mapping",
+      "file": "data/b3_historical_cvm_ticker_map.csv",
+      "registered_sha256": "34915dbade0df919b2c5350331acef9ff3c4a0537d08c91b5e14f5d9744f0385",
+      "true_sha256": "4dadca2e849cb8d9bbaf1237c869b60678de5dd97390b09479ac7b1be836e2f6",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "inputs.prices",
+      "file": "data/prices_b3_real_cash_2011_2025.csv",
+      "registered_sha256": "9ae1bb5816a5859ffef4310579a418878fff720888a4d8abcd72da881eed6ff4",
+      "true_sha256": "c40774dace24461f9252fd94fd890d9503047b5b89c6cd358aab50c704388b8b",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "inputs.total_return_manifest",
+      "file": "data/prices_b3_real_cash_2011_2025_manifest.json",
+      "registered_sha256": "4fd698253cfc71246660dfd264532307ccb75982d5b5859d7249a0fb9a63e9c7",
+      "true_sha256": "33525fb728fd80ab16f8c9a5b525c64d78ecd3b5c1e7e1cfc9f640f591c82d7e",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v3_registration.json",
+      "field": "inputs.universe",
+      "file": "data/b3_historical_universes.csv",
+      "registered_sha256": "b4315cbd7bbfd21781f1252a21437cda8bdb603963ad040539997ea3bcf15d83",
+      "true_sha256": "25bc275a3aee63ec179fce712d73da9c609916c691b756d09abb281029f77ff8",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "code.annual_walk_forward.py",
+      "file": "annual_walk_forward.py",
+      "registered_sha256": "da664570088a10afee85a26264e87ead60eef3abb5d612ed9744c22089cf5baf",
+      "true_sha256": "59b1d17849ddcb256f584e24728f51392335ed1e9ffdcfc4111393fe545bd1ee",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "code.portfolio_risk.py",
+      "file": "portfolio_risk.py",
+      "registered_sha256": "5d6a46dd329b154788c762562b2dff4bd9d082068cb592968d0e2b48b6f040bf",
+      "true_sha256": "5421431eb817a664cb1f26d1bff888bb1d18184b265762ec46563ff774c153db",
+      "cause": "conteudo_mudou"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "code.profile_ladder.py",
+      "file": "profile_ladder.py",
+      "registered_sha256": "a5074512297d85450e53a7fba11653339175d373060aa15b8cc590f9dd8c6ae0",
+      "true_sha256": "c5fb74fd32a9f0d0d87ff47e952063fc07e7723b58f8197cb7ba4f7bf486afdb",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "code.profile_ladder_v2.py",
+      "file": "profile_ladder_v2.py",
+      "registered_sha256": "5afe66aa0d5519dc285d3940e5e1281df251ad0d2412295785b7632016f141cb",
+      "true_sha256": "dc135b694940c29ff8bec07b686224d1a98833085c19863f14c36a253bdf49e2",
+      "cause": "conteudo_mudou"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "code.tesouro_selic_series.py",
+      "file": "tesouro_selic_series.py",
+      "registered_sha256": "7db6a0d2edfe2b6155a1819c629c4544bc7b9ddefce21bfbc6b456c5d474fbb7",
+      "true_sha256": "20fe30389cc8a3b18f6d08848d34999086c2a962b74fe08a9b3f8467959c566b",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "inputs.benchmarks",
+      "file": "data/benchmarks_market_2011_2025.csv",
+      "registered_sha256": "658697bf27e9988f1e8cafdf564acacac0038969f743073dcdec0f9eea343c1b",
+      "true_sha256": "f0ff656bd2291fdf0ce4c6d36333dc2113a397235b1ab0e0c4f115718b442109",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "inputs.cash_series",
+      "file": "data/tesouro_selic_cash_index.csv",
+      "registered_sha256": "a0c02f414d6fb8a39deab6795b53a3f1b888680bbb9918d39f94372eae43a4b4",
+      "true_sha256": "e6ded8f189043e12c0fce2b931b8ec6bcd03f0b4f18fe6e2a368944bc4320e60",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "inputs.cash_series_manifest",
+      "file": "data/tesouro_selic_cash_index_manifest.json",
+      "registered_sha256": "501e6d45896c366b659faa7e643d198fb542705e7d1578e5dae2a8ae6c7b388e",
+      "true_sha256": "1b4d3d61e14be6c2970c066a7ba3b3df2c05b9c79ada9c587a2da4b66b9524cc",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "inputs.fundamentals",
+      "file": "data/fundamentals_b3_cvm_full_2013_2025_v2.csv",
+      "registered_sha256": "c2e41b5285cac91568434b41bc75657d3da889bd1bec3ea7a57a88768224456f",
+      "true_sha256": "e6ac76f94f129714020fcd1b4c079b0bd6aed4543a857e84d781a5bec50a8f86",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "inputs.mapping",
+      "file": "data/b3_historical_cvm_ticker_map.csv",
+      "registered_sha256": "34915dbade0df919b2c5350331acef9ff3c4a0537d08c91b5e14f5d9744f0385",
+      "true_sha256": "4dadca2e849cb8d9bbaf1237c869b60678de5dd97390b09479ac7b1be836e2f6",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "inputs.prices",
+      "file": "data/prices_b3_real_cash_2011_2025.csv",
+      "registered_sha256": "9ae1bb5816a5859ffef4310579a418878fff720888a4d8abcd72da881eed6ff4",
+      "true_sha256": "c40774dace24461f9252fd94fd890d9503047b5b89c6cd358aab50c704388b8b",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "inputs.total_return_manifest",
+      "file": "data/prices_b3_real_cash_2011_2025_manifest.json",
+      "registered_sha256": "4fd698253cfc71246660dfd264532307ccb75982d5b5859d7249a0fb9a63e9c7",
+      "true_sha256": "33525fb728fd80ab16f8c9a5b525c64d78ecd3b5c1e7e1cfc9f640f591c82d7e",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_ladder_v4_registration.json",
+      "field": "inputs.universe",
+      "file": "data/b3_historical_universes.csv",
+      "registered_sha256": "b4315cbd7bbfd21781f1252a21437cda8bdb603963ad040539997ea3bcf15d83",
+      "true_sha256": "25bc275a3aee63ec179fce712d73da9c609916c691b756d09abb281029f77ff8",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_risk_v1_registration.json",
+      "field": "code_sha256.annual_walk_forward.py",
+      "file": "annual_walk_forward.py",
+      "registered_sha256": "0758547a697cb18f14d2eb1744712ab8efd6eb01c9177993e80a717738d1f0b2",
+      "true_sha256": "59b1d17849ddcb256f584e24728f51392335ed1e9ffdcfc4111393fe545bd1ee",
+      "cause": "conteudo_mudou"
+    },
+    {
+      "registration": "data/benevente_profile_risk_v1_registration.json",
+      "field": "code_sha256.benevente2_event_risk.py",
+      "file": "benevente2_event_risk.py",
+      "registered_sha256": "d1497b84dc1230b5bab9c7f4b4272ceb3d9ef47c438932301d6cea7c4d0178a3",
+      "true_sha256": "97d03d90836aaab95bc3da0430d84b79f003c9dfe58d531df1c78f840817fd8e",
+      "cause": "conteudo_mudou"
+    },
+    {
+      "registration": "data/benevente_profile_risk_v1_registration.json",
+      "field": "code_sha256.portfolio_risk.py",
+      "file": "portfolio_risk.py",
+      "registered_sha256": "5a2e9f81efc5a73c55261d97482467c316fb51ff570a86126bc21f2d36ac43f5",
+      "true_sha256": "5421431eb817a664cb1f26d1bff888bb1d18184b265762ec46563ff774c153db",
+      "cause": "conteudo_mudou"
+    },
+    {
+      "registration": "data/benevente_profile_risk_v1_registration.json",
+      "field": "input_sha256.b3_historical_cvm_ticker_map_2012_2025.csv",
+      "file": "data/b3_historical_cvm_ticker_map_2012_2025.csv",
+      "registered_sha256": "c89c39072ceb68da2bd269c4b8902416f91415405777dba1a07489d54e47a9ad",
+      "true_sha256": "6340669c8720964a700d61555abe74ef9727c0812a5c95986866ea0954b99e6b",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_risk_v1_registration.json",
+      "field": "input_sha256.b3_historical_universes_2012_2025.csv",
+      "file": "data/b3_historical_universes_2012_2025.csv",
+      "registered_sha256": "8e0b2e87ed78b86531d924b75d2de709f9589e9151d44aba74d7427841bbf5e6",
+      "true_sha256": "117ea50752ef739499ffa2ca9a06bc6e16250a108d6f89f079a22a141a24054c",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_risk_v1_registration.json",
+      "field": "input_sha256.b3_primary_events_2011_2025_manifest.json",
+      "file": "data/b3_primary_events_2011_2025_manifest.json",
+      "registered_sha256": "3938fe2aa6ce01a9a0d7b5abb0d3d51c141bcf3040761b2c97f2d75de2607ffd",
+      "true_sha256": "bac01315f8f7bbd7fa9597712c0c8c3a8a9105295851ea79b758f0cbd967313b",
+      "cause": "conteudo_mudou"
+    },
+    {
+      "registration": "data/benevente_profile_risk_v1_registration.json",
+      "field": "input_sha256.fundamentals_b3_cvm_full_2012_2025.csv",
+      "file": "data/fundamentals_b3_cvm_full_2012_2025.csv",
+      "registered_sha256": "2df683244a39134e245398cf785aa8817e380343266d7f871527493428c22abe",
+      "true_sha256": "db3e2282dbc2e1461bd3f63106af6c40ca859a981a0779930d85f244ac9f13bf",
+      "cause": "crlf"
+    },
+    {
+      "registration": "data/benevente_profile_risk_v1_registration.json",
+      "field": "input_sha256.prices_b3_total_return_full_2011_2025_manifest.json",
+      "file": "data/prices_b3_total_return_full_2011_2025_manifest.json",
+      "registered_sha256": "d41d364b757b8df207930dfc7b6ff25544bfdd2c6f7230c059fb6d3453350ca8",
+      "true_sha256": "f8f175c3050e88ecd4385627289b516ed90aad12d2a42f98019c055af5f13301",
+      "cause": "crlf"
+    }
+  ],
+  "correction_sha256": "94b51a19ec41512615e82b9fcc5cbae7eeff48dfd2b8248e56a45c04f5511f7c"
+}

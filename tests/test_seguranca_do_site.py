@@ -12,6 +12,8 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
+import sys
 from pathlib import Path
 
 import pytest
@@ -291,6 +293,20 @@ def test_texto_de_terceiro_nao_entra_em_shell_por_interpolacao(caminho: Path) ->
         if dentro_de_run and "${{" in linha:
             assert re.search(r"\$\{\{\s*(secrets|vars|github\.token|env)\.", linha), (
                 f"{caminho.name}: interpolação em run: sem origem confiável -> {despida}")
+
+
+def test_todo_hash_publicado_confere_com_o_que_o_clone_recebe() -> None:
+    """Prova de procedência que só vale nesta máquina não é prova de nada.
+
+    Vinte e seis hashes publicados foram calculados sobre bytes com CRLF de uma
+    cópia de trabalho no Windows, enquanto o repositório entrega LF: quem
+    clonasse e conferisse encontrava outro valor. O verificador compara sempre
+    contra `git show HEAD:<arquivo>`, que é o que o clone recebe.
+    """
+    resultado = subprocess.run(
+        [sys.executable, str(ROOT / "tools" / "verify_published_hashes.py")],
+        cwd=ROOT, capture_output=True, text=True, encoding="utf-8", errors="replace")
+    assert resultado.returncode == 0, resultado.stdout + resultado.stderr
 
 
 # --- nada de segredo no que é publicado ------------------------------------

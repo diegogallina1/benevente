@@ -134,7 +134,7 @@
     {
       "path": "artifacts/published_nested/annual_results.csv",
       "bytes": 7953,
-      "sha256": "4433b1bf6205fb04be02ce237eba8d23023fae832f8d6cf6bff85e6abae72baf"
+      "sha256": "98f2f591a83ccb73478cfe00d22929a2886d95474637b285631a997773114b0f"
     },
     {
       "path": "artifacts/published_nested/annual_holdings.csv",
@@ -154,7 +154,7 @@
     {
       "path": "artifacts/published_nested/protocol.json",
       "bytes": 1081,
-      "sha256": "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d"
+      "sha256": "8157af1f7908926e8c67ee68a19fb75daa47716f6371310f3113911e285ddf64"
     },
     {
       "path": "artifacts/audit_evidence/audit_evidence.json",
@@ -164,7 +164,7 @@
     {
       "path": "artifacts/configuration_search_2012/summary.json",
       "bytes": 1347,
-      "sha256": "e3330a04727f8a8d27f52633d7ab3cacfc1759aa0abc0da670361e6ef2f1bbfe"
+      "sha256": "0c305ff1c6469db64c60820bc9565708313cab837312d4ba3397828bf1cd612f"
     },
     {
       "path": "artifacts/llm_contamination/summary.json",
@@ -179,22 +179,22 @@
     {
       "path": "artifacts/benevente2_event_risk/summary.json",
       "bytes": 20196,
-      "sha256": "8bc321fb4f6f18cb89675a2dc1b9c19561e0a3e018f227890421bc345c7d1a00"
+      "sha256": "f4e9e3a90721303d0b2b4062b00014fcada4663c207fcda722e224e653d8199a"
     },
     {
       "path": "artifacts/benevente2_event_risk/candidate_annual_comparison.csv",
       "bytes": 1503,
-      "sha256": "5c6e4558bf7534400f01d95876096b0e3aae0bfc706f75ad66fe8580f06831f9"
+      "sha256": "3a8358cd0f6e2c471d0fc78b026839120d1038b8e287ac220037245fb4cac133"
     },
     {
       "path": "artifacts/benevente2_event_risk/candidate_daily_comparison.csv",
       "bytes": 1173370,
-      "sha256": "4b25dc16011b219e4d2d3a5022ec79490d52be5edfdff4474cf73b4a78fd7fae"
+      "sha256": "09ec1dba7fe30de0ba5fb8ec3032db53f4de244d8517b0f40d26a67bd2528a5d"
     },
     {
       "path": "artifacts/benevente2_event_risk/sensitivity_grid.csv",
       "bytes": 95826,
-      "sha256": "507a6eebfd6e4f909f19c4495ad5b3dc223c19bce19747f1041a496ad29280a1"
+      "sha256": "4d0b959d4b586d4b69ef294b6441458a791f6d60064695691a06adbc9c986ace"
     },
     {
       "path": "data/prices_b3_total_return_full_2011_2025.csv",
@@ -204,62 +204,62 @@
     {
       "path": "data/prices_b3_total_return_full_2011_2025_manifest.json",
       "bytes": 1745,
-      "sha256": "d41d364b757b8df207930dfc7b6ff25544bfdd2c6f7230c059fb6d3453350ca8"
+      "sha256": "f8f175c3050e88ecd4385627289b516ed90aad12d2a42f98019c055af5f13301"
     },
     {
       "path": "data/fundamentals_b3_cvm_full_2012_2025.csv",
       "bytes": 2111182,
-      "sha256": "2df683244a39134e245398cf785aa8817e380343266d7f871527493428c22abe"
+      "sha256": "db3e2282dbc2e1461bd3f63106af6c40ca859a981a0779930d85f244ac9f13bf"
     },
     {
       "path": "data/b3_historical_universes_2012_2025.csv",
       "bytes": 2189594,
-      "sha256": "8e0b2e87ed78b86531d924b75d2de709f9589e9151d44aba74d7427841bbf5e6"
+      "sha256": "117ea50752ef739499ffa2ca9a06bc6e16250a108d6f89f079a22a141a24054c"
     },
     {
       "path": "data/b3_historical_cvm_ticker_map_2012_2025.csv",
       "bytes": 1230054,
-      "sha256": "c89c39072ceb68da2bd269c4b8902416f91415405777dba1a07489d54e47a9ad"
+      "sha256": "6340669c8720964a700d61555abe74ef9727c0812a5c95986866ea0954b99e6b"
     },
     {
       "path": "data/benchmarks_market_2011_2025.csv",
       "bytes": 140467,
-      "sha256": "658697bf27e9988f1e8cafdf564acacac0038969f743073dcdec0f9eea343c1b"
+      "sha256": "f0ff656bd2291fdf0ce4c6d36333dc2113a397235b1ab0e0c4f115718b442109"
     },
     {
       "path": "data/benchmarks_market_2011_2025_manifest.json",
       "bytes": 1155,
-      "sha256": "76d4348035f91818aa59ff76f57f9c456ba35769260fa90127a3121089a57338"
+      "sha256": "d696e6e246e6b538c5800cf3fd1f5ed9ddb8caa5b796e2f15d13e65675b10041"
     },
     {
       "path": "data/b3_primary_corporate_events_2011_2025.csv",
       "bytes": 3202492,
-      "sha256": "230465e490dc3600c4859253ca9050a19beb213cd5d82f9df5032525de1f8402"
+      "sha256": "2fb466b6f5ead3ca600655f812f234d191b37b1d75d5324d010f476cdad545cd"
     },
     {
       "path": "data/b3_primary_event_coverage_2011_2025.csv",
       "bytes": 149790,
-      "sha256": "91d3addb9a8197c59dae782f228504c7b6985a2e385291af24349714eb9fecb2"
+      "sha256": "3b5ea9344401d6b766f6433b34968f5c158d5b75c71e0dbfa10f8a944eb1f6d6"
     },
     {
       "path": "data/b3_primary_events_2011_2025_manifest.json",
       "bytes": 3967,
-      "sha256": "2bdbee0f97659421dfdbce58edb46bb6aaea32ce68a1cd1e95904dd6de196042"
+      "sha256": "bac01315f8f7bbd7fa9597712c0c8c3a8a9105295851ea79b758f0cbd967313b"
     },
     {
       "path": "artifacts/primary_reconciliation/summary.json",
       "bytes": 2007,
-      "sha256": "1446908fcd756e12f15219a9bcce9ac33ba635f95c718b3577a861ef691c5f35"
+      "sha256": "472ed8ac8e6bd9d1e3ec2821a66b61e1e80966c376493518b03ba7473c1a03ae"
     },
     {
       "path": "artifacts/primary_reconciliation/strategy_holding_year_audit.csv",
       "bytes": 10974,
-      "sha256": "55193e1e0d3741fbf3330b88eaca7adb9669cb604c10b239c69afda9042d1018"
+      "sha256": "aaa019d39fc183508b96a6e56b3ad6730940795c86f71146b3aa276baa55bbfc"
     },
     {
       "path": "data/benevente_profile_risk_v1_registration.json",
       "bytes": 3778,
-      "sha256": "38369d8e00cf0227a1f49b1e90915488bc906202665c694001d0ee4b1c596c8e"
+      "sha256": "f91f39ad937ac4bdd72547581d8dc121711a5f0b231b5d3e05d6f457a79ad90f"
     },
     {
       "path": "artifacts/risk_system_validation_20260820/summary.json",
@@ -289,5 +289,105 @@
   ],
   "cvm_source_archives": [],
   "audit_evidence_sha256": "123b4dac353a26be36b72579378629af7127061443bb700a7cb63531d3ff2985",
-  "audit_years": 11
+  "audit_years": 11,
+  "correction_2026_09_04": {
+    "why": "Os SHA-256 deste registro foram recalculados em 04/09/2026 sobre os bytes que o repositório entrega, que são LF. Os valores anteriores tinham sido calculados numa cópia de trabalho no Windows, onde o Git convertia para CRLF na saída: os bytes diferiam, e o hash publicado não batia com o arquivo que qualquer pessoa recebia ao clonar. Nenhum conteúdo mudou; o que estava errado era a ponta que calculava. O .gitattributes passou a fixar LF em todo arquivo de texto, para que o valor publicado e o valor que um terceiro calcula sejam o mesmo em qualquer sistema.",
+    "recomputed": [
+      {
+        "file": "artifacts/published_nested/annual_results.csv",
+        "was": "4433b1bf6205fb04be02ce237eba8d23023fae832f8d6cf6bff85e6abae72baf",
+        "now": "98f2f591a83ccb73478cfe00d22929a2886d95474637b285631a997773114b0f"
+      },
+      {
+        "file": "artifacts/published_nested/protocol.json",
+        "was": "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d",
+        "now": "8157af1f7908926e8c67ee68a19fb75daa47716f6371310f3113911e285ddf64"
+      },
+      {
+        "file": "artifacts/configuration_search_2012/summary.json",
+        "was": "e3330a04727f8a8d27f52633d7ab3cacfc1759aa0abc0da670361e6ef2f1bbfe",
+        "now": "0c305ff1c6469db64c60820bc9565708313cab837312d4ba3397828bf1cd612f"
+      },
+      {
+        "file": "artifacts/benevente2_event_risk/summary.json",
+        "was": "8bc321fb4f6f18cb89675a2dc1b9c19561e0a3e018f227890421bc345c7d1a00",
+        "now": "f4e9e3a90721303d0b2b4062b00014fcada4663c207fcda722e224e653d8199a"
+      },
+      {
+        "file": "artifacts/benevente2_event_risk/candidate_annual_comparison.csv",
+        "was": "5c6e4558bf7534400f01d95876096b0e3aae0bfc706f75ad66fe8580f06831f9",
+        "now": "3a8358cd0f6e2c471d0fc78b026839120d1038b8e287ac220037245fb4cac133"
+      },
+      {
+        "file": "artifacts/benevente2_event_risk/candidate_daily_comparison.csv",
+        "was": "4b25dc16011b219e4d2d3a5022ec79490d52be5edfdff4474cf73b4a78fd7fae",
+        "now": "09ec1dba7fe30de0ba5fb8ec3032db53f4de244d8517b0f40d26a67bd2528a5d"
+      },
+      {
+        "file": "artifacts/benevente2_event_risk/sensitivity_grid.csv",
+        "was": "507a6eebfd6e4f909f19c4495ad5b3dc223c19bce19747f1041a496ad29280a1",
+        "now": "4d0b959d4b586d4b69ef294b6441458a791f6d60064695691a06adbc9c986ace"
+      },
+      {
+        "file": "data/prices_b3_total_return_full_2011_2025_manifest.json",
+        "was": "d41d364b757b8df207930dfc7b6ff25544bfdd2c6f7230c059fb6d3453350ca8",
+        "now": "f8f175c3050e88ecd4385627289b516ed90aad12d2a42f98019c055af5f13301"
+      },
+      {
+        "file": "data/fundamentals_b3_cvm_full_2012_2025.csv",
+        "was": "2df683244a39134e245398cf785aa8817e380343266d7f871527493428c22abe",
+        "now": "db3e2282dbc2e1461bd3f63106af6c40ca859a981a0779930d85f244ac9f13bf"
+      },
+      {
+        "file": "data/b3_historical_universes_2012_2025.csv",
+        "was": "8e0b2e87ed78b86531d924b75d2de709f9589e9151d44aba74d7427841bbf5e6",
+        "now": "117ea50752ef739499ffa2ca9a06bc6e16250a108d6f89f079a22a141a24054c"
+      },
+      {
+        "file": "data/b3_historical_cvm_ticker_map_2012_2025.csv",
+        "was": "c89c39072ceb68da2bd269c4b8902416f91415405777dba1a07489d54e47a9ad",
+        "now": "6340669c8720964a700d61555abe74ef9727c0812a5c95986866ea0954b99e6b"
+      },
+      {
+        "file": "data/benchmarks_market_2011_2025.csv",
+        "was": "658697bf27e9988f1e8cafdf564acacac0038969f743073dcdec0f9eea343c1b",
+        "now": "f0ff656bd2291fdf0ce4c6d36333dc2113a397235b1ab0e0c4f115718b442109"
+      },
+      {
+        "file": "data/benchmarks_market_2011_2025_manifest.json",
+        "was": "76d4348035f91818aa59ff76f57f9c456ba35769260fa90127a3121089a57338",
+        "now": "d696e6e246e6b538c5800cf3fd1f5ed9ddb8caa5b796e2f15d13e65675b10041"
+      },
+      {
+        "file": "data/b3_primary_corporate_events_2011_2025.csv",
+        "was": "230465e490dc3600c4859253ca9050a19beb213cd5d82f9df5032525de1f8402",
+        "now": "2fb466b6f5ead3ca600655f812f234d191b37b1d75d5324d010f476cdad545cd"
+      },
+      {
+        "file": "data/b3_primary_event_coverage_2011_2025.csv",
+        "was": "91d3addb9a8197c59dae782f228504c7b6985a2e385291af24349714eb9fecb2",
+        "now": "3b5ea9344401d6b766f6433b34968f5c158d5b75c71e0dbfa10f8a944eb1f6d6"
+      },
+      {
+        "file": "data/b3_primary_events_2011_2025_manifest.json",
+        "was": "2bdbee0f97659421dfdbce58edb46bb6aaea32ce68a1cd1e95904dd6de196042",
+        "now": "bac01315f8f7bbd7fa9597712c0c8c3a8a9105295851ea79b758f0cbd967313b"
+      },
+      {
+        "file": "artifacts/primary_reconciliation/summary.json",
+        "was": "1446908fcd756e12f15219a9bcce9ac33ba635f95c718b3577a861ef691c5f35",
+        "now": "472ed8ac8e6bd9d1e3ec2821a66b61e1e80966c376493518b03ba7473c1a03ae"
+      },
+      {
+        "file": "artifacts/primary_reconciliation/strategy_holding_year_audit.csv",
+        "was": "55193e1e0d3741fbf3330b88eaca7adb9669cb604c10b239c69afda9042d1018",
+        "now": "aaa019d39fc183508b96a6e56b3ad6730940795c86f71146b3aa276baa55bbfc"
+      },
+      {
+        "file": "data/benevente_profile_risk_v1_registration.json",
+        "was": "38369d8e00cf0227a1f49b1e90915488bc906202665c694001d0ee4b1c596c8e",
+        "now": "f91f39ad937ac4bdd72547581d8dc121711a5f0b231b5d3e05d6f457a79ad90f"
+      }
+    ]
+  }
 }

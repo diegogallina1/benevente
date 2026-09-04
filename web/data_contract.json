@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0.0",
-  "updated_at": "2026-08-24",
+  "updated_at": "2026-09-04",
   "research_window": {
     "first_decision_year": 2015,
     "last_decision_year": 2025,
@@ -9,7 +9,8 @@
   },
   "prospective_protocol": {
     "frozen_at": "2026-08-16",
-    "sha256": "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d",
+    "source": "artifacts/published_nested/protocol.json",
+    "sha256": "8157af1f7908926e8c67ee68a19fb75daa47716f6371310f3113911e285ddf64",
     "applies_to": "Benevente 1; versões posteriores possuem registro próprio",
     "first_evaluable_decisions": "decisões anuais tomadas integralmente após o registro da versão avaliada"
   },
@@ -58,5 +59,15 @@
     "current_catalog": "catálogo atual da B3",
     "dated_record": "registro datado",
     "prospective_validation": "avaliação de uma decisão tomada depois do registro, sem alterar a versão após observar o resultado"
+  },
+  "correction_2026_09_04": {
+    "why": "O SHA-256 do protocolo tinha sido calculado sobre bytes com CRLF de uma copia de trabalho no Windows; o repositorio entrega LF, entao quem clonasse encontrava outro valor. O conteudo nao mudou. O campo source foi acrescentado porque o registro declarava um hash sem dizer de qual arquivo, e assim ninguem podia conferir.",
+    "recomputed": [
+      {
+        "file": "artifacts/published_nested/protocol.json",
+        "was": "ba2d7b436fc4ca24ed129af61a8331ec8e2a463d3f1c4d7f639ef98336f9d56d",
+        "now": "8157af1f7908926e8c67ee68a19fb75daa47716f6371310f3113911e285ddf64"
+      }
+    ]
   }
 }

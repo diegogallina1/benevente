@@ -90,7 +90,13 @@ jobs:
             --deselect tests/test_publication_contract.py::test_site_data_contract_matches_canonical_sources \
             --deselect tests/test_strategy_decision_ledger.py::test_published_ledger_matches_the_builder
 
-      # Os dois verificadores ficam de fora, e não por escolha: os dois leem
+      # Este roda: ele não lê artifacts/ pelo disco, e sim os bytes que o Git
+      # entrega, com `git show HEAD:<arquivo>`. É o que impede um hash publicado
+      # de voltar a divergir do arquivo que a pessoa recebe ao clonar.
+      - name: Conferir que todo hash publicado bate com o que o clone recebe
+        run: python tools/verify_published_hashes.py
+
+      # Os outros dois verificadores ficam de fora, e não por escolha: os dois leem
       # caminhos sob artifacts/, que o clone não recebe inteiro, e morrem em
       # FileNotFoundError antes de comparar qualquer coisa. Eles continuam
       # sendo rodados à mão antes de publicar. Enquanto artifacts/ não for

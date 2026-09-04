@@ -3332,7 +3332,7 @@
   ],
   "sources_sha256": {
     "web/annual_research.json": "272239e24db4c1977124496e28297bb11bac82082c52b07c634a6c07c741eaac",
-    "artifacts/benevente2_event_risk/candidate_annual_comparison.csv": "5c6e4558bf7534400f01d95876096b0e3aae0bfc706f75ad66fe8580f06831f9",
-    "artifacts/benevente2_event_risk/candidate_daily_comparison.csv": "4b25dc16011b219e4d2d3a5022ec79490d52be5edfdff4474cf73b4a78fd7fae"
+    "artifacts/benevente2_event_risk/candidate_annual_comparison.csv": "3a8358cd0f6e2c471d0fc78b026839120d1038b8e287ac220037245fb4cac133",
+    "artifacts/benevente2_event_risk/candidate_daily_comparison.csv": "09ec1dba7fe30de0ba5fb8ec3032db53f4de244d8517b0f40d26a67bd2528a5d"
   }
 }
