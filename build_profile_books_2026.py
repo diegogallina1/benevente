@@ -24,9 +24,12 @@ proventos, então o retorno parcial subestima as ações que pagaram dividendos.
 from __future__ import annotations
 
 from dataclasses import replace
+from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 import argparse
 import json
+import sys
 
 import pandas as pd
 
@@ -40,24 +43,34 @@ from profile_ladder_v2 import GLOBAL_FRACTION, LADDER_V2, _issuer_cap, domestic_
 from research_global_sleeve import GLOBAL_TICKER
 
 ROOT = Path(__file__).resolve().parent
-DECISION_YEAR = 2026
 FACTOR = "triple_factor"
 LIQUIDITY_FLOOR_BRL = 10_000_000
+
+#: O ano da decisão sai do retrato do universo, e não de uma constante nem de um
+#: sinalizador na linha de comando.
+#:
+#: A razão é evitar um erro específico: com o ano escrito à parte, dá para rodar
+#: a lógica de um ano sobre os insumos de outro e receber uma carteira que
+#: parece certa. Sendo propriedade do insumo, o ano e os dados não têm como se
+#: separar. Quem quiser decidir 2027 troca o retrato, e o resto acompanha.
+def ano_da_decisao(universe: "pd.DataFrame") -> int:
+    return int(pd.Timestamp(universe.decision_date.iloc[0]).year)
 
 
 def _screen_inputs(price_path, universe_path, mapping_path, cvm_cache, destination):
     """Universo datado, ponte auditada, fundamentos recebidos antes da decisão."""
     universe = pd.read_csv(universe_path)
-    universe["universe_year"] = DECISION_YEAR
+    ano = ano_da_decisao(universe)
+    universe["universe_year"] = ano
     prior = pd.read_csv(mapping_path, dtype={"ticker": str, "isin": str, "cnpj_cia": str})
-    mapping = current_mapping(universe, prior)
+    mapping = current_mapping(universe, prior, ano)
 
     liquid = universe[universe.average_daily_value_brl.ge(LIQUIDITY_FLOOR_BRL)].copy()
-    fundamentals, coverage = build_full_panel(liquid, mapping, DECISION_YEAR, DECISION_YEAR, Path(cvm_cache))
+    fundamentals, coverage = build_full_panel(liquid, mapping, ano, ano, Path(cvm_cache))
     destination.mkdir(parents=True, exist_ok=True)
-    fundamentals.to_csv(destination / "fundamentals_2026.csv", index=False)
-    coverage.to_csv(destination / "fundamental_coverage_2026.csv", index=False)
-    mapping.to_csv(destination / "identifier_bridge_2026.csv", index=False)
+    fundamentals.to_csv(destination / f"fundamentals_{ano}.csv", index=False)
+    coverage.to_csv(destination / f"fundamental_coverage_{ano}.csv", index=False)
+    mapping.to_csv(destination / f"identifier_bridge_{ano}.csv", index=False)
 
     prices = pd.read_csv(price_path, parse_dates=["date"]).set_index("date").sort_index()
     decision = pd.Timestamp(universe.decision_date.iloc[0])
@@ -73,7 +86,7 @@ def _screen_inputs(price_path, universe_path, mapping_path, cvm_cache, destinati
                .rename(columns={columns[t]: t for t in complete}).pct_change().dropna())
     issuer_ids = {r.ticker: str(r.cnpj_cia) for r in
                   mapping[["ticker", "cnpj_cia"]].drop_duplicates("ticker").itertuples(index=False)}
-    return {"universe": universe, "liquid": liquid, "mapping": mapping, "fundamentals": fundamentals,
+    return {"ano": ano, "universe": universe, "liquid": liquid, "mapping": mapping, "fundamentals": fundamentals,
             "prices": prices, "decision": decision, "known": known, "history": history,
             "issuer_ids": issuer_ids, "engine": AnnualWalkForwardEngine(prices, snapshots, SystemConfig())}
 
@@ -83,10 +96,11 @@ def book_for_profile(profile: str, inputs: dict) -> dict:
     declared = LADDER_V2[profile]
     budget, count = declared["maximum_equity_weight"], declared["top_assets"]
     global_share = round(budget * GLOBAL_FRACTION, 6)
-    domestic = domestic_protocol(profile, DECISION_YEAR, DECISION_YEAR + 1)
+    ano = inputs["ano"]
+    domestic = domestic_protocol(profile, ano, ano + 1)
 
     protocol = AnnualWalkForwardConfig(
-        DECISION_YEAR, DECISION_YEAR + 1, factor=FACTOR,
+        ano, ano + 1, factor=FACTOR,
         maximum_equity_weight=domestic.maximum_equity_weight,
         maximum_asset_weight=domestic.maximum_asset_weight,
         top_assets=count, maximum_names_per_sector=domestic.maximum_names_per_sector)
@@ -125,20 +139,40 @@ def book_for_profile(profile: str, inputs: dict) -> dict:
 def build(price_path, universe_path, mapping_path, cvm_cache, output) -> dict:
     destination = Path(output)
     inputs = _screen_inputs(price_path, universe_path, mapping_path, cvm_cache, destination)
-    registration = json.loads((ROOT / "data" / "benevente_profile_ladder_v3_registration.json")
-                              .read_text(encoding="utf-8"))
+    # O registro vem da política vigente, não de um caminho escrito à mão: era
+    # assim que dois registros conseguiam se dizer vigentes ao mesmo tempo.
+    if str(ROOT / "tools") not in sys.path:
+        sys.path.insert(0, str(ROOT / "tools"))
+    from politica import REGISTRO
+    registration = json.loads(REGISTRO.read_text(encoding="utf-8"))
     books = {p: book_for_profile(p, inputs) for p in LADDER_V2}
+    # Reconstrução e decisão não são a mesma coisa, e a diferença é a data em
+    # que isto rodou. Escrito à mão, o campo dizia "reconstrução" mesmo quando a
+    # decisão fosse tomada no dia — que é exatamente o que 2027 exige para a
+    # amostra confirmatória valer. Agora ele sai da comparação, não da memória.
+    hoje = datetime.now(ZoneInfo("America/Sao_Paulo")).date()
+    reconstrucao = hoje > inputs["decision"].date()
     result = {
         "decision_date": str(inputs["decision"].date()),
-        "status": "reconstrucao_sob_politica_congelada",
+        "generated_at": datetime.now(ZoneInfo("America/Sao_Paulo")).isoformat(),
+        "status": ("reconstrucao_sob_politica_congelada" if reconstrucao
+                   else "decisao_tomada_na_data"),
         "policy": registration["policy"],
         "registration_sha256": registration["registration_sha256"],
         "approved_by": registration["approved_by"],
+        # A frase acompanha o que o livro de fato é. Escrita fixa, ela diria
+        # "reconstrução, não validação prospectiva" também no dia em que a
+        # decisão passar a ser tomada na data — e aí estaria negando a única
+        # coisa que a amostra confirmatória precisa afirmar.
         "honesty": (
             "A política é declarada e foi congelada antes desta execução, então aplicá-la a uma data "
             "passada não escolhe nada: orçamento, número de nomes, tetos e fatores já estavam assinados. "
-            "A amostra confirmatória continua começando no primeiro pregão de 2027 — este livro é "
-            "reconstrução, não validação prospectiva."),
+            f"A amostra confirmatória começa em {registration['confirmatory_sample_starts']} — este livro é "
+            "reconstrução, não validação prospectiva."
+            if reconstrucao else
+            "A decisão foi tomada na própria data, com o universo, a ponte e os fundamentos disponíveis "
+            "nela, sob política congelada e assinada antes. Não é reconstrução: é a decisão do ano, e "
+            f"a amostra confirmatória declarada começa em {registration['confirmatory_sample_starts']}."),
         "universe": {
             "all_instruments": int(len(inputs["universe"])),
             "equities_at_decision": int(inputs["universe"].asset_class.eq("equity").sum()),
@@ -156,7 +190,7 @@ def build(price_path, universe_path, mapping_path, cvm_cache, output) -> dict:
             "ficam fora da triagem e isso está no arquivo de cobertura.",
         ],
     }
-    (destination / "profile_books_2026.json").write_text(
+    (destination / f"profile_books_{inputs['ano']}.json").write_text(
         json.dumps(result, ensure_ascii=False, indent=2), encoding="utf-8")
     return result
 

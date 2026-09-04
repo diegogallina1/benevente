@@ -66,13 +66,30 @@ def test_o_ultraconservador_continua_com_dois_metodos(relatorio) -> None:
         "os dois métodos convergiram: decida qual governa e atualize a descrição")
 
 
-def test_as_amarras_a_2026_estao_inventariadas() -> None:
-    """A lista de mudanças para 2027 não pode envelhecer separada do código."""
+def test_nenhuma_amarra_a_2026_voltou() -> None:
+    """O ano é propriedade do insumo, e tem de continuar sendo.
+
+    As quatro amarras caíram em 04/09/2026: o ano passou a sair do retrato do
+    universo, e não de constante, nome de arquivo ou número escrito no corpo.
+    Reintroduzir qualquer uma faz o fluxo servir a um ano só de novo, e o
+    sintoma disso em 2027 seria ler silenciosamente o ano errado.
+    """
     modulo = _ensaio()
     pinos = modulo.pinos_de_2026()
     assert pinos, "o inventário de amarras ficou vazio"
-    for pino in pinos:
-        assert (ROOT / pino["arquivo"]).exists(), pino["arquivo"]
+    de_pe = [p for p in pinos if p["presente"]]
+    assert not de_pe, de_pe
+
+
+def test_o_ano_sai_do_retrato_do_universo() -> None:
+    """Não de um sinalizador: assim os dados e o ano não têm como se separar."""
+    import pandas as pd
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    import build_profile_books_2026 as gerador
+    for data, esperado in (("2026-01-02", 2026), ("2027-01-04", 2027)):
+        universo = pd.DataFrame({"decision_date": [data]})
+        assert gerador.ano_da_decisao(universo) == esperado
 
 
 def test_o_comando_documentado_do_gerador_funciona() -> None:

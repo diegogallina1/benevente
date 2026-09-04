@@ -58,11 +58,19 @@ INSUMOS = {
 }
 
 #: Tudo que amarra o fluxo a 2026. Vira a lista de mudanças para 2027.
+#:
+#: Cada entrada traz a própria marca, e não uma busca solta pelo arquivo: com
+#: uma expressão só para todos, duas amarras diferentes no mesmo arquivo se
+#: reportavam presentes porque uma casava com a marca da outra.
 PRESOS_A_2026 = (
-    ("build_profile_books_2026.py", "DECISION_YEAR = 2026"),
-    ("build_current_2026_decision.py", "current_mapping fixa universe_year 2025 e 2026"),
-    ("build_current_2026_decision.py", "_january_price_row lê COTAHIST_A2026.ZIP"),
-    ("build_profile_books_2026.py", "escreve fundamentals_2026.csv e coverage_2026.csv"),
+    ("build_profile_books_2026.py", "DECISION_YEAR escrito como constante",
+     r"^DECISION_YEAR\s*=\s*2026"),
+    ("build_profile_books_2026.py", "nomes de saída com o ano dentro",
+     r'"fundamentals_2026\.csv"|"profile_books_2026\.json"'),
+    ("build_current_2026_decision.py", "current_mapping fixa universe_year 2025 e 2026",
+     r"universe_year\.eq\(2025\)|carried\[.universe_year.\]\s*=\s*2026"),
+    ("build_current_2026_decision.py", "_january_price_row lê COTAHIST_A2026.ZIP",
+     r"COTAHIST_A2026\.ZIP"),
 )
 
 
@@ -153,9 +161,9 @@ def divergencia_do_ultraconservador(ensaiado: dict) -> dict:
 def pinos_de_2026() -> list[dict]:
     """Confere que cada amarra a 2026 ainda está lá, para a lista não envelhecer."""
     encontrados = []
-    for arquivo, descricao in PRESOS_A_2026:
+    for arquivo, descricao, padrao in PRESOS_A_2026:
         texto = (ROOT / arquivo).read_text(encoding="utf-8") if (ROOT / arquivo).exists() else ""
-        marca = re.search(r"DECISION_YEAR\s*=\s*2026|COTAHIST_A2026|fundamentals_2026|eq\(2025\)", texto)
+        marca = re.search(padrao, texto, re.M)
         encontrados.append({"arquivo": arquivo, "amarra": descricao, "presente": bool(marca)})
     return encontrados
 
@@ -194,10 +202,13 @@ def main() -> int:
         print(f"    total em ações: {total['publicado']:.4%} publicado, {total['ensaio']:.4%} no ensaio "
               f"({'igual' if total['igual'] else 'DIFERENTE'})")
         print(f"    distribuição entre papéis: diferente em {len(divergencia['pesos_diferentes_em'])} dos 12")
-    print("\n  amarras a 2026 que precisam sair para 2027:")
-    for pino in relatorio["presos_a_2026"]:
-        if pino["presente"]:
-            print(f"    {pino['arquivo']}: {pino['amarra']}")
+    presentes = [p for p in relatorio["presos_a_2026"] if p["presente"]]
+    resolvidas = [p for p in relatorio["presos_a_2026"] if not p["presente"]]
+    print(f"\n  amarras a 2026: {len(resolvidas)} resolvida(s), {len(presentes)} de pé")
+    for pino in presentes:
+        print(f"    falta  {pino['arquivo']}: {pino['amarra']}")
+    for pino in resolvidas:
+        print(f"    ok     {pino['arquivo']}: {pino['amarra']}")
     faltando = [i for i in relatorio["insumos"] if not i["existe"]]
     if faltando:
         print("\n  INSUMO AUSENTE:")

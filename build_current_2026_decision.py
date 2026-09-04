@@ -34,32 +34,50 @@ LIVE_ISSUER_CAP = .176
 LIVE_TOP_ASSETS = 5
 
 
-def current_mapping(universe: pd.DataFrame, prior_mapping: pd.DataFrame) -> pd.DataFrame:
-    """Carry only an already-audited B3/CVM bridge with the same ticker *and* ISIN."""
+def current_mapping(universe: pd.DataFrame, prior_mapping: pd.DataFrame,
+                    decision_year: int = 2026) -> pd.DataFrame:
+    """Carry only an already-audited B3/CVM bridge with the same ticker *and* ISIN.
+
+    O ano entra como argumento, com 2026 de padrão para não quebrar quem já
+    chamava: a ponte de um ano se apoia na do anterior, e com os dois números
+    escritos no corpo a função só servia para 2026. Quem decidir 2027 passa
+    2027, e a herança passa a vir de 2026 sozinha.
+    """
     equities = universe[universe.asset_class.eq("equity")][["ticker", "isin"]].copy()
     prior = prior_mapping[prior_mapping.mapping_status.eq("accepted")].copy()
     if "universe_year" in prior:
-        prior = prior[prior.universe_year.eq(2025)].copy()
-    # The current bridge export is already dated to 2026. It is accepted only
-    # after the same-ticker and same-ISIN intersection below, never by ticker
-    # name alone.
+        prior = prior[prior.universe_year.eq(decision_year - 1)].copy()
+    # The current bridge export is already dated to the decision year. It is
+    # accepted only after the same-ticker and same-ISIN intersection below,
+    # never by ticker name alone.
     carried = equities.merge(prior, on=["ticker", "isin"], how="inner", suffixes=("", "_prior"))
-    carried["universe_year"] = 2026
+    carried["universe_year"] = decision_year
     carried["decision_date"] = universe.decision_date.iloc[0]
     carried["mapping_status"] = "accepted"
     carried["match_method"] = "prior_accepted_b3_cvm_bridge_same_ticker_isin"
     return carried[prior_mapping.columns]
 
 
-def _january_price_row(cache_dir: Path, tickers: set[str]) -> pd.DataFrame:
-    quotations = parse_cotahist(cache_dir / "COTAHIST_A2026.ZIP", end_date="2026-01-31", tickers=tickers)
-    january = quotations[(quotations.trade_date.dt.year == 2026) & (quotations.trade_date.dt.month == 1)]
+def _january_price_row(cache_dir: Path, tickers: set[str], year: int = 2026) -> pd.DataFrame:
+    """O primeiro pregão de janeiro do ano da decisão.
+
+    O ano entra como argumento, com 2026 de padrão para não quebrar quem já
+    chamava. Com o número escrito no corpo, o arquivo do COTAHIST e o filtro de
+    data só serviam para 2026, e uma execução de 2027 leria silenciosamente o
+    ano errado em vez de falhar.
+    """
+    quotations = parse_cotahist(cache_dir / f"COTAHIST_A{year}.ZIP",
+                                end_date=f"{year}-01-31", tickers=tickers)
+    january = quotations[(quotations.trade_date.dt.year == year) & (quotations.trade_date.dt.month == 1)]
     decision = january.trade_date.min()
     return january[january.trade_date.eq(decision)].assign(ticker=lambda frame: frame.ticker_raw + ".SA")
 
 
-def _partial_prices(cache_dir: Path, tickers: set[str], start: pd.Timestamp) -> pd.DataFrame:
-    quotations = parse_cotahist(cache_dir / "COTAHIST_A2026.ZIP", start_date=start, tickers=tickers)
+def _partial_prices(cache_dir: Path, tickers: set[str], start: pd.Timestamp,
+                    year: int | None = None) -> pd.DataFrame:
+    """Preços do ano da decisão a partir dela. O ano sai da própria data quando não vem dito."""
+    year = year or int(pd.Timestamp(start).year)
+    quotations = parse_cotahist(cache_dir / f"COTAHIST_A{year}.ZIP", start_date=start, tickers=tickers)
     quotations["ticker"] = quotations.ticker_raw + ".SA"
     return quotations.pivot_table(index="trade_date", columns="ticker", values="close_price_brl", aggfunc="last").sort_index()
 
