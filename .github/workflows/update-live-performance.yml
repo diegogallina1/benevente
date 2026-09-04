@@ -84,4 +84,11 @@ jobs:
           # passo morre antes do commit. Nos caminhos de web/ o -f e inocuo.
           git add -f $tracked
           git commit -m "Atualiza acompanhamento corrente de 2026 [skip ci]"
+          # Rebase antes de empurrar: se o main andou desde o checkout, o push
+          # direto é recusado com non-fast-forward e a atualização se perde. O
+          # radar publica duas vezes por dia no mesmo branch, então a corrida é
+          # real. Conflito aqui não se resolve sozinho, porque os dois lados são
+          # o mesmo arquivo gerado: o passo falha, e a execução seguinte
+          # reconstrói do zero a partir do dado de mercado.
+          git pull --rebase origin main
           git push

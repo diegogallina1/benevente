@@ -84,4 +84,11 @@ jobs:
           git config user.email "214411949+diegogallina1@users.noreply.github.com"
           git add web/event_radar.json
           git commit -m "Atualiza radar consolidado de eventos [skip ci]"
+          # Rebase antes de empurrar: se o main andou desde o checkout, o push
+          # direto é recusado com non-fast-forward e a consolidação se perde.
+          # Aconteceu ao disparar duas execuções com treze segundos de
+          # diferença. Um conflito aqui não pode ser resolvido sozinho, porque
+          # os dois lados são o mesmo arquivo gerado: nesse caso o passo falha,
+          # que é o certo, e a execução seguinte reconstrói do zero.
+          git pull --rebase origin main
           git push
