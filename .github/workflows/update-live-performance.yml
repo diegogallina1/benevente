@@ -32,14 +32,21 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: requirements-ci.txt
 
       # numpy e pandas entram por portfolio_risk.py, de onde saem os
       # multiplicadores da camada de proteção. Esse arquivo é hasheado no
       # registro congelado da política, então não pode ser editado para ficar
       # leve — e copiar os multiplicadores para cá criaria uma segunda fonte
       # de um parâmetro declarado, que é pior do que instalar a dependência.
-      - name: Instalar dependências mínimas
-        run: python -m pip install pytest numpy pandas
+      #
+      # A lista era escrita aqui à mão e ficou para trás: em 03/09/2026 os
+      # testes passaram a alcançar fundamentals.py, que importa pydantic, e o
+      # noturno quebrou três noites seguidas com ModuleNotFoundError enquanto
+      # os outros workflows seguiam verdes — eles já liam requirements-ci.txt.
+      # Uma lista só, com as versões presas, é o que impede a repetição.
+      - name: Instalar dependências
+        run: python -m pip install -r requirements-ci.txt
 
       - name: Atualizar séries e validar contrato
         run: |
