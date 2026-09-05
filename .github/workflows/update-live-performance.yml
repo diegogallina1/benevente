@@ -64,9 +64,19 @@ jobs:
           # quebrado: o monitor sem separar as pernas, listas de tres perfis
           # escondendo o quarto degrau, e a faixa de 2026 descrita como se
           # tivesse sido desenhada em janeiro.
+          # O teste do app embutido nao vale aqui, e nao por ser inconveniente:
+          # ele compara o payload dentro de docs/desenho_tela_mapa.html com o
+          # web/forecast_2026.json que estes passos acabaram de reescrever. O
+          # documento sai de tools/build_mapa_prototype.py, que nao roda neste
+          # workflow de proposito — o app so muda com revisao humana. Logo o
+          # embutido envelhece a cada pregao e a comparacao aqui so mede o
+          # relogio. Ela continua valendo onde os dois lados estao parados: na
+          # CI de pull request, que roda este mesmo teste e ainda passa por
+          # tools/verify_app_matches_site.py.
           python -m pytest tests/test_live_performance.py tests/test_profile_books_2026.py tests/test_notify_queue.py \
             tests/test_monitor_pernas_e_faltas.py tests/test_escada_completa_em_2026.py tests/test_forecast_2026.py \
-            tests/test_seguranca_do_site.py -q
+            tests/test_seguranca_do_site.py -q \
+            --deselect tests/test_forecast_2026.py::test_o_app_mostra_o_mesmo_acompanhamento_do_site
 
       - name: Publicar somente quando houver novo dado
         shell: bash
