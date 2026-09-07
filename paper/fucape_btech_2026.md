@@ -12,11 +12,11 @@ Palavras-chave: governança de investimentos; alocação de carteira; trilha de 
 
 ## 1. Introdução: problema, objetivo e contribuição
 
-O problema é operacional: a recomendação é produzida hoje e defendida anos depois; sem preservar dado, versão da regra e aprovação, a justificativa posterior incorpora informação que não existia. O Benevente produz proposta e registro verificável no mesmo fluxo.
+O problema é operacional: a decisão é tomada hoje e defendida anos depois; sem preservar dado, versão da regra e aprovação, a justificativa posterior incorpora informação que não existia. O Benevente produz proposta e registro verificável no mesmo fluxo.
 
-Quando um cliente pergunta por que uma ação entrou na carteira anos antes, o escritório precisa demonstrar três coisas.
+Quando alguém pergunta por que uma ação entrou na carteira anos antes, quem decidiu precisa demonstrar três coisas.
 
-1. Quais dados existiam naquela data: um balanço republicado em 2024 não pode aparecer como disponível em janeiro de 2023, e sem data de recebimento a justificativa incorpora informação que ninguém tinha.
+1. Quais dados existiam naquela data: um balanço republicado em 2024 não pode aparecer como disponível em janeiro de 2023.
 2. Qual regra estava vigente naquele janeiro, com os limites de então, e não a regra de hoje.
 3. Quem aprovou: decisão sem responsável não é auditável, e automação sem aprovação humana desloca a responsabilidade para um sistema que não pode respondê-la.
 
@@ -24,13 +24,13 @@ Uma planilha sobrescreve o próprio estado e perde a autoria das alterações; u
 
 A pergunta prioritária, como usar modelos de linguagem acessíveis à comunidade para apoiar decisões de investimento, torna-se no Benevente uma questão de engenharia e governança: como produzir proposta e prova no mesmo fluxo, sem transferir ao texto gerado a seleção, os pesos ou a responsabilidade.
 
-O objetivo é construir e avaliar um artefato B2B que transforme cada recomendação em documento verificável, pelo método do design science: identificar o problema, explicitar requisitos, construir e avaliar por utilidade, qualidade e evidência (Hevner et al., 2004; Peffers et al., 2007). A avaliação combina testes, inspeção das fontes, busca deliberada de erros e diagnóstico histórico. A contribuição não é a trilha de auditoria com hash e separação de papéis, que já é padrão, e sim ligá-la a um protocolo congelado antes do período avaliado, com critério de falseamento e início da amostra confirmatória declarados. Trilhas registram o que houve; esta se compromete de antemão com o que contaria como fracasso. O retorno passado mede o comportamento do protótipo, não sua utilidade nem o desempenho futuro.
+O objetivo é construir e avaliar um artefato que transforme cada decisão de carteira em documento verificável, pelo método do design science: identificar o problema, explicitar requisitos, construir e avaliar por utilidade, qualidade e evidência (Hevner et al., 2004; Peffers et al., 2007). A avaliação combina testes, inspeção das fontes, busca deliberada de erros e diagnóstico histórico. A contribuição não é a trilha de auditoria com hash e separação de papéis, que já é padrão, e sim ligá-la a um protocolo congelado antes do período avaliado, com critério de falseamento e início da amostra confirmatória declarados. Trilhas registram o que houve; esta se compromete de antemão com o que contaria como fracasso.
 
 ---
 
 ## 2. Problema prático e fundamentação
 
-O público inicial são escritórios de investimento, consultorias de valores mobiliários e gestão patrimonial que precisam recomendar, revisar e defender carteiras: preservar o contexto da decisão, demonstrar por que cada ativo entrou ou não, e comparar com alternativas reconhecíveis pelo cliente. O piloto comercial proposto, descrito na Seção 6.3, medirá o problema e a utilidade do artefato, sem presumir efeito sobre a economia local.
+O público é o investidor que decide a própria carteira e quer poder reconstruir a decisão depois: preservar o contexto em que ela foi tomada, saber por que cada ativo entrou ou não, e comparar com alternativas reconhecíveis. O artefato não recomenda a ninguém em particular. Ele aplica uma política declarada, idêntica para todos, e a carteira de cada perfil é a mesma para quem nele se enquadra; o enquadramento é regra determinística publicada, não avaliação individual. O piloto da Seção 6.3 medirá o problema e a utilidade do artefato.
 
 Três vieses clássicos de backtesting foram tratados como requisitos de projeto. O viés de sobrevivência é mitigado ao reconstruir o universo pelo arquivo histórico da B3 e manter os deslistados; ainda resta reconciliar integralmente seus eventos societários. O viés de antecipação, ou *look-ahead*, é mitigado pela data de recebimento de ITR e DFP e pelo corte anual; republicações e fontes auxiliares continuam sujeitas a inspeção. O viés de mineração de dados, ou *data-snooping*, é limitado pela seleção aninhada, pelo prêmio de retrospectiva e pelo Sharpe deflacionado (Bailey & López de Prado, 2014), mas onze decisões não substituem uma amostra prospectiva.
 
@@ -38,7 +38,7 @@ Markowitz (1952) fundamenta a comparação média-variância, ou MVO, calculada 
 
 A literatura recente separa utilidade narrativa de capacidade preditiva: Perlin et al. (2025), com 30 mil simulações e 1.522 empresas anonimizadas, não encontram superioridade consistente de LLM sobre 1/N ou S&P 500; Pelster e Val (2024) defendem o experimento ao vivo contra conhecimento posterior; Kim, Muhn e Nikolaev (2024) mostram extração narrativa útil sem alfa de negociação; Li et al. (2026, FINSABER) veem vantagens aparentes se deteriorarem em universos amplos e regimes distintos; FINCON (Yu et al., 2024) inspira divisão de responsabilidades, não autonomia. Esse conjunto sustenta a escolha do Benevente: a regra calcula, o modelo apenas explica fatos aprovados, e a utilidade será avaliada prospectivamente.
 
-Essas escolhas definem o tipo de evidência que o trabalho pode produzir. O backtest é um experimento histórico sobre um protocolo, não uma simulação da experiência de cada cliente, cuja carteira implementável depende de suitability, liquidez, tributação e restrições contratuais. O artefato separa, por isso, a regra que mede o sinal, a política institucional que limita o risco e o texto explicativo que apoia a revisão humana.
+Essas escolhas definem o tipo de evidência que o trabalho pode produzir. O backtest é um experimento histórico sobre um protocolo, não a experiência de uma pessoa, cuja carteira implementável depende de liquidez, tributação e restrições próprias. O artefato separa, por isso, a regra que mede o sinal, a política institucional que limita o risco e o texto explicativo que apoia a revisão humana.
 
 ---
 
@@ -105,7 +105,7 @@ O sistema recusa, por regra, ordens que ultrapassem 5% do volume médio diário 
 
 ### 3.7 Governança: o sistema propõe, a pessoa decide
 
-Quatro mecanismos delimitam o que o software pode fazer. Eles transformam a prestação de contas algorítmica em propriedade do desenho, e não em explicação produzida depois do fato (Kroll et al., 2017). A aprovação humana e o enquadramento ao perfil também são coerentes com a Resolução CVM nº 30, enquanto qualquer uso como consultoria individualizada depende da estrutura autorizada prevista na Resolução CVM nº 19 (Comissão de Valores Mobiliários, 2021a, 2021b).
+Quatro mecanismos delimitam o que o software pode fazer. Eles transformam a prestação de contas algorítmica em propriedade do desenho, e não em explicação produzida depois do fato (Kroll et al., 2017). A aprovação humana e o enquadramento por perfil são coerentes com a Resolução CVM nº 30; e o desenho mantém o artefato fora da consultoria individualizada, que exigiria a estrutura autorizada da Resolução CVM nº 19, porque a política é pública e igual para todos, o enquadramento é regra determinística e nenhuma orientação é produzida em função do caso de uma pessoa (Comissão de Valores Mobiliários, 2021a, 2021b).
 
 1. Aprovação humana obrigatória: nenhuma ordem é transmitida, porque a arquitetura não possui esse caminho.
 2. Papel delimitado do modelo de linguagem: o modelo organiza tese e riscos a partir de fatos já aprovados, sem definir peso, alterar limite ou aprovar ativo. Trata-se de restrição de arquitetura verificável, e a Seção 5.6 apresenta o experimento que testou o relaxamento dessa restrição.
@@ -310,15 +310,15 @@ Depois da última correção, o retorno anualizado publicado caiu e a queda máx
 
 ### 6.1 Público e proposta de valor
 
-O produto foi concebido para escritórios de investimento, consultorias e gestores patrimoniais. A política aplicada, os dados e seus hashes, a elegibilidade, os pesos, as ordens, o custo estimado e a aprovação permanecem ligados à mesma decisão, o que reduz o tempo de reconstrução e permite responder por que um papel entrou e por que outro ficou de fora. O valor a testar está na consistência do processo e na revisão, não em promessa de superar o mercado.
+O produto foi concebido para quem decide a própria carteira. A política aplicada, os dados e seus hashes, a elegibilidade, os pesos, as ordens, o custo estimado e a aprovação permanecem ligados à mesma decisão, o que reduz o tempo de reconstrução e mostra por que um papel entrou e outro não.
 
 ### 6.2 Fluxo operacional
 
-O uso começa pelo perfil declarado adequado ao cliente. O usuário vê quais arquivos estavam disponíveis e quais passaram na validação; a triagem mostra aprovados e reprovados com o motivo; a carteira candidata apresenta pesos, parcela defensiva, custo e comparação com CDI, Ibovespa e MVO. O profissional revisa a tese, registra riscos, aprova ou rejeita e justifica; o dossiê reúne esse percurso com a versão da regra.
+O uso começa pelo enquadramento em um dos quatro perfis. Quem decide vê quais arquivos estavam disponíveis e quais passaram na validação; a triagem mostra aprovados e reprovados com o motivo; a carteira candidata apresenta pesos, parcela defensiva, custo e comparação com CDI, Ibovespa e MVO. Em seguida revisa a tese, registra riscos, aprova ou rejeita e justifica; o dossiê reúne esse percurso com a versão da regra.
 
 ### 6.3 Implantação e piloto comercial
 
-A implantação começa por fontes, políticas, acessos e aprovadores. No piloto o sistema acompanha poucas carteiras sem enviar ordens, e os dossiês são confrontados com o processo vigente; a conciliação de custos e posições fecha o ciclo. O piloto medirá tempo, completude da evidência, revisões, divergência de custos e disposição a pagar; é lá que a intensidade do problema se mede. O produto permanece em protótipo, com hashes versionados e data carimbada por terceiro.
+No piloto o sistema acompanha poucas carteiras sem enviar ordens, e os dossiês são confrontados com o que o usuário faria sem ele; a conciliação de custos e posições fecha o ciclo. O piloto medirá tempo, completude da evidência, revisões, divergência de custos e disposição a pagar; é lá que a intensidade do problema se mede. O produto permanece em protótipo, com hashes versionados e data carimbada por terceiro.
 
 ### 6.4 Matriz de evidências
 
@@ -348,7 +348,7 @@ A segunda limitação está nos dados. A página atual da B3 respondeu para 95,6
 
 A terceira é econômica. Na série de desenvolvimento a queda máxima chegou a 47,8%, pior que os 47,0% do Ibovespa; a camada reduziu essa marca para 28,7%, mas foi concebida depois da Covid-19 (Seção 5.5); o imposto de renda variável é apurado por ativo e custo médio, e resta conciliar com notas de corretagem. A política limita a exposição por perfil, com quedas máximas retrospectivas entre 9,2% e 28,9%, mas seus parâmetros também foram definidos com conhecimento da amostra.
 
-Por fim, o produto não elimina responsabilidade profissional: uso comercial exige enquadramento regulatório, suitability, segurança, contrato de fontes e aprovação humana. O modelo de linguagem não seleciona ativos nem define pesos, e o radar de notícias serve apenas ao alerta humano, sem participar do retorno histórico.
+Por fim, o produto não transfere responsabilidade: a decisão, a ordem e o risco continuam de quem usa, e o artefato é ferramenta de apoio, não recomendação individual nem promessa de resultado. Uso comercial exige enquadramento regulatório, segurança e contrato de fontes. O radar de notícias serve apenas ao alerta humano, sem participar do retorno histórico.
 
 ### 7.2 Recomendações de pesquisa e implantação
 
@@ -362,7 +362,7 @@ O Benevente foi construído para resolver uma falha operacional específica: car
 
 No diagnóstico 2015–2025, os quatro perfis superaram o CDI em oito de onze anos cada um, com quedas escalonadas conforme o perfil; a incerteza amostral e a imputação parcial impedem tratar isso como superioridade comprovada. Os negativos são parte da contribuição: reselecionar mais vezes não ajudou, o modelo de linguagem não acrescentou retorno, a alocação direta por texto saiu aritmeticamente inconsistente em parte dos anos e a própria busca se degradou ao ser ampliada. O conjunto justifica um sistema em que a regra calcula, a linguagem explica e uma pessoa responde.
 
-A conclusão sustentada pela evidência é estreita. O artefato cria uma cadeia auditável e a usa para achar erros que alteram o próprio resultado — inclusive recusando um selo que os dados não sustentavam e trocando um caixa que não era comprável — e para medir o limite do próprio procedimento de seleção. A viabilidade comercial depende de um piloto que meça ganho de tempo, completude documental, compreensão e disposição a pagar. A validade financeira exigirá uma base histórica reconciliável e observações posteriores aos registros congelados; a amostra confirmatória da política vigente começa no primeiro pregão de 2027. Até lá, o desempenho histórico permanece diagnóstico de desenvolvimento.
+A conclusão sustentada pela evidência é estreita. O artefato cria uma cadeia auditável e a usa para achar erros que alteram o próprio resultado — inclusive recusando um selo que os dados não sustentavam e trocando um caixa que não era comprável — e para medir o limite do próprio procedimento de seleção. A viabilidade comercial depende do piloto da Seção 6.3. A validade financeira exigirá uma base histórica reconciliável e observações posteriores aos registros congelados; a amostra confirmatória da política vigente começa no primeiro pregão de 2027. Até lá, o desempenho histórico permanece diagnóstico de desenvolvimento.
 
 ---
 
