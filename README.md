@@ -490,15 +490,20 @@ O motor auditável continua sendo a interface Streamlit e os comandos de
 proposta descritos neste README. Uma futura API deverá ligar a experiência web
 ao mesmo núcleo Python, preservando a trilha de dados e aprovação humana.
 
-### Contato institucional do site
+### A chave que pseudonimiza o documento
 
-O site comercial tem um formulário de demonstração em `/api/demo-request`. A
-rota só encaminha o lead depois que estas variáveis forem cadastradas na Vercel
-para produção: `RESEND_API_KEY`, `BENEVENTE_FROM_EMAIL` e
-`BENEVENTE_CONTACT_EMAIL`. Use `web/.env.example` apenas como referência e não
-versione chaves. Sem as variáveis, a página informa de forma explícita que o
-canal ainda não foi configurado; ela não guarda dados do visitante em arquivo
-ou planilha local.
+O registro de consentimento da conexão com a B3 guarda o CPF derivado, nunca o
+número. A derivação é HMAC-SHA256 com chave do ambiente, em
+`BENEVENTE_DOCUMENTO_CHAVE`, de no mínimo 32 bytes. Sem a variável o módulo
+recusa em vez de cair no SHA-256 puro: existem cerca de 10⁹ CPFs válidos, e
+enumerar esse espaço contra um hash sem chave é trabalho de minutos, o que
+devolveria o número a quem obtivesse o registro. A chave não fica no
+repositório, não entra no registro e não aparece em nenhum artefato.
+
+`research_b3_connection.py` usa uma chave de demonstração declarada no próprio
+arquivo, sobre um CPF sintético, para que
+`artifacts/b3_connection_v1/connection_example.json` continue reproduzível. O
+artefato diz isso em `consent_note`.
 
 ## Carteira-sombra real, sem ordem automática
 

@@ -30,9 +30,14 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
     # home abre pelo problema do leitor. O contrato exige que ela esteja
     # declarada, não que esteja numa redação específica.
     assert all(papel in home for papel in ("CALCULA", "EXPLICA", "DECIDE"))
-    assert "Revisor humano responsável" in home
+    # Quem decide é o leitor. Em 04/09/2026 o produto passou de B2B para B2C, e
+    # a frase deixou de dizer "revisor humano responsável", que era o
+    # profissional habilitado do escritório, e passou a apontar para ele mesmo.
+    # O que o contrato exige continua sendo o mesmo: que a decisão tenha dono
+    # nomeado na página, e que não seja o software.
+    assert "Você, e a escolha fica registrada" in home
     # E que a home roteie por jornada, não pelas versões internas do motor.
-    assert "Entenda a pesquisa" in home and "Veja o produto de governança" in home
+    assert "Entenda a pesquisa" in home and "Veja o que você recebe" in home
     assert "Benevente 1</strong>" not in home and "Benevente 2</strong>" not in home
     # A home enxugou de seis blocos para três mais o público. O passo a passo
     # do "como decide" e o dossiê ano a ano saíram porque já existiam, melhor
@@ -42,7 +47,12 @@ def test_home_has_canonical_stage_and_five_core_blocks() -> None:
         assert core_class in home
     for moved in ("model-shell", "lab-section", 'id="carteira"'):
         assert moved not in home, f"{moved} voltou para a home"
-    assert "Feito para quem assina a recomendação" in home
+    assert "Feito para quem decide o próprio dinheiro" in home
+    # Falando com investidor final, o aviso deixa de ser rodapé e passa a ser
+    # parte da tese: o site aplica uma regra declarada e mostra o resultado, e
+    # isso não é recomendação individual. Se a frase sair da home, sai também a
+    # única coisa que separa uma ferramenta de um serviço de recomendação.
+    assert "Não é recomendação individual" in home
     for moved_class in ("research-signal shell", "evidence-board shell", "research-disclosure shell"):
         assert moved_class not in home
     assert "hero-performance" in home
@@ -86,7 +96,7 @@ def familias_hospedadas() -> set[str]:
 
 def test_benevente_2_has_direct_benchmarks_and_shared_design_system() -> None:
     pages = [ROOT / "web" / name for name in (
-        "index.html", "versoes.html", "metodo.html", "para-escritorios.html", "quant-ai.html"
+        "index.html", "versoes.html", "metodo.html", "para-voce.html", "quant-ai.html"
     )]
     for path in pages:
         source = path.read_text(encoding="utf-8")
@@ -109,7 +119,7 @@ def test_benevente_2_has_direct_benchmarks_and_shared_design_system() -> None:
     for name in ("benevente-1.html", "benevente-2.html"):
         redirect = (ROOT / "web" / name).read_text(encoding="utf-8")
         assert "versoes.html" in redirect and "http-equiv=\"refresh\"" in redirect, name
-    assert (ROOT / "web" / "btech.html").read_text(encoding="utf-8").count("para-escritorios.html") >= 1
+    assert (ROOT / "web" / "btech.html").read_text(encoding="utf-8").count("para-voce.html") >= 1
     # O site de produto publica só a política que está em uso. As duas escadas
     # lado a lado eram duas tabelas quase iguais, e quem chega para contratar
     # não precisa escolher entre elas: só uma existe. As duas continuam juntas

@@ -153,10 +153,6 @@ def live_checks(base: str, result: Result) -> None:
     result.check(status == 400, "ticker malformado é recusado", f"esperado 400, veio {status}")
     status, _ = request(prices, headers={"Origin": "https://evil.example"})
     result.check(status == 403, "origem externa recusada em preços", f"esperado 403, veio {status}")
-    status, _ = request("/api/demo-request")
-    result.check(status == 405, "contato recusa método errado", f"esperado 405, veio {status}")
-    status, _ = request("/api/demo-request", method="POST", headers={"Origin": "https://evil.example"})
-    result.check(status == 403, "origem externa recusada no contato", f"esperado 403, veio {status}")
 
 
 def main() -> None:

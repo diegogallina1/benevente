@@ -16,18 +16,18 @@
     <link rel="stylesheet" href="./versions.css?v=5256a2e04e" />
     <link rel="stylesheet" href="./paper.css?v=53e5e97e39" />
     <link rel="stylesheet" href="./site-polish.css?v=39e348ecd6" />
-    <link rel="stylesheet" href="./design-system.css?v=e7e02e955b" />
+    <link rel="stylesheet" href="./design-system.css?v=d5d9f20421" />
     <link rel="stylesheet" href="./ladder.css?v=2a8be89fde" />
     <link rel="stylesheet" href="./fontes.css?v=a1b29e2888">
     <link rel="stylesheet" href="./tokens.css?v=057ed757df">
-    <link rel="stylesheet" href="./benevente.css?v=57f547e6fb">
+    <link rel="stylesheet" href="./benevente.css?v=15f92c4a7f">
     <script defer src="/_vercel/insights/script.js"></script>
   <script defer data-framework="vanilla" src="/_vercel/speed-insights/script.js"></script>
   </head>
   <body class="version-page">
     <header class="version-nav shell">
       <a class="brand" href="./"><span class="brand-mark">B</span><span>Benevente</span></a>
-      <nav aria-label="Navegação"><a class="strategy-tab" href="./versoes.html">Módulos e perfis</a><a aria-current="page" href="./metodo.html">Método</a><a href="./quant-ai.html">Evidência</a><a href="./para-escritorios.html">Para escritórios</a><a href="./limitacoes.html">Limitações</a><a href="./app.html">App</a></nav>
+      <nav aria-label="Navegação"><a class="strategy-tab" href="./versoes.html">Módulos e perfis</a><a aria-current="page" href="./metodo.html">Método</a><a href="./quant-ai.html">Evidência</a><a href="./para-voce.html">Para você</a><a href="./limitacoes.html">Limitações</a><a href="./app.html">App</a></nav>
     </header>
     <main class="shell paper-page">
       <p class="version-kicker">DOCUMENTAÇÃO PÚBLICA</p>
@@ -78,10 +78,10 @@
       <p>A troca também tapou um buraco de dado que ninguém tinha notado: a coluna de caixa do painel anterior é <b>plana até 2012</b>, não tem dado. A escada avalia a partir de 2015 e não era afetada, mas a busca aninhada arquivada ordena configurações pelos anos encerrados antes de cada decisão, e 2012 entrava em todas as ordenações com o caixa rendendo zero, penalizando as configurações mais defensivas. Como as duas pontas do experimento de capacidade usaram o mesmo insumo, a comparação entre 36 e 256 candidatos permanece válida. O que não se pode afirmar é que a ordenação de 2015 a 2025 teria sido a mesma com o caixa correto. A série do Tesouro Selic é real desde 2010, então a v3 não carrega o buraco. A rotina e a série estão em <b>tesouro_selic_series.py</b> e <b>tools/build_real_cash_panel.py</b>.</p>
 
       <h3>3.1 Catálogo de renda fixa: a ordem que a taxa anunciada esconde</h3>
-      <p>A parcela em caixa da política é um instrumento só, e isso basta para medir a escada. Um escritório real escolhe entre dezenas de produtos que <b>não são comparáveis do jeito que são anunciados</b>: um CDB a 118% do CDI paga a tabela regressiva, uma LCI a 94% é isenta, um título público paga custódia, um fundo DI paga taxa e come-cotas. Qual vence depende do prazo, e a taxa da vitrine não responde.</p>
+      <p>A parcela em caixa da política é um instrumento só, e isso basta para medir a escada. Na prática se escolhe entre dezenas de produtos que <b>não são comparáveis do jeito que são anunciados</b>: um CDB a 118% do CDI paga a tabela regressiva, uma LCI a 94% é isenta, um título público paga custódia, um fundo DI paga taxa e come-cotas. Qual vence depende do prazo, e a taxa da vitrine não responde.</p>
       <p>O módulo de catálogo traz todos para a mesma régua, rendimento líquido anualizado no horizonte do próprio papel, depois de imposto, IOF, custódia e taxa, e o resultado inverte a ordem da vitrine com frequência. Numa grade de demonstração a 10,15% de CDI, o CDB anunciado a 118% entrega <b>101% do CDI</b> depois do imposto, enquanto a LCI anunciada a 94% entrega os mesmos 94%. E uma carteira de caixa bem montada rende cerca de <b>97% do CDI cheio</b>: o índice que serve de comparador nesta página é bruto, e nenhum investidor o recebe.</p>
       <p>A alocação tem três restrições declaradas, nessa ordem. O <b>teto do FGC</b>, R$ 250 mil por conglomerado por CPF, R$ 1 milhão em janela de quatro anos, corta o melhor produto quando o emissor esgota o limite, e dois papéis do mesmo conglomerado dividem um teto só, não dois. Produtos <b>sem cobertura</b> (CRI, CRA, debênture) só entram se o risco de crédito for declarado explicitamente, nunca por omissão. E uma <b>reserva de liquidez</b> impede que o caixa que a camada de proteção precisa movimentar fique preso num papel de dois anos.</p>
-      <p>Uma observação de enquadramento, registrada porque o catálogo atravessa regimes: CDB, RDB, LC, LCI e LCA são captação bancária, sob CMN e Banco Central, com FGC. Debênture, CRI e CRA são valores mobiliários, sob CVM, sem FGC. Título público é risco soberano. A ordenação por rendimento líquido atravessa os três, a decisão de alocar, não. Por isso a cobertura e o regime viajam com cada produto em vez de ficarem numa nota de rodapé. Nenhuma fonte pública arquiva a grade ofertada por distribuidor: a grade é do escritório, carregada com a data de recebimento, e o sistema ordena e aloca o que recebe. O módulo e os testes estão em <b>fixed_income_catalog.py</b>.</p>
+      <p>Uma observação de enquadramento, registrada porque o catálogo atravessa regimes: CDB, RDB, LC, LCI e LCA são captação bancária, sob CMN e Banco Central, com FGC. Debênture, CRI e CRA são valores mobiliários, sob CVM, sem FGC. Título público é risco soberano. A ordenação por rendimento líquido atravessa os três, a decisão de alocar, não. Por isso a cobertura e o regime viajam com cada produto em vez de ficarem numa nota de rodapé. Nenhuma fonte pública arquiva a grade ofertada por distribuidor: a grade é de quem a recebe, carregada com a data de recebimento, e o sistema ordena e aloca o que recebe. O módulo e os testes estão em <b>fixed_income_catalog.py</b>.</p>
 
       <h3>3.2 Esperado × realizado: medir a incerteza em vez de prometer retorno</h3>
       <p>Existe uma versão desonesta de "rentabilidade esperada" e uma honesta, e elas se parecem. A desonesta projeta um número, <i>este perfil rende 15% ao ano</i>, e o publica ao lado do histórico. É indefensável e seria a primeira coisa usada contra o produto no primeiro ano ruim. A honesta projeta um <b>intervalo</b> e depois mede se ele estava certo.</p>

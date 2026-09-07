@@ -58,7 +58,7 @@ def test_sample_dossier_carries_the_contract() -> None:
 def test_site_links_resolve_to_existing_files() -> None:
     ladder = (ROOT / "web" / "ladder.js").read_text(encoding="utf-8")
     assert "./dossiers/dossie_${activeProfile}_${activeYear}.pdf" in ladder
-    for page in ("index.html", "para-escritorios.html"):
+    for page in ("index.html", "para-voce.html"):
         source = (ROOT / "web" / page).read_text(encoding="utf-8")
         for match in re.findall(r'href="\./(dossiers/[^"]+\.pdf)"', source):
             assert (ROOT / "web" / match).exists(), match

@@ -8,12 +8,16 @@ testes cai.
 from __future__ import annotations
 
 from datetime import date
+import hashlib
 
 import pytest
 
-from b3_connection import (BASE_COMECA_EM, COBERTURA, Consentimento, Negociacao,
-                           Qualidade, reconstruir_custo, relatorio_de_lacunas)
+from b3_connection import (BASE_COMECA_EM, CHAVE_DO_DOCUMENTO, COBERTURA, DERIVACAO,
+                           ChaveAusente, Consentimento, Negociacao, Qualidade,
+                           reconstruir_custo, relatorio_de_lacunas)
 from portfolio_mapping import Bucket, Position, Source, adapt_portfolio, map_portfolio
+
+CHAVE = b"chave de teste com mais de trinta e dois bytes"
 
 ALVO = {"positions": {"CURY3": 0.10, "CMIN3": 0.10, "BBSE3": 0.06},
         "global_sleeve": 0.11, "cash": 0.63}
@@ -22,7 +26,7 @@ ALVO = {"positions": {"CURY3": 0.10, "CMIN3": 0.10, "BBSE3": 0.06},
 # --- consentimento --------------------------------------------------------
 
 def test_o_cpf_nunca_entra_no_registro():
-    consentimento = Consentimento(Consentimento.anonimiza("123.456.789-09"), "Benevente",
+    consentimento = Consentimento(Consentimento.pseudonimiza("123.456.789-09", CHAVE), "Benevente",
                                   "2026-08-26T09:00:00-03:00", ("Posição",))
     registro = consentimento.registro()
     assert "12345678909" not in str(registro)
@@ -32,21 +36,64 @@ def test_o_cpf_nunca_entra_no_registro():
 
 def test_o_registro_declara_onde_se_revoga():
     """Um consentimento sem caminho de saída não é consentimento."""
-    registro = Consentimento(Consentimento.anonimiza("12345678909"), "Benevente",
+    registro = Consentimento(Consentimento.pseudonimiza("12345678909", CHAVE), "Benevente",
                              "2026-08-26T09:00:00-03:00", ("Posição",)).registro()
     assert "investidor.b3.com.br" in registro["revogavel_em"]
+
+
+def test_o_pseudonimo_nao_e_o_hash_puro_do_cpf():
+    """O hash direto do CPF se enumera: são ~10⁹ candidatos, minutos de máquina.
+
+    Enquanto a derivação foi SHA-256 puro, quem obtivesse o registro recuperava
+    o número por força bruta, e o módulo chamava isso de anonimização. Este
+    teste é a prova de que a chave entra na conta.
+    """
+    puro = hashlib.sha256(b"12345678909").hexdigest()
+    assert Consentimento.pseudonimiza("12345678909", CHAVE) != puro
+
+
+def test_chaves_diferentes_dao_pseudonimos_diferentes():
+    outra = b"outra chave de teste com mais de trinta e dois bytes"
+    assert (Consentimento.pseudonimiza("12345678909", CHAVE)
+            != Consentimento.pseudonimiza("12345678909", outra))
+
+
+def test_sem_chave_o_modulo_recusa(monkeypatch):
+    """Voltar em silêncio ao hash puro devolveria o problema com o nome novo."""
+    monkeypatch.delenv(CHAVE_DO_DOCUMENTO, raising=False)
+    with pytest.raises(ChaveAusente):
+        Consentimento.pseudonimiza("12345678909")
+
+
+def test_chave_curta_e_recusada(monkeypatch):
+    monkeypatch.setenv(CHAVE_DO_DOCUMENTO, "curta demais")
+    with pytest.raises(ChaveAusente):
+        Consentimento.pseudonimiza("12345678909")
+
+
+def test_a_chave_do_ambiente_e_usada_quando_nenhuma_e_passada(monkeypatch):
+    monkeypatch.setenv(CHAVE_DO_DOCUMENTO, CHAVE.decode("utf-8"))
+    assert (Consentimento.pseudonimiza("12345678909")
+            == Consentimento.pseudonimiza("12345678909", CHAVE))
+
+
+def test_a_chave_nunca_entra_no_registro():
+    registro = Consentimento(Consentimento.pseudonimiza("12345678909", CHAVE), "Benevente",
+                             "2026-08-26T09:00:00-03:00", ("Posição",)).registro()
+    assert CHAVE.decode("utf-8") not in str(registro)
+    assert registro["documento_derivado_com"] == DERIVACAO
 
 
 def test_documento_invalido_e_recusado():
     for ruim in ("123", "", "abc"):
         with pytest.raises(ValueError):
-            Consentimento.anonimiza(ruim)
+            Consentimento.pseudonimiza(ruim)
 
 
 def test_o_registro_encadeia_no_anterior():
-    primeiro = Consentimento(Consentimento.anonimiza("12345678909"), "Benevente",
+    primeiro = Consentimento(Consentimento.pseudonimiza("12345678909", CHAVE), "Benevente",
                              "2026-08-26T09:00:00-03:00", ("Posição",)).registro()
-    segundo = Consentimento(Consentimento.anonimiza("12345678909"), "Benevente",
+    segundo = Consentimento(Consentimento.pseudonimiza("12345678909", CHAVE), "Benevente",
                             "2026-09-26T09:00:00-03:00", ("Posição",),
                             registro_anterior_sha256=primeiro["registro_sha256"]).registro()
     assert segundo["registro_anterior_sha256"] == primeiro["registro_sha256"]

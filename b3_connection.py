@@ -27,7 +27,11 @@ custo por posição e deixar o mapa recusar-se a somar o que não sabe.
 O consentimento também é da B3, não nosso: o investidor autoriza dentro da área
 logada dela e revoga em Minha Conta → Segurança → Aplicativos e Sites, sem
 passar por nós. Guardamos o registro de que houve consentimento — encadeado e
-com hash, como todo o resto do projeto —, nunca a credencial.
+com hash, como todo o resto do projeto —, nunca a credencial. O CPF entra nesse
+registro como pseudônimo derivado com chave, e não como hash puro: o espaço de
+CPFs válidos é pequeno o bastante para ser enumerado contra um SHA-256, então o
+hash direto devolveria o número a quem obtivesse o registro. A chave mora no
+ambiente, fora do registro, e sem ela o módulo recusa em vez de voltar ao hash.
 """
 from __future__ import annotations
 
@@ -35,11 +39,26 @@ from dataclasses import dataclass, field
 from datetime import date
 from enum import Enum
 import hashlib
+import hmac
 import json
+import os
 
 #: A base da Área do Investidor começa aqui. Antes disso a B3 não tem o dado, e
 #: nenhuma chamada, retentativa ou paginação faz aparecer.
 BASE_COMECA_EM = date(2019, 11, 1)
+
+#: A chave que separa pseudonimização de anonimização. Mora no ambiente, nunca
+#: no repositório e nunca no registro: gravada em qualquer um dos dois, ela
+#: viajaria junto com o dado que deveria proteger.
+CHAVE_DO_DOCUMENTO = "BENEVENTE_DOCUMENTO_CHAVE"
+
+#: Uma chave curta é enumerável junto com o CPF. Trinta e dois bytes é o
+#: tamanho do bloco do SHA-256 e o piso abaixo do qual o módulo recusa.
+CHAVE_MINIMA_EM_BYTES = 32
+
+#: Como o documento é derivado. Vai no registro porque quem o ler depois
+#: precisa saber que aquilo é pseudônimo, não anônimo.
+DERIVACAO = "HMAC-SHA256"
 
 #: Só uma consulta por investidor por dia: é orientação expressa do manual, e a
 #: API Guia existe para dizer quem teve movimentação e evitar o resto.
@@ -66,6 +85,10 @@ class Qualidade(str, Enum):
         return self in (Qualidade.RECONSTRUIDO, Qualidade.DECLARADO)
 
 
+class ChaveAusente(RuntimeError):
+    """Sem chave não há pseudônimo, e o hash puro do CPF não serve de saída."""
+
+
 @dataclass(frozen=True)
 class Consentimento:
     """O registro de que houve autorização. Nunca a credencial.
@@ -75,7 +98,7 @@ class Consentimento:
     porque no dia em que alguém perguntar por que lemos a carteira de fulano, a
     resposta precisa ser um documento, não uma lembrança.
     """
-    documento_hash: str                    # SHA-256 do CPF/CNPJ, nunca o número
+    documento_hash: str                    # pseudônimo do CPF/CNPJ, nunca o número
     licenciado: str
     concedido_em: str                      # ISO-8601
     escopo: tuple[str, ...]
@@ -84,16 +107,51 @@ class Consentimento:
     registro_anterior_sha256: str | None = None
 
     @staticmethod
-    def anonimiza(documento: str) -> str:
-        """CPF vira hash antes de tocar em qualquer registro nosso."""
+    def chave_do_ambiente() -> bytes:
+        """A chave de derivação, ou a recusa em seguir sem ela."""
+        bruta = os.environ.get(CHAVE_DO_DOCUMENTO, "").encode("utf-8")
+        if not bruta:
+            raise ChaveAusente(
+                f"falta a variável de ambiente {CHAVE_DO_DOCUMENTO}. Sem ela o "
+                "documento só poderia virar hash puro, que é reversível.")
+        if len(bruta) < CHAVE_MINIMA_EM_BYTES:
+            raise ChaveAusente(
+                f"{CHAVE_DO_DOCUMENTO} tem {len(bruta)} bytes; o mínimo é "
+                f"{CHAVE_MINIMA_EM_BYTES}. Chave curta se enumera junto com o CPF.")
+        return bruta
+
+    @staticmethod
+    def pseudonimiza(documento: str, chave: bytes | None = None) -> str:
+        """CPF vira pseudônimo derivado com chave antes de tocar em qualquer registro.
+
+        A versão anterior era SHA-256 puro do número e chamava a si mesma de
+        anonimização. Não era: existem cerca de 10⁹ CPFs válidos, e enumerar
+        esse espaço contra um hash é trabalho de minutos numa máquina comum, de
+        modo que quem obtivesse o registro recuperaria o número. O dado seguia
+        pessoal, e o nome da função dizia o contrário.
+
+        O HMAC fecha a porta porque não há o que enumerar sem a chave, que mora
+        no ambiente e nunca no registro. O resultado continua sendo pseudônimo,
+        não anônimo: quem tem a chave reverte por enumeração, e é por isso que o
+        registro declara a derivação em vez de deixar o leitor supor.
+
+        Sem chave o módulo recusa. Voltar em silêncio ao hash puro devolveria o
+        problema com o nome novo, que é a única saída pior do que tê-lo.
+        """
         limpo = "".join(c for c in documento if c.isdigit())
         if len(limpo) not in (11, 14):
             raise ValueError("Documento deve ser CPF (11) ou CNPJ (14) dígitos.")
-        return hashlib.sha256(limpo.encode("utf-8")).hexdigest()
+        if chave is None:
+            chave = Consentimento.chave_do_ambiente()
+        if len(chave) < CHAVE_MINIMA_EM_BYTES:
+            raise ChaveAusente(
+                f"a chave tem {len(chave)} bytes; o mínimo é {CHAVE_MINIMA_EM_BYTES}.")
+        return hmac.new(chave, limpo.encode("utf-8"), hashlib.sha256).hexdigest()
 
     def registro(self) -> dict:
         corpo = {
             "documento_hash": self.documento_hash,
+            "documento_derivado_com": DERIVACAO,
             "licenciado": self.licenciado,
             "concedido_em": self.concedido_em,
             "escopo": list(self.escopo),
