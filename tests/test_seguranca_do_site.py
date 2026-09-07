@@ -452,9 +452,25 @@ def test_o_diretorio_publicado_nao_carrega_credencial() -> None:
     assert not culpados, f"credencial em arquivo publicado: {culpados}"
 
 
-def test_a_chave_do_provedor_de_email_so_existe_no_ambiente() -> None:
-    lead = (WEB / "api" / "demo-request.js").read_text(encoding="utf-8")
-    assert "process.env.RESEND_API_KEY" in lead
-    # A chave não pode chegar ao corpo de nenhuma resposta nem ao log.
-    assert "RESEND_API_KEY}" not in lead.replace("${process.env.RESEND_API_KEY}", "")
-    assert "console.error(\"Lead email delivery failed\", emailResponse.status)" in lead
+def test_o_site_nao_coleta_dado_de_visitante() -> None:
+    """O formulário comercial saiu junto com o desenho B2B.
+
+    Ele pedia nome, e-mail profissional, instituição e mensagem, e mandava
+    tudo por um provedor de e-mail — coleta que o produto dirigido à pessoa
+    física não precisa fazer e que traria dever de base legal, aviso e canal
+    do titular no ponto de coleta. O caminho mais barato de cumprir a LGPD é
+    não coletar, e este teste é o que impede a rota de voltar por descuido.
+    """
+    assert not (WEB / "api" / "demo-request.js").exists()
+    rotas = sorted(caminho.name for caminho in (WEB / "api").glob("*.js"))
+    assert rotas == ["_guard.js", "chart-series.js"], f"rota inesperada: {rotas}"
+
+    for arquivo in WEB.rglob("*"):
+        if not arquivo.is_file() or arquivo.suffix.lower() not in {".html", ".js", ".css"}:
+            continue
+        texto = arquivo.read_text(encoding="utf-8", errors="ignore")
+        onde = arquivo.relative_to(ROOT)
+        assert "RESEND" not in texto, f"provedor de e-mail ainda citado em {onde}"
+        assert "demo-request" not in texto, f"rota de lead ainda citada em {onde}"
+        assert 'name="institution"' not in texto, f"campo institucional em {onde}"
+        assert 'type="email"' not in texto, f"campo de e-mail em {onde}"

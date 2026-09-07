@@ -467,16 +467,6 @@ O motor auditável continua sendo a interface Streamlit e os comandos de
 proposta descritos neste README. Uma futura API deverá ligar a experiência web
 ao mesmo núcleo Python, preservando a trilha de dados e aprovação humana.
 
-### Contato institucional do site
-
-O site comercial tem um formulário de demonstração em `/api/demo-request`. A
-rota só encaminha o lead depois que estas variáveis forem cadastradas na Vercel
-para produção: `RESEND_API_KEY`, `BENEVENTE_FROM_EMAIL` e
-`BENEVENTE_CONTACT_EMAIL`. Use `web/.env.example` apenas como referência e não
-versione chaves. Sem as variáveis, a página informa de forma explícita que o
-canal ainda não foi configurado; ela não guarda dados do visitante em arquivo
-ou planilha local.
-
 ## Carteira-sombra real, sem ordem automática
 
 Uma proposta operacional requer três insumos datados e atribuídos:

@@ -167,17 +167,6 @@ h1, h2, h3, h4,
   .policy-split th, .policy-split td { padding: .5rem .35rem; }
   .split-detail { display: none; }
 }
-.pilot-form { margin-top: 1.4rem; max-width: 720px; display: grid; gap: .8rem; }
-.pilot-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
-.pilot-form label { display: grid; gap: .3rem; font-size: .78rem; font-weight: 700; color: var(--ink-soft, #5b6f7c); }
-.pilot-form input, .pilot-form select, .pilot-form textarea {
-  padding: .6rem .7rem; border: 1px solid var(--hairline, #d9e4e0); border-radius: 8px;
-  font: inherit; font-size: .9rem; background: #fff; color: inherit;
-}
-.pilot-form textarea { resize: vertical; }
-.pilot-form-foot { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
-#demo-form-response { margin: 0; font-size: .82rem; color: var(--ink-soft, #5b6f7c); }
-.pilot-note { margin-top: .9rem; font-size: .78rem; color: var(--ink-soft, #5b6f7c); max-width: 720px; }
 /* A linha de ações não tinha margem superior nenhuma: encostava no bloco de
    cima (o herói mostrava os botões colados nos cartões CALCULA/EXPLICA/DECIDE).
    A folga vive aqui, uma vez, em vez de um style inline por ocorrência. */
@@ -285,7 +274,7 @@ h1, h2, h3, h4,
 .quick-composition { margin-top: .9rem; font-size: .82rem; color: var(--ink-soft, #5b6f7c); }
 .quick-composition a { color: var(--brand-green, #0b8377); font-weight: 750; text-decoration: none; }
 .quick-composition a:hover { text-decoration: underline; }
-@media (max-width: 680px) { .pilot-form-grid { grid-template-columns: 1fr; } }
+
 .wealth-card.primary strong.num-lg { font-size: clamp(1.7rem, 2.7vw, 2.6rem); }
 .wealth-card.primary strong.num-xl { font-size: clamp(1.4rem, 2.2vw, 2.1rem); }
 .wealth-card.benchmark strong.num-lg { font-size: clamp(1.2rem, 1.7vw, 1.5rem); }
@@ -328,8 +317,7 @@ h1, h2, h3, h4,
 .version-section { gap: clamp(2rem, 5vw, 4rem); padding: 3.25rem 0; }
 .version-hero h1 { font-size: clamp(2.7rem, 5vw, 4.3rem); }
 .version-hero h1 em { font-family: inherit; font-style: normal; }
-.version-metric strong, .evidence-card strong { font-family: var(--sans); }
-.model-section, .comparison, .lab-section, .evidence-board, .research-disclosure { padding-top: clamp(2.75rem, 4.5vw, 4.5rem); padding-bottom: clamp(2.75rem, 4.5vw, 4.5rem); }
+.version-metric strong, .evidence-card strong { font-family: var(--sans); }.model-section,.comparison,.lab-section,.evidence-board{ padding-top: clamp(2.75rem, 4.5vw, 4.5rem); padding-bottom: clamp(2.75rem, 4.5vw, 4.5rem); }
 .version-gateway { padding-top: 3.5rem; padding-bottom: 4rem; }
 /* O link do cartão era absoluto num offset fixo do rodapé: quando o parágrafo
    crescia, o texto passava por baixo dele e as duas linhas se sobrepunham

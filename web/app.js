@@ -796,29 +796,7 @@ document.querySelectorAll("[data-dossier-strategy]").forEach(button => button.ad
   renderProfileHistory();
 }));
 
-// O formulário de demonstração só existe onde há convite comercial. Enquanto
-// o projeto está em pesquisa, a home não o carrega, e sem esta guarda o
-// addEventListener em null derrubaria todo o script registrado adiante.
-const demoForm = document.querySelector("#demo-request-form");
-if (demoForm) demoForm.addEventListener("submit", async event => {
-  event.preventDefault();
-  const form = event.currentTarget;
-  const response = document.querySelector("#demo-form-response");
-  const button = form.querySelector("button");
-  button.disabled = true;
-  response.textContent = "Enviando solicitação…";
-  try {
-    const request = await fetch("/api/demo-request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(Object.fromEntries(new FormData(form))) });
-    const payload = await request.json();
-    if (!request.ok) throw new Error(payload.error || "Não foi possível registrar a solicitação.");
-    response.textContent = "Solicitação registrada. A equipe retornará pelo e-mail informado.";
-    form.reset();
-  } catch (error) {
-    response.textContent = error.message || "Não foi possível enviar. Tente novamente em alguns instantes.";
-  } finally { button.disabled = false; }
-});
-
-function renderModel(step) { const detail=document.querySelector("#model-detail"); if(!detail) return; const item=modelSteps[step]; detail.innerHTML=`<span class="detail-number">${item.number}</span><h3>${item.title}</h3><p>${item.text}</p><div class="detail-grid"><div><small>USA</small><b>${item.uses}</b></div><div><small>BLOQUEIA</small><b>${item.blocks}</b></div><div><small>PRODUZ</small><b>${item.produces}</b></div><div><small>RESPONSÁVEL</small><b>Instituição e revisor humano</b></div></div><p class="detail-rule">${item.rule}</p>`; }
+function renderModel(step) { const detail=document.querySelector("#model-detail"); if(!detail) return; const item=modelSteps[step]; detail.innerHTML=`<span class="detail-number">${item.number}</span><h3>${item.title}</h3><p>${item.text}</p><div class="detail-grid"><div><small>USA</small><b>${item.uses}</b></div><div><small>BLOQUEIA</small><b>${item.blocks}</b></div><div><small>PRODUZ</small><b>${item.produces}</b></div><div><small>RESPONSÁVEL</small><b>Você, e a aprovação fica registrada</b></div></div><p class="detail-rule">${item.rule}</p>`; }
 document.querySelectorAll(".model-step").forEach(button=>button.addEventListener("click",()=>{document.querySelectorAll(".model-step").forEach(item=>item.classList.remove("active"));button.classList.add("active");renderModel(button.dataset.step)}));
 
 renderModel("optimizer");
