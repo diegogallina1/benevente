@@ -154,7 +154,7 @@ def main() -> None:
                         "data_referencia": referencia_esperada(agora).isoformat(),
                         "utilizavel": True},
         },
-    }, indent=2, ensure_ascii=False), encoding="utf-8")
+    }, indent=2, ensure_ascii=False), encoding="utf-8", newline="\n")
 
 
 if __name__ == "__main__":
