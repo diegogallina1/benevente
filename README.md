@@ -467,6 +467,21 @@ O motor auditável continua sendo a interface Streamlit e os comandos de
 proposta descritos neste README. Uma futura API deverá ligar a experiência web
 ao mesmo núcleo Python, preservando a trilha de dados e aprovação humana.
 
+### A chave que pseudonimiza o documento
+
+O registro de consentimento da conexão com a B3 guarda o CPF derivado, nunca o
+número. A derivação é HMAC-SHA256 com chave do ambiente, em
+`BENEVENTE_DOCUMENTO_CHAVE`, de no mínimo 32 bytes. Sem a variável o módulo
+recusa em vez de cair no SHA-256 puro: existem cerca de 10⁹ CPFs válidos, e
+enumerar esse espaço contra um hash sem chave é trabalho de minutos, o que
+devolveria o número a quem obtivesse o registro. A chave não fica no
+repositório, não entra no registro e não aparece em nenhum artefato.
+
+`research_b3_connection.py` usa uma chave de demonstração declarada no próprio
+arquivo, sobre um CPF sintético, para que
+`artifacts/b3_connection_v1/connection_example.json` continue reproduzível. O
+artefato diz isso em `consent_note`.
+
 ## Carteira-sombra real, sem ordem automática
 
 Uma proposta operacional requer três insumos datados e atribuídos:

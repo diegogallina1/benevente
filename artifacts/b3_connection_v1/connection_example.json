@@ -1,10 +1,12 @@
 {
   "status": "demonstration_only",
   "warning": "Custódia e negociações sintéticas, escritas para exercitar o módulo.",
+  "consent_note": "O documento é derivado com HMAC-SHA256, e nesta demonstração a chave é pública, para o artefato ser reproduzível. Em produção a chave vem do ambiente e não existe no repositório.",
   "source": "APIs da Área do Investidor da B3, Manual Técnico",
   "base_starts": "2019-11-01",
   "consent": {
-    "documento_hash": "7ec94663084bd506d4f0c3e21042df233681fd7426e93f397c921b1d3e397bba",
+    "documento_hash": "2b2fab575bf0aae585ff9635a2a228c1bfc7d4f843ac347125cd860a3fc1a3e2",
+    "documento_derivado_com": "HMAC-SHA256",
     "licenciado": "Benevente",
     "concedido_em": "2026-08-26T09:12:00-03:00",
     "escopo": [
@@ -16,7 +18,7 @@
     "revogavel_em": "investidor.b3.com.br, em Minha Conta, Segurança, Aplicativos e Sites",
     "registro_anterior_sha256": null,
     "credencial_armazenada": false,
-    "registro_sha256": "569421c0f6aa7777dcbf50d5f80ca19dd39021aadd53fe8be712735d556d2768"
+    "registro_sha256": "6f3552d7853a0ee9ecfa07200f02097e6a79d1e037aa51004ccf05955f501259"
   },
   "coverage": {
     "entrega": [

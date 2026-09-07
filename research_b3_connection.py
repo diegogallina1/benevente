@@ -16,9 +16,15 @@ from pathlib import Path
 import json
 
 from b3_client import B3Client, Endpoints, Frescor, classificar, referencia_esperada
-from b3_connection import (BASE_COMECA_EM, COBERTURA, Consentimento, Negociacao,
-                           Origem, Posicao, Qualidade, consolidar, reconstruir_custo,
-                           relatorio_de_lacunas)
+from b3_connection import (BASE_COMECA_EM, COBERTURA, DERIVACAO, Consentimento,
+                           Negociacao, Origem, Posicao, Qualidade, consolidar,
+                           reconstruir_custo, relatorio_de_lacunas)
+
+#: A chave da demonstração é pública de propósito, e o CPF que ela deriva é o
+#: sintético que está logo abaixo no código. Em produção a chave vem do
+#: ambiente e não existe em lugar nenhum do repositório; usar uma chave fixa
+#: aqui é o que mantém o artefato reproduzível sem inventar um segredo.
+CHAVE_DA_DEMONSTRACAO = b"chave publica de demonstracao do benevente"
 
 ROOT = Path(__file__).resolve().parent
 OUT = ROOT / "artifacts" / "b3_connection_v1"
@@ -52,13 +58,13 @@ NEGOCIACOES = [
 
 def main() -> None:
     consentimento = Consentimento(
-        documento_hash=Consentimento.anonimiza("123.456.789-09"),
+        documento_hash=Consentimento.pseudonimiza("123.456.789-09", CHAVE_DA_DEMONSTRACAO),
         licenciado="Benevente", concedido_em="2026-08-26T09:12:00-03:00",
         escopo=("Posição", "Movimentação", "Negociação de Ativos", "Eventos Provisionados"))
     registro = consentimento.registro()
 
     print("CONSENTIMENTO")
-    print(f"  documento: {registro['documento_hash'][:16]}… (hash; o CPF não é guardado)")
+    print(f"  documento: {registro['documento_hash'][:16]}… (pseudônimo HMAC; o CPF não é guardado)")
     print(f"  escopo:    {', '.join(registro['escopo'])}")
     print(f"  revogação: {registro['revogavel_em']}")
     print(f"  registro:  {registro['registro_sha256'][:16]}…")
@@ -118,6 +124,10 @@ def main() -> None:
     (OUT / "connection_example.json").write_text(json.dumps({
         "status": "demonstration_only",
         "warning": "Custódia e negociações sintéticas, escritas para exercitar o módulo.",
+        "consent_note": (
+            f"O documento é derivado com {DERIVACAO}, e nesta demonstração a chave é "
+            "pública, para o artefato ser reproduzível. Em produção a chave vem do "
+            "ambiente e não existe no repositório."),
         "source": "APIs da Área do Investidor da B3, Manual Técnico",
         "base_starts": BASE_COMECA_EM.isoformat(),
         "consent": registro,
