@@ -196,10 +196,43 @@ Posição financeira identificada é dado pessoal. As decisões tomadas:
 
 ## 7. Open Finance
 
-Cobriria o que a B3 não cobre — inclusive fundos e previdência fora da B3 — mas
-consumir dados de investimento exige enquadramento como participante regulado.
-Enquanto isso não existir, o Open Finance entra como origem declarada de posição
-lançada por outro caminho, nunca como integração.
+A versão anterior desta seção tratava "Open Finance" como uma coisa só e concluía
+que não dava para usar. São duas famílias de API, e a conclusão só vale para uma.
+
+**Dados de clientes.** Posição, saldo e movimentação. A especificação pede
+`OAuth2AuthorizationCode` com os escopos `openid`, `consent:consentId` e o da
+própria API, o que exige ser instituição autorizada pelo Banco Central,
+registrada no diretório, com certificado e consentimento do titular. Cobriria o
+que a B3 não cobre — inclusive fundos e previdência fora da B3 — e continua fora
+do alcance. Enquanto isso, entra como origem declarada de posição lançada por
+outro caminho, nunca como integração. O caminho usual para sair daqui não é
+virar participante: é contratar uma receptora autorizada, que já é participante e
+compartilha sob consentimento do cliente. É decisão contratual e jurídica, não de
+engenharia, e nada neste repositório a antecipa.
+
+**Dados abertos.** `/open-banking/opendata-investments/v1` não tem esquema de
+segurança na especificação: os únicos parâmetros são `page` e `page-size`. É GET
+público, sem consentimento e sem credencial, e está implementado em
+`tools/build_open_finance_investments.py`.
+
+O que ele traz, e o que não traz:
+
+| Recurso | O que vem | O que não vem |
+| --- | --- | --- |
+| `bank-fixed-incomes` | Distribuição da remuneração de emissão de CDB, RDB, LCI e LCA por emissor, tipo, indexador, mínimo, resgate, faixa de vencimento, carência e público: quatro faixas com mediana e peso, mais mínimo e máximo | Papel, vencimento, oferta comprável |
+| `funds` | Cadastro por distribuidor: CNPJ, ISIN, categoria ANBIMA, tributação, taxa de administração máxima, entrada, saída, performance, aplicação mínima, cotização, liquidação e carência | Cota, retorno, patrimônio |
+| `credit-fixed-incomes`, `variable-incomes`, `treasure-titles` | Taxa de custódia e de carregamento cobradas pela instituição | A taxa do papel. Debênture, CRI e CRA continuam vindo da ANBIMA; o Tesouro, do Tesouro Transparente |
+
+Três limites ficam registrados porque são fáceis de esquecer depois:
+
+- **Nenhum payload tem data de referência.** A datação é a da coleta, e o
+  arquivo diz isso em vez de deixar quem lê supor o mês corrente.
+- **Não é catálogo.** Uma distribuição de emissão não é uma oferta, e transformar
+  a mediana de uma faixa em "taxa disponível" seria publicar um número inventado
+  com cara de medido. O uso é conferir a grade que o escritório manda:
+  `open_finance_reference.conferir`.
+- **Oferta cotada em CDI + spread não é conferível.** A própria especificação
+  manda descartar operação com taxa mista em CDI, DI e SELIC.
 
 ## 8. O que este desenho deliberadamente não resolve
 

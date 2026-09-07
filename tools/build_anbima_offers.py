@@ -2,11 +2,14 @@
 """A grade de papel de mercado da ANBIMA, na mesma régua do catálogo.
 
 O coletor do Tesouro cobre título público. Este cobre a outra metade que tem
-fonte pública: debênture, CRI e CRA, que a ANBIMA divulga com taxa de compra, de
-venda e indicativa. O que continua sem fonte é captação bancária, e não por
-falta de coletor: CDB, LCI e LCA são bilaterais, com taxa por distribuidor, por
-valor aplicado e por dia, então não existe livro de ofertas central para ler.
-Esses entram pela mão da pessoa, marcados como informados por ela.
+taxa de papel em fonte pública: debênture, CRI e CRA, que a ANBIMA divulga com
+taxa de compra, de venda e indicativa. Captação bancária continua sem livro de
+ofertas: CDB, LCI e LCA são bilaterais, com taxa por distribuidor, por valor
+aplicado e por dia, e nenhuma fonte publica a oferta comprável. Esses entram
+pela mão da pessoa, marcados como informados por ela — agora com uma régua para
+conferir a taxa recebida, que são os dados abertos do Open Finance
+(``tools/build_open_finance_investments.py``): distribuição da remuneração de
+emissão por emissor, que não é oferta e não vira catálogo.
 
 A diferença de regime viaja com o dado, porque muda o que se pode afirmar. Papel
 da ANBIMA é valor mobiliário sob a CVM e não tem FGC: o catálogo já sabe disso
