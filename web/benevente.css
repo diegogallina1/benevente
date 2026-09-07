@@ -438,8 +438,7 @@ p a:hover, li a:hover, td a:hover { color: var(--acao-inverso) !important; }
 .carteira-2026-since{color:var(--fg-2)}
 .carteira-2026-names{color:var(--fg-2)}
 .carteira-2026-split{color:var(--fg);border-color:var(--line)}
-.carteira-2026-note{color:var(--fg-2)}
-.comparison h2,.model-heading h2{color:var(--fg)}
+.carteira-2026-note{color:var(--fg-2)}.comparison h2{color:var(--fg)}
 .comparison-head>p{color:var(--fg-2)}
 .comparison-card{background-color:var(--canvas);border-color:var(--line)}
 .comparison-controls{border-color:var(--line)}
@@ -463,22 +462,6 @@ p a:hover, li a:hover, td a:hover { color: var(--acao-inverso) !important; }
 .comparison-foot{color:var(--fg-2);border-color:var(--line)}
 .comparison-foot i{color:var(--acao)}
 .research-note{color:var(--fg-2)}
-.model-shell{background-color:var(--inverso);color:var(--fg-2)}
-.model-heading h2{color:var(--fg-2)}
-.model-steps{border-color:var(--line)}
-.model-step{color:var(--fg-2)}
-.model-step span{color:var(--acao)}
-.model-step small{color:var(--fg-2)}
-.model-step.active{background-color:var(--acao);color:var(--fg-2);border-color:var(--acao)}
-.model-detail{background-color:var(--canvas);color:var(--fg)}
-.detail-number{color:var(--acao)}
-.model-detail h3{color:var(--fg)}
-.model-detail>p{color:var(--fg-2)}
-.detail-grid div{border-color:var(--line)}
-.detail-grid small{color:var(--fg-2)}
-.detail-grid b{color:var(--fg)}
-.detail-rule{color:var(--fg);border-color:var(--line)}
-.detail-rule strong{color:var(--acao)}
 .curve-toggle{background-color:var(--canvas);color:var(--fg-2);border-color:var(--line)}
 .curve-toggle[data-kind="Benevente Quant AI"]{color:var(--acao)}
 .curve-toggle[data-kind="CDI"]{color:var(--acao)}

@@ -32,30 +32,11 @@ select,
 textarea,
 svg text {
   font-family: var(--sans) !important;
-}
-
-h1, h2, h3, h4,
-.hero h1,
-.section-heading h2,
-.comparison h2,
-.lab-head h2,
-.model-heading h2,
-.version-hero h1,
-.version-section-heading h2,
-.paper-page h1,
-.paper-page h2,
-.paper-page h3 {
+}h1,h2,h3,h4,.hero h1,.section-heading h2,.comparison h2,.lab-head h2,.version-hero h1,.version-section-heading h2,.paper-page h1,.paper-page h2,.paper-page h3{
   font-family: var(--display);
   font-style: normal;
   letter-spacing: -.045em;
-}
-
-.hero h1 em,
-.version-hero h1 em,
-.section-heading h2 em,
-.comparison h2 em,
-.lab-head h2 em,
-.model-heading h2 em {
+}.hero h1 em,.version-hero h1 em,.section-heading h2 em,.comparison h2 em,.lab-head h2 em{
   font-family: inherit;
   font-style: normal;
 }
@@ -317,7 +298,7 @@ h1, h2, h3, h4,
 .version-section { gap: clamp(2rem, 5vw, 4rem); padding: 3.25rem 0; }
 .version-hero h1 { font-size: clamp(2.7rem, 5vw, 4.3rem); }
 .version-hero h1 em { font-family: inherit; font-style: normal; }
-.version-metric strong, .evidence-card strong { font-family: var(--sans); }.model-section,.comparison,.lab-section,.evidence-board{ padding-top: clamp(2.75rem, 4.5vw, 4.5rem); padding-bottom: clamp(2.75rem, 4.5vw, 4.5rem); }
+.version-metric strong, .evidence-card strong { font-family: var(--sans); }.comparison,.lab-section,.evidence-board{ padding-top: clamp(2.75rem, 4.5vw, 4.5rem); padding-bottom: clamp(2.75rem, 4.5vw, 4.5rem); }
 .version-gateway { padding-top: 3.5rem; padding-bottom: 4rem; }
 /* O link do cartão era absoluto num offset fixo do rodapé: quando o parágrafo
    crescia, o texto passava por baixo dele e as duas linhas se sobrepunham
