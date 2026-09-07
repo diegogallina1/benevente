@@ -3,8 +3,9 @@ from zipfile import ZipFile
 import pandas as pd
 import pytest
 
-from fund_comparator import (CvmFundDailyClient, FundQuoteSeries, compare_common_window, format_cnpj,
-                             fund_values_for_nav, normalize_cnpj)
+from fund_comparator import (CvmFundDailyClient, FundQuoteSeries, compare_common_window,
+                             distribution_terms, format_cnpj, fund_values_for_nav,
+                             normalize_cnpj)
 from pilot_tracker import build_performance
 from production_policy import ProductionPolicy
 from shadow_portfolio import ProposedOrder, activate_shadow_portfolio
@@ -96,3 +97,44 @@ def test_shadow_activation_refuses_unapproved_or_wrong_date_orders(tmp_path):
     pd.DataFrame([ProposedOrder("2026-01-03", "PETR4", "BUY", 100, 30, 1, "shadow:PETR4").__dict__]).to_csv(orders_path, index=False)
     with pytest.raises(ValueError, match="effective date"):
         activate_shadow_portfolio(policy_path, orders_path, "Comitê", tmp_path / "activation.json")
+
+
+def test_distribution_terms_are_absent_when_the_harvest_is_absent(tmp_path):
+    """No harvest must look like no source, never like a fund nobody distributes."""
+    assert distribution_terms("73.232.530/0001-39", tmp_path / "nao-existe.json") == []
+
+
+def test_distribution_terms_carry_the_fees_the_quota_file_never_had(tmp_path):
+    """The comparison warns that fees and terms are outside the CVM quota file.
+
+    Open Finance open data publishes them, per distributor and with the date of
+    the harvest, so the warning can carry numbers.
+    """
+    import json
+
+    harvest = tmp_path / "dados_abertos_open_finance.json"
+    harvest.write_text(json.dumps({
+        "colhido_em": "2026-09-07T12:00:00+00:00",
+        "participantes": [{
+            "marca": "Corretora Exemplo", "organizacao": "Corretora Exemplo",
+            "cnpj": "45086338000178",
+            "recursos": {"funds": {"linhas": 1, "dados": [{
+                "name": "DYNAMO COUGAR FIF", "cnpjNumber": "73232530000139",
+                "anbimaCategory": "ACOES", "taxation": "ACOES",
+                "fees": {"maxAdminFee": "0.019000",
+                         "performanceFee": {"amount": "0.200000", "benchmark": "OUTROS"}},
+                "generalConditions": {
+                    "minimumAmount": {"value": "5000.00", "currency": "BRL"},
+                    "application": {"quotationDays": 0, "quotationTerm": "DIAS_UTEIS"},
+                    "redemption": {"quotationDays": 30, "quotationTerm": "DIAS_CORRIDOS",
+                                   "paymentDays": 1, "paymentTerm": "DIAS_UTEIS"},
+                    "fundQuotaType": "ABERTO"}}]}},
+        }],
+    }), encoding="utf-8")
+
+    (termos,) = distribution_terms("73.232.530/0001-39", harvest)
+    assert termos["distributor"] == "Corretora Exemplo"
+    assert termos["max_admin_fee"] == 0.019
+    assert termos["minimum_initial_brl"] == 5_000.0
+    assert termos["redemption_quotation_days"] == 30
+    assert termos["harvested_at"].startswith("2026-09-07")

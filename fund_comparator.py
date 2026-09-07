@@ -152,6 +152,45 @@ def compare_common_window(strategies: dict[str, pd.DataFrame], fund: FundQuoteSe
     return curves, metrics, metadata
 
 
+def distribution_terms(cnpj: str, harvest_path: str | Path | None = None) -> list[dict]:
+    """Public, dated distribution terms for a fund, one row per distributor.
+
+    The comparison above deliberately says nothing about whether the fund was
+    buyable: fees, taxation, minimums and redemption terms are outside the CVM
+    daily quota file. Open Finance open data publishes exactly those, per
+    distributing institution, with no consent and no credential — so the caveat
+    can carry numbers instead of only a warning.
+
+    These are terms, not returns. A lower administration fee is not a better
+    fund, and this function makes no investability claim either.
+
+    Requires a harvest produced by ``tools/build_open_finance_investments.py``;
+    without one it returns an empty list, because an absent source must look
+    absent rather than like a fund nobody distributes.
+    """
+    from open_finance_reference import COLHEITA_PADRAO, carregar, termos_de_distribuicao
+
+    path = Path(harvest_path or COLHEITA_PADRAO)
+    if not path.exists():
+        return []
+    harvest = carregar(path)
+    return [{
+        "distributor": terms.marca,
+        "harvested_at": harvest.colhido_em,
+        "max_admin_fee": terms.taxa_administracao_maxima,
+        "entry_fee": terms.taxa_entrada,
+        "exit_fee": terms.taxa_saida,
+        "performance_fee": terms.taxa_performance,
+        "performance_benchmark": terms.performance_benchmark,
+        "minimum_initial_brl": terms.aplicacao_minima_brl,
+        "redemption_quotation_days": terms.resgate_cotizacao_dias,
+        "redemption_payment_days": terms.resgate_liquidacao_dias,
+        "grace_days": terms.carencia_dias,
+        "anbima_category": terms.categoria_anbima,
+        "taxation": terms.tributacao,
+    } for terms in termos_de_distribuicao(normalize_cnpj(cnpj), harvest.fundos)]
+
+
 def fund_values_for_nav(fund: FundQuoteSeries, nav_dates: pd.Series | pd.DatetimeIndex,
                         initial_value_brl: float) -> pd.Series:
     """Mark an active-fund reference to the shadow NAV dates from CVM quotas.

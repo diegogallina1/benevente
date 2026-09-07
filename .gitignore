@@ -71,3 +71,8 @@ anbima_*.json
 # Um teste recusa versionar coleta marcada como sandbox.
 data/fundos_anbima.json
 data/ofertas_anbima.json
+
+# Coleta dos dados abertos do Open Finance. É pública e sem credencial, mas é
+# grande, muda toda semana e não é resultado de pesquisa: quem precisar do
+# número roda o coletor e datar a própria coleta é parte do método.
+data/dados_abertos_open_finance.json

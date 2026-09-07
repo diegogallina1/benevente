@@ -305,9 +305,18 @@ def motor_para_navegador() -> dict:
 def load_catalog(path) -> list[Product]:
     """Lê a grade que o próprio escritório mantém.
 
-    O catálogo é do escritório, não nosso: as taxas mudam por dia, por faixa e
-    por segmento, e nenhuma fonte pública as arquiva. O sistema ordena e aloca o
-    que recebe, e registra a data do que recebeu.
+    O catálogo continua sendo do escritório, e por um motivo mais estreito do
+    que dizia a versão anterior desta nota: **oferta comprável** não tem fonte
+    pública. Captação bancária é bilateral, e a taxa de um papel muda por
+    distribuidor, por valor aplicado e por dia. O sistema ordena e aloca o que
+    recebe, e registra a data do que recebeu.
+
+    O que passou a existir é a régua para conferir o que chega. Os dados abertos
+    do Open Finance publicam, por emissor, tipo, indexador e faixa de prazo, a
+    distribuição da remuneração de emissão de CDB, RDB, LCI e LCA. Não é oferta,
+    não substitui a grade e não monta catálogo: responde se a taxa recebida está
+    dentro do que aquele emissor de fato emitiu. Ver
+    ``open_finance_reference.conferir``.
     """
     payload = json.loads(open(path, encoding="utf-8").read())
     return [Product(

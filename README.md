@@ -364,6 +364,29 @@ python research_runner.py --start 2021-07-01 --end 2026-07-01 --fund-cnpj 73.232
 python validate_research.py --input artifacts/dynamo_comparison
 ```
 
+## Régua pública de renda fixa: dados abertos do Open Finance
+
+A grade de renda fixa continua vindo do escritório — oferta comprável não tem
+fonte pública, porque captação bancária é bilateral. O que passou a existir é a
+régua para conferi-la: a API de Dados Abertos de Investimentos do Open Finance é
+GET público, sem consentimento e sem credencial, e publica por emissor a
+distribuição da remuneração de emissão de CDB, RDB, LCI e LCA, o cadastro de
+fundos por distribuidor e as taxas de custódia e carregamento cobradas por cada
+instituição.
+
+```powershell
+.\.venv-benevente\Scripts\python.exe tools\build_open_finance_investments.py --listar
+.\.venv-benevente\Scripts\python.exe tools\build_open_finance_investments.py --limite 5
+```
+
+Não é catálogo e não vira um: a API devolve quatro faixas de frequência com
+mediana e peso, não uma oferta. A leitura publicada é "as faixas cuja mediana
+fica abaixo desta oferta somam X% das operações", nunca um percentil
+interpolado. Posição de cliente exige ser participante autorizado pelo Banco
+Central e continua fora. Ver o
+[protocolo de dados abertos](docs/dados_abertos_open_finance.md) e a
+[§7 do desenho da conexão](docs/desenho_conexao_b3.md).
+
 ## Interface local
 
 Há quatro áreas numa interface única:
