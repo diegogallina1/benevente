@@ -88,9 +88,9 @@ Desde agosto de 2026 o sistema opera sob uma política declarada. Em vez da busc
 
 ### 3.5 Por que a decisão é anual
 
-A cadência anual é coerente com o sinal e foi testada: fundamentos saem em ciclos contábeis e a tese precisa de tempo para aparecer no preço; a troca mensal vende a empresa antes do reconhecimento e multiplica decisões a justificar. A revisão em janeiro cria uma fronteira simples: o publicado até a data entra, o resto é do próximo ciclo.
+A cadência decorre do enfoque: a análise é fundamentalista, e fundamento se move em ciclo contábil, não em pregão. A tese precisa de tempo para aparecer no preço, e a troca mensal vende a empresa antes do reconhecimento e multiplica decisões a justificar. A revisão em janeiro cria uma fronteira simples: o publicado até a data entra, o resto é do próximo ciclo.
 
-Cadência anual não significa ignorar o risco por doze meses: preço, concentração, liquidez e eventos seguem monitorados, e uma política institucional pode prever gatilhos extraordinários. Significa que a reseleção sistemática ocorre uma vez ao ano. Mantidas regra e dados, a cadência anual superou a trimestral e a mensal antes dos custos; onze anos pareados não provam otimalidade, apenas ausência de evidência para trocar a regra mais simples. Notícias não entram no retorno histórico: um radar de acompanhamento lê fontes públicas e classifica alertas para revisão humana, sem alterar ativos ou pesos, porque avaliá-las exigiria um braço prospectivo com horário de publicação e decisões arquivadas antes do desfecho.
+Cadência anual não significa ignorar o risco por doze meses: preço, concentração, liquidez e eventos seguem monitorados, e uma política institucional pode prever gatilhos extraordinários. Mantidas regra e dados, a cadência anual superou a trimestral e a mensal antes dos custos; onze anos pareados não provam otimalidade, apenas ausência de evidência para trocar a regra mais simples. Notícias não entram no retorno histórico: um radar de acompanhamento lê fontes públicas e classifica alertas para revisão humana, sem alterar ativos ou pesos.
 
 ### 3.6 Custos, imposto e execução
 
@@ -342,17 +342,17 @@ A matriz converge com a literatura: ausência de alfa do modelo (Perlin et al., 
 
 ### 7.1 Limitações
 
-A primeira limitação é temporal: onze decisões anuais são poucas, e a janela também serviu ao desenvolvimento. O prêmio de retrospectiva e o Sharpe deflacionado tratam parte do risco de múltiplas tentativas, mas não equivalem a validação prospectiva.
+A primeira limitação é temporal: onze decisões anuais são poucas, e a janela também serviu ao desenvolvimento. O prêmio de retrospectiva e o Sharpe deflacionado tratam parte do risco de múltiplas tentativas, mas não equivalem a validação prospectiva. A cadência anual é consequência do enfoque fundamentalista, não resultado geral: sobre horizontes mais curtos o trabalho nada afirma.
 
-A segunda limitação está nos dados. A página atual da B3 respondeu para 95,6% das séries consultadas, percentual que mede resposta do serviço, não completude histórica; a reconstrução das posições mantidas encontrou sete diferenças materiais em 54 comparações e duas observações sem resposta. Papéis sem cobertura completa recebem distribuição imputada pela mediana transversal do ano; a Seção 5.2 mede o alcance e o efeito disso. O arquivo novo melhora a auditabilidade porque permite reprovar a própria reconciliação; não transforma a curva em evidência institucional.
+A segunda limitação está nos dados. A B3 respondeu para 95,6% das séries consultadas — resposta do serviço, não completude histórica —, e a reconstrução das posições mantidas encontrou sete diferenças materiais em 54 comparações, com duas sem resposta. Papéis sem cobertura completa recebem distribuição imputada pela mediana transversal do ano; a Seção 5.2 mede o alcance e o efeito disso. O arquivo novo melhora a auditabilidade porque permite reprovar a própria reconciliação; não transforma a curva em evidência institucional.
 
 A terceira é econômica. Na série de desenvolvimento a queda máxima chegou a 47,8%, pior que os 47,0% do Ibovespa; a camada reduziu essa marca para 28,7%, mas foi concebida depois da Covid-19 (Seção 5.5); o imposto de renda variável é apurado por ativo e custo médio, e resta conciliar com notas de corretagem. A política limita a exposição por perfil, com quedas máximas retrospectivas entre 9,2% e 28,9%, mas seus parâmetros também foram definidos com conhecimento da amostra.
 
-Por fim, o produto não transfere responsabilidade: a decisão, a ordem e o risco continuam de quem usa, e o artefato é ferramenta de apoio, não recomendação individual nem promessa de resultado. Uso comercial exige enquadramento regulatório, suitability, segurança e contrato de fontes. O radar de notícias serve apenas ao alerta humano, sem participar do retorno histórico.
+Por fim, o produto não transfere responsabilidade: a decisão, a ordem e o risco continuam de quem usa, e o artefato é ferramenta de apoio, não recomendação individual nem promessa de resultado. Uso comercial exige enquadramento regulatório, suitability, segurança e contrato de fontes.
 
 ### 7.2 Recomendações de pesquisa e implantação
 
-O passo científico prioritário é acumular decisões posteriores aos registros congelados. Em paralelo, uma versão institucional precisará de um livro histórico de eventos capaz de cobrir os 22 códigos não devolvidos e de reproduzir as sete diferenças materiais encontradas no escopo da estratégia. Testes seguintes devem acrescentar trajetórias sintéticas com regimes de baixa prolongada, sem substituir a observação futura; um estudo com notícias deve ser registrado como braço separado, com horário verificável. O passo de produto é um piloto silencioso, sem execução automática, que meça tempo, completude documental, divergência de custos, compreensão do usuário e disposição a pagar.
+O passo científico prioritário é acumular decisões posteriores aos registros congelados. Em paralelo, uma versão institucional precisará de um livro histórico de eventos capaz de cobrir os 22 códigos não devolvidos e de reproduzir as sete diferenças materiais encontradas no escopo da estratégia. Testes seguintes devem acrescentar trajetórias sintéticas com regimes de baixa prolongada, sem substituir a observação futura; a direção natural para encurtar o horizonte é trocar a base de sinal: um estudo com notícias, como braço separado, com horário de publicação verificável e decisões arquivadas antes do desfecho. O passo de produto é um piloto silencioso, sem execução automática, que meça tempo, completude documental, divergência de custos, compreensão do usuário e disposição a pagar.
 
 ---
 
