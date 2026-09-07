@@ -11,7 +11,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 JS = ROOT / "web" / "bolinha.js"
 CSS = ROOT / "web" / "benevente.css"
-PAGINAS = ("index", "versoes", "metodo", "limitacoes", "para-escritorios", "quant-ai")
+PAGINAS = ("index", "versoes", "metodo", "limitacoes", "para-voce", "quant-ai")
 
 
 def test_o_script_desiste_sem_ponteiro_e_com_movimento_reduzido():
