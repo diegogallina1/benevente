@@ -348,7 +348,7 @@ A segunda limitação está nos dados. A página atual da B3 respondeu para 95,6
 
 A terceira é econômica. Na série de desenvolvimento a queda máxima chegou a 47,8%, pior que os 47,0% do Ibovespa; a camada reduziu essa marca para 28,7%, mas foi concebida depois da Covid-19 (Seção 5.5); o imposto de renda variável é apurado por ativo e custo médio, e resta conciliar com notas de corretagem. A política limita a exposição por perfil, com quedas máximas retrospectivas entre 9,2% e 28,9%, mas seus parâmetros também foram definidos com conhecimento da amostra.
 
-Por fim, o produto não transfere responsabilidade: a decisão, a ordem e o risco continuam de quem usa, e o artefato é ferramenta de apoio, não recomendação individual nem promessa de resultado. Uso comercial exige enquadramento regulatório, segurança e contrato de fontes. O radar de notícias serve apenas ao alerta humano, sem participar do retorno histórico.
+Por fim, o produto não transfere responsabilidade: a decisão, a ordem e o risco continuam de quem usa, e o artefato é ferramenta de apoio, não recomendação individual nem promessa de resultado. Uso comercial exige enquadramento regulatório, suitability, segurança e contrato de fontes. O radar de notícias serve apenas ao alerta humano, sem participar do retorno histórico.
 
 ### 7.2 Recomendações de pesquisa e implantação
 
