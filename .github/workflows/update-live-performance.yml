@@ -59,29 +59,42 @@ jobs:
           # As mudancas da camada de protecao no ano, que a pagina lista ao
           # abrir cada carteira. Sai da mesma serie diaria.
           python tools/build_changes_2026_web.py
+          # O documento do app embute o mesmo acompanhamento que o site publica,
+          # e depende dos dois passos acima: e o payload que eles escrevem que
+          # ele carrega para dentro. Ate 08/09/2026 este passo nao existia --
+          # o app so mudava por revisao humana, o embutido envelhecia a cada
+          # pregao, e o teste que compara os dois vivia deselecionado aqui
+          # porque mediria o relogio. O envelhecimento entrou assim mesmo: o
+          # commit deste workflow leva [skip ci], entao a CI de pull request,
+          # que era quem barraria, nunca via o main andar. Em 08/09 o app
+          # mostrava 165 pregoes e 2,73% enquanto o site publicava 170 e 5,70%.
+          # Regerar aqui move os dois lados juntos e devolve sentido ao teste.
+          python tools/build_mapa_prototype.py
           python tools/notify_queue.py
-          # Os tres ultimos guardam o que a auditoria de setembro encontrou
-          # quebrado: o monitor sem separar as pernas, listas de tres perfis
-          # escondendo o quarto degrau, e a faixa de 2026 descrita como se
-          # tivesse sido desenhada em janeiro.
-          # O teste do app embutido nao vale aqui, e nao por ser inconveniente:
-          # ele compara o payload dentro de docs/desenho_tela_mapa.html com o
-          # web/forecast_2026.json que estes passos acabaram de reescrever. O
-          # documento sai de tools/build_mapa_prototype.py, que nao roda neste
-          # workflow de proposito — o app so muda com revisao humana. Logo o
-          # embutido envelhece a cada pregao e a comparacao aqui so mede o
-          # relogio. Ela continua valendo onde os dois lados estao parados: na
-          # CI de pull request, que roda este mesmo teste e ainda passa por
-          # tools/verify_app_matches_site.py.
+          # O mesmo verificador que a CI roda depois do merge. Aqui ele roda
+          # antes do commit, que e onde ainda da tempo de nao publicar.
+          python tools/verify_app_matches_site.py
+          # monitor_pernas_e_faltas, escada_completa_em_2026 e forecast_2026
+          # guardam o que a auditoria de setembro encontrou quebrado: o monitor
+          # sem separar as pernas, listas de tres perfis escondendo o quarto
+          # degrau, e a faixa de 2026 descrita como se tivesse sido desenhada em
+          # janeiro. Nomeados, e nao "os tres ultimos": a lista cresceu.
+          # O teste do app embutido volta para a lista, sem deselecao: com o
+          # documento regerado acima, os dois lados param no mesmo dado e a
+          # comparacao mede o que promete. test_intake_and_paths entra junto
+          # porque e ele quem reprova quando o gerador nao rodou -- ele executa
+          # build_mapa_prototype.py e exige que a pagina publicada nao mude.
           python -m pytest tests/test_live_performance.py tests/test_profile_books_2026.py tests/test_notify_queue.py \
             tests/test_monitor_pernas_e_faltas.py tests/test_escada_completa_em_2026.py tests/test_forecast_2026.py \
-            tests/test_seguranca_do_site.py -q \
-            --deselect tests/test_forecast_2026.py::test_o_app_mostra_o_mesmo_acompanhamento_do_site
+            tests/test_intake_and_paths.py tests/test_seguranca_do_site.py -q
 
       - name: Publicar somente quando houver novo dado
         shell: bash
         run: |
-          tracked="web/live_performance.json web/live_profiles_2026.json web/forecast_2026.json web/mudancas_2026.json artifacts/notification_queue/queue.json"
+          # Os quatro ultimos sao a saida de build_mapa_prototype.py. Sem eles
+          # aqui o passo acima regeraria o app e o commit deixaria a regeracao
+          # para tras: o defeito original com uma etapa a mais para esconde-lo.
+          tracked="web/live_performance.json web/live_profiles_2026.json web/forecast_2026.json web/mudancas_2026.json artifacts/notification_queue/queue.json docs/desenho_tela_mapa.html web/app.html web/plano.js web/plano.css"
           # Os perfis saem da politica, nao de uma lista escrita aqui. Escrita a
           # mao, esta ficou com tres quando a escada ganhou o quarto degrau: o
           # passo anterior gerava os quatro arquivos e este publicava tres, e o
@@ -100,6 +113,10 @@ jobs:
           # dele: sem isso o git recusa o pathspec da fila de notificacoes e o
           # passo morre antes do commit. Nos caminhos de web/ o -f e inocuo.
           git add -f $tracked
+          # O [skip ci] continua, e agora com o que o sustenta: o portao roda
+          # neste job, antes do commit. Um passo acima que reprove derruba a
+          # execucao e nada e publicado, o que protege mais do que uma CI
+          # olhando depois que o push ja aconteceu.
           git commit -m "Atualiza acompanhamento corrente de 2026 [skip ci]"
           # Rebase antes de empurrar: se o main andou desde o checkout, o push
           # direto é recusado com non-fast-forward e a atualização se perde. O

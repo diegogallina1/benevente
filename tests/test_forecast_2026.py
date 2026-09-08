@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import json
+import re
 
 import pytest
 
@@ -99,6 +100,39 @@ def test_o_passo_diario_publica_o_arquivo():
              ).read_text(encoding="utf-8")
     assert "tools/build_forecast_2026_web.py" in fluxo
     assert "web/forecast_2026.json" in fluxo
+
+
+def test_o_passo_diario_regenera_o_app_e_publica_o_que_ele_escreve():
+    """O embutido envelhecia porque o noturno mexia num lado só.
+
+    Até 08/09/2026 o workflow reescrevia o acompanhamento do site e não tocava
+    no documento do app, que só mudava por revisão humana. O teste logo abaixo
+    vivia deselecionado lá, porque com um lado parado ele mediria o relógio — e
+    foi por essa fresta que a divergência entrou: o commit do noturno leva
+    `[skip ci]`, então a CI de pull request, que era quem barraria, nunca via o
+    main andar. O app ficou em 165 pregões e 2,73% com o site em 170 e 5,70%.
+
+    Três coisas seguram o conserto, e é por isso que são três asserções: o
+    gerador precisa rodar, sua saída precisa entrar no commit, e o teste de
+    baixo não pode voltar a ser deselecionado. Faltando qualquer uma, a
+    divergência volta pelo mesmo caminho.
+    """
+    fluxo = (ROOT / ".github" / "workflows" / "update-live-performance.yml"
+             ).read_text(encoding="utf-8")
+    assert "tools/build_mapa_prototype.py" in fluxo, (
+        "o noturno não regenera o documento do app: o embutido volta a envelhecer")
+
+    publicados = re.search(r'tracked="([^"]+)"', fluxo)
+    assert publicados, "a lista do que se publica sumiu do workflow"
+    for saida in ("docs/desenho_tela_mapa.html", "web/app.html", "web/plano.js",
+                  "web/plano.css"):
+        assert saida in publicados.group(1), (
+            f"{saida} é regerado e não é publicado: o commit deixaria a "
+            f"regeração para trás, que é o defeito original com uma etapa a mais")
+
+    assert "--deselect" not in fluxo, (
+        "deselecionar aqui devolve o problema: era a deseleção deste teste que "
+        "deixava os dois lados se afastarem sem ninguém ver")
 
 
 def test_o_app_mostra_o_mesmo_acompanhamento_do_site(publicado):
