@@ -31,17 +31,17 @@ SAIDA = WEB / "benevente.css"
 #: Folhas que cada página carrega, na ordem. A camada gerada cobre só estas
 #: duas páginas: as outras sete seguem intocadas, e o risco fica isolado.
 PAGINAS = {
-    "index": ["styles.css", "enhancements.css", "lab.css", "commercial.css",
+    "index": ["styles.css", "enhancements.css", "lab.css",
               "paper.css", "refinements.css", "design-system.css"],
     "versoes": ["versions.css", "paper.css", "site-polish.css", "design-system.css",
                 "ladder.css"],
-    # As quatro carregam exatamente as folhas de /versoes. As tres restantes
-    # (btech, benevente-1, benevente-2) sao redirecionamentos de 400 bytes sem
-    # estilo nenhum: nao ha o que tematizar.
+    # As quatro carregam exatamente as folhas de /versoes. As quatro restantes
+    # (btech, benevente-1, benevente-2, para-escritorios) sao redirecionamentos
+    # de meio kilobyte sem estilo nenhum: nao ha o que tematizar.
     "metodo": ["versions.css", "paper.css", "site-polish.css", "design-system.css", "ladder.css"],
     "quant-ai": ["versions.css", "paper.css", "site-polish.css", "design-system.css", "ladder.css"],
-    "para-escritorios": ["versions.css", "paper.css", "site-polish.css", "design-system.css",
-                         "ladder.css"],
+    "para-voce": ["versions.css", "paper.css", "site-polish.css", "design-system.css",
+                  "ladder.css"],
     "limitacoes": ["versions.css", "paper.css", "site-polish.css", "design-system.css",
                    "ladder.css"],
 }

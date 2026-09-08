@@ -53,7 +53,11 @@ BASE_COMECA_EM = date(2019, 11, 1)
 CHAVE_DO_DOCUMENTO = "BENEVENTE_DOCUMENTO_CHAVE"
 
 #: Uma chave curta é enumerável junto com o CPF. Trinta e dois bytes é o
-#: tamanho do bloco do SHA-256 e o piso abaixo do qual o módulo recusa.
+#: tamanho da saída do SHA-256, que é o piso recomendado para chave de HMAC
+#: (RFC 2104) — não o do bloco, que tem sessenta e quatro. O módulo recusa
+#: abaixo disso. O que ele não sabe checar é entropia: trinta e dois caracteres
+#: de uma frase escolhida por gente passam aqui e se enumeram lá fora, então a
+#: chave tem de ser sorteada. Ver docs/guarda_da_chave_do_documento.md.
 CHAVE_MINIMA_EM_BYTES = 32
 
 #: Como o documento é derivado. Vai no registro porque quem o ler depois
