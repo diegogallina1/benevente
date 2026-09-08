@@ -500,6 +500,10 @@ enumerar esse espaço contra um hash sem chave é trabalho de minutos, o que
 devolveria o número a quem obtivesse o registro. A chave não fica no
 repositório, não entra no registro e não aparece em nenhum artefato.
 
+Como gerar, quem acessa, o que a rotação quebra e por que destruir a chave é uma
+forma de fazer o registro expirar estão na
+[guarda da chave](docs/guarda_da_chave_do_documento.md).
+
 `research_b3_connection.py` usa uma chave de demonstração declarada no próprio
 arquivo, sobre um CPF sintético, para que
 `artifacts/b3_connection_v1/connection_example.json` continue reproduzível. O
