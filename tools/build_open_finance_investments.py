@@ -173,6 +173,24 @@ def base_do_endpoint(url: str) -> str | None:
     return f"{prefixo}{MARCA}{_versao_do_caminho(url)}"
 
 
+#: O que se aceita como nome de host. O diretório é preenchido por terceiros e
+#: esta lista alimenta um laço de shell no workflow de diagnóstico: um nome com
+#: aspas, espaço ou ponto-e-vírgula viraria comando lá do outro lado. Filtrar na
+#: origem é mais seguro que escapar no destino, porque o destino pode mudar de
+#: dono e o filtro não viaja junto.
+HOST_ACEITAVEL = re.compile(r"^[A-Za-z0-9][A-Za-z0-9.-]{0,252}[A-Za-z0-9]$")
+
+
+def hosts(participantes) -> list[str]:
+    """Os hosts distintos, só os que têm forma de host, em ordem."""
+    achados = []
+    for participante in participantes:
+        nome = urlsplit(participante["base"]).hostname or ""
+        if HOST_ACEITAVEL.fullmatch(nome) and nome not in achados:
+            achados.append(nome)
+    return achados
+
+
 def _servidores(organizacao: dict) -> list:
     """Os servidores de autorização, aceitando as duas formas do diretório."""
     dos_servidores = organizacao.get("AuthorisationServers")
@@ -423,6 +441,8 @@ def main() -> None:
     p.add_argument("--saida", type=Path, default=DESTINO)
     p.add_argument("--listar", action="store_true",
                    help="só imprime quem publica dados abertos, sem colher nada")
+    p.add_argument("--hosts", action="store_true",
+                   help="imprime um host por linha, para diagnóstico de TLS")
     args = p.parse_args()
 
     diretorio = None
@@ -438,6 +458,12 @@ def main() -> None:
                 f"o diretório de participantes não respondeu ({parou}). Ele é "
                 f"público: {DIRETORIO}. Salve uma cópia e rode com "
                 f"--diretorio-local se a rede daqui não o alcança.") from None
+
+    if args.hosts:
+        for host in hosts(filtrados(bases_publicadas(diretorio),
+                                    args.participante, args.limite)):
+            print(host)
+        return
 
     if args.listar:
         publicadas = bases_publicadas(diretorio)
