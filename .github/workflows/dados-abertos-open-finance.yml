@@ -20,7 +20,12 @@ on:
         options: [listar, colher]
         default: listar
       limite:
-        description: "Quantos participantes percorrer no modo colher. Vazio = todos"
+        # Era "Vazio = todos", e vazio nunca quis dizer todos: o GitHub repõe o
+        # default quando o valor chega em branco, entao pedir a colheita inteira
+        # devolvia os mesmos cinco em silencio. Um valor explicito diz o que o
+        # vazio nao consegue, e o default continua pequeno para um clique
+        # distraido nao percorrer quarenta e seis hosts de terceiros.
+        description: "Quantos participantes percorrer no modo colher. 0 = todos"
         type: string
         default: "5"
       participante:
@@ -78,7 +83,7 @@ jobs:
           fi
           if [ "$MODO" = "listar" ]; then
             argumentos+=(--listar)
-          elif [ -n "$LIMITE" ]; then
+          elif [ -n "$LIMITE" ] && [ "$LIMITE" != "0" ]; then
             argumentos+=(--limite "$LIMITE")
           fi
           python tools/build_open_finance_investments.py "${argumentos[@]}" | tee saida.txt
