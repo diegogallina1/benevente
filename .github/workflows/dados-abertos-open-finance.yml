@@ -1,0 +1,102 @@
+# Roda o coletor de dados abertos do Open Finance num runner, e não numa máquina.
+#
+# Existe porque o obstáculo nunca foi o código: era alcance de rede. Os dados
+# abertos ficam no host de cada participante, todos no Brasil, e quem desenvolve
+# nem sempre tem de onde chamá-los. O runner da Actions tem, e é gratuito para
+# este uso.
+#
+# Não há credencial aqui, e isso não é descuido: a especificação de dados
+# abertos não tem esquema de segurança, e o coletor não envia cabeçalho de
+# autorização. Um teste prende isso. Por isso o job pede só leitura: ele não
+# escreve no repositório, não publica nada e não tem segredo no ambiente.
+name: Dados abertos do Open Finance
+
+on:
+  workflow_dispatch:
+    inputs:
+      modo:
+        description: "listar (só quem publica) ou colher (busca os dados)"
+        type: choice
+        options: [listar, colher]
+        default: listar
+      limite:
+        description: "Quantos participantes percorrer no modo colher. Vazio = todos"
+        type: string
+        default: "5"
+      participante:
+        description: "Filtra por trecho do nome da organização ou da marca"
+        type: string
+        default: ""
+
+# Só leitura. Este workflow observa; quem publica é outro.
+permissions:
+  contents: read
+
+concurrency:
+  group: benevente-dados-abertos
+  cancel-in-progress: false
+
+jobs:
+  coletar:
+    runs-on: ubuntu-latest
+    # Colher percorre centenas de hosts de terceiros, com pausa entre chamadas
+    # de propósito. O teto é alto porque o modo colher sem limite é lento por
+    # escolha, não por defeito.
+    timeout-minutes: 45
+    steps:
+      - name: Baixar repositório
+        # Presa ao SHA, nao a tag, como nos outros workflows: uma tag e um
+        # ponteiro que o dono da action pode mover.
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - name: Preparar Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.12"
+
+      # Sem passo de instalação: o coletor é biblioteca padrão inteira. Se um
+      # dia deixar de ser, a lista é requirements-ci.txt, nunca uma escrita aqui
+      # — foi assim que o radar caiu oito execuções seguidas em setembro.
+
+      # Os três chegam por env, nunca por ${{ }} dentro do run. A interpolação
+      # é substituição textual antes de o shell ler a linha, então um nome de
+      # participante com aspas e ponto-e-vírgula viraria comando. Por env eles
+      # chegam como valor de variável, que o shell trata como dado. Um teste
+      # deste repositório reprova a outra forma, e reprovou a primeira versão
+      # deste arquivo.
+      - name: Rodar o coletor
+        shell: bash
+        env:
+          MODO: ${{ inputs.modo }}
+          LIMITE: ${{ inputs.limite }}
+          PARTICIPANTE: ${{ inputs.participante }}
+        run: |
+          set -o pipefail
+          argumentos=()
+          if [ -n "$PARTICIPANTE" ]; then
+            argumentos+=(--participante "$PARTICIPANTE")
+          fi
+          if [ "$MODO" = "listar" ]; then
+            argumentos+=(--listar)
+          elif [ -n "$LIMITE" ]; then
+            argumentos+=(--limite "$LIMITE")
+          fi
+          python tools/build_open_finance_investments.py "${argumentos[@]}" | tee saida.txt
+
+      - name: Escrever o resultado no resumo da execução
+        # O log some no meio do ruído do runner; o resumo fica na página da
+        # execução, que é onde quem apertou o botão vai olhar.
+        if: always()
+        shell: bash
+        env:
+          MODO: ${{ inputs.modo }}
+        run: |
+          {
+            echo "## Dados abertos do Open Finance"
+            echo
+            echo "Modo \`$MODO\`, em $(date -u +'%Y-%m-%d %H:%M UTC')."
+            echo
+            echo '```'
+            head -c 60000 saida.txt 2>/dev/null || echo "sem saída: o passo anterior falhou antes de imprimir"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -120,6 +120,33 @@ def test_quem_nao_publica_investimentos_nao_aparece() -> None:
     assert coletor.bases_publicadas(diretorio(outra_familia)) == []
 
 
+def test_o_filtro_de_nome_vale_nos_dois_modos() -> None:
+    """Listar reimplementava a seleção, e esqueceu o filtro.
+
+    Pedir uma instituição pelo nome devolvia a lista inteira, sem erro nenhum:
+    quem lê acha que aquele é o resultado da busca. Os dois caminhos passam pela
+    mesma função agora, e este teste é o que impede a cópia de voltar.
+    """
+    lista = coletor.bases_publicadas(diretorio(
+        organizacao("Banco Exemplo", "45086338000178", BASE),
+        organizacao("Outro Banco", "11111111000191",
+                    "https://api.outro.com.br/open-banking/opendata-investments/v1")))
+    assert len(lista) == 2
+    assert [p["organizacao"] for p in coletor.filtrados(lista, "outro", None)] == ["Outro Banco"]
+    assert [p["organizacao"] for p in coletor.filtrados(lista, "", 1)] == ["Banco Exemplo"]
+    assert coletor.filtrados(lista, "nao existe", None) == []
+    assert coletor.filtrados(lista, "", None) == lista
+
+
+def test_a_marca_tambem_casa_no_filtro() -> None:
+    """O diretório separa razão social de nome de fantasia, e quem busca usa o
+    segundo: filtrar só pela organização acharia menos do que existe."""
+    lista = coletor.bases_publicadas(diretorio(
+        organizacao("Instituicao de Pagamento XYZ Ltda", "45086338000178", BASE)))
+    lista[0]["marca"] = "Apelido"
+    assert coletor.filtrados(lista, "apelido", None) == lista
+
+
 # --- paginação --------------------------------------------------------------
 
 def test_a_paginacao_para_no_total_declarado_pelo_envelope() -> None:

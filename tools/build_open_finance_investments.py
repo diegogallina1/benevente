@@ -197,6 +197,20 @@ def bases_publicadas(diretorio) -> list[dict]:
     return sorted(achados.values(), key=lambda x: (x["organizacao"], x["base"]))
 
 
+def filtrados(participantes, filtro: str, limite: int | None):
+    """Aplica nome e teto. Existe como função por ter falhado como cópia.
+
+    O ``--listar`` reimplementava a seleção e esqueceu o filtro: pedir uma
+    instituição pelo nome devolvia a lista inteira, em silêncio, o que é pior
+    que um erro — quem lê acha que aquele é o resultado da busca.
+    """
+    if filtro:
+        alvo = filtro.lower()
+        participantes = [p for p in participantes
+                         if alvo in p["organizacao"].lower() or alvo in p["marca"].lower()]
+    return participantes if limite is None else participantes[:limite]
+
+
 def _itens(corpo) -> tuple[list, dict]:
     """Separa ``data`` do envelope. O envelope é quem sabe se acabou."""
     if isinstance(corpo, list):
@@ -258,13 +272,7 @@ def coletar(*, abrir=urllib.request.urlopen, diretorio=None, limite: int | None 
     if diretorio is None:
         diretorio = _abrir_json(DIRETORIO, abrir=abrir)
     publicadas = bases_publicadas(diretorio)
-    participantes = publicadas
-    if filtro:
-        alvo = filtro.lower()
-        participantes = [p for p in participantes
-                         if alvo in p["organizacao"].lower() or alvo in p["marca"].lower()]
-    if limite is not None:
-        participantes = participantes[:limite]
+    participantes = filtrados(publicadas, filtro, limite)
 
     colhidos, falhas = [], []
     for participante in participantes:
@@ -375,9 +383,12 @@ def main() -> None:
 
     if args.listar:
         publicadas = bases_publicadas(diretorio)
+        escolhidos = filtrados(publicadas, args.participante, args.limite)
         plural = "participante publica" if len(publicadas) == 1 else "participantes publicam"
         print(f"{len(publicadas)} {plural} {MARCA}")
-        for participante in publicadas[:args.limite or len(publicadas)]:
+        if len(escolhidos) != len(publicadas):
+            print(f"  {len(escolhidos)} depois do filtro")
+        for participante in escolhidos:
             print(f"  {participante['organizacao']} · {participante['base']}")
         return
 
