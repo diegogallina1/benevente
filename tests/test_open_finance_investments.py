@@ -170,6 +170,32 @@ def test_a_lista_de_hosts_nao_repete_e_guarda_a_ordem() -> None:
     assert coletor.hosts(lista) == ["b.com.br", "a.com.br"]
 
 
+def test_sem_ancora_extra_o_abridor_e_o_de_sempre() -> None:
+    """A âncora é opcional: sem ela o coletor usa as do sistema e os hosts que
+    não validam continuam falhando, nomeados. Falhar visível é melhor que
+    passar, e é por isso que o padrão não muda."""
+    import urllib.request
+    assert coletor.abridor_com("") is urllib.request.urlopen
+    assert coletor.abridor_com(None) is urllib.request.urlopen
+
+
+def test_ancora_ilegivel_levanta_em_vez_de_cair_no_padrao(tmp_path) -> None:
+    """Cair no padrão em silêncio é o defeito perigoso aqui.
+
+    O coletor pareceria consertado e continuaria recusando os mesmos oito
+    hosts, e quem fosse investigar procuraria o defeito no lugar errado — no
+    certificado do banco, não no arquivo que não carregou.
+    """
+    with pytest.raises(FileNotFoundError):
+        coletor.abridor_com(str(tmp_path / "nao-existe.pem"))
+
+    qualquer_coisa = tmp_path / "isto-nao-e-pem.txt"
+    qualquer_coisa.write_text("bom dia", encoding="utf-8")
+    with pytest.raises(Exception) as caiu:
+        coletor.abridor_com(str(qualquer_coisa))
+    assert not isinstance(caiu.value, AssertionError)
+
+
 # --- paginação --------------------------------------------------------------
 
 def test_a_paginacao_para_no_total_declarado_pelo_envelope() -> None:
