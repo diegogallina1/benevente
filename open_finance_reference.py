@@ -48,7 +48,32 @@ import unicodedata
 from fixed_income_catalog import Index, Product
 
 ROOT = Path(__file__).resolve().parent
+#: A coleta local, fora do versionamento: quem roda o coletor na própria máquina
+#: escreve aqui, e é o arquivo mais novo que existe.
 COLHEITA_PADRAO = ROOT / "data" / "dados_abertos_open_finance.json"
+#: As coletas publicadas, com a data no nome. Uma só é versionada quando alguém
+#: aperta o botão do workflow, então elas são poucas e cada uma diz de quando é.
+COLHEITAS_PUBLICADAS = "dados_abertos_open_finance_*.json"
+
+
+def colheita_vigente(raiz: Path | None = None) -> Path:
+    """O arquivo que ``carregar`` lê quando ninguém aponta um.
+
+    A coleta local ganha quando existe: quem acabou de rodar o coletor quer o
+    que acabou de colher, não o que estava publicado. Sem ela, vale a publicada
+    de data mais recente — ordenar por nome basta porque a data é ISO e vem do
+    ``colhido_em`` de dentro do arquivo.
+
+    Devolve ``COLHEITA_PADRAO`` quando não há nenhuma. O caminho inexistente é
+    de propósito: quem chama trata a ausência, e um erro aqui esconderia de
+    ``fund_comparator`` a diferença entre "sem fonte" e "fonte vazia".
+    """
+    pasta = raiz or (ROOT / "data")
+    local = pasta / COLHEITA_PADRAO.name
+    if local.exists():
+        return local
+    publicadas = sorted(pasta.glob(COLHEITAS_PUBLICADAS))
+    return publicadas[-1] if publicadas else local
 
 #: De um índice do catálogo para o indexador da API. O que não está aqui não tem
 #: contraparte publicada, e a ausência é uma recusa declarada, não um esquecimento.
@@ -293,9 +318,10 @@ FAMILIA_DE_TAXA = {"credit-fixed-incomes": "RENDA_FIXA_CREDITO",
                    "treasure-titles": "TESOURO"}
 
 
-def carregar(caminho: str | Path = COLHEITA_PADRAO) -> Colheita:
+def carregar(caminho: str | Path | None = None) -> Colheita:
     """Lê o documento do coletor. Linha malformada é contada, não engolida."""
-    documento = json.loads(Path(caminho).read_text(encoding="utf-8"))
+    documento = json.loads(
+        Path(caminho or colheita_vigente()).read_text(encoding="utf-8"))
     emissoes, taxas, fundos, descartadas = [], [], [], []
     for participante in documento.get("participantes") or []:
         recursos = participante.get("recursos") or {}

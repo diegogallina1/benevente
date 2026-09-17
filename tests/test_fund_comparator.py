@@ -1,3 +1,4 @@
+from pathlib import Path
 from zipfile import ZipFile
 
 import pandas as pd
@@ -138,3 +139,86 @@ def test_distribution_terms_carry_the_fees_the_quota_file_never_had(tmp_path):
     assert termos["minimum_initial_brl"] == 5_000.0
     assert termos["redemption_quotation_days"] == 30
     assert termos["harvested_at"].startswith("2026-09-07")
+
+
+def _colheita_de_fundo(colhido_em: str = "2026-09-17T02:47:24+00:00") -> dict:
+    """Uma coleta mínima com uma linha de ``funds``, no formato da especificação."""
+    return {
+        "colhido_em": colhido_em,
+        "participantes": [{
+            "marca": "Corretora Exemplo", "organizacao": "Corretora Exemplo",
+            "cnpj": "45086338000178",
+            "recursos": {"funds": {"linhas": 1, "dados": [{
+                "name": "DYNAMO COUGAR FIF", "cnpjNumber": "73232530000139",
+                "anbimaCategory": "ACOES", "taxation": "ACOES",
+                "fees": {"maxAdminFee": "0.019000"},
+                "generalConditions": {"fundQuotaType": "ABERTO"}}]}},
+        }],
+    }
+
+
+def test_published_slice_is_enough_for_the_only_consumer(tmp_path):
+    """A fatia publicada precisa bastar para quem a lê, ou publicar não serve.
+
+    ``RECURSOS_PUBLICADOS`` existe para não versionar megabytes que ninguém
+    abre. O risco do corte é o oposto do desperdício: cortar demais, e
+    ``distribution_terms`` passar a devolver lista vazia em silêncio, que é
+    indistinguível de "nenhum distribuidor oferece este fundo". Este teste falha
+    quando o corte deixa de alimentar o consumidor.
+    """
+    import json
+    import sys
+
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+    from build_open_finance_investments import RECURSOS_PUBLICADOS
+
+    assert "funds" in RECURSOS_PUBLICADOS, (
+        "distribution_terms lê funds; sem ele a publicação não alimenta ninguém")
+
+    colheita = _colheita_de_fundo()
+    # Só o que seria publicado sobrevive ao corte.
+    for participante in colheita["participantes"]:
+        participante["recursos"] = {nome: corpo
+                                    for nome, corpo in participante["recursos"].items()
+                                    if nome in RECURSOS_PUBLICADOS}
+
+    caminho = tmp_path / "dados_abertos_open_finance_2026-09-17.json"
+    caminho.write_text(json.dumps(colheita), encoding="utf-8")
+
+    (termos,) = distribution_terms("73.232.530/0001-39", caminho)
+    assert termos["max_admin_fee"] == 0.019
+    assert termos["harvested_at"].startswith("2026-09-17")
+
+
+def test_published_harvest_is_used_when_there_is_no_local_one(tmp_path):
+    """Sem coleta local, vale a publicada mais recente — e a mais recente mesmo."""
+    import json
+
+    from open_finance_reference import colheita_vigente
+
+    for dia, taxa in (("2026-09-10", "0.011000"), ("2026-09-17", "0.019000")):
+        colheita = _colheita_de_fundo(f"{dia}T02:47:24+00:00")
+        linha = colheita["participantes"][0]["recursos"]["funds"]["dados"][0]
+        linha["fees"]["maxAdminFee"] = taxa
+        (tmp_path / f"dados_abertos_open_finance_{dia}.json").write_text(
+            json.dumps(colheita), encoding="utf-8")
+
+    assert colheita_vigente(tmp_path).name == "dados_abertos_open_finance_2026-09-17.json"
+
+    (termos,) = distribution_terms("73.232.530/0001-39", colheita_vigente(tmp_path))
+    assert termos["max_admin_fee"] == 0.019
+
+
+def test_local_harvest_wins_over_the_published_ones(tmp_path):
+    """Quem acabou de rodar o coletor quer o que colheu, não o que estava publicado."""
+    import json
+
+    from open_finance_reference import colheita_vigente
+
+    (tmp_path / "dados_abertos_open_finance_2026-09-17.json").write_text(
+        json.dumps(_colheita_de_fundo()), encoding="utf-8")
+    assert colheita_vigente(tmp_path).name.startswith("dados_abertos_open_finance_2026")
+
+    (tmp_path / "dados_abertos_open_finance.json").write_text(
+        json.dumps(_colheita_de_fundo()), encoding="utf-8")
+    assert colheita_vigente(tmp_path).name == "dados_abertos_open_finance.json"

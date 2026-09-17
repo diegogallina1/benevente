@@ -387,3 +387,67 @@ def test_coleta_vazia_nao_apaga_coleta_boa(tmp_path) -> None:
         coletor.gravar(destino, vazio)
     assert "fica como está" in str(parou.value)
     assert json.loads(destino.read_text(encoding="utf-8"))["participantes"]
+
+
+def test_o_nome_publicado_sai_da_data_de_dentro_do_arquivo() -> None:
+    """O nome e o ``colhido_em`` não podem divergir, então o nome vem de dentro."""
+    caminho = coletor.destino_datado("2026-09-17T02:47:24+00:00", Path("/tmp"))
+    assert caminho.name == "dados_abertos_open_finance_2026-09-17.json"
+
+
+@pytest.mark.parametrize("colhido_em", ["", "ontem", "2026/09/17", "17-09-2026"])
+def test_data_que_nao_e_iso_levanta_em_vez_de_virar_nome(colhido_em) -> None:
+    """Nome com data inventada é pior que nenhum: ele parece um dado datado."""
+    with pytest.raises(ValueError, match="colhido_em"):
+        coletor.destino_datado(colhido_em, Path("/tmp"))
+
+
+def test_publicar_colhe_so_o_que_alguem_le(tmp_path, monkeypatch) -> None:
+    """``--publicar`` corta os recursos que nenhum consumidor abre.
+
+    Sem o corte, cada publicação versiona vinte mil linhas de distribuição de
+    taxa de emissão que nenhuma linha deste repositório lê.
+    """
+    mapa = {f"/{recurso}?": pagina([{"cnpjNumber": "73232530000139",
+                                     "name": f"linha de {recurso}"}])
+            for recurso in coletor.RECURSOS}
+    destino = tmp_path / "dados_abertos_open_finance.json"
+    monkeypatch.setattr(coletor, "DESTINO", destino)
+    monkeypatch.setattr(coletor, "abridor_com", lambda _: _abrir(mapa))
+    monkeypatch.setattr(sys, "argv", [
+        "coletor", "--publicar", "--pausa", "0",
+        "--diretorio-local", str(_diretorio_salvo(tmp_path))])
+
+    coletor.main()
+
+    assert not destino.exists(), "publicar não pode escrever no caminho mutável"
+    (publicado,) = tmp_path.glob("dados_abertos_open_finance_*.json")
+    escrito = json.loads(publicado.read_text(encoding="utf-8"))
+    recursos = escrito["participantes"][0]["recursos"]
+    assert tuple(recursos) == coletor.RECURSOS_PUBLICADOS
+    assert "bank-fixed-incomes" not in recursos
+    assert publicado.name[-15:-5] == escrito["colhido_em"][:10]
+
+
+def test_saida_explicita_manda_mesmo_com_publicar(tmp_path, monkeypatch) -> None:
+    """Quem escolheu o caminho está dizendo onde quer; datar por cima seria
+    gravar em outro lugar sem avisar."""
+    mapa = {"/funds?": pagina([{"cnpjNumber": "73232530000139", "name": "um fundo"}])}
+    escolhido = tmp_path / "onde-eu-quis.json"
+    monkeypatch.setattr(coletor, "DESTINO", tmp_path / "dados_abertos_open_finance.json")
+    monkeypatch.setattr(coletor, "abridor_com", lambda _: _abrir(mapa))
+    monkeypatch.setattr(sys, "argv", [
+        "coletor", "--publicar", "--pausa", "0", "--saida", str(escolhido),
+        "--diretorio-local", str(_diretorio_salvo(tmp_path))])
+
+    coletor.main()
+
+    assert escolhido.exists()
+    assert not list(tmp_path.glob("dados_abertos_open_finance_*.json"))
+
+
+def _diretorio_salvo(tmp_path: Path) -> Path:
+    caminho = tmp_path / "diretorio.json"
+    caminho.write_text(json.dumps(diretorio(
+        organizacao("Banco Exemplo", "45086338000178", BASE))), encoding="utf-8")
+    return caminho

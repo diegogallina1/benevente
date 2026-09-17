@@ -143,22 +143,43 @@ não gambiarra.
   quando nem isso existe imprime o código de saída do `openssl` em vez de um
   rótulo inventado.
 
+### Publicar a colheita
+
+O modo `publicar` do workflow versiona a colheita. Três escolhas dentro dele:
+
+- **A data vai no nome**, tirada do `colhido_em` de dentro do arquivo:
+  `data/dados_abertos_open_finance_AAAA-MM-DD.json`. O caminho mutável
+  `data/dados_abertos_open_finance.json` continua fora do versionamento, porque
+  um arquivo que muda de conteúdo sem mudar de nome vira dado sem idade. É a
+  mesma regra dos outros dados deste repositório, que têm o período no nome.
+- **Só os recursos que alguém lê.** `RECURSOS_PUBLICADOS` é hoje só `funds`,
+  que é o que `fund_comparator.distribution_terms` abre. Os outros quatro
+  continuam sendo colhidos e contados — as falhas e ausências seguem no arquivo
+  — mas versionar vinte mil linhas de distribuição de taxa de emissão que
+  nenhuma linha lê seria peso sem leitor. Um teste amarra a tupla ao consumidor:
+  cortar demais faz o teste falhar, em vez de `distribution_terms` passar a
+  devolver lista vazia em silêncio.
+- **Recorte não publica.** `publicar` recusa `limite` e `participante`. Colheita
+  publicada carrega data e passa a valer como cobertura; quem abrisse o arquivo
+  seis meses depois veria cinco participantes sem ter como saber que quarenta e
+  seis responderam.
+
+Quem lê resolve sozinho qual arquivo vale: a coleta local ganha quando existe, e
+sem ela vale a publicada de data mais recente.
+
 ### O que ainda não dá para responder
 
-Duas das três perguntas originais continuam abertas, por um motivo prosaico: **a
-colheita não é preservada.** O arquivo fica no runner, o runner é descartado, e
-sobra o log com os totais.
+As duas perguntas abaixo dependem de abrir o arquivo, não de ler o total, e
+seguem abertas até a primeira execução do modo `publicar`:
 
-- **Se algum host recusa `page-size=1000`.** O coletor pagina até a página curta,
-  então um teto menor do outro lado passa despercebido no total.
+- **Se algum host recusa `page-size=1000`.** O coletor pagina até a página
+  curta, então um teto menor do outro lado passa despercebido no total.
 - **Se `bank-fixed-incomes` traz emissor de fora do distribuidor.** O payload tem
   `issuerInstitutionCnpjNumber` separado do participante, o que sugere que uma
-  corretora publique emissores de terceiros. Confirmar exige ler o arquivo, não o
-  total.
-
-Guardar a colheita como artefato da execução responde as duas. Não entrou aqui
-porque exige fixar `actions/upload-artifact` num SHA, e este repositório não
-adivinha referência de ação.
+  corretora publique emissores de terceiros. Note que este recurso fica **fora**
+  do que é publicado, então responder isto exige uma rodada de `colher` e olhar
+  o arquivo no runner, ou incluí-lo em `RECURSOS_PUBLICADOS` quando algum código
+  passar a lê-lo.
 
 ## Limites
 

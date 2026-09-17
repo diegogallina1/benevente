@@ -167,10 +167,15 @@ def distribution_terms(cnpj: str, harvest_path: str | Path | None = None) -> lis
     Requires a harvest produced by ``tools/build_open_finance_investments.py``;
     without one it returns an empty list, because an absent source must look
     absent rather than like a fund nobody distributes.
-    """
-    from open_finance_reference import COLHEITA_PADRAO, carregar, termos_de_distribuicao
 
-    path = Path(harvest_path or COLHEITA_PADRAO)
+    With no explicit path it takes the local harvest when one exists, and
+    otherwise the most recent published one — the dated files under ``data/``.
+    Both carry their own collection date, which travels into every row as
+    ``harvested_at``: these terms were true on that date, not today.
+    """
+    from open_finance_reference import carregar, colheita_vigente, termos_de_distribuicao
+
+    path = Path(harvest_path or colheita_vigente())
     if not path.exists():
         return []
     harvest = carregar(path)
