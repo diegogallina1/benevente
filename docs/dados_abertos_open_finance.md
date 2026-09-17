@@ -91,22 +91,74 @@ aquele emissor emitiu.
 | Comparar **entre emissores** | Taxa maior de emissor pior não é oferta melhor, é outro risco de crédito |
 | Comparar **entre faixas de prazo** | A tabela regressiva do IR inverte ordem entre prazos; a faixa é parte da identidade da linha |
 
-## A conferir na primeira execução real
+## O que a primeira execução real respondeu
 
-Três coisas não puderam ser verificadas onde o coletor foi escrito, porque o
-ambiente não alcança os domínios brasileiros. Nenhuma delas é suposição embutida
-no código, mas todas merecem um olhar na primeira rodada:
+`--listar`, `colher` e `diagnostico` rodaram inteiros em 2026-09-17, pelo botão do
+workflow, porque o ambiente onde o coletor foi escrito não alcança domínio
+brasileiro. Os números abaixo são dessa data, não de hoje.
 
-1. **Quantos participantes de fato publicam.** `--listar` responde. A descoberta é
-   feita pelo caminho `/opendata-investments/` publicado no diretório, e não pelo
-   campo `ApiFamilyType`, justamente para não depender de um nome de família
-   suposto.
-2. **Se os hosts respondem `page-size=1000`.** É o teto documentado. Se algum
-   recusar, ele aparece em `falhas` com o código HTTP, não em silêncio.
-3. **Se `bank-fixed-incomes` traz emissor de fora do distribuidor.** O payload tem
-   `issuerInstitutionCnpjNumber` separado do participante, o que sugere que uma
-   corretora publica emissores de terceiros. Se for assim, a cobertura por emissor
-   é maior do que o número de participantes faz supor.
+- **46 de 46 participantes** responderam. A descoberta pelo caminho
+  `/opendata-investments/` publicado no diretório funcionou — não foi preciso
+  supor nome de família de API.
+- **Linhas colhidas:** `funds` 27.478, `bank-fixed-incomes` 20.127,
+  `credit-fixed-incomes` 93, `variable-incomes` 36, `treasure-titles` 29.
+- **44 recursos responderam HTTP 404.** A instituição está dizendo que não
+  publica aquele recurso. Isso é resposta, não falha, e o coletor conta separado.
+- **63 falhas**, por causa: 40 de TLS, 18 de HTTP 4xx, 5 de HTTP 5xx.
+
+### As 40 falhas de TLS
+
+O diagnóstico por host fecha a conta: **8 dos 41 hosts** não validam com o bundle
+padrão, e 8 × 5 recursos = 40. Dois caminhos independentes, mesmo número.
+
+| Host | Veredito | Raiz declarada na cadeia |
+| --- | --- | --- |
+| `api.bradesco.com` | falha | ICP-Brasil |
+| `api.openbanking.bancointer.com.br` | falha | ICP-Brasil |
+| `api.openbanking.caixa.gov.br` | falha | ICP-Brasil |
+| `qrcode.openfinance.banking.infinitepay.io` | 19, autoassinado na cadeia | ICP-Brasil |
+| `openfinance.sicoob.com.br` | 19, autoassinado na cadeia | ICP-Brasil |
+| `openbanking.api.pagseguro.com` | 20, emissor local ausente | ICP-Brasil |
+| `obbr.745.cipbanfico.com` | falha | GlobalSign R6 |
+| `external.openfinance.stone.com.br` | falha | GlobalSign R3 |
+
+Seis apresentam a raiz da **ICP-Brasil** — a PKI nacional, a mesma de e-CPF e
+assinatura digital. Não é certificado avulso por banco, e é por isso que
+`--ca-extra` existe: acrescentar essa âncora ao processo do coletor é conserto,
+não gambiarra.
+
+### Duas leituras erradas, registradas para não voltarem
+
+- **Raiz pública não quer dizer certificado válido.** Citibank e Stone apresentam
+  raiz GlobalSign, que já está no bundle padrão, e ainda assim o coletor levanta
+  `CERTIFICATE_VERIFY_FAILED` — nos oito, sem exceção. Raiz confiável com
+  verificação falhando é, quase sempre, **intermediária faltando na cadeia
+  enviada**. Por isso o diagnóstico passou a contar quantos certificados o
+  servidor manda: cadeia curta demais é o retrato disso.
+- **"Sem resposta" era o instrumento, não o servidor.** Cinco dos oito hosts
+  recebiam esse rótulo porque o passo descartava o stderr do `openssl`, que é
+  exatamente onde está o motivo. Os servidores responderam; quem não soube ler
+  foi o diagnóstico. Ele agora lê `Verification error:`, que sai logo depois do
+  handshake e sobrevive quando o bloco `SSL-Session` não chega a ser impresso, e
+  quando nem isso existe imprime o código de saída do `openssl` em vez de um
+  rótulo inventado.
+
+### O que ainda não dá para responder
+
+Duas das três perguntas originais continuam abertas, por um motivo prosaico: **a
+colheita não é preservada.** O arquivo fica no runner, o runner é descartado, e
+sobra o log com os totais.
+
+- **Se algum host recusa `page-size=1000`.** O coletor pagina até a página curta,
+  então um teto menor do outro lado passa despercebido no total.
+- **Se `bank-fixed-incomes` traz emissor de fora do distribuidor.** O payload tem
+  `issuerInstitutionCnpjNumber` separado do participante, o que sugere que uma
+  corretora publique emissores de terceiros. Confirmar exige ler o arquivo, não o
+  total.
+
+Guardar a colheita como artefato da execução responde as duas. Não entrou aqui
+porque exige fixar `actions/upload-artifact` num SHA, e este repositório não
+adivinha referência de ação.
 
 ## Limites
 
