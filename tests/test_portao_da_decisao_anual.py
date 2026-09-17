@@ -88,3 +88,41 @@ def test_o_workflow_so_escreve_depois_do_portao() -> None:
     ultimo = passos[-1]["run"]
     assert "gh pr create" in ultimo
     assert "git push origin main" not in ultimo
+
+
+def test_o_portao_escreve_as_chaves_que_o_workflow_le(tmp_path) -> None:
+    """O contrato tem dois lados, e só um estava preso.
+
+    O teste acima prende o lado do YAML: todo passo que escreve fica atrás de
+    ``steps.portao.outputs.acao``. Nada prendia o lado do Python. Renomear a
+    chave no portão deixava a suíte inteira verde — e em janeiro o job ficaria
+    verde também, que é o pior jeito de isto falhar: sem a chave, o ``if`` de
+    cada passo dá falso, nada roda, e o mês passa sem decisão parecendo sucesso.
+    É exatamente o silêncio que o cabeçalho do workflow diz querer impedir.
+
+    As chaves esperadas saem do YAML, não de uma lista escrita aqui: uma lista
+    escrita à mão envelhece quando o workflow passa a ler outra saída, e o teste
+    aprovaria de novo a mesma falha silenciosa.
+    """
+    import re
+    import subprocess
+
+    fluxo = (ROOT / ".github" / "workflows" / "decisao-anual.yml").read_text(encoding="utf-8")
+    lidas = set(re.findall(r"steps\.portao\.outputs\.([A-Za-z_][A-Za-z0-9_]*)", fluxo))
+    assert lidas, "o workflow deixou de ler saída do portão; este teste perdeu o objeto"
+
+    saida = tmp_path / "github_output"
+    concluido = subprocess.run(
+        [sys.executable, str(ROOT / "tools" / "portao_da_decisao_anual.py"),
+         "--hoje", "2026-07-15", "--github-output", str(saida)],
+        capture_output=True, text=True)
+    assert saida.exists(), (
+        f"o portão não escreveu arquivo nenhum: {concluido.stderr.strip()}")
+
+    escritas = {linha.split("=", 1)[0]
+                for linha in saida.read_text(encoding="utf-8").splitlines() if "=" in linha}
+    faltando = lidas - escritas
+    assert not faltando, (
+        f"o workflow lê {sorted(faltando)} em steps.portao.outputs, e o portão "
+        f"escreve {sorted(escritas)}. Em janeiro o if daria falso, nada rodaria "
+        f"e o job ficaria verde sem decidir.")
