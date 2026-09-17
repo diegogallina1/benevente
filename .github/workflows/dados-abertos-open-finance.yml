@@ -132,6 +132,23 @@ jobs:
       # truststore é o conserto; se for certificado avulso por instituição, não
       # há o que fazer do nosso lado. Este passo lê o emissor e responde qual é.
       #
+      # A primeira versão descartava o stderr e chamava de "sem resposta" tudo
+      # que não casasse com um grep. Cinco dos oito hosts caíram nesse balde, e
+      # o balde era do instrumento, não dos servidores: o coletor levanta
+      # CERTIFICATE_VERIFY_FAILED nos oito, então os oito responderam. O que
+      # faltava era ler o motivo, que estava no stderr jogado fora.
+      #
+      # Agora o stderr entra na captura e a linha lida é "Verification error:",
+      # que o openssl imprime logo depois do handshake e sobrevive quando o
+      # bloco SSL-Session não chega a ser impresso. Quando nem essa linha
+      # aparece, sai o código de saída do openssl em vez de um rótulo inventado.
+      #
+      # Também conta quantos certificados o servidor mandou e lista todos os
+      # emissores, não só o último. Cadeia curta terminando em raiz pública é o
+      # retrato de intermediária faltando — a explicação que sobra quando a raiz
+      # é confiável e a verificação falha mesmo assim, que é o caso de dois
+      # destes hosts.
+      #
       # Ele NÃO busca dado nenhum: abre a conexão, lê a cadeia e fecha. E o
       # coletor só imprime host que tem forma de host, porque esta lista vem do
       # diretório, que é preenchido por terceiros, e entra num laço de shell.
@@ -146,16 +163,26 @@ jobs:
           while read -r host; do
             [ -n "$host" ] || continue
             total=$((total + 1))
-            cadeia=$(echo | timeout 20 openssl s_client -connect "$host:443" \
-                       -servername "$host" -showcerts 2>/dev/null || true)
-            codigo=$(printf '%s\n' "$cadeia" | grep -m1 '^Verify return code:' || true)
+            bruto=$(echo | timeout 20 openssl s_client -connect "$host:443" \
+                      -servername "$host" -showcerts 2>&1) && saiu=0 || saiu=$?
+            codigo=$(printf '%s\n' "$bruto" | grep -m1 '^Verify return code:' || true)
             if printf '%s\n' "$codigo" | grep -q '(ok)'; then
               printf '%-52s ok\n' "$host" >> saida.txt
-            else
-              ruins=$((ruins + 1))
-              raiz=$(printf '%s\n' "$cadeia" | grep -E '^ +i:' | tail -1 || true)
-              printf '%-52s %s\n' "$host" "${codigo:-sem resposta}" >> saida.txt
-              printf '%-52s   raiz: %s\n' "" "${raiz:-desconhecida}" >> saida.txt
+              continue
+            fi
+            ruins=$((ruins + 1))
+            erro=$(printf '%s\n' "$bruto" | grep -m1 '^Verification error:' || true)
+            queixa=$(printf '%s\n' "$bruto" \
+                       | grep -m1 -E 'alert |Connection reset|no peer certificate' || true)
+            enviados=$(printf '%s\n' "$bruto" | grep -c '^-----BEGIN CERTIFICATE-----' || true)
+            emissores=$(printf '%s\n' "$bruto" | sed -n 's/^ *i://p' | paste -sd'|' - || true)
+            veredito="${codigo:-$erro}"
+            printf '%-52s %s\n' "$host" \
+                   "${veredito:-sem veredito; openssl saiu $saiu}" >> saida.txt
+            printf '%-52s   certificados enviados: %s\n' "" "$enviados" >> saida.txt
+            printf '%-52s   emissores: %s\n' "" "${emissores:-nenhum}" >> saida.txt
+            if [ -n "$queixa" ]; then
+              printf '%-52s   %s\n' "" "$queixa" >> saida.txt
             fi
           done < hosts.txt
           printf '\n%s de %s hosts não validam com o bundle padrão.\n' \
