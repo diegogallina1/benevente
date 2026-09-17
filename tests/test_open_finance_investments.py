@@ -204,6 +204,74 @@ def test_um_host_fora_do_ar_nao_derruba_os_outros() -> None:
     assert "HTTP 429" in documento["falhas"][0]
 
 
+def test_quem_responde_404_nao_entra_na_conta_de_falhas() -> None:
+    """Ausência declarada é resposta, e somá-la a falha mente sobre o mercado.
+
+    Uma instituição que não distribui Tesouro responde 404 em treasure-titles.
+    Contar isso junto com um handshake de TLS que falhou produz um número que
+    faz o ecossistema parecer quebrado quando metade daquilo é a instituição
+    dizendo, corretamente, o que ela não tem.
+    """
+    def abrir(pedido, timeout=None):
+        if "treasure-titles" in pedido.full_url:
+            raise urllib.error.HTTPError(pedido.full_url, 404, "Not Found", {},
+                                         io.BytesIO(b""))
+        return RespostaFalsa(json.dumps(pagina([{"ok": True}])).encode("utf-8"))
+
+    documento = coletor.coletar(
+        abrir=abrir, pausa=0,
+        diretorio=diretorio(organizacao("Banco Exemplo", "45086338000178", BASE)))
+    assert documento["falhas"] == []
+    assert documento["ausencias"] == ["Banco Exemplo/treasure-titles"]
+    recurso = documento["participantes"][0]["recursos"]["treasure-titles"]
+    assert recurso["linhas"] == 0 and "não publica" in recurso["ausente"]
+    assert "falhou" not in recurso
+
+
+def test_erro_de_servidor_continua_sendo_falha() -> None:
+    """Só o 404 vira ausência. Um 503 é o host quebrado, e isso é falha."""
+    def abrir(pedido, timeout=None):
+        raise urllib.error.HTTPError(pedido.full_url, 503, "Service Unavailable",
+                                     {}, io.BytesIO(b""))
+
+    documento = coletor.coletar(
+        abrir=abrir, pausa=0,
+        diretorio=diretorio(organizacao("Banco Exemplo", "45086338000178", BASE)))
+    assert documento["ausencias"] == []
+    assert len(documento["falhas"]) == len(coletor.RECURSOS)
+    assert documento["falhas_por_causa"] == {"HTTP 5xx": len(coletor.RECURSOS)}
+
+
+def test_as_falhas_sao_agrupadas_por_causa() -> None:
+    """Cento e sete falhas é um número; rotuladas, viram um diagnóstico.
+
+    A diferença decide o que fazer: certificado fora do bundle padrão se resolve
+    acrescentando a cadeia, host que não resolve se resolve com a instituição
+    corrigindo o cadastro no diretório, e 5xx se resolve esperando.
+    """
+    contagem = coletor.contar_por_causa([
+        "A/funds: rede: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed",
+        "B/funds: rede: [SSL: CERTIFICATE_VERIFY_FAILED] certificate verify failed",
+        "C/funds: rede: [Errno -2] Name or service not known",
+        "D/funds: HTTP 503",
+        "E/funds: rede: timed out",
+    ])
+    assert list(contagem) == ["TLS: certificado não confiável", "DNS: host não resolve",
+                              "HTTP 5xx", "tempo esgotado"]
+    assert contagem["TLS: certificado não confiável"] == 2
+    # Da mais frequente para a menos: quem lê quer saber onde está o problema.
+    assert list(contagem.values()) == sorted(contagem.values(), reverse=True)
+
+
+def test_um_erro_de_tls_nao_e_rotulado_como_rede_generica() -> None:
+    """Certificado chega dentro de um URLError e o rótulo genérico o engoliria,
+    que é justamente a causa que precisa aparecer separada."""
+    assert coletor.rotulo_da_falha(
+        "rede: [SSL: CERTIFICATE_VERIFY_FAILED] self-signed certificate"
+    ) == "TLS: certificado não confiável"
+    assert coletor.rotulo_da_falha("rede: conexão recusada") == "rede: outro erro"
+
+
 def test_resposta_que_nao_e_json_e_falha_nomeada_e_nao_traceback() -> None:
     def abrir(pedido, timeout=None):
         return RespostaFalsa(b"<html>portal do banco</html>")
