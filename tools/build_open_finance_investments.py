@@ -88,11 +88,49 @@ PAUSA_PADRAO = 0.2
 
 
 class RecursoIndisponivel(RuntimeError):
-    """O host respondeu, mas não com dado: 404, 429, 5xx.
+    """Não deu para obter o dado: rede, TLS, 5xx, resposta que não é JSON.
 
     Não derruba a coleta. Cada instituição serve o próprio host, e um host fora
-    do ar não pode transformar o resultado dos outros trezentos em nada.
+    do ar não pode transformar o resultado dos outros quarenta e cinco em nada.
     """
+
+
+class RecursoAusente(RecursoIndisponivel):
+    """O host respondeu 404: ele existe e não publica este recurso.
+
+    Separada porque contar as duas juntas mente sobre o mercado. Um 404 em
+    treasure-titles de quem não distribui Tesouro é informação — a instituição
+    disse o que não tem. Somar isso a um handshake de TLS que falhou produz um
+    número de "falhas" que faz o ecossistema parecer quebrado quando metade
+    daquilo é ausência declarada.
+    """
+
+
+#: Como um erro é rotulado no resumo. A ordem importa: a primeira que casar
+#: vence, e a de TLS vem antes da de rede porque um erro de certificado chega
+#: dentro de um URLError e seria engolido pelo rótulo genérico.
+ROTULOS = (
+    ("CERTIFICATE_VERIFY_FAILED", "TLS: certificado não confiável"),
+    ("SSL", "TLS: outro erro"),
+    ("Name or service not known", "DNS: host não resolve"),
+    ("timed out", "tempo esgotado"),
+    ("não é JSON", "resposta não é JSON"),
+    ("paginação", "paginação não converge"),
+    ("HTTP 4", "HTTP 4xx"),
+    ("HTTP 5", "HTTP 5xx"),
+    ("rede", "rede: outro erro"),
+)
+
+
+def rotulo_da_falha(motivo: str) -> str:
+    """Agrupa o motivo numa causa. Sem isto, cento e sete falhas são um número.
+
+    Um número de falhas não decide nada: rotulado, ele diz se a saída é mexer no
+    truststore, esperar a instituição consertar o cadastro, ou nada."""
+    for marca, nome in ROTULOS:
+        if marca in motivo:
+            return nome
+    return "outro"
 
 
 def _abrir_json(url: str, *, abrir=urllib.request.urlopen):
@@ -101,6 +139,8 @@ def _abrir_json(url: str, *, abrir=urllib.request.urlopen):
         with abrir(pedido, timeout=TEMPO_LIMITE) as resposta:
             return json.loads(resposta.read().decode("utf-8"))
     except urllib.error.HTTPError as erro:
+        if erro.code == 404:
+            raise RecursoAusente("HTTP 404: não publica este recurso") from None
         raise RecursoIndisponivel(f"HTTP {erro.code}") from None
     except urllib.error.URLError as erro:
         raise RecursoIndisponivel(f"rede: {erro.reason}") from None
@@ -211,6 +251,16 @@ def filtrados(participantes, filtro: str, limite: int | None):
     return participantes if limite is None else participantes[:limite]
 
 
+def contar_por_causa(falhas) -> dict:
+    """Quantas falhas de cada causa, da mais frequente para a menos."""
+    contagem: dict[str, int] = {}
+    for falha in falhas:
+        motivo = falha.split(": ", 1)[1] if ": " in falha else falha
+        rotulo = rotulo_da_falha(motivo)
+        contagem[rotulo] = contagem.get(rotulo, 0) + 1
+    return dict(sorted(contagem.items(), key=lambda par: -par[1]))
+
+
 def _itens(corpo) -> tuple[list, dict]:
     """Separa ``data`` do envelope. O envelope é quem sabe se acabou."""
     if isinstance(corpo, list):
@@ -274,13 +324,19 @@ def coletar(*, abrir=urllib.request.urlopen, diretorio=None, limite: int | None 
     publicadas = bases_publicadas(diretorio)
     participantes = filtrados(publicadas, filtro, limite)
 
-    colhidos, falhas = [], []
+    colhidos, falhas, ausencias = [], [], []
     for participante in participantes:
         registro = {**participante, "recursos": {}}
         for recurso in recursos:
             try:
                 itens = buscar_recurso(participante["base"], recurso, abrir=abrir,
                                        pausa=pausa)
+            except RecursoAusente as vazio:
+                # O host respondeu e disse que não tem. Isso é resposta, não
+                # falha, e some da contagem de falhas de propósito.
+                registro["recursos"][recurso] = {"linhas": 0, "ausente": str(vazio)}
+                ausencias.append(f"{participante['organizacao']}/{recurso}")
+                continue
             except RecursoIndisponivel as parou:
                 registro["recursos"][recurso] = {"linhas": 0, "falhou": str(parou)}
                 falhas.append(f"{participante['organizacao']}/{recurso}: {parou}")
@@ -312,6 +368,8 @@ def coletar(*, abrir=urllib.request.urlopen, diretorio=None, limite: int | None 
         "participantes_no_diretorio": len(publicadas),
         "participantes_colhidos": len(colhidos),
         "falhas": falhas,
+        "falhas_por_causa": contar_por_causa(falhas),
+        "ausencias": ausencias,
         "participantes": colhidos,
     }
 
@@ -404,9 +462,13 @@ def main() -> None:
         linhas = sum((p["recursos"].get(recurso) or {}).get("linhas", 0)
                      for p in documento["participantes"])
         print(f"  {recurso}: {linhas} linhas")
+    if documento["ausencias"]:
+        print(f"  {len(documento['ausencias'])} recursos que a instituição "
+              f"respondeu não publicar (HTTP 404). Isso é resposta, não falha.")
     if documento["falhas"]:
-        print(f"  {len(documento['falhas'])} falhas, nomeadas no arquivo. "
-              f"Primeira: {documento['falhas'][0]}")
+        print(f"  {len(documento['falhas'])} falhas, nomeadas no arquivo, por causa:")
+        for causa, quantas in documento["falhas_por_causa"].items():
+            print(f"    {quantas:>4}  {causa}")
     print("  bank-fixed-incomes é distribuição de taxa de emissão, não oferta "
           "comprável. Não vira catálogo.")
 
