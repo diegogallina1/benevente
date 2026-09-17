@@ -32,6 +32,17 @@ on:
         description: "Filtra por trecho do nome da organização ou da marca"
         type: string
         default: ""
+      ca_extra_url:
+        # Vazia de propósito, e não por falta de candidata. O diagnóstico de
+        # 17/09/2026 mostrou que a raiz que falta é a da ICP-Brasil, mas a URL
+        # oficial dela não foi conferida de dentro deste ambiente, e este
+        # projeto não adivinha URL — é a mesma regra de data/b3_endpoints.json.
+        # Quem preencher, preenche com o endereço lido na fonte oficial, e a
+        # execução imprime o sha256 e o titular do que baixou, para conferir
+        # antes de confiar e para fixar depois.
+        description: "URL do PEM com âncora adicional. Vazio = só as do sistema"
+        type: string
+        default: ""
 
 # Só leitura. Este workflow observa; quem publica é outro.
 permissions:
@@ -69,6 +80,29 @@ jobs:
       # chegam como valor de variável, que o shell trata como dado. Um teste
       # deste repositório reprova a outra forma, e reprovou a primeira versão
       # deste arquivo.
+      # Baixar uma âncora de confiança é diferente de baixar um dado, e por
+      # isso o passo imprime o sha256 e o titular antes de qualquer uso: quem
+      # aperta o botão tem de poder conferir o que passou a ser confiado. A URL
+      # precisa ser https — buscar âncora por texto claro seria pedir para
+      # alguém no caminho escolher em quem o coletor confia.
+      - name: Baixar a âncora adicional, se houver
+        if: inputs.modo == 'colher'
+        shell: bash
+        env:
+          CA_URL: ${{ inputs.ca_extra_url }}
+        run: |
+          if [ -z "$CA_URL" ]; then
+            echo "Sem âncora adicional: valem só as do sistema."
+            exit 0
+          fi
+          case "$CA_URL" in
+            https://*) ;;
+            *) echo "A URL da âncora precisa ser https."; exit 1 ;;
+          esac
+          curl -fsS --max-time 60 -o ca-extra.pem "$CA_URL"
+          echo "sha256: $(sha256sum ca-extra.pem | cut -d" " -f1)"
+          openssl x509 -in ca-extra.pem -noout -subject -issuer -enddate
+
       - name: Rodar o coletor
         if: inputs.modo != 'diagnostico'
         shell: bash
@@ -86,6 +120,9 @@ jobs:
             argumentos+=(--listar)
           elif [ -n "$LIMITE" ] && [ "$LIMITE" != "0" ]; then
             argumentos+=(--limite "$LIMITE")
+          fi
+          if [ -s ca-extra.pem ]; then
+            argumentos+=(--ca-extra ca-extra.pem)
           fi
           python tools/build_open_finance_investments.py "${argumentos[@]}" | tee saida.txt
 

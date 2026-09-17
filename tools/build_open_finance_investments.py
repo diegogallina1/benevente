@@ -52,6 +52,7 @@ import datetime as dt
 import hashlib
 import json
 import re
+import ssl
 import time
 import urllib.error
 import urllib.request
@@ -131,6 +132,42 @@ def rotulo_da_falha(motivo: str) -> str:
         if marca in motivo:
             return nome
     return "outro"
+
+
+def abridor_com(ca_extra: str | None):
+    """Um abridor que confia também na âncora do arquivo, além das do sistema.
+
+    Oito dos quarenta e um hosts não validam com o bundle padrão, e o
+    diagnóstico de 17/09/2026 mostrou de quem é a raiz que falta: a ICP-Brasil,
+    a PKI nacional, a mesma que sustenta e-CPF e assinatura digital. Não é
+    certificado avulso por banco, e por isso acrescentá-la é decisão delimitada.
+
+    Delimitada de três formas, e as três importam:
+
+    * **Acrescenta, não substitui.** ``create_default_context`` já carrega as
+      âncoras do sistema, e ``load_verify_locations`` soma a nova. Nenhuma
+      autoridade deixa de valer.
+    * **Vale só neste processo.** Nada é instalado no truststore da máquina.
+    * **É opcional e explícita.** Sem o arquivo, o coletor usa o padrão e os
+      oito continuam falhando, nomeados. Falhar visível é melhor que passar.
+
+    O que ela não faz, e não deve fazer, é desligar a verificação. Isso trocaria
+    oito falhas que se leem por um cliente que aceita o certificado de quem se
+    passar por qualquer um deles.
+
+    Arquivo ilegível levanta. Cair no padrão em silêncio faria o coletor
+    parecer consertado enquanto continuasse recusando os mesmos oito, e a
+    pessoa procuraria o defeito no lugar errado.
+    """
+    if not ca_extra:
+        return urllib.request.urlopen
+    contexto = ssl.create_default_context()
+    contexto.load_verify_locations(cafile=ca_extra)
+
+    def abrir(pedido, timeout=None):
+        return urllib.request.urlopen(pedido, timeout=timeout, context=contexto)
+
+    return abrir
 
 
 def _abrir_json(url: str, *, abrir=urllib.request.urlopen):
@@ -438,6 +475,9 @@ def main() -> None:
                    help="pode repetir. Sem isto, os cinco")
     p.add_argument("--pausa", type=float, default=PAUSA_PADRAO,
                    help="segundos entre chamadas, para não incomodar os hosts")
+    p.add_argument("--ca-extra", default="",
+                   help="PEM com âncora adicional (a raiz da ICP-Brasil, por "
+                        "exemplo). Soma às do sistema, não substitui")
     p.add_argument("--saida", type=Path, default=DESTINO)
     p.add_argument("--listar", action="store_true",
                    help="só imprime quem publica dados abertos, sem colher nada")
@@ -476,7 +516,8 @@ def main() -> None:
             print(f"  {participante['organizacao']} · {participante['base']}")
         return
 
-    documento = coletar(diretorio=diretorio, limite=args.limite,
+    documento = coletar(abrir=abridor_com(args.ca_extra),
+                        diretorio=diretorio, limite=args.limite,
                         recursos=tuple(args.recurso) if args.recurso else RECURSOS,
                         filtro=args.participante, pausa=args.pausa)
     gravar(args.saida, documento)
