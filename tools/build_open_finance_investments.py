@@ -60,6 +60,25 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 DESTINO = ROOT / "data" / "dados_abertos_open_finance.json"
 
+
+def destino_datado(colhido_em: str, raiz: Path | None = None) -> Path:
+    """O caminho publicado, com a data da própria coleta no nome.
+
+    ``DESTINO`` é mutável e fica fora do versionamento de propósito: sobrescrever
+    o mesmo arquivo toda semana produz um dado sem idade, que alguém lê meses
+    depois achando que é de hoje. Os dados versionados deste repositório têm a
+    data no nome, e esta coleta segue a mesma regra — o nome e o ``colhido_em``
+    de dentro não podem divergir, então o nome vem de dentro.
+    """
+    dia = (colhido_em or "")[:10]
+    if len(dia) != 10 or dia[4] != "-" or dia[7] != "-":
+        raise ValueError(
+            f"colhido_em não tem data ISO no começo: {colhido_em!r}. O nome do "
+            f"arquivo publicado sai daí, e um nome com data inventada é pior "
+            f"que nenhum.")
+    raiz = raiz or (ROOT / "data")
+    return raiz / f"dados_abertos_open_finance_{dia}.json"
+
 #: O diretório de participantes é público e é o único lugar onde os endereços de
 #: cada instituição estão declarados. Não existe endpoint central: cada
 #: participante serve os dados abertos no host dele.
@@ -74,6 +93,13 @@ MARCA = "/opendata-investments/"
 #: Os cinco recursos, com o nome que cada um tem na especificação.
 RECURSOS = ("funds", "bank-fixed-incomes", "credit-fixed-incomes",
             "variable-incomes", "treasure-titles")
+#: Os recursos que algum código deste repositório de fato lê hoje. Só ``funds``
+#: chega a um consumidor: ``fund_comparator.distribution_terms`` o usa para
+#: dizer em que termos um fundo era comprável em cada distribuidor. Os outros
+#: quatro são colhidos e contados, mas publicá-los seria versionar megabytes que
+#: nenhuma linha abre. Um teste amarra esta tupla ao consumidor: se ele passar a
+#: precisar de outro recurso, ele falha em vez de devolver lista vazia.
+RECURSOS_PUBLICADOS = ("funds",)
 
 #: O teto documentado de ``page-size`` é mil, e é o que se pede. O que vier
 #: menor que isso encerra a paginação, como no coletor da ANBIMA.
@@ -483,6 +509,10 @@ def main() -> None:
                    help="só imprime quem publica dados abertos, sem colher nada")
     p.add_argument("--hosts", action="store_true",
                    help="imprime um host por linha, para diagnóstico de TLS")
+    p.add_argument("--publicar", action="store_true",
+                   help=f"colhe só {', '.join(RECURSOS_PUBLICADOS)} e grava com a "
+                        f"data da coleta no nome, para versionar. Sem isto, os "
+                        f"cinco recursos no arquivo mutável")
     args = p.parse_args()
 
     diretorio = None
@@ -516,13 +546,29 @@ def main() -> None:
             print(f"  {participante['organizacao']} · {participante['base']}")
         return
 
+    if args.recurso:
+        escolhidos = tuple(args.recurso)
+    elif args.publicar:
+        escolhidos = RECURSOS_PUBLICADOS
+    else:
+        escolhidos = RECURSOS
+
     documento = coletar(abrir=abridor_com(args.ca_extra),
                         diretorio=diretorio, limite=args.limite,
-                        recursos=tuple(args.recurso) if args.recurso else RECURSOS,
+                        recursos=escolhidos,
                         filtro=args.participante, pausa=args.pausa)
-    gravar(args.saida, documento)
 
-    print(f"{args.saida} · colhido em {documento['colhido_em']}")
+    # --saida explícito manda, inclusive com --publicar: quem escolheu o caminho
+    # está dizendo onde quer, e sobrescrever isso seria gravar em outro lugar
+    # sem avisar. Sem --saida, publicar significa datar o nome.
+    saida = args.saida
+    if args.publicar and saida == DESTINO:
+        # Ancorado na pasta do próprio destino, não na raiz do módulo: quem
+        # aponta DESTINO para outro lugar espera que o datado caia junto.
+        saida = destino_datado(documento["colhido_em"], DESTINO.parent)
+    gravar(saida, documento)
+
+    print(f"{saida} · colhido em {documento['colhido_em']}")
     print(f"  {documento['participantes_colhidos']} de "
           f"{documento['participantes_no_diretorio']} participantes")
     for recurso in RECURSOS:

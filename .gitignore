@@ -72,7 +72,13 @@ anbima_*.json
 data/fundos_anbima.json
 data/ofertas_anbima.json
 
-# Coleta dos dados abertos do Open Finance. É pública e sem credencial, mas é
-# grande, muda toda semana e não é resultado de pesquisa: quem precisar do
-# número roda o coletor e datar a própria coleta é parte do método.
+# Coleta local dos dados abertos do Open Finance. É pública e sem credencial,
+# mas este caminho é mutável: rodar de novo sobrescreve, e um arquivo que muda
+# de conteúdo sem mudar de nome vira um dado sem idade, que alguém lê meses
+# depois achando que é de hoje. Datar a própria coleta é parte do método.
+#
+# O que é versionado são as colheitas com a data no nome
+# (data/dados_abertos_open_finance_AAAA-MM-DD.json), publicadas pelo modo
+# publicar do workflow e contendo só os recursos que algum código deste
+# repositório lê. Estas não casam com a linha abaixo, de propósito.
 data/dados_abertos_open_finance.json
