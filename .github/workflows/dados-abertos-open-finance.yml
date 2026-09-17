@@ -15,9 +15,9 @@ on:
   workflow_dispatch:
     inputs:
       modo:
-        description: "listar (só quem publica) ou colher (busca os dados)"
+        description: "listar (quem publica), colher (busca os dados) ou diagnostico (TLS)"
         type: choice
-        options: [listar, colher]
+        options: [listar, colher, diagnostico]
         default: listar
       limite:
         # Era "Vazio = todos", e vazio nunca quis dizer todos: o GitHub repõe o
@@ -70,6 +70,7 @@ jobs:
       # deste repositório reprova a outra forma, e reprovou a primeira versão
       # deste arquivo.
       - name: Rodar o coletor
+        if: inputs.modo != 'diagnostico'
         shell: bash
         env:
           MODO: ${{ inputs.modo }}
@@ -87,6 +88,42 @@ jobs:
             argumentos+=(--limite "$LIMITE")
           fi
           python tools/build_open_finance_investments.py "${argumentos[@]}" | tee saida.txt
+
+      # Quarenta das sessenta e três falhas da primeira colheita inteira foram
+      # certificado que o bundle padrão não valida. O número não decide nada
+      # sozinho: se a raiz for a PKI do próprio Open Finance, acrescentá-la ao
+      # truststore é o conserto; se for certificado avulso por instituição, não
+      # há o que fazer do nosso lado. Este passo lê o emissor e responde qual é.
+      #
+      # Ele NÃO busca dado nenhum: abre a conexão, lê a cadeia e fecha. E o
+      # coletor só imprime host que tem forma de host, porque esta lista vem do
+      # diretório, que é preenchido por terceiros, e entra num laço de shell.
+      - name: Diagnosticar o TLS dos hosts
+        if: inputs.modo == 'diagnostico'
+        shell: bash
+        run: |
+          python tools/build_open_finance_investments.py --hosts > hosts.txt
+          : > saida.txt
+          ruins=0
+          total=0
+          while read -r host; do
+            [ -n "$host" ] || continue
+            total=$((total + 1))
+            cadeia=$(echo | timeout 20 openssl s_client -connect "$host:443" \
+                       -servername "$host" -showcerts 2>/dev/null || true)
+            codigo=$(printf '%s\n' "$cadeia" | grep -m1 '^Verify return code:' || true)
+            if printf '%s\n' "$codigo" | grep -q '(ok)'; then
+              printf '%-52s ok\n' "$host" >> saida.txt
+            else
+              ruins=$((ruins + 1))
+              raiz=$(printf '%s\n' "$cadeia" | grep -E '^ +i:' | tail -1 || true)
+              printf '%-52s %s\n' "$host" "${codigo:-sem resposta}" >> saida.txt
+              printf '%-52s   raiz: %s\n' "" "${raiz:-desconhecida}" >> saida.txt
+            fi
+          done < hosts.txt
+          printf '\n%s de %s hosts não validam com o bundle padrão.\n' \
+                 "$ruins" "$total" >> saida.txt
+          cat saida.txt
 
       - name: Escrever o resultado no resumo da execução
         # O log some no meio do ruído do runner; o resumo fica na página da
