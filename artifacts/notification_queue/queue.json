@@ -449,6 +449,112 @@
       "previous_record_sha256": "a50fe40025bce6bb05f9d189befaef4fc87f670af53acfa903b245eface2625b",
       "state": "queued_dry_run",
       "record_sha256": "6658d592ab9e94eeccce697253dbeb6cdf9c46195a20b00067e4f18abb42cc26"
+    },
+    {
+      "key": "camada:ultraconservador:2026-09-16:0",
+      "template": "camada_mudou",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Ultraconservador",
+        "de": "alerta",
+        "para": "normal",
+        "data": "16/09/2026",
+        "exposicao_antes": "1,8%",
+        "exposicao_depois": "3,2%",
+        "motivo": "recuperação após dez pregões mais calmos"
+      },
+      "preview": "Benevente · Ultraconservador: a camada de proteção passou de alerta para normal em 16/09/2026. Exposição em ações vai de 1,8% para 3,2% no próximo pregão. Motivo observado: recuperação após dez pregões mais calmos. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "live_performance_ultraconservador.json",
+        "sha256": "44f1675af011381555df3a0f9e967007e36bd09e7628822dfb804e3dbe4e2e8d"
+      },
+      "previous_record_sha256": "6658d592ab9e94eeccce697253dbeb6cdf9c46195a20b00067e4f18abb42cc26",
+      "state": "queued_dry_run",
+      "record_sha256": "4f84fecd3486d4a73b969eaf1c97128022b9008c5fed70a2d92f0ab8667387e6"
+    },
+    {
+      "key": "camada:conservador:2026-09-16:0",
+      "template": "camada_mudou",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Conservador",
+        "de": "alerta",
+        "para": "normal",
+        "data": "16/09/2026",
+        "exposicao_antes": "15,4%",
+        "exposicao_depois": "28,0%",
+        "motivo": "recuperação após dez pregões mais calmos"
+      },
+      "preview": "Benevente · Conservador: a camada de proteção passou de alerta para normal em 16/09/2026. Exposição em ações vai de 15,4% para 28,0% no próximo pregão. Motivo observado: recuperação após dez pregões mais calmos. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "live_performance_conservador.json",
+        "sha256": "21182926a03493fbb43c3b8bac26bf6101e891cf83a5d5caaf9a885e90db9236"
+      },
+      "previous_record_sha256": "4f84fecd3486d4a73b969eaf1c97128022b9008c5fed70a2d92f0ab8667387e6",
+      "state": "queued_dry_run",
+      "record_sha256": "048c09c12cc9dbbc7569794a2eb2135955448f73e01b7899e13f5dd8b0394f0a"
+    },
+    {
+      "key": "camada:equilibrado:2026-09-16:0",
+      "template": "camada_mudou",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Equilibrado",
+        "de": "alerta",
+        "para": "normal",
+        "data": "16/09/2026",
+        "exposicao_antes": "30,8%",
+        "exposicao_depois": "44,0%",
+        "motivo": "recuperação após dez pregões mais calmos"
+      },
+      "preview": "Benevente · Equilibrado: a camada de proteção passou de alerta para normal em 16/09/2026. Exposição em ações vai de 30,8% para 44,0% no próximo pregão. Motivo observado: recuperação após dez pregões mais calmos. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "live_performance_equilibrado.json",
+        "sha256": "4e849309879b92a0bb04fd074f1ec13df10ec205321d747044d7758e404688b0"
+      },
+      "previous_record_sha256": "048c09c12cc9dbbc7569794a2eb2135955448f73e01b7899e13f5dd8b0394f0a",
+      "state": "queued_dry_run",
+      "record_sha256": "2be8dbd763421981824502a87f21f072b0924bed019c6e4776d31b3b6cdcaeab"
+    },
+    {
+      "key": "camada:arrojado:2026-09-16:0",
+      "template": "camada_mudou",
+      "category": "utilitaria",
+      "variables": {
+        "perfil": "Arrojado",
+        "de": "alerta",
+        "para": "normal",
+        "data": "16/09/2026",
+        "exposicao_antes": "51,0%",
+        "exposicao_depois": "60,0%",
+        "motivo": "recuperação após dez pregões mais calmos"
+      },
+      "preview": "Benevente · Arrojado: a camada de proteção passou de alerta para normal em 16/09/2026. Exposição em ações vai de 51,0% para 60,0% no próximo pregão. Motivo observado: recuperação após dez pregões mais calmos. Nenhuma ordem foi transmitida — a decisão é sua.",
+      "source": {
+        "file": "live_performance_arrojado.json",
+        "sha256": "29283eb99b33bc21f63069e710ab74dc42c00e91991e91323491c15705560628"
+      },
+      "previous_record_sha256": "2be8dbd763421981824502a87f21f072b0924bed019c6e4776d31b3b6cdcaeab",
+      "state": "queued_dry_run",
+      "record_sha256": "ff2ac239ddb4f340b6eff5ed146959d9aac3f63edfd703a88f0e3a5a133e5ed0"
+    },
+    {
+      "key": "radar:2026-09-17:45",
+      "template": "radar_revisao",
+      "category": "utilitaria",
+      "variables": {
+        "quantidade": "45",
+        "tickers": "B3SA3, BBSE3, CMIN3, CSNA3, CXSE3, PSSA3, RDOR3, SHOW3, TEND3",
+        "data": "17/09/2026"
+      },
+      "preview": "Benevente · radar: 45 item(ns) sobre B3SA3, BBSE3, CMIN3, CSNA3, CXSE3, PSSA3, RDOR3, SHOW3, TEND3 marcado(s) para revisão humana em 17/09/2026. O radar não altera pesos e não participa do sinal de proteção.",
+      "source": {
+        "file": "event_radar.json",
+        "sha256": "381d7c1dc191819be1fafd0c219742049c1858faa9b08c0ad08e2edc22c0bdf5"
+      },
+      "previous_record_sha256": "ff2ac239ddb4f340b6eff5ed146959d9aac3f63edfd703a88f0e3a5a133e5ed0",
+      "state": "queued_dry_run",
+      "record_sha256": "eefa1745b55d20e09e0daffcabeddeebdfe253a20d26daed71b1b0bc5f792b4d"
     }
   ]
 }
