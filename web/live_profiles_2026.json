@@ -8,35 +8,35 @@
   "honesty": "A política é declarada e foi congelada antes desta execução, então aplicá-la a uma data passada não escolhe nada: orçamento, número de nomes, tetos e fatores já estavam assinados. A amostra confirmatória continua começando no primeiro pregão de 2027 — este livro é reconstrução, não validação prospectiva.",
   "profiles": {
     "ultraconservador": {
-      "through": "2026-09-16",
-      "portfolio_return": 0.0952378941,
+      "through": "2026-09-18",
+      "portfolio_return": 0.0954488248,
       "equity_weight": 0.04,
       "issuers": 12,
-      "record_sha256": "ccd6f999fc2977229f291148917835cace0f165920d9d88de3e1657ca494f1bb",
+      "record_sha256": "c0fca756083ea22d21b7062071ec1dab3d402187a5ed30ac949110a3585d6b99",
       "reconstructed": true
     },
     "conservador": {
-      "through": "2026-09-16",
-      "portfolio_return": 0.0671508413,
+      "through": "2026-09-18",
+      "portfolio_return": 0.0603439931,
       "equity_weight": 0.35,
       "issuers": 12,
-      "record_sha256": "2973b49a6ef652388155468335cf9f1c140ab2c5df76ccf633d039fc74a176e5",
+      "record_sha256": "9116b5e007404819cba84982fcbce63be6324922c5182b4ecdafaae01d9c2fd4",
       "reconstructed": false
     },
     "equilibrado": {
-      "through": "2026-09-16",
-      "portfolio_return": 0.0506182475,
+      "through": "2026-09-18",
+      "portfolio_return": 0.0345092467,
       "equity_weight": 0.55,
       "issuers": 8,
-      "record_sha256": "ce3002a78a107b0e94abad8d4a15a2b79297120bf6f515ddaa90259ea3b2a714",
+      "record_sha256": "fe5fc844652d39f7bcb886fc21f024d1155dc95a7712c12cc2608c1f64660477",
       "reconstructed": false
     },
     "arrojado": {
-      "through": "2026-09-16",
-      "portfolio_return": 0.020125846,
+      "through": "2026-09-18",
+      "portfolio_return": -0.0021238039,
       "equity_weight": 0.75,
       "issuers": 5,
-      "record_sha256": "447f343f560279852701561b2dff34efa4fc2793fd54a25ed586362ce304ccc1",
+      "record_sha256": "fe5a9efa3dcdef5a8aa58d931d461fe392e7d622f5e1f8eaa6f7ec6c01caf35d",
       "reconstructed": false
     }
   }
